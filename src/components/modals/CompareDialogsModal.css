@@ -76,6 +76,10 @@
     width: 1437px;
 }
 
+.cl-compare-dialogs-overhang {
+    width: 1537px;
+}
+
 .cl-modal.cl-modal--compare-dialogs > * {
     grid-template-rows: 1fr min-content;
 }

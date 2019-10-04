@@ -22,7 +22,7 @@
   "private": true,
   "dependencies": {
     "@conversationlearner/models": "0.212.0",
-    "@conversationlearner/webchat": "0.155.0",
+    "@conversationlearner/webchat": "0.156.0",
     "@cypress/webpack-preprocessor": "4.0.3",
     "adaptivecards": "1.2.0",
     "adm-zip": "^0.4.13",

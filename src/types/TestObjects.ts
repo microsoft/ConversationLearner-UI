@@ -191,6 +191,7 @@ export class ValidationSet {
             // Add sourceName if it doesn't exist
             if (!this.sourceNames.includes(sourceName)) {
                 this.sourceNames.push(sourceName)
+                this.sourceNames.sort()
             }
         }
     }
@@ -214,6 +215,7 @@ export class ValidationSet {
         // Add sourceName if it doesn't exist
         if (!this.sourceNames.includes(item.sourceName)) {
             this.sourceNames.push(item.sourceName)
+            this.sourceNames.sort()
             // Validation results never have LG as they come from logDialogs
             this.usesLgMap.set(item.sourceName, false)
         }
@@ -370,28 +372,34 @@ export class ValidationSet {
 
     // Return count of unratable items because there are
     // no matching transcripts between the two sources
-    unratableConversationIds(pivotSource: string, source: string): string[] {
-        const pivotConversationIds = this.items.filter(i => i.sourceName === pivotSource).map(i => i.conversationId)
+    unratableConversationIds(source: string, pivotSource?: string): string[] {
+        const filterConversationIds = pivotSource 
+            ? this.items.filter(i => i.sourceName === pivotSource).map(i => i.conversationId)
+            : this.getAllConversationIds()
+            
         const conversationIds = this.items.filter(i => i.sourceName === source).map(i => i.conversationId)
-        return pivotConversationIds.filter(id => !conversationIds.includes(id))
+        return filterConversationIds.filter(id => !conversationIds.includes(id))
     }
 
     // Return list of conversationIds that haven't been rated yet
-    unratedConversationIds(pivotSource: string, source: string): string[] {
+    unratedConversationIds(source: string, filterSource?: string): string[] {
 
         // Get list of conversations that exist for both
-        const pivotConversationIds = this.items.filter(i => i.sourceName === pivotSource).map(i => i.conversationId)
+        const filterConversationIds = filterSource 
+            ? this.items.filter(i => i.sourceName === filterSource).map(i => i.conversationId)
+            : this.getAllConversationIds()
+
         const sourceConversationIds = this.items.filter(i => i.sourceName === source).map(i => i.conversationId)
-        const sharedConversationIds = pivotConversationIds.filter(id => sourceConversationIds.includes(id))
+        const sharedConversationIds = filterConversationIds.filter(id => sourceConversationIds.includes(id))
         
         // Lookup is always alphabetical
-        const sourceNames = [pivotSource, source].sort()
+        const sourceNames = [filterSource, source].sort()
 
         // Find ones that still need to be rated
         return this.ratingPairs.filter(rp => 
                 rp.result === RatingResult.UNKNOWN
-                && rp.sourceNames[0] === sourceNames[0]
-                && rp.sourceNames[1] === sourceNames[1]
+                && ((filterSource === undefined && rp.sourceNames.includes(source))
+                    || (rp.sourceNames[0] === sourceNames[0] && rp.sourceNames[1] === sourceNames[1]))
                 && sharedConversationIds.includes(rp.conversationId))
                 .map(rp => rp.conversationId)
     }
