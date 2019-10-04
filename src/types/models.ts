@@ -19,7 +19,8 @@ export interface ImportedAction {
     text: string,
     buttons: string[],
     isTerminal: boolean,
-    reprompt: boolean
+    reprompt: boolean,
+    isEntryNode?: boolean
 }
 
 export interface ActivityHeight {

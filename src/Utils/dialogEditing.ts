@@ -249,7 +249,7 @@ export async function onChangeAction(
                 if (!newAction.clientData || !newAction.clientData.importHashes) {
                     newAction.clientData = { importHashes: []}
                 }
-                newAction.clientData!.importHashes!.push(importHash)
+                newAction.clientData.importHashes!.push(importHash)
                 await editActionThunkAsync(appId, newAction)
 
                 // Test if new lookup can be used on any other imported actions
@@ -469,15 +469,18 @@ export async function onEditTeach(
     await editHandler(trainDialog, selectedActivity, args)
 }
 
-// Returns placeholder if it exists, otherwise creates it if given creation action
-export async function getPlaceholderAPIAction(
+/**
+ * Returns placeholder if it exists, otherwise creates it if given creation action.
+ * Will add the new action to `actions` if one is created.
+ */
+export async function getOrCreatePlaceholderAPIAction(
     appId: string,
     placeholderName: string | "",
     isTerminal: boolean,
     actions: CLM.ActionBase[],
     createActionThunkAsync: (appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null> | null
 ): Promise<CLM.ActionBase | undefined> {
-    // Check if it has been attached to real api call
+    // Get the action if it has been attached to real API call.
     const apiHash = Util.hashText(placeholderName)
     let placeholder = actions.find(a => {return a.clientData && a.clientData.importHashes
         ? (a.clientData.importHashes.find(h => h === apiHash) !== undefined)
@@ -506,7 +509,7 @@ export async function getPlaceholderAPIAction(
         if (!newAction) {
             throw new Error("Failed to create placeholder API")
         }
-
+        actions.push(newAction)
         return newAction
     }
     return undefined
@@ -544,7 +547,8 @@ export async function getAPIPlaceholderScorerStep(
     createActionThunkAsync: (appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null>
 ): Promise<CLM.TrainScorerStep> {
 
-    const placeholderAction = await getPlaceholderAPIAction(appId, placeholderName, isTerminal, actions, createActionThunkAsync)
+    const placeholderAction = await getOrCreatePlaceholderAPIAction(appId, placeholderName, isTerminal,
+        actions, createActionThunkAsync)
 
     if (!placeholderAction) {
         throw new Error("Unable to create API placeholder Action")

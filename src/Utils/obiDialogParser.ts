@@ -36,8 +36,8 @@ export class ObiDialogParser {
         createEntityThunkAsync: (appId: string, entity: CLM.EntityBase) => Promise<CLM.EntityBase | null>
     ) {
         this.app = app
-        this.actions = actions
-        this.entities = entities
+        this.actions = [...actions]
+        this.entities = [...entities]
         this.createActionThunkAsync = createActionThunkAsync
         this.createEntityThunkAsync = createEntityThunkAsync
     }
@@ -249,8 +249,8 @@ export class ObiDialogParser {
         const hashText = JSON.stringify(step)
         let action: CLM.ActionBase | undefined | null = OBIUtils.findActionFromHashText(hashText, this.actions)
         if (!action && this.createActionThunkAsync) {
-            action = await DialogEditing.getPlaceholderAPIAction(this.app.appId, step.url, isTerminal,
-                this.actions, this.createActionThunkAsync as any)
+            action = await DialogEditing.getOrCreatePlaceholderAPIAction(this.app.appId, step.url,
+                isTerminal, this.actions, this.createActionThunkAsync as any)
         }
         // Create an entity for each output parameter in the action.
         let actionOutputEntities: OBIUtils.OBIActionOutput[] = []

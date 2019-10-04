@@ -19,8 +19,10 @@ export enum TipType {
     ACTION_API3 = 'actionAPI3',
     ACTION_ARGUMENTS = 'actionArguments',
     ACTION_CARD = 'actionCard',
+    ACTION_DELETE_INUSE = 'actionDeleteInUse',
     ACTION_END_SESSION = 'actionEndSession',
     ACTION_ENTITIES = 'actionEntities',
+    ACTION_IS_ENTRY_NODE = 'isEntryNode',
     ACTION_NEGATIVE = 'negativeEntities',
     ACTION_REPROMPT = 'actionReprompt',
     ACTION_REQUIRED = 'requiredEntities',
@@ -32,7 +34,6 @@ export enum TipType {
     ACTION_SET_ENTITY_VALUE = 'actionSetEntityValue',
     ACTION_TYPE = 'actionType',
     ACTION_WAIT = 'isTerminal',
-    ACTION_DELETE_INUSE = 'actionDeleteInUse',
 
     DISPATCHER_CREATOR_ALGORITHM_TYPE = 'dispatcherCreatorAlgorithmType',
 
@@ -292,6 +293,8 @@ export function getTip(tipType: string) {
                 ]);
         case TipType.ACTION_REPROMPT:
             return render(FM.TOOLTIP_ACTION_REPROMPT_TITLE, [FM.TOOLTIP_ACTION_REPROMPT]);
+        case TipType.ACTION_IS_ENTRY_NODE:
+            return render(FM.TOOLTIP_ACTION_IS_ENTRY_NODE_TITLE, [FM.TOOLTIP_ACTION_IS_ENTRY_NODE]);
         case TipType.ACTION_REQUIRED:
             return render(
                 FM.TOOLTIP_ACTION_REQUIRED_TITLE,

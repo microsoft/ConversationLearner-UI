@@ -252,7 +252,8 @@ export async function trainDialogFromTranscriptImport(
                     const isTerminal = !nextActivity || nextActivity.from.role === "user"
 
                     if (!action) {
-                        action = await DialogEditing.getPlaceholderAPIAction(app.appId, actionCall.actionName, isTerminal, actions, createActionThunkAsync as any)
+                        action = await DialogEditing.getOrCreatePlaceholderAPIAction(app.appId, actionCall.actionName,
+                            isTerminal, actions, createActionThunkAsync as any)
                     }
                     // Throw error if I was supposed to create actions
                     if (!action && createActionThunkAsync) {
@@ -610,7 +611,7 @@ export function areTranscriptsEqual(transcript1: Util.RecursivePartial<BB.Activi
 /**
  * Given the {entityName, entityValue} results from some action being imported, returns
  * an array of FilledEntity instances representing those results.
- * Entities that do not yet exist will be created once.
+ * Entities that do not yet exist will be created and added to `entities`.
  */
 export async function importActionOutput(
     actionResults: OBIActionOutput[],
@@ -653,6 +654,9 @@ export async function importActionOutput(
             if (!entityId) {
                 throw new Error("Invalid Entity Definition")
             }
+            // Record the created entity in the input entity list.
+            newEntity.entityId = entityId
+            entities.push(newEntity)
         }
         else {
             entityId = "UNKNOWN ENTITY"
