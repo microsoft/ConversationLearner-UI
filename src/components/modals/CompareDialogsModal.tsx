@@ -93,7 +93,7 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
             const haveHeights = this.state.activityHeights.length > 0 && this.state.activityHeights.filter(ah => ah.height === undefined).length === 0
             
             if (haveHeights) {
-                // If I have them calcluate padding required to horizontally alight the activities
+                // If I have them calcluate padding to align acitivity horizontally
                 const activityHeights = [...this.state.activityHeights]
                 const numActivities = Math.max(...Object.values(this.state.activityMap).map(ah => ah.length))
                 for (let index = 0; index < numActivities; index = index + 1) {
@@ -122,11 +122,12 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
 
     renderActivity(activityProps: BotChat.WrappedActivityProps, children: React.ReactNode, setRef: (div: HTMLDivElement | null) => void): JSX.Element {
 
-        let padding = 0
         // Pad activity to align the activities in chat window
+        let padding = 0
         if (this.state.haveActivityHeights && activityProps.activity.id) {
             // Find height lookup
             const activityHeight = this.state.activityHeights.find(ah => ah.id === activityProps.activity.id)
+            
             if (activityHeight && activityHeight.padding) {
                 padding = activityHeight.padding
             }
@@ -315,24 +316,22 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
     @autobind
     onActivityHeight(sourceName: string, index: number, height: number): void {
     
-        if (!this.state.haveActivityHeights) {
-            // Find height for this item
-            let activityHeight = this.state.activityHeights.find(ac =>
-                ac.sourceName === sourceName && ac.index === index)
+        // Find height for this item
+        let activityHeight = this.state.activityHeights.find(ac =>
+            ac.sourceName === sourceName && ac.index === index)
 
-            if (activityHeight) {
-                // If height hasn't been set
-                if (!activityHeight.height) {
-                    // Set state via function so events don't clobber each other
-                    this.setState(prevState => {
-                        // Update height
-                        activityHeight = prevState.activityHeights.find(ac =>
-                            ac.sourceName === sourceName && ac.index === index)!
-                        activityHeight.height = height
-                        return {activityHeights: prevState.activityHeights}
-                    })
-                } 
-            }
+        if (activityHeight) {
+            // If height hasn't been set
+            if (!activityHeight.height) {
+                // Set state via function so events don't clobber each other
+                this.setState(prevState => {
+                     // Update height
+                    activityHeight = prevState.activityHeights.find(ac =>
+                        ac.sourceName === sourceName && ac.index === index)!
+                    activityHeight.height = height
+                    return {activityHeights: prevState.activityHeights}
+                })
+            } 
         }
     }
 
