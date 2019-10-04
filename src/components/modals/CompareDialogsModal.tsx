@@ -14,6 +14,7 @@ import * as DialogUtils from '../../Utils/dialogUtils'
 import actions from '../../actions'
 import IndexButtons from '../IndexButtons'
 import Webchat, { renderActivity } from '../Webchat'
+import { ActivityHeight } from '../../types/models'
 import { autobind } from 'core-decorators';
 import { withRouter } from 'react-router-dom'
 import { RouteComponentProps } from 'react-router'
@@ -44,14 +45,6 @@ interface RenderData {
     activities: BB.Activity[] | undefined,
     ranking: number | undefined
     sourceName: string
-}
-
-interface ActivityHeight {
-    sourceName: string
-    index: number
-    id: string,
-    height: number | undefined,
-    padding: number | undefined
 }
 
 const initialState: ComponentState = {
@@ -359,7 +352,6 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
             : renderData.length === 3
             ? "cl-compare-dialogs-large"
             : "cl-compare-dialogs-overhang"
-
 
         const body = renderData.length === 1 ? 'cl-compare-dialogs--bodysmall' : ""
 

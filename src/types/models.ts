@@ -22,4 +22,12 @@ export interface ImportedAction {
     reprompt: boolean
 }
 
+export interface ActivityHeight {
+    sourceName: string
+    index: number
+    id: string,
+    height: number | undefined,
+    padding: number | undefined
+}
+
 export type PartialTrainDialog = Pick<CLM.TrainDialog, "trainDialogId" | "tags" | "description"> & Partial<CLM.TrainDialog>

@@ -191,6 +191,7 @@ export class ValidationSet {
             // Add sourceName if it doesn't exist
             if (!this.sourceNames.includes(sourceName)) {
                 this.sourceNames.push(sourceName)
+                this.sourceNames.sort()
             }
         }
     }
@@ -214,6 +215,7 @@ export class ValidationSet {
         // Add sourceName if it doesn't exist
         if (!this.sourceNames.includes(item.sourceName)) {
             this.sourceNames.push(item.sourceName)
+            this.sourceNames.sort()
             // Validation results never have LG as they come from logDialogs
             this.usesLgMap.set(item.sourceName, false)
         }
