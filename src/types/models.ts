@@ -20,7 +20,7 @@ export interface ImportedAction {
     buttons: string[],
     isTerminal: boolean,
     reprompt: boolean,
-    entryNode?: boolean
+    isEntryNode?: boolean
 }
 
 export type PartialTrainDialog = Pick<CLM.TrainDialog, "trainDialogId" | "tags" | "description"> & Partial<CLM.TrainDialog>
