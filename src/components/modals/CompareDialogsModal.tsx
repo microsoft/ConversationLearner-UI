@@ -203,7 +203,7 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
         let minActivities: number = 0
         for (let sourceName of this.props.validationSet.sourceNames) {
 
-            const unratedConversationIds = this.props.conversationPivot ? this.props.validationSet.unratedConversationIds(this.props.conversationPivot, sourceName) : []
+            const unratedConversationIds = this.props.validationSet.unratedConversationIds(sourceName, this.props.conversationPivot)
             const validationItems = this.state.sourceItemMap[sourceName]
 
             if (validationItems) {
