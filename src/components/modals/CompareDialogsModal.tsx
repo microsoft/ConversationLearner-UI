@@ -356,7 +356,10 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
             ? "cl-compare-dialogs-small"
             : renderData.length === 2
             ? "cl-compare-dialogs-med"
-            : "cl-compare-dialogs-large"
+            : renderData.length === 3
+            ? "cl-compare-dialogs-large"
+            : "cl-compare-dialogs-overhang"
+
 
         const body = renderData.length === 1 ? 'cl-compare-dialogs--bodysmall' : ""
 
