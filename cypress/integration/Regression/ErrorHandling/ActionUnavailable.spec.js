@@ -23,7 +23,7 @@ describe('Action Unavailable - ErrorHandling', () => {
 
   context('Train Dialog - Create Errors', () => {
     it('Verify there are no Incident Triangles on the page and should create a new Train Dialog', () => {
-      modelPage.VerifyNoIncidentTriangleOnPage()
+      modelPage.VerifyNoErrorTriangleOnPage()
       train.CreateNewTrainDialog()
     })
 
@@ -52,7 +52,7 @@ describe('Action Unavailable - ErrorHandling', () => {
 
     it('Should save the training with errors', () => {
       train.ClickSaveCloseButton()
-      modelPage.VerifyIncidentTriangleForTrainDialogs()
+      modelPage.VerifyErrorTriangleForTrainDialogs()
       trainDialogsGrid.VerifyIncidentTriangleFoundInTrainDialogsGrid(`Joe`, 'Joe', "Hello $name")
     })
   })
@@ -75,7 +75,7 @@ describe('Action Unavailable - ErrorHandling', () => {
     it('Should verify that there are no more errors', () => {
       train.VerifyNoErrorMessage()
       train.ClickSaveCloseButton()
-      modelPage.VerifyNoIncidentTriangleOnPage()
+      modelPage.VerifyNoErrorTriangleOnPage()
     })
   })
 })

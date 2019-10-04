@@ -18,7 +18,7 @@ describe('Wait Non Wait Error Handling', () => {
     modelPage.NavigateToTrainDialogs()
     cy.WaitForTrainingStatusCompleted()
 
-    modelPage.VerifyNoIncidentTriangleOnPage()
+    modelPage.VerifyNoErrorTriangleOnPage()
   })
   
   context('Create Errors', () => {
@@ -49,7 +49,7 @@ describe('Wait Non Wait Error Handling', () => {
   context(`SaveAsIsVerifyInGrid & Validate Training Errors`, () => {
     it('Saves the Training with Errors, verifies Model page and Train Dialog grid shows an error', () => {
       train.ClickSaveCloseButton()
-      modelPage.VerifyIncidentTriangleForTrainDialogs()
+      modelPage.VerifyErrorTriangleForTrainDialogs()
       trainDialogsGrid.VerifyIncidentTriangleFoundInTrainDialogsGrid(`Duck`, 'Fish', common.fishJustSwim)
     })
 
@@ -86,7 +86,7 @@ describe('Wait Non Wait Error Handling', () => {
       train.VerifyNoErrorMessage()
 
       train.ClickSaveCloseButton()
-      modelPage.VerifyNoIncidentTriangleOnPage()
+      modelPage.VerifyNoErrorTriangleOnPage()
     })
   })
 })

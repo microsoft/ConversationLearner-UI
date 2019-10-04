@@ -302,31 +302,39 @@ function _VerifyLabelTextAsEntity(text, verification) {
 
 export function VerifyTextIsLabeledAsEntity(text, entity) {
   cy.WaitForStableDOM().then(() => {
-    if (!IsTextLabeledAsEntity(text, entity)) { throw new Error(`Failed to find "${text}" labeled as "${entity}"`) }
+    if (!IsWordLabeledAsEntity(text, entity)) { throw new Error(`Failed to find "${text}" labeled as "${entity}"`) }
   })
 }
 
 export function VerifyTextIsNotLabeledAsEntity(text, entity) {
   cy.WaitForStableDOM().then(() => {
-    if (IsTextLabeledAsEntity(text, entity)) { throw new Error(`We found that "${text}" is labeled as "${entity}" - it should have no label`) }
+    if (IsWordLabeledAsEntity(text, entity)) { throw new Error(`We found that "${text}" is labeled as "${entity}" - it should have no label`) }
   })
 }
 
-function IsTextLabeledAsEntity(text, entity) {
-  let isLabeled = false
+function IsWordLabeledAsEntity(word, entity) {
+  var wordWasFound = false
   const elements = Cypress.$('[data-testid="token-node-entity-value"] > span > span')
+  helpers.ConLog('IsWordLabeledAsEntity', `Number of elements found: ${elements.length}`)
 
   // If you need to find a phrase, this part of the code will fail, 
   // you will need to upgrade this code in that case.
   for (let i = 0; i < elements.length; i++) {
-    if (helpers.TextContentWithoutNewlines(elements[i]) === text) {
-      isLabeled = Cypress.$(elements[i]).parents('.cl-entity-node--custom')
-                        .find(`[data-testid="custom-entity-name-button"]:contains('${entity}')`)
-                        .length > 0
-      break;
+    if (helpers.TextContentWithoutNewlines(elements[i]) === word) {
+      wordWasFound = true
+      if (Cypress.$(elements[i])
+                 .parents('.cl-entity-node--custom')
+                 .find(`[data-testid="custom-entity-name-button"]:contains('${entity}')`)
+                 .length > 0) {
+        return true
+      }
     }
   }
-  return isLabeled
+  
+  if (!wordWasFound) {
+    throw new Error(`We could not find '${word}' in the phrase.`)
+  }
+  return false
 }
 
 export function LabelTextAsEntity(text, entity, itMustNotBeLabeledYet = true) {
@@ -340,7 +348,7 @@ export function LabelTextAsEntity(text, entity, itMustNotBeLabeledYet = true) {
     LabelIt()
   } else {
     // First make sure it is not already labeled before trying to label it.
-    cy.WaitForStableDOM().then(() => { if (!IsTextLabeledAsEntity(text, entity)) LabelIt() })
+    cy.WaitForStableDOM().then(() => { if (!IsWordLabeledAsEntity(text, entity)) LabelIt() })
   }
 }
 
@@ -383,6 +391,15 @@ export function VerifyEntityLabel(word, entity) {
     .contains(entity)
 }
 
+export function VerifyWordNotLabeledAsEntity(word, entity) { 
+  cy.wrap(1).should(() => {
+    if (IsWordLabeledAsEntity(word, entity)) {
+      throw new Error(`The word '${word}' was found, it should NOT be labeled as '${entity}'`)
+    }
+  })
+}
+
+
 const entityLabelConflictPopupSelector = '[data-testid="entity-conflict-cancel"], [data-testid="entity-conflict-accept"]'
 export function VerifyEntityLabelConflictPopup() { cy.Get(entityLabelConflictPopupSelector).should('have.length', 2) }
 export function VerifyNoEntityLabelConflictPopup() { cy.Get(entityLabelConflictPopupSelector).should('have.length', 0) }
@@ -390,16 +407,31 @@ export function VerifyNoEntityLabelConflictPopup() { cy.Get(entityLabelConflictP
 // textEntityPairs is an array of objects contains these two variables:
 //  text = a word within the utterance that should already be labeled
 //  entity = name of entity to label the word with
-export function VerifyEntityLabelConflictPopupAndClose(textEntityPairs) { VerifyEntityLabelConflictPopupAndClickButton(textEntityPairs, '[data-testid="entity-conflict-cancel"]') }
-export function VerifyEntityLabelConflictPopupAndAccept(textEntityPairs) { VerifyEntityLabelConflictPopupAndClickButton(textEntityPairs, '[data-testid="entity-conflict-accept"]') }
+export function VerifyEntityLabelConflictPopupAndClose(previousTextEntityPairs, attemptedTextEntityPairs) { VerifyEntityLabelConflictPopupAndClickButton(previousTextEntityPairs, attemptedTextEntityPairs, '[data-testid="entity-conflict-cancel"]') }
+export function VerifyEntityLabelConflictPopupAndChangeToPevious(previousTextEntityPairs, attemptedTextEntityPairs) { VerifyEntityLabelConflictPopupAndClickButton(previousTextEntityPairs, attemptedTextEntityPairs, '[data-testid="entity-conflict-accept"]') }
+export function VerifyEntityLabelConflictPopupAndChangeToAttempted(previousTextEntityPairs, attemptedTextEntityPairs) { VerifyEntityLabelConflictPopupAndClickButton(previousTextEntityPairs, attemptedTextEntityPairs, '[data-testid="entity-conflict-accept"]', true) }
 
-function VerifyEntityLabelConflictPopupAndClickButton(textEntityPairs, buttonSelector) {
-  cy.Get('[data-testid="extract-conflict-modal-previously-submitted-labels"]')
-    .siblings('[data-testid="extractor-response-editor-entity-labeler"]')
-    .within(() => { textEntityPairs.forEach(textEntityPair => VerifyEntityLabel(textEntityPair.text, textEntityPair.entity)) })
+function VerifyEntityLabelConflictPopupAndClickButton(previousTextEntityPairs, attemptedTextEntityPairs, buttonSelector, selectAttempted = false) {
+  helpers.ConLog('VerifyEntityLabelConflictPopupAndClickButton', 'start')
   
-  //data-testid="extract-conflict-modal-conflicting-labels"
-  cy.get(buttonSelector).Click()  
+  if (previousTextEntityPairs) {
+    cy.Get('[data-testid="extract-conflict-modal-previously-submitted-labels"]')
+      .siblings('[data-testid="extractor-response-editor-entity-labeler"]')
+      .within(() => { previousTextEntityPairs.forEach(textEntityPair => VerifyEntityLabel(textEntityPair.text, textEntityPair.entity)) })
+  }
+
+  if (attemptedTextEntityPairs) {
+    cy.Get('[data-testid="extract-conflict-modal-conflicting-labels"]')
+      .siblings('[data-testid="extractor-response-editor-entity-labeler"]')
+      .within(() => { attemptedTextEntityPairs.forEach(textEntityPair => VerifyEntityLabel(textEntityPair.text, textEntityPair.entity)) })
+    
+    if (selectAttempted) {
+      cy.Get('[data-testid="extract-conflict-modal-conflicting-labels"]').click()
+    }
+  }
+  
+  cy.get(buttonSelector).Click()
+  helpers.ConLog('VerifyEntityLabelConflictPopupAndClickButton', 'end')
 }
 
 export function VerifyEntityLabelWithinSpecificInput(textEntityPairs, index) {

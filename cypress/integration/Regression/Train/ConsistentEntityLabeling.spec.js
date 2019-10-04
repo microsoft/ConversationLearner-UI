@@ -31,7 +31,7 @@ describe('Consistent Entity Labeling - Train', () => {
       train.ClickScoreActionsButton()
       train.VerifyEntityLabelConflictPopupAndClose([textEntityPairs[0]])
       train.ClickScoreActionsButton()
-      train.VerifyEntityLabelConflictPopupAndAccept([textEntityPairs[0]])
+      train.VerifyEntityLabelConflictPopupAndChangeToPevious([textEntityPairs[0]])
       train.SelectTextAction('Hello')
     })
 
@@ -41,7 +41,7 @@ describe('Consistent Entity Labeling - Train', () => {
       train.ClickScoreActionsButton()
       train.VerifyEntityLabelConflictPopupAndClose(textEntityPairs)
       train.ClickScoreActionsButton()
-      train.VerifyEntityLabelConflictPopupAndAccept(textEntityPairs)
+      train.VerifyEntityLabelConflictPopupAndChangeToPevious(textEntityPairs)
       train.SelectTextAction('Hi')
     })
 
@@ -52,7 +52,7 @@ describe('Consistent Entity Labeling - Train', () => {
       train.ClickScoreActionsButton()
       train.VerifyEntityLabelConflictPopupAndClose(textEntityPairs)
       train.ClickScoreActionsButton()
-      train.VerifyEntityLabelConflictPopupAndAccept(textEntityPairs)
+      train.VerifyEntityLabelConflictPopupAndChangeToPevious(textEntityPairs)
       train.SelectTextAction('Hi')
     })
   })
@@ -83,11 +83,11 @@ describe('Consistent Entity Labeling - Train', () => {
       train.ClickScoreActionsButton()
       train.VerifyEntityLabelConflictPopupAndClose(textEntityPairs)
       train.ClickScoreActionsButton()
-      train.VerifyEntityLabelConflictPopupAndAccept(textEntityPairs)
+      train.VerifyEntityLabelConflictPopupAndChangeToPevious(textEntityPairs)
 
       train.VerifyEntityLabelConflictPopupAndClose(textEntityPairs)
       train.ClickScoreActionsButton()
-      train.VerifyEntityLabelConflictPopupAndAccept(textEntityPairs)
+      train.VerifyEntityLabelConflictPopupAndChangeToPevious(textEntityPairs)
       train.SelectTextAction('Hi')
 
       train.SaveAsIsVerifyInGrid()

@@ -23,7 +23,7 @@ describe('Two Consecutive User Inputs - ErrorHandling', () => {
 
   context('Edit Train Dialog - Create Errors', () => {
     it('Verify there are no Incident Triangles on the page', () => {
-      modelPage.VerifyNoIncidentTriangleOnPage()
+      modelPage.VerifyNoErrorTriangleOnPage()
     })
 
     it('Should create an error and verify the general error message shows up', () => {
@@ -39,7 +39,7 @@ describe('Two Consecutive User Inputs - ErrorHandling', () => {
 
     it('Should save the Train Dialog and verify the errors show up in the grid', () => {
       train.ClickSaveCloseButton()
-      modelPage.VerifyIncidentTriangleForTrainDialogs()
+      modelPage.VerifyErrorTriangleForTrainDialogs()
       trainDialogsGrid.VerifyIncidentTriangleFoundInTrainDialogsGrid(`Hey`, 'world peace', "Sorry $name, I can't help you get $want")
     })
   })
@@ -60,7 +60,7 @@ describe('Two Consecutive User Inputs - ErrorHandling', () => {
 
     it('Should save the Train Dialog and verify that all error messages are gone from the grid', () => {
       train.ClickSaveCloseButton()
-      modelPage.VerifyNoIncidentTriangleOnPage()
+      modelPage.VerifyNoErrorTriangleOnPage()
     })
   })
 })
