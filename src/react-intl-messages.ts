@@ -514,8 +514,8 @@ export enum FM {
     TOOLTIP_ACTION_DISQUAL_ROW3 = 'ToolTip.ACTION_NEGATIVE_TITLE_ROW3',
     TOOLTIP_ACTION_DISQUAL_ROW4 = 'ToolTip.ACTION_NEGATIVE_TITLE_ROW4',
 
-    TOOLTIP_ACTION_ENTRY_NODE = 'ToolTip.ACTION_ENTRY_NODE',
-    TOOLTIP_ACTION_ENTRY_NODE_TITLE = 'ToolTip.ACTION_ENTRY_NODE_TITLE',
+    TOOLTIP_ACTION_IS_ENTRY_NODE = 'ToolTip.ACTION_IS_ENTRY_NODE',
+    TOOLTIP_ACTION_IS_ENTRY_NODE_TITLE = 'ToolTip.ACTION_IS_ENTRY_NODE_TITLE',
 
     TOOLTIP_ACTION_REPROMPT = 'ToolTip.ACTION_REPROMPT',
     TOOLTIP_ACTION_REPROMPT_TITLE = 'ToolTip.ACTION_REPROMPT_TITLE',
@@ -955,8 +955,8 @@ export default {
         [FM.TOOLTIP_ACTION_DISQUAL_ROW3]: '"When were you born?"',
         [FM.TOOLTIP_ACTION_DISQUAL_ROW4]: '$birthdate',
 
-        [FM.TOOLTIP_ACTION_ENTRY_NODE]: "When selected and not in a Train Dialog, Bot will direct dialog flow to this action if it isn't confident on how to respond to the user's first input.",
-        [FM.TOOLTIP_ACTION_ENTRY_NODE_TITLE]: 'Unknown user 1st turn input',
+        [FM.TOOLTIP_ACTION_IS_ENTRY_NODE]: "When selected and not in a Train Dialog, Bot will direct dialog flow to this action if it isn't confident on how to respond to the user's first input.",
+        [FM.TOOLTIP_ACTION_IS_ENTRY_NODE_TITLE]: 'Unknown user 1st turn input',
 
         [FM.TOOLTIP_ACTION_REPROMPT]: "When selected and not in a Train Dialog, Bot will repeat the given action if it isn't confident on how to respond to the user's input.",
         [FM.TOOLTIP_ACTION_REPROMPT_TITLE]: 'Reprompt',

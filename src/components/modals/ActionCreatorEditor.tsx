@@ -571,7 +571,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             await Util.setStateAsync(this, {
                 isTerminal: props.importedAction.isTerminal,
                 reprompt: props.importedAction.reprompt,
-                entryNode: props.importedAction.entryNode
+                isEntryNode: props.importedAction.isEntryNode
             })
 
             // If a good card match exists switch to card view
@@ -1760,7 +1760,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                 onChange={this.onChangeIsEntryNodeCheckbox}
                                 style={{ marginTop: '1em', display: 'inline-block' }}
                                 disabled={[CLM.ActionTypes.END_SESSION, CLM.ActionTypes.SET_ENTITY, CLM.ActionTypes.DISPATCH].includes(this.state.selectedActionTypeOptionKey as CLM.ActionTypes)}
-                                tipType={ToolTip.TipType.ACTION_ENTRY_NODE}
+                                tipType={ToolTip.TipType.ACTION_IS_ENTRY_NODE}
                             />
                         }
                         <div
