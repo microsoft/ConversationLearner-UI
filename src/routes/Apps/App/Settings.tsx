@@ -402,6 +402,7 @@ class Settings extends React.Component<Props, ComponentState> {
                         disabled={true}
                         label='CONVERSATION_LEARNER_MODEL_ID'
                         value={this.state.appIdVal}
+                        readOnly={true}
                     />
                     <div>
                         <OF.Label className={`${OF.FontClassNames.mediumPlus} cl-label`}>

@@ -6,22 +6,22 @@ import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../react-intl-messages'
 import './ConditionCreatorModal.css'
 import { Position } from 'office-ui-fabric-react/lib/utilities/positioning'
+import { PreBuilts } from 'src/types'
+import { conditionDisplay } from '../../types/const'
+import { convertConditionToConditionalTag, isConditionEqual } from './ActionCreatorEditor'
 
-enum Operator {
-    GreaterThan = '>',
-    GreaterThanEquals = '>=',
-    LessThan = '<',
-    LessThanEquals = '<=',
-    Equals = '=',
-    NotEquals = '!=',
-}
+const entityIsAllowedInCondition = (entity: CLM.EntityBase): boolean => {
+    if (entity.entityType == CLM.EntityType.ENUM) {
+        return true
+    }
 
-console.log(Operator)
+    if (entity.entityType == CLM.EntityType.LUIS
+        && entity.resolverType == PreBuilts.Number
+        && entity.isResolutionRequired == true) {
+        return true
+    }
 
-export type Condition = {
-    entityId: string,
-    operator: Operator,
-    value: number | string
+    return false
 }
 
 const convertEntityToDropdownOption = (entity: CLM.EntityBase): OF.IDropdownOption => {
@@ -38,20 +38,24 @@ const convertEntityToDropdownOption = (entity: CLM.EntityBase): OF.IDropdownOpti
     }
 }
 
-// Enum here refers to TypeScript type enum not CL enum entity
-// Need to do whole object instead of value map since this refers to whole object 'enumObject'
-const convertEnumToDropdownOptions = (enumObject: object): OF.IDropdownOption[] => {
-    return Object.keys(enumObject)
-        .map((operatorString: string) =>
-            ({
-                key: operatorString,
-                text: operatorString,
-                data: enumObject[operatorString],
-            }))
+const convertConditionTypesToDropdownOptions = (conditionTypes: object): OF.IDropdownOption[] => {
+    return Object.keys(conditionTypes)
+        .map((conditionType: string) => {
+            let conditionText = `unknown`
+            if (conditionDisplay && conditionDisplay[conditionType]) {
+                conditionText = conditionDisplay[conditionType]
+            }
+
+            return {
+                key: conditionType,
+                text: conditionText || `unknown`,
+                data: conditionTypes[conditionType],
+            }
+        })
 }
 
-const operatorOptions = convertEnumToDropdownOptions(Operator)
-const equalOperatorOption = operatorOptions.find(o => o.data == Operator.Equals)!
+const operatorOptions = convertConditionTypesToDropdownOptions(CLM.ConditionType)
+const equalOperatorOption = operatorOptions.find(o => o.data == CLM.ConditionType.EQUAL)!
 
 // Enum here refers to Enum values on Entities
 const convertEnumValueToDropdownOption = (enumValue: CLM.EnumValue): OF.IDropdownOption => {
@@ -64,23 +68,33 @@ const convertEnumValueToDropdownOption = (enumValue: CLM.EnumValue): OF.IDropdow
     return {
         key: enumValue.enumValueId,
         text: enumValue.enumValue,
+        data: enumValue,
     }
 }
+
+
 
 
 type Props = InjectedIntlProps
     & {
         entities: CLM.EntityBase[],
         isOpen: boolean,
-        conditions: Condition[],
-        onClickCreate: (condition: Condition) => void,
+        conditions: CLM.Condition[],
+        onClickCreate: (condition: CLM.Condition) => void,
         onClickCancel: () => void,
     }
 
 const Component: React.FC<Props> = (props) => {
     // Entity Dropdown
-    const entityOptions = props.entities.map(e => convertEntityToDropdownOption(e))
-    const [selectedEntityOption, setSelectedEntityOptionKey] = React.useState<OF.IDropdownOption>(entityOptions[0])
+    const entityOptions = props.entities
+        .filter(entityIsAllowedInCondition)
+        .map(e => convertEntityToDropdownOption(e))
+
+    const [selectedEntityOption, setSelectedEntityOption] = React.useState(entityOptions[0])
+    React.useEffect(() => {
+        setSelectedEntityOption(entityOptions[0])
+    }, [props.entities])
+
     const onChangeEntity = (event: React.FormEvent<HTMLDivElement>, option?: OF.IDropdownOption | undefined, index?: number | undefined) => {
         if (!option) {
             return
@@ -98,7 +112,7 @@ const Component: React.FC<Props> = (props) => {
             setShowNumberValue(true)
         }
 
-        setSelectedEntityOptionKey(option)
+        setSelectedEntityOption(option)
     }
 
     // Operator Dropdown
@@ -134,23 +148,38 @@ const Component: React.FC<Props> = (props) => {
     React.useEffect(() => {
         const isValid = Boolean(selectedEntityOption)
             && Boolean(selectedOperatorOption)
-            && showNumberValue
-            ? Boolean(numberValue)
-            : Boolean(selectedEnumValueOption)
+            && (showNumberValue
+                || Boolean(selectedEnumValueOption))
 
-        setIsCreateDisabled(isValid)
+        setIsCreateDisabled(!isValid)
     }, [selectedEntityOption, selectedOperatorOption, numberValue, selectedEnumValueOption])
 
-    const onClickCreate = () => {
-        const condition: Condition = {
+    // If modal has opened (from false to true)
+    React.useLayoutEffect(() => {
+        if (props.isOpen) {
+            setNumberValue(0)
+        }
+    }, [props.isOpen])
+
+    const createConditionFromState = () => {
+        const condition: CLM.Condition = {
             entityId: (selectedEntityOption.data as CLM.EntityBase).entityId,
-            operator: selectedOperatorOption.data,
-            // TODO: Fix types, if showNumber is false, we know enum value should be true
-            value: showNumberValue || !selectedEnumValueOption
-                ? numberValue
-                : (selectedEnumValueOption.data as CLM.EnumValue).enumValueId!
+            condition: selectedOperatorOption.data
         }
 
+        if (showNumberValue) {
+            condition.value = numberValue
+        }
+        else if (selectedEnumValueOption) {
+            // TODO: Fix enum types
+            condition.valueId = (selectedEnumValueOption.data as CLM.EnumValue).enumValueId!
+        }
+
+        return condition
+    }
+
+    const onClickCreate = () => {
+        const condition = createConditionFromState()
         props.onClickCreate(condition)
     }
 
@@ -158,49 +187,110 @@ const Component: React.FC<Props> = (props) => {
         props.onClickCancel()
     }
 
+    const onClickExistingCondition = (condition: CLM.Condition) => {
+        // If EnumCondition
+        if (condition.valueId) {
+            setSelectedOperatorOption(equalOperatorOption)
+        }
+        // Other ValueCondition (If valueId is falsy this has to be truthy, but check for TypeScript)
+        else if (condition.value) {
+            const operatorOption = operatorOptions.find(o => o.key === condition.condition)
+            if (!operatorOption) {
+                throw new Error(`User clicked on existing condition, but could not find matching operator for condition.`)
+            }
+
+            setSelectedOperatorOption(operatorOption)
+            setNumberValue(condition.value)
+        }
+    }
+
+    const isOperatorDisabled = selectedEntityOption && (selectedEntityOption.data as CLM.EntityBase).entityType === CLM.EntityType.ENUM
+    const conditionsUsingEntity = props.conditions.filter(c => c.entityId === selectedEntityOption.key)
+    const currentCondition = createConditionFromState()
+
     return <OF.Modal
         isOpen={props.isOpen}
         containerClassName="cl-modal cl-modal--medium"
     >
-        <div className="cl-modal_header" data-testid="codition-creator-title">
+        <div className="cl-modal_header" data-testid="condition-creator-title">
             <span className={OF.FontClassNames.xxLarge}>Create a Condition</span>
         </div>
 
         <div className="cl-modal_body">
             <div>
-                <h2>Expression</h2>
-                <div className="cl-condition-creator__expression">
-                    <OF.Dropdown
-                        label="Entity"
-                        selectedKey={selectedEntityOption.key}
-                        options={entityOptions}
-                        onChange={onChangeEntity}
-                    />
-                    <OF.Dropdown
-                        label="Operator"
-                        selectedKey={selectedOperatorOption.key}
-                        options={operatorOptions}
-                        onChange={onChangeOperator}
-                    />
-                    {/* Little akward to checkEnumValueOption here, but do it for type safety */}
-                    {(showNumberValue || !selectedEnumValueOption)
-                        ? <div>
-                            <OF.Label>Number</OF.Label>
-                            <OF.SpinButton
-                                value={numberValue.toString()}
-                                onDecrement={v => setNumberValue(prevValue => prevValue - 1)}
-                                onIncrement={v => setNumberValue(prevValue => prevValue + 1)}
-                                labelPosition={Position.bottom}
-                                step={1}
+                {entityOptions.length === 0
+                    ? <h2>You may only create conditions on enum entities or those with resolver type number which is required. Your model does not have either type available. Please create either of these types of entities to create a condition.</h2>
+                    : <>
+                        <h2 className={OF.FontClassNames.large}>Current Condition:</h2>
+                        <div className="cl-condition-creator__expression">
+                            <OF.Dropdown
+                                label="Entity"
+                                selectedKey={selectedEntityOption && selectedEntityOption.key}
+                                options={entityOptions}
+                                onChange={onChangeEntity}
                             />
+                            <OF.Dropdown
+                                label="Operator"
+                                selectedKey={selectedOperatorOption.key}
+                                disabled={isOperatorDisabled}
+                                options={operatorOptions}
+                                onChange={onChangeOperator}
+                            />
+                            {/* Little awkward to checkEnumValueOption here, but do it for type safety */}
+                            {(showNumberValue || !selectedEnumValueOption)
+                                ? <div>
+                                    <OF.Label>Number</OF.Label>
+                                    <OF.SpinButton
+                                        value={numberValue.toString()}
+                                        onBlur={(event: React.FocusEvent<HTMLInputElement>) => {
+                                            const value = parseInt(event.target.value)
+                                            if (!Number.isNaN(value)) {
+                                                setNumberValue(value)
+                                            }
+                                        }}
+                                        onDecrement={v => setNumberValue(prevValue => prevValue - 1)}
+                                        onIncrement={v => setNumberValue(prevValue => prevValue + 1)}
+                                        labelPosition={Position.bottom}
+                                        step={1}
+                                    />
+                                </div>
+                                : <OF.Dropdown
+                                    label="Enum Value"
+                                    selectedKey={selectedEnumValueOption.key}
+                                    options={enumValueOptions}
+                                    onChange={onChangeEnumValueOption}
+                                />}
                         </div>
-                        : <OF.Dropdown
-                            label="Enum Value"
-                            selectedKey={selectedEnumValueOption.key}
-                            options={enumValueOptions}
-                            onChange={onChangeEnumValueOption}
-                        />}
-                </div>
+
+                        <h2 style={{ fontWeight: OF.FontWeights.bold as number }} className={OF.FontClassNames.large}>Existing Conditions:</h2>
+                        <div className="cl-condition-creator__existing-conditions">
+                            {conditionsUsingEntity.map(condition => {
+                                const conditionalTag = convertConditionToConditionalTag(condition, props.entities)
+                                const isActive = isConditionEqual(condition, currentCondition)
+
+                                return <React.Fragment key={conditionalTag.key}>
+                                    <div className="cl-condition-creator__existing-condition">
+                                        {conditionalTag.name}
+                                    </div>
+
+                                    <OF.DefaultButton
+                                        onClick={() => onClickExistingCondition(conditionalTag.condition!)}
+                                    >
+                                        Use Condition
+                                    </OF.DefaultButton>
+
+                                    <div>
+                                        {isActive
+                                            && <OF.Icon
+                                                className="cl-text--success"
+                                                iconName="Accept"
+                                            />}
+                                    </div>
+                                </React.Fragment>
+                            })}
+                        </div>
+                    </>
+                }
             </div>
         </div>
 
@@ -209,7 +299,7 @@ const Component: React.FC<Props> = (props) => {
             </div>
             <div className="cl-modal-buttons_primary">
                 <OF.PrimaryButton
-                    data-testid="codition-creator-button-create"
+                    data-testid="condition-creator-button-create"
                     disabled={isCreateDisabled}
                     onClick={onClickCreate}
                     ariaDescription={Util.formatMessageId(props.intl, FM.BUTTON_CREATE)}
@@ -218,10 +308,10 @@ const Component: React.FC<Props> = (props) => {
                 />
 
                 <OF.DefaultButton
-                    data-testid="action-creator-cancel-button"
+                    data-testid="condition-creator-button-cancel"
                     onClick={onClickCancel}
-                    ariaDescription={Util.formatMessageId(props.intl, FM.ACTIONCREATOREDITOR_CANCELBUTTON_ARIADESCRIPTION)}
-                    text={Util.formatMessageId(props.intl, FM.ACTIONCREATOREDITOR_CANCELBUTTON_TEXT)}
+                    ariaDescription={Util.formatMessageId(props.intl, FM.BUTTON_CANCEL)}
+                    text={Util.formatMessageId(props.intl, FM.BUTTON_CANCEL)}
                     iconProps={{ iconName: 'Cancel' }}
                 />
             </div>

@@ -3,3 +3,16 @@
     grid-gap: 1em;
     grid-template-columns: repeat(3, 1fr);
 }
+
+.cl-condition-creator__existing-conditions {
+    display: grid;
+    grid-template: auto / max-content max-content min-content;
+    grid-gap: 1em;
+    align-content: center;
+    align-items: center;
+}
+
+.cl-condition-creator__existing-condition {
+    background-color: var(--color-neutralQuaternaryAlt);
+    padding: 6px 10px;
+}

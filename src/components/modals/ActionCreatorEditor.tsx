@@ -13,7 +13,7 @@ import * as ActionPayloadEditor from './ActionPayloadEditor'
 import Plain from 'slate-plain-serializer'
 import actions from '../../actions'
 import ActionDeleteModal from './ActionDeleteModal'
-import ConditionCreatorModal, { Condition } from './ConditionCreatorModal'
+import ConditionCreatorModal from './ConditionCreatorModal'
 import ConfirmCancelModal from './ConfirmCancelModal'
 import EntityCreatorEditor from './EntityCreatorEditor'
 import AdaptiveCardViewer from './AdaptiveCardViewer/AdaptiveCardViewer'
@@ -25,7 +25,7 @@ import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { State } from '../../types'
-import { REPROMPT_SELF } from '../../types/const'
+import { REPROMPT_SELF, conditionDisplay } from '../../types/const'
 import { CLTagItem, ICLPickerItemProps } from './CLTagItem'
 import { withRouter } from 'react-router-dom'
 import { RouteComponentProps } from 'react-router'
@@ -87,63 +87,55 @@ const convertEntityIdsToTags = (ids: string[], entities: CLM.EntityBase[], expan
         .reduce((a, b) => [...a, ...b], [])
 }
 
-const getEnumConditionName = (entity: CLM.EntityBase, enumValue: CLM.EnumValue): string => {
+export const getEnumConditionName = (entity: CLM.EntityBase, enumValue: CLM.EnumValue): string => {
     return `${entity.entityName} = ${enumValue.enumValue}`
 }
 
-const conditionDisplay: Record<CLM.ConditionType, string> = {
-    [CLM.ConditionType.EQUAL]: '==',
-    [CLM.ConditionType.NOT_EQUAL]: '!=',
-    [CLM.ConditionType.GREATER_THAN]: '>',
-    [CLM.ConditionType.GREATER_THAN_OR_EQUAL]: '>=',
-    [CLM.ConditionType.LESS_THAN]: '<',
-    [CLM.ConditionType.LESS_THEN_OR_EQUAL]: '<=',
-}
-
-const getValueConditionName = (entity: CLM.EntityBase, condition: CLM.Condition): string => {
+export const getValueConditionName = (entity: CLM.EntityBase, condition: CLM.Condition): string => {
     return `${entity.entityName} ${conditionDisplay[condition.condition]} ${condition.value}`
 }
 
-const convertConditionalsToTags = (conditions: CLM.Condition[], entities: CLM.EntityBase[]): IConditionalTag[] => {
-    const tags: IConditionalTag[] = []
-    conditions.forEach(c => {
-        const entity = entities.find(e => e.entityId === c.entityId)
-        if (!entity) {
-            console.log(`ERROR: Condition refers to non-existent Entity ${c.entityId}`)
-        }
-        else if (!entity.enumValues) {
-            console.log(`ERROR: Condition refers to Entity without Enums ${entity.entityName}`)
-        }
-        else {
-            const enumValueId = c.valueId
-            if (enumValueId) {
-                const enumValue = entity.enumValues.find(e => e.enumValueId === enumValueId)
-                if (!enumValue) {
-                    console.log(`ERROR: Condition refers to non-existent EnumValue: ${enumValueId}`)
-                }
-                else {
-                    const conditionalTag: IConditionalTag = {
-                        key: `${c.entityId}${enumValueId}`,
-                        name: getEnumConditionName(entity, enumValue),
-                        condition: c
-                    }
+export const convertConditionToConditionalTag = (condition: CLM.Condition, entities: CLM.EntityBase[]): IConditionalTag => {
+    const entity = entities.find(e => e.entityId === condition.entityId)
+    if (!entity) {
+        throw new Error(`Condition refers to non-existent Entity ${condition.entityId}`)
+    }
 
-                    tags.push(conditionalTag)
-                }
-            }
-            else {
-                const conditionalTag: IConditionalTag = {
-                    key: `${c.entityId}`,
-                    name: getValueConditionName(entity, c),
-                    condition: c
-                }
-
-                tags.push(conditionalTag)
-            }
+    let conditionalTag: IConditionalTag
+    let name: string
+    if (entity.entityType === CLM.EntityType.ENUM) {
+        if (!entity.enumValues) {
+            throw new Error(`Condition refers to Entity without Enums ${entity.entityName}`)
         }
-    })
 
-    return tags
+        const enumValueId = condition.valueId
+        if (!enumValueId) {
+            throw new Error(`Condition refers to enum entity, but condition did not have enum value id.`)
+        }
+        const enumValue = entity.enumValues.find(e => e.enumValueId === enumValueId)
+        if (!enumValue) {
+            throw new Error(`Condition refers to non-existent EnumValue: ${enumValueId}`)
+        }
+
+        name = getEnumConditionName(entity, enumValue)
+    }
+    else {
+        name = getValueConditionName(entity, condition)
+    }
+
+    const key = Util.hashText(name)
+    conditionalTag = {
+        key,
+        name,
+        condition,
+    }
+
+    return conditionalTag
+}
+
+const convertConditionsToTags = (conditions: CLM.Condition[], entities: CLM.EntityBase[]): IConditionalTag[] => {
+    return conditions
+        .map(c => convertConditionToConditionalTag(c, entities))
 }
 
 /**
@@ -187,6 +179,32 @@ const conditionalEntityTags = (entities: CLM.EntityBase[]): IConditionalTag[] =>
         // Convert each entity to condition tag
         .map(e => convertEntityToConditionalTags(e))
         .reduce((a, b) => [...a, ...b], [])
+}
+
+export const isConditionEqual = (conditionA: CLM.Condition, conditionB: CLM.Condition): boolean => {
+    return conditionA.entityId === conditionB.entityId
+        && conditionA.condition === conditionB.condition
+        && conditionA.valueId === conditionB.valueId
+        && conditionA.value === conditionB.value
+}
+
+const getUniqueConditions = (actions: CLM.ActionBase[]): CLM.Condition[] => {
+    const allConditions = actions
+        .map(a => [...a.requiredConditions, ...a.negativeConditions])
+        .reduce((a, b) => [...a, ...b], [])
+
+    const uniqueConditions = allConditions
+        .reduce<CLM.Condition[]>((conditions, condition) => {
+            const matchingCondition = conditions.find(c => isConditionEqual(c, condition))
+            // If no identical condition was found, condition is unique, add it to list
+            if (!matchingCondition) {
+                conditions.push(condition)
+            }
+
+            return conditions
+        }, [])
+
+    return uniqueConditions
 }
 
 // Entities that can be picked as expected entity
@@ -524,11 +542,11 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     .filter(t => !requiredEntityTagsFromPayload.some(tag => tag.key === t.key))
 
                 if (action.requiredConditions) {
-                    requiredEntityTags.push(...convertConditionalsToTags(action.requiredConditions, prevProps.entities))
+                    requiredEntityTags.push(...convertConditionsToTags(action.requiredConditions, prevProps.entities))
                 }
 
                 if (action.negativeConditions) {
-                    negativeEntityTags.push(...convertConditionalsToTags(action.negativeConditions, prevProps.entities))
+                    negativeEntityTags.push(...convertConditionsToTags(action.negativeConditions, prevProps.entities))
                 }
 
                 newState = {
@@ -1074,8 +1092,13 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    onClickCreateConditionCreator(condition: Condition) {
-
+    onClickCreateConditionCreator(condition: CLM.Condition) {
+        const conditionalTag = convertConditionToConditionalTag(condition, this.props.entities)
+        console.log(`Create Condition: `, { conditionalTag })
+        this.setState(prevState => ({
+            requiredEntityTags: [...prevState.requiredEntityTags, conditionalTag],
+            isConditionCreatorModalOpen: false,
+        }))
     }
 
     @autobind
@@ -1294,8 +1317,17 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    onRenderRequiredEntitySuggestion(props: OF.ITag, itemProps: OF.ISuggestionItemProps<OF.ITag>): JSX.Element {
-        return <TagItemSuggestion>Custom! {props.name}</TagItemSuggestion>
+    onRenderRequiredEntitySuggestion(tag: OF.ITag, itemProps: OF.ISuggestionItemProps<OF.ITag>): JSX.Element {
+        if (tag.key === addConditionPlaceholder.key) {
+            return <div className="cl-tag-item-suggestion--add-condition">
+                <OF.PrimaryButton
+                    text="Add Condition"
+                    iconProps={{ iconName: 'Add' }}
+                />
+            </div>
+        }
+
+        return <TagItemSuggestion>{tag.name}</TagItemSuggestion>
     }
 
     onResolveNegativeEntityTags = (filterText: string, selectedTags: OF.ITag[]): OF.ITag[] => {
@@ -1470,6 +1502,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             && this.state.selectedApiOptionKey
             ? this.props.botInfo.callbacks.find(t => t.name === this.state.selectedApiOptionKey)
             : undefined
+
+        const uniqueConditions = getUniqueConditions(this.props.actions)
         return (
             <OF.Modal
                 isOpen={this.props.open}
@@ -1799,7 +1833,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                             label={Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_CHECKBOX_REPROMPT_LABEL)}
                             checked={this.state.reprompt}
                             onChange={this.onChangeRepromptCheckbox}
-                            style={{ marginTop: '1em', display: 'inline-block' }}
+                            style={{ marginTop: '4em', display: 'inline-block' }}
                             disabled={!this.state.isTerminal || [CLM.ActionTypes.END_SESSION, CLM.ActionTypes.SET_ENTITY, CLM.ActionTypes.DISPATCH].includes(this.state.selectedActionTypeOptionKey as CLM.ActionTypes)}
                             tipType={ToolTip.TipType.ACTION_REPROMPT}
                         />
@@ -1918,7 +1952,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 />
                 <ConditionCreatorModal
                     entities={this.props.entities}
-                    conditions={[]}
+                    conditions={uniqueConditions}
                     isOpen={this.state.isConditionCreatorModalOpen}
                     onClickCreate={this.onClickCreateConditionCreator}
                     onClickCancel={this.onClickCancelConditionCreator}
