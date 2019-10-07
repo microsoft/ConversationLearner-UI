@@ -1167,7 +1167,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         }
         catch (e) {
             const error = e as Error
-            this.props.setErrorDisplay(ErrorType.Error, error.message, error.message, null)//LARS
+            this.props.setErrorDisplay(ErrorType.Error, error.message, error.message, null)
             this.setState({
                 importedTrainDialogs: undefined,
                 isImportWaitModalOpen: false
@@ -1247,11 +1247,6 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 editType: EditDialogType.IMPORT
             })
             newTrainDialog.validity = CLM.Validity.VALID
-
-            // Should re-prompt train dialogs be created
-            if (Util.isFeatureEnabled(this.props.settings.features, FeatureStrings.REPROMPT)) {
-                await OBIUtils.addRepromptExamples(this.props.app.appId, newTrainDialog, this.props.actions, this.props.createTrainDialogThunkAsync as any)
-            }
 
             await this.onCreateTrainDialog(newTrainDialog)
         }
@@ -1501,9 +1496,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     />
                     {Util.isFeatureEnabled(this.props.settings.features, FeatureStrings.CCI) &&
                         <OF.DefaultButton
-                            iconProps={{
-                                iconName: "DownloadDocument"
-                            }}
+                            iconProps={{iconName: "CloudUpload"}}
                             disabled={isEditingDisabled}
                             onClick={this.onClickImportTranscripts}
                             ariaDescription={Util.formatMessageId(intl, FM.BUTTON_IMPORT)}

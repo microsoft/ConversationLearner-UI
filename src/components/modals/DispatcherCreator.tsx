@@ -57,19 +57,6 @@ class Component extends React.Component<Props, ComponentState> {
         this.props.onCancel()
     }
 
-    private getModelFromState(): Partial<CLM.AppBase> {
-        return {
-            appName: this.state.modelName.trim(),
-            locale: 'en-us',
-            metadata: {
-                botFrameworkApps: [],
-                markdown: undefined,
-                video: undefined,
-                isLoggingOn: true,
-            }
-        }
-    }
-
     @autobind
     onClickCreate() {
         const isSubmitDisabled = this.isSubmitDisabled()
@@ -176,7 +163,6 @@ class Component extends React.Component<Props, ComponentState> {
                         />
                     </div>
 
-
                 </div>
                 <div className='cl-modal_footer'>
                     <div className="cl-modal-buttons">
@@ -203,6 +189,19 @@ class Component extends React.Component<Props, ComponentState> {
                 </div>
             </OF.Modal>
         )
+    }
+ 
+    private getModelFromState(): Partial<CLM.AppBase> {
+        return {
+            appName: this.state.modelName.trim(),
+            locale: 'en-us',
+            metadata: {
+                botFrameworkApps: [],
+                markdown: undefined,
+                video: undefined,
+                isLoggingOn: true,
+            }
+        }
     }
 }
 

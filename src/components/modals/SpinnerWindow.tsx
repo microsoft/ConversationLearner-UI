@@ -6,7 +6,6 @@ import * as React from 'react'
 import * as OF from 'office-ui-fabric-react'
 import { returntypeof } from 'react-redux-typescript'
 import { connect } from 'react-redux'
-import { Spinner, SpinnerSize } from 'office-ui-fabric-react/lib/Spinner'
 import { State } from '../../types'
 import './SpinnerWindow.css'
 
@@ -23,7 +22,7 @@ class SpinnerWindow extends React.Component<Props> {
                     containerClassName='cl-spinner'
                     scrollableContentClassName='cl-spinner_scrollable'
                 >
-                    <Spinner size={SpinnerSize.large} />
+                    <OF.Spinner size={OF.SpinnerSize.large} />
                     {debug &&
                         <div>
                             {this.props.displaySpinner.join("\n\n")}
