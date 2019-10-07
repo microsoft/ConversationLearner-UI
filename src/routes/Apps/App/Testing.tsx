@@ -8,12 +8,18 @@ import * as CLM from '@conversationlearner/models'
 import * as Util from '../../../Utils/util'
 import * as BB from 'botbuilder'
 import * as OBIUtils from '../../../Utils/obiUtils'
+import * as Test from '../../../types/TestObjects'
 import actions from '../../../actions'
+import TranscriptRatings from '../../../components/modals/TranscriptRatings'
+import TranscriptComparisions from '../../../components/modals/TranscriptComparisons'
+import TranscriptList from '../../../components/modals/TranscriptList'
 import FormattedMessageId from '../../../components/FormattedMessageId'
 import CompareDialogsModal from '../../../components/modals/CompareDialogsModal'
 import RateDialogsModal from '../../../components/modals/RateDialogsModal'
-import TranscriptValidatorPicker from '../../../components/modals/TranscriptValidatorPicker'
 import TestWaitModal from '../../../components/modals/ProgressModal'
+import TranscriptTestPicker from '../../../components/modals/TranscriptTestPicker'
+import ConfirmCancelModal from '../../../components/modals/ConfirmCancelModal'
+import { autobind } from 'core-decorators'
 import { connect } from 'react-redux'
 import { saveAs } from 'file-saver'
 import { State, ErrorType } from '../../../types'
@@ -22,128 +28,172 @@ import { returntypeof } from 'react-redux-typescript'
 import { FM } from '../../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import './Testing.css'
-import { autobind } from 'core-decorators';
 
 const SAVE_SUFFIX = ".cltr"
 
 interface ComponentState {
-    transcriptIndex: number
-    transcriptFiles: File[]
-    lgMap: Map<string, CLM.LGItem> | null
-    transcriptValidationSet: CLM.TranscriptValidationSet
-    isTranscriptValidatePickerOpen: boolean
-    compareDialogs: CLM.TranscriptValidationResult[] | null
+    testIndex: number
+    testItems: Test.ValidationItem[]
+    validationSet: Test.ValidationSet | undefined
+    viewConversationIds: string[] | undefined
+    viewConversationPivot: string | undefined
     isRateDialogsOpen: boolean
-    edited: boolean
-}
-
-const initialState: ComponentState = {
-    transcriptIndex: 0,
-    transcriptFiles: [],
-    lgMap: null,
-    transcriptValidationSet: { transcriptValidationResults: [] },
-    isTranscriptValidatePickerOpen: false,
-    compareDialogs: null,
-    isRateDialogsOpen: false,
-    edited: false
+    isTestPickerOpen: boolean
+    isConfirmClearModalOpen: boolean
+    pivotSelection: string | undefined
+    isSaveInputOpen: boolean
 }
 
 class Testing extends React.Component<Props, ComponentState> {
-    state = initialState
 
-    private resultfileInput: any
+    private loadSetFileInput: any
+
+    constructor(props: Props) {
+        super(props)
+        this.state = {
+            testIndex: 0,
+            testItems: [],
+            validationSet: undefined,
+            viewConversationIds: undefined,
+            viewConversationPivot: undefined,
+            isRateDialogsOpen: false,
+            isTestPickerOpen: false,
+            isConfirmClearModalOpen: false,
+            pivotSelection: undefined,
+            isSaveInputOpen: false
+        }
+    }
+
+    async onTranscriptsChanged(): Promise<void> {
+        if (!this.state.validationSet || this.state.validationSet.sourceNames.length === 0) {
+            return
+        }
+
+        const validationSet = Test.ValidationSet.Create(this.state.validationSet)
+        validationSet.compareAll()
+        validationSet.initRating()
+        this.setState({validationSet})
+    }
 
     @autobind
-    async onSubmitTranscriptValidationPicker(testName: string, transcriptFiles: File[], lgFiles: File[]): Promise<void> {
+    async onLoadTranscriptFiles(transcriptFiles: any): Promise<void> {
         if (transcriptFiles.length > 0) {
-            const lgMap = await OBIUtils.lgMapFromLGFiles(lgFiles)
-            const emptySet: CLM.TranscriptValidationSet = { transcriptValidationResults: [], appId: this.props.app.appId, fileName: testName }
-            await Util.setStateAsync(this, {
-                isTranscriptValidatePickerOpen: false,
-                transcriptFiles,
-                lgMap,
-                transcriptValidationSet: emptySet,
-                edited: true
-            })
-            await this.onStartTranscriptValidate()
-        }
-        else {
-            this.setState({ isTranscriptValidatePickerOpen: false })
+
+            try {
+                const validationSet = this.state.validationSet 
+                    ? Test.ValidationSet.Create(this.state.validationSet)
+                    : Test.ValidationSet.Create({ appId: this.props.app.appId })
+                
+                await validationSet.addTranscriptFiles(transcriptFiles)
+
+                await Util.setStateAsync(this, {validationSet})
+
+                // Recompute comparisons and rankings
+                await this.onTranscriptsChanged()
+            }
+            catch (e) {
+                const error = e as Error
+                this.props.setErrorDisplay(ErrorType.Error, `invalid .transcript file`, error.message, null)
+            }
         }
     }
 
     @autobind
-    async onAbandonTranscriptValidationPicker(): Promise<void> {
-        this.setState({ isTranscriptValidatePickerOpen: false })
+    async onLoadLGFiles(lgFiles: any): Promise<void> {
+        if (lgFiles.length > 0) {
+
+            try {
+                const validationSet = this.state.validationSet 
+                    ? Test.ValidationSet.Create(this.state.validationSet)
+                    : Test.ValidationSet.Create({ appId: this.props.app.appId })
+                
+                await validationSet.addLGFiles(lgFiles)
+
+                await Util.setStateAsync(this, {validationSet})
+
+                // Recompute comparisons and rankings
+                await this.onTranscriptsChanged()
+            }
+            catch (e) {
+                const error = e as Error
+                this.props.setErrorDisplay(ErrorType.Error, `invalid .lg file`, error.message, null)
+            }
+        }
     }
 
     @autobind
     onChangeName(event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, text: string) {
-        const transcriptValidationSet = Util.deepCopy(this.state.transcriptValidationSet)
-        transcriptValidationSet.fileName = text
+        const validationSet = Test.ValidationSet.Create(this.state.validationSet)
+        validationSet.fileName = text
+        this.setState({validationSet})
+    }
+
+    @autobind
+    onCancelTest(): void {
         this.setState({
-            transcriptValidationSet,
-            edited: true
+            testItems: []
         })
     }
 
     @autobind
-    onCancelTest() {
-        this.setState({
-            transcriptFiles: [],
-            lgMap: null
-        })
+    onCompare(): void {
+        if (!this.state.validationSet || this.state.validationSet.sourceNames.length === 0) {
+            return
+        }
+
+        const validationSet = Test.ValidationSet.Create(this.state.validationSet)
+        validationSet.compareAll()
+        this.setState({validationSet})
     }
 
     @autobind
-    async onStartTranscriptValidate() {
+    async testNextTranscript() {
 
-        if (!this.state.transcriptFiles || this.state.transcriptFiles.length === 0) {
+        if (!this.state.testItems || this.state.testItems.length === 0) {
             return
         }
 
         // Check if I'm done importing files
-        if (this.state.transcriptIndex === this.state.transcriptFiles.length) {
-            this.setState({
-                transcriptFiles: [],
-                lgMap: null
+        if (this.state.testIndex === this.state.testItems.length) {
+            this.setState({ 
+                testItems: []
             })
-            this.onSave()
+            await this.onTranscriptsChanged()
+            this.onSaveSet()
             return
         }
 
-        // Pop the next file
-        const transcriptFile = this.state.transcriptFiles[this.state.transcriptIndex]
-        this.setState({ transcriptIndex: this.state.transcriptIndex + 1 })
+        // Get the next test item
+        const testItem = this.state.testItems[this.state.testIndex]
+        this.setState({ testIndex: this.state.testIndex + 1 })
 
-        let source = await Util.readFileAsync(transcriptFile)
         try {
-            const sourceJson = JSON.parse(source)
-            await this.onValidateTranscript(transcriptFile.name, sourceJson, this.props.entities)
+            await this.onValidateTranscript(testItem)
         }
         catch (e) {
             const error = e as Error
-            this.props.setErrorDisplay(ErrorType.Error, `.transcript file (${transcriptFile.name})`, error.message, null)
+            this.props.setErrorDisplay(ErrorType.Error, `Source: ${testItem.sourceName} Conversation: ${testItem.conversationId}`, error.message, null)
             this.setState({
-                transcriptFiles: [],
-                lgMap: null
+                testItems: []
             })
         }
     }
 
-    async onValidateTranscript(fileName: string, transcript: BB.Activity[], entities: CLM.EntityBase[]): Promise<void> {
+    async onValidateTranscript(testItem: Test.ValidationItem): Promise<void> {
+
+        if (!testItem.transcript) {
+            throw new Error("Missing transcript")
+        }
+        // Copy validation set
+        const validationSet = Test.ValidationSet.Create(this.state.validationSet)
+        const conversationId = testItem.conversationId
 
         const transcriptValidationTurns: CLM.TranscriptValidationTurn[] = []
-        let transcriptValidationTurn: CLM.TranscriptValidationTurn = { inputText: "", actionHashes: [], apiResults: []}
+        let transcriptValidationTurn: CLM.TranscriptValidationTurn = { inputText: "", apiResults: []}
         let invalidTranscript = false
         let apiResults: CLM.FilledEntity[] = []
 
-        // If I have an LG map, substitute in LG text
-        if (this.state.lgMap) {
-            OBIUtils.substituteLG(transcript, this.state.lgMap)
-        }
-
-        for (let activity of transcript) {
+        for (let activity of testItem.transcript) {
             // TODO: Handle conversation updates
             if (!activity.type || activity.type === "message") {
                 if (activity.text === "END_SESSION") {
@@ -154,14 +204,10 @@ class Testing extends React.Component<Props, ComponentState> {
                     if (transcriptValidationTurn.inputText !== "") {
                         transcriptValidationTurns.push(transcriptValidationTurn)
                     }
-                    transcriptValidationTurn = { inputText: activity.text, actionHashes: [], apiResults: []}
+                    transcriptValidationTurn = { inputText: activity.text, apiResults: []}
                 }
                 else if (activity.from.role === "bot") {
                     if (transcriptValidationTurn) {
-                        const hashText = OBIUtils.hashTextFromActivity(activity, entities, apiResults)
-                        const actionHash = Util.hashText(hashText)
-                        transcriptValidationTurn.actionHashes.push(actionHash)
-
                         // If API call include API results
                         if (activity.channelData && activity.channelData.type === "ActionCall") {
                             const actionCall = activity.channelData as OBIUtils.TranscriptActionCall
@@ -184,112 +230,221 @@ class Testing extends React.Component<Props, ComponentState> {
             transcriptValidationTurns.push(transcriptValidationTurn)
         }
 
-        let transcriptValidationResult: CLM.TranscriptValidationResult
+        const sourceName = `${this.props.app.appName} (${testItem.sourceName})`
+
+        let validationResult: Test.ValidationItem
         if (invalidTranscript) {
-            transcriptValidationResult = { validity: CLM.TranscriptValidationResultType.INVALID_TRANSCRIPT, logDialogId: null, rating: CLM.TranscriptRating.UNKNOWN }
+            validationResult = { 
+                sourceName,
+                conversationId,
+                logDialogId: null, 
+                invalidTranscript: true
+            }
         }
         else {
-            transcriptValidationResult = await ((this.props.fetchTranscriptValidationThunkAsync(this.props.app.appId, this.props.editingPackageId, this.props.user.id, transcriptValidationTurns) as any) as Promise<CLM.TranscriptValidationResult>)
+            const logDialogId = await ((this.props.fetchTranscriptValidationThunkAsync(this.props.app.appId, this.props.editingPackageId, this.props.user.id, transcriptValidationTurns) as any) as Promise<string | null>)
+
+            let resultTranscript: BB.Activity[] | undefined
+            if (logDialogId) {
+
+                resultTranscript = await OBIUtils.getLogDialogActivities(
+                    this.props.app.appId, 
+                    logDialogId,
+                    this.props.user, 
+                    this.props.actions,
+                    this.props.entities,
+                    conversationId,
+                    sourceName,
+                    this.props.fetchLogDialogThunkAsync as any,
+                    this.props.fetchActivitiesThunkAsync as any) as BB.Activity[]
+            }
+            validationResult = { 
+                sourceName,
+                conversationId,
+                logDialogId, 
+                transcript: resultTranscript as BB.Activity[]
+            }
         }
-        // Store the transcript for later comparison
-        transcriptValidationResult.sourceActivities = transcript
-        transcriptValidationResult.fileName = fileName
 
         // Need to check that dialog as still open as user may canceled the test
-        if (this.state.transcriptValidationSet) {
-            const transcriptValidationSet = Util.deepCopy(this.state.transcriptValidationSet)
-            transcriptValidationSet.transcriptValidationResults = [...transcriptValidationSet.transcriptValidationResults, transcriptValidationResult]
-            await Util.setStateAsync(this, { transcriptValidationSet })
+        if (this.state.validationSet) {
+            validationSet.addValidationResult(validationResult)
+            await Util.setStateAsync(this, { validationSet: validationSet })
         }
-        await this.onStartTranscriptValidate()
+        await this.testNextTranscript()
     }
 
     @autobind
-    onTest(): void {
-        this.setState({
-            isTranscriptValidatePickerOpen: true,
-            transcriptIndex: 0
-        })
-    }
-
-    @autobind
-    onCompare(results: CLM.TranscriptValidationResult[]) {
-        this.setState({ compareDialogs: results })
-    }
-
-    @autobind
-    onCloseCompare() {
-        this.setState({ compareDialogs: null })
-    }
-
-    @autobind
-    onRate() {
-        this.setState({ isRateDialogsOpen: true })
-    }
-
-    @autobind
-    onCloseRate(transcriptValidationSet: CLM.TranscriptValidationSet) {
-        this.setState({
-            transcriptValidationSet,
-            isRateDialogsOpen: false,
-            edited: true
-        })
-        this.onSave()
-    }
-
-    @autobind
-    onSave() {
-
-        if (!this.state.transcriptValidationSet.fileName || this.onGetNameErrorMessage(this.state.transcriptValidationSet.fileName) !== '') {
+    async onTest(): Promise<void> {
+        if (!this.state.validationSet || this.state.validationSet.sourceNames.length === 0) {
             return
         }
-        const blob = new Blob([JSON.stringify(this.state.transcriptValidationSet)], { type: "text/plain;charset=utf-8" })
-        saveAs(blob, `${this.state.transcriptValidationSet.fileName}${SAVE_SUFFIX}`)
+
+        // If there's only one set of transcripts test on it
+        if (this.state.validationSet.sourceNames.length === 1) {
+            await this.startTest(this.state.validationSet.sourceNames[0])
+        }
+        // Otherwise user must pick,
+        else {
+            this.setState({
+                isTestPickerOpen: true
+            })
+        }
+    }
+
+    async startTest(sourceName: string): Promise<void> {
+        if (this.state.validationSet) {
+            const testItems = this.state.validationSet.getItems(sourceName)
+            await Util.setStateAsync(this, { testItems, testIndex: 0 })
+            await this.testNextTranscript()
+        }
     }
 
     @autobind
-    onChangeResultFiles(files: any) {
-        const reader = new FileReader()
-        reader.onload = (e: Event) => {
-            try {
-                if (typeof reader.result !== 'string') {
-                    throw new Error("String Expected")
-                }
-                const set = JSON.parse(reader.result) as CLM.TranscriptValidationSet
-                if (!set || set.transcriptValidationResults.length === 0 || !set.transcriptValidationResults[0].validity) {
-                    throw new Error("No test results found in file")
-                }
-                if (set.appId !== this.props.app.appId) {
-                    throw new Error("Loaded results are from a different Model")
-                }
-                this.setState({
-                    transcriptValidationSet: set,
-                    edited: false
-                })
-            }
-            catch (e) {
-                const error = e as Error
-                this.props.setErrorDisplay(ErrorType.Error, error.message, "Invalid file contents", null)
-            }
-        }
-        if (files[0]) {
-            reader.readAsText(files[0])
+    onView(compareType: Test.ComparisonResultType, comparePivot?: string, compareSource?: string): void {
+
+        if (this.state.validationSet) {
+            const viewConversationIds = compareSource && comparePivot 
+            ? this.state.validationSet.getComparisonConversationIds(compareSource, comparePivot, compareType)
+            : this.state.validationSet.getAllConversationIds()
+
+            this.onViewConversationIds(viewConversationIds, comparePivot)
         }
     }
 
-    percentOf(count: number): string {
-        if (this.state.transcriptValidationSet.transcriptValidationResults.length === 0) {
-            return "-"
+    @autobind
+    onViewConversationIds(viewConversationIds: string[], viewConversationPivot?: string) {
+        if (viewConversationIds.length > 0) {
+            this.setState({ viewConversationIds, viewConversationPivot })
         }
-        return `${(count / this.state.transcriptValidationSet.transcriptValidationResults.length * 100).toFixed(1)}%`
+    }
+
+    @autobind
+    onCloseView() {
+        this.setState({ viewConversationIds: undefined, viewConversationPivot: undefined })
+    }
+
+    @autobind
+    onOpenRate() {
+        const validationSet = Test.ValidationSet.Create(this.state.validationSet)
+        // TODO: consider only clearing when .transcripts have changed
+        // and allowing user to continue partially rated set of .transcripts
+        validationSet.initRating()
+        this.setState({validationSet, isRateDialogsOpen: true})
+    }
+
+    @autobind
+    async onRate(ratingPair: Test.RatingPair) {
+        const validationSet = Test.ValidationSet.Create(this.state.validationSet)
+        validationSet.addRatingResult(ratingPair)
+        await Util.setStateAsync(this, {validationSet})
+    }
+
+    @autobind
+    async onCloseRate() {
+        this.setState({
+            isRateDialogsOpen: false
+        })
+        await this.calcRankings()
+        this.onSaveSet()
+    }
+
+    async calcRankings() {
+        if (this.state.validationSet) {
+            const validationSet = Test.ValidationSet.Create(this.state.validationSet)
+            validationSet.calcRankings()
+            await Util.setStateAsync(this, {validationSet})
+        }
+    }
+
+    @autobind
+    onPickTest() {
+        this.setState({ isTestPickerOpen: true })
+    }
+
+    @autobind
+    onPickTestAbandon() {
+        this.setState({ isTestPickerOpen: false })
+    }
+
+    @autobind
+    async onPickTestSubmit(sourceName: string) {
+        this.setState({ isTestPickerOpen: false })
+        await this.startTest(sourceName)
+    }
+
+    @autobind
+    onClear() {
+        this.setState({isConfirmClearModalOpen: true})
+    }
+
+    @autobind
+    onConfirmClear() {
+        const validationSet = Test.ValidationSet.Create({ appId: this.props.app.appId })
+
+        // Clear filename so user can reload same file
+        let fileInput = (this.loadSetFileInput as HTMLInputElement)
+        fileInput.value = ""
+        this.setState({validationSet, isConfirmClearModalOpen: false})
+    }
+
+    @autobind
+    onCancelClear() {
+        this.setState({
+            isConfirmClearModalOpen: false,
+        })
+    }
+
+    @autobind
+    async onSaveSet() {
+
+        if (!this.state.validationSet) {
+            return
+        }
+
+        // If no name provided default to name of model
+        if (!this.state.validationSet.fileName) {
+            const validationSet = Test.ValidationSet.Create(this.state.validationSet)
+            // Use app name, removing unsafe characters
+            validationSet.fileName = this.props.app.appName.replace(/[^a-zA-Z0-9-_\.]/g, '')
+            await Util.setStateAsync(this, {validationSet})
+
+        }
+
+        if (this.state.validationSet.fileName && this.onGetNameErrorMessage(this.state.validationSet.fileName) !== '') {
+            return
+        }
+
+        const blob = this.state.validationSet.serialize()
+        saveAs(blob, `${this.state.validationSet.fileName}${SAVE_SUFFIX}`)
+    }
+
+    @autobind
+    async onLoadSet(files: any) {
+
+        const fileText = await Util.readFileAsync(files[0])
+
+        try {
+            if (typeof fileText !== 'string') {
+                throw new Error("String Expected")
+            }
+            const validationSet = Test.ValidationSet.Deserialize(fileText)
+
+            await Util.setStateAsync(this, {validationSet})
+        }
+        catch (e) {
+            const error = e as Error
+            this.props.setErrorDisplay(ErrorType.Error, error.message, "Invalid file contents", null)
+        }
     }
 
     @autobind
     nameErrorCheck(value: string): string {
         const MAX_NAME_LENGTH = 30
 
+        // Allow empty name, will populate with Model name on save if empty
         if (value.length === 0) {
-            return Util.formatMessageId(this.props.intl, FM.FIELDERROR_REQUIREDVALUE)
+            return ''
         }
 
         if (value.length > MAX_NAME_LENGTH) {
@@ -303,21 +458,10 @@ class Testing extends React.Component<Props, ComponentState> {
     }
 
     render() {
-        const results = this.state.transcriptValidationSet.transcriptValidationResults
-        const reproduced = results.filter(tr => tr.validity === CLM.TranscriptValidationResultType.REPRODUCED)
-        const changed = results.filter(tr => tr.validity === CLM.TranscriptValidationResultType.CHANGED)
-        const changed_better = changed.filter(tr => tr.rating === CLM.TranscriptRating.BETTER)
-        const changed_worse = changed.filter(tr => tr.rating === CLM.TranscriptRating.WORSE)
-        const changed_same = changed.filter(tr => tr.rating === CLM.TranscriptRating.SAME)
-        const test_failed = results.filter(tr => tr.validity === CLM.TranscriptValidationResultType.TEST_FAILED)
-        const invalid = results.filter(tr => tr.validity === CLM.TranscriptValidationResultType.INVALID_TRANSCRIPT)
 
-        const numChangedResults = changed_better.length + changed_same.length + changed_worse.length
-        const changed_notRated = changed.length - numChangedResults
-
-        const saveDisabled = this.state.transcriptValidationSet.transcriptValidationResults.length === 0
-            || !this.state.transcriptValidationSet.fileName
-            || this.onGetNameErrorMessage(this.state.transcriptValidationSet.fileName) !== ''
+        const saveDisabled = !this.state.validationSet 
+            || this.state.validationSet.items.length === 0
+            || (this.state.validationSet.fileName !== undefined && this.onGetNameErrorMessage(this.state.validationSet.fileName) !== '')
 
         return (
             <div className="cl-page">
@@ -325,205 +469,122 @@ class Testing extends React.Component<Props, ComponentState> {
                     className={`cl-dialog-title cl-dialog-title--import ${OF.FontClassNames.xxLarge}`}
                 >
                     <OF.Icon iconName="TestPlan" />
-                    <FormattedMessageId id={FM.TRANSCRIPT_VALIDATOR_TITLE} />
+                    <FormattedMessageId id={FM.TESTING_TITLE} />
                 </span>
                 <span className={OF.FontClassNames.mediumPlus}>
-                    <FormattedMessageId id={FM.TRANSCRIPT_VALIDATOR_SUBTITLE} />
+                    <FormattedMessageId id={FM.TESTING_SUBTITLE} />
                 </span>
                 <OF.TextField
-                    className={`${OF.FontClassNames.mediumPlus} ${this.state.transcriptValidationSet.transcriptValidationResults.length === 0 ? ' cl-test-disabled' : ''}`}
+                    className={`${OF.FontClassNames.mediumPlus} ${!this.state.validationSet || this.state.validationSet.items.length === 0 ? ' cl-test-disabled' : ''}`}
                     onChange={this.onChangeName}
-                    label={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_VALIDATOR_NAME_LABEL)}
+                    label={Util.formatMessageId(this.props.intl, FM.TESTING_NAME_LABEL)}
                     onGetErrorMessage={value => this.onGetNameErrorMessage(value)}
-                    value={this.state.transcriptValidationSet.fileName}
+                    value={this.state.validationSet ? this.state.validationSet.fileName : ""}
                 />
-                <div className="cl-testing-body">
+                <div className="cl-modal-buttons">
                     <input
                         hidden={true}
                         type="file"
                         style={{ display: 'none' }}
-                        onChange={(event) => this.onChangeResultFiles(event.target.files)}
-                        ref={ele => (this.resultfileInput = ele)}
+                        onChange={(event) => this.onLoadSet(event.target.files)}
+                        ref={ele => (this.loadSetFileInput = ele)}
                         multiple={false}
                     />
-                    <div>
-                        <div className={`cl-testing-result-group ${this.state.transcriptValidationSet.transcriptValidationResults.length === 0 ? ' cl-test-disabled' : ''}`}>
-                            <div className="cl-testing-result">
-                                <span className="cl-testing-result-title">Reproduced: </span>
-                                <span className="cl-entity cl-testing-result-value">
-                                    {reproduced.length}
-                                </span>
-                                <span className="cl-entity cl-testing-result-percent">
-                                    {this.percentOf(reproduced.length)}
-                                </span>
-                                <div className="cl-buttons-row cl-testing-result-buttons">
-                                    <OF.DefaultButton
-                                        disabled={reproduced.length === 0 || this.state.transcriptFiles.length > 0}
-                                        onClick={() => this.onCompare(reproduced)}
-                                        ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_COMPARE)}
-                                        text={Util.formatMessageId(this.props.intl, FM.BUTTON_COMPARE)}
-                                        iconProps={{ iconName: 'DiffSideBySide' }}
-                                    />
-                                </div>
-                            </div>
-                            <div className="cl-testing-result">
-                                <span className="cl-testing-result-title">Changed: </span>
-                                <span className="cl-entity cl-testing-result-value">
-                                    {changed.length}
-                                </span>
-                                <span className="cl-entity cl-testing-result-percent">
-                                    {this.percentOf(changed.length)}
-                                </span>
-                                <div className="cl-buttons-row cl-testing-result-buttons">
-                                    <OF.DefaultButton
-                                        disabled={changed.length === 0 || this.state.transcriptFiles.length > 0}
-                                        onClick={() => this.onCompare(changed)}
-                                        ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_COMPARE)}
-                                        text={Util.formatMessageId(this.props.intl, FM.BUTTON_COMPARE)}
-                                        iconProps={{ iconName: 'DiffSideBySide' }}
-                                    />
-                                    <OF.DefaultButton
-                                        disabled={changed.length === 0 || this.state.transcriptFiles.length > 0}
-                                        onClick={this.onRate}
-                                        ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_RATE)}
-                                        text={Util.formatMessageId(this.props.intl, FM.BUTTON_RATE)}
-                                        iconProps={{ iconName: 'Compare' }}
-                                    />
-                                </div>
-                            </div>
-                            {numChangedResults > 0 &&
-                                <div className="cl-testing-subresult">
-                                    <span className="cl-testing-result-subtitle">Better: </span>
-                                    <span className="cl-entity cl-entity--match cl-testing-result-subvalue">
-                                        {changed_better.length}
-                                    </span>
-                                    <span className="cl-entity cl-entity--match cl-testing-result-subpercent">
-                                        {this.percentOf(changed_better.length)}
-                                    </span>
-                                </div>
-                            }
-                            {numChangedResults > 0 &&
-                                <div className="cl-testing-subresult">
-                                    <span className="cl-testing-result-subtitle">Same: </span>
-                                    <span className="cl-entity cl-testing-result-subvalue">
-                                        {changed_same.length}
-                                    </span>
-                                    <span className="cl-entity cl-testing-result-subpercent">
-                                        {this.percentOf(changed_same.length)}
-                                    </span>
-                                </div>
-                            }
-                            {numChangedResults > 0 &&
-                                <div className="cl-testing-subresult">
-                                    <span className="cl-testing-result-subtitle">Worse: </span>
-                                    <span className="cl-entity cl-entity--mismatch cl-testing-result-subvalue">
-                                        {changed_worse.length}
-                                    </span>
-                                    <span className="cl-entity cl-entity--mismatch cl-testing-result-subpercent">
-                                        {this.percentOf(changed_worse.length)}
-                                    </span>
-                                </div>
-                            }
-                            {numChangedResults > 0 && changed_notRated > 0 &&
-                                <div className="cl-testing-subresult">
-                                    <span className="cl-testing-result-subtitle">Not Rated: </span>
-                                    <span className="cl-entity cl-testing-result-subvalue">
-                                        {changed_notRated}
-                                    </span>
-                                    <span className="cl-entity cl-testing-result-subpercent">
-                                        {this.percentOf(changed_notRated)}
-                                    </span>
-                                </div>
-                            }
-                            {invalid.length > 0 &&
-                                <div className="cl-testing-result">
-                                    <span className="cl-testing-result-title">Invalid File: </span>
-                                    <span className="cl-entity cl-entity--mismatch cl-testing-result-value">
-                                        {invalid.length}
-                                    </span>
-                                    <span className="cl-entity cl-entity--mismatch cl-testing-result-percent">
-                                        {this.percentOf(invalid.length)}
-                                    </span>
-                                </div>
-                            }
-                            {test_failed.length > 0 &&
-                                <div className="cl-testing-result">
-                                    <span className="cl-testing-result-title">Test Fail: </span>
-                                    <span className="cl-entity cl-entity--mismatch cl-testing-result-value">
-                                        {test_failed.length}
-                                    </span>
-                                    <span className="cl-entity cl-entity--mismatch cl-testing-result-percent">
-                                        {this.percentOf(test_failed.length)}
-                                    </span>
-                                    <div className="cl-buttons-row cl-testing-result-buttons">
-                                        <OF.DefaultButton
-                                            disabled={test_failed.length === 0 || this.state.transcriptFiles.length > 0}
-                                            onClick={() => this.onCompare(test_failed)}
-                                            ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_COMPARE)}
-                                            text={Util.formatMessageId(this.props.intl, FM.BUTTON_COMPARE)}
-                                            iconProps={{ iconName: 'DiffSideBySide' }}
-                                        />
-                                    </div>
-                                </div>
-                            }
-                        </div>
-                    </div>
-                </div>
-                <div className="cl-modal_footer">
-                    <div className="cl-modal-buttons_secondary" />
+                    <div className="cl-modal-buttons_secondary"/>
                     <div className="cl-modal-buttons_primary">
-                        <OF.PrimaryButton
-                            className="cl-file-picker-button"
-                            ariaDescription={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_VALIDATOR_BUTTON_NEW_TEST)}
-                            text={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_VALIDATOR_BUTTON_NEW_TEST)}
-                            iconProps={{ iconName: 'TestCase' }}
-                            onClick={this.onTest}
-                        />
-                        <OF.DefaultButton
-                            className="cl-file-picker-button"
-                            ariaDescription={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_VALIDATOR_BUTTON_LOAD_RESULTS)}
-                            text={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_VALIDATOR_BUTTON_LOAD_RESULTS)}
-                            iconProps={{ iconName: 'DownloadDocument' }}
-                            onClick={() => this.resultfileInput.click()}
-                        />
                         <OF.DefaultButton
                             disabled={saveDisabled}
-                            onClick={() => this.onSave()}
-                            ariaDescription={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_VALIDATOR_BUTTON_SAVE_RESULTS)}
-                            text={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_VALIDATOR_BUTTON_SAVE_RESULTS)}
-                            iconProps={{ iconName: 'DownloadDocument' }}
+                            onClick={this.onSaveSet}
+                            ariaDescription={Util.formatMessageId(this.props.intl, FM.TESTING_BUTTON_SAVE_RESULTS)}
+                            text={Util.formatMessageId(this.props.intl, FM.TESTING_BUTTON_SAVE_RESULTS)}
+                            iconProps={{ iconName: 'CloudDownload' }}
+                        />
+                        <OF.DefaultButton
+                            ariaDescription={Util.formatMessageId(this.props.intl, FM.TESTING_BUTTON_LOAD_RESULTS)}
+                            text={Util.formatMessageId(this.props.intl, FM.TESTING_BUTTON_LOAD_RESULTS)}
+                            iconProps={{ iconName: 'CloudUpload' }}
+                            onClick={() => this.loadSetFileInput.click()}
+                        />
+                        <OF.DefaultButton
+                            className="cl-button-delete"
+                            disabled={!this.state.validationSet || this.state.validationSet.sourceName.length === 0}
+                            ariaDescription={Util.formatMessageId(this.props.intl, FM.TESTING_BUTTON_CLEAR_RESULTS)}
+                            text={Util.formatMessageId(this.props.intl, FM.TESTING_BUTTON_CLEAR_RESULTS)}
+                            iconProps={{ iconName: 'RemoveFilter' }}
+                            onClick={this.onClear}
                         />
                     </div>
                 </div>
+            <div className="cl-testing-body">
+                    <OF.Pivot 
+                        linkSize={OF.PivotLinkSize.large}
+                    >
+                        <OF.PivotItem
+                            linkText={Util.formatMessageId(this.props.intl, FM.TESTING_PIVOT_DATA)}
+                        >
+                            <TranscriptList
+                                validationSet={this.state.validationSet}
+                                onView={this.onView}
+                                onLoadTranscriptFiles={this.onLoadTranscriptFiles}
+                                onLoadLGFiles={this.onLoadLGFiles}
+                                onTest={this.onTest}
+                            />
+                        </OF.PivotItem>
+                        <OF.PivotItem
+                            linkText={Util.formatMessageId(this.props.intl, FM.TESTING_PIVOT_COMPARISON)}
+                        >
+                            <TranscriptComparisions
+                                validationSet={this.state.validationSet}
+                                onCompare={this.onCompare}
+                                onView={this.onView}
+                            />
+                        </OF.PivotItem>
+                        <OF.PivotItem
+                            linkText={Util.formatMessageId(this.props.intl, FM.TESTING_PIVOT_RATING)}
+                        >
+                            <TranscriptRatings
+                                validationSet={this.state.validationSet}
+                                onRate={this.onOpenRate}
+                                onView={this.onViewConversationIds}
+                            />
+                        </OF.PivotItem>
+                    </OF.Pivot>
+                </div>
+                <ConfirmCancelModal
+                    open={this.state.isConfirmClearModalOpen}
+                    onCancel={this.onCancelClear}
+                    onConfirm={this.onConfirmClear}
+                    title={Util.formatMessageId(this.props.intl, FM.TESTING_CONFIRM_CLEAR_TITLE)}
+                />
                 <TestWaitModal
-                    open={this.state.transcriptFiles.length > 0}
+                    open={this.state.testItems.length > 0}
                     title={"Testing"}
-                    index={this.state.transcriptIndex}
-                    total={this.state.transcriptFiles.length}
+                    index={this.state.testIndex}
+                    total={this.state.testItems.length}
                     onClose={this.onCancelTest}
                 />
-                {this.state.compareDialogs &&
+                {this.state.viewConversationIds && this.state.validationSet && 
                     <CompareDialogsModal
                         app={this.props.app}
-                        lgMap={this.state.lgMap}
-                        transcriptValidationResults={this.state.compareDialogs}
-                        onClose={this.onCloseCompare}
+                        validationSet={this.state.validationSet}
+                        conversationIds={this.state.viewConversationIds}
+                        conversationPivot={this.state.viewConversationPivot}
+                        onClose={this.onCloseView}
                     />
                 }
-                {this.state.isRateDialogsOpen &&
+                {this.state.isRateDialogsOpen && this.state.validationSet &&
                     <RateDialogsModal
                         app={this.props.app}
-                        transcriptValidationSet={this.state.transcriptValidationSet}
+                        validationSet={this.state.validationSet}
+                        onRate={this.onRate}
                         onClose={this.onCloseRate}
                     />
                 }
-                {this.state.isTranscriptValidatePickerOpen &&
-                    <TranscriptValidatorPicker
-                        app={this.props.app}
-                        open={true}
-                        onAbandon={() => this.onAbandonTranscriptValidationPicker()}
-                        onValidateFiles={(testName: string, transcriptFiles: File[], lgFiles: File[]) => this.onSubmitTranscriptValidationPicker(testName, transcriptFiles, lgFiles)}
-                        onGetNameErrorMessage={this.nameErrorCheck}
+                {this.state.isTestPickerOpen && this.state.validationSet && 
+                    <TranscriptTestPicker
+                        sourceNames={this.state.validationSet.sourceNames}
+                        onAbandon={this.onPickTestAbandon}
+                        onSubmit={this.onPickTestSubmit}
                     />
                 }
             </div>
@@ -533,7 +594,7 @@ class Testing extends React.Component<Props, ComponentState> {
     private onGetNameErrorMessage(value: string): string {
 
         // If not results skip check
-        if (this.state && this.state.transcriptValidationSet.transcriptValidationResults.length === 0) {
+        if (this.state && this.state.validationSet && this.state.validationSet.items.length === 0) {
             return ''
         }
 
@@ -543,6 +604,8 @@ class Testing extends React.Component<Props, ComponentState> {
 
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
+        fetchActivitiesThunkAsync: actions.train.fetchActivitiesThunkAsync,
+        fetchLogDialogThunkAsync: actions.log.fetchLogDialogThunkAsync,
         fetchTranscriptValidationThunkAsync: actions.app.fetchTranscriptValidationThunkAsync,
         setErrorDisplay: actions.display.setErrorDisplay
     }, dispatch);
@@ -555,7 +618,8 @@ const mapStateToProps = (state: State) => {
 
     return {
         user: state.user.user,
-        entities: state.entities
+        entities: state.entities,
+        actions: state.actions
     }
 }
 

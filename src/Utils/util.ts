@@ -18,6 +18,25 @@ export function equal<T extends number | string | boolean>(as: T[], bs: T[]): bo
         && as.every((a, i) => a === bs[i])
 }
 
+// Return random number between min and max
+export function randomInt(min: number, max: number): number {
+    return Math.floor(Math.random() * (max - min + 1) + min)
+}
+
+export function percentOf(count: number, total: number): string {
+    if (total === 0) {
+        return "-"
+    }
+    return `${(count / total * 100).toFixed(1)}%`
+}
+
+// Convert rgb to hex allowing for non-whole numbers
+export function rgbToHex(r: number, g: number, b: number) {
+    // tslint:disable:prefer-template
+    // tslint:disable:no-bitwise
+    return "#" + ((1 << 24) + (Math.trunc(r) << 16) + (Math.trunc(g) << 8) + Math.trunc(b)).toString(16).slice(1);
+  }
+
 export function replace<T>(xs: T[], updatedX: T, getId: (x: T) => object | number | string): T[] {
     const index = xs.findIndex(x => getId(x) === getId(updatedX))
     if (index < 0) {
@@ -146,7 +165,7 @@ function normalizeActionAndStringify(newAction: CLM.ActionBase) {
 }
 
 export function deepCopy<T>(obj: T): T {
-    let copy: any;
+    let copy: any
 
     // Simple types, null or undefined
     if (obj === null || typeof obj !== "object") {
@@ -157,25 +176,30 @@ export function deepCopy<T>(obj: T): T {
     if (obj instanceof Date) {
         copy = new Date();
         copy.setTime(obj.getTime());
-        return copy as T;
+        return copy as T
+    }
+
+    // Map
+    if (obj instanceof Map) {
+        return new Map(obj) as unknown as T
     }
 
     // Array
     if (obj instanceof Array) {
-        copy = [];
+        copy = []
         obj.forEach((item, index) => copy[index] = deepCopy(obj[index]))
-        return copy as T;
+        return copy as T
     }
 
     // Handle Object
     if (obj instanceof Object) {
-        copy = {};
+        copy = {}
         Object.keys(obj).forEach(attr => {
             if ((obj as Object).hasOwnProperty(attr)) {
                 copy[attr] = deepCopy(obj[attr])
             }
         })
-        return copy as T;
+        return copy as T
     }
 
     throw new Error("Unknown Type");
@@ -280,6 +304,11 @@ export function isTemplateTitleGeneric(template: CLM.Template): boolean {
     return (titleVariable !== undefined)
 }
 
+// Create recursive partial of an object
+export type RecursivePartial<T> = {
+    [P in keyof T]?: RecursivePartial<T[P]>;
+}
+
 // Calculate a 32 bit FNV-1a hash
 // Ref.: http://isthe.com/chongo/tech/comp/fnv/
 export function hashText(text: string) {
@@ -301,4 +330,53 @@ export function isFeatureEnabled(featureString: string | undefined, feature: Con
         return true
     }
     return false
+}
+
+// Generate colors that scale with number from red (neg) to green (pos)
+export function scaledColor(rating?: number): string {
+        if (rating === undefined) {
+            return "#ffffff"
+        }
+        if (rating === 0) {
+            // Yellow at zero
+            return '#ffec8c'
+        }
+        if (rating > 0) {
+            const scale = Math.pow(0.9, rating - 1)
+            const r = scale * 224
+            const g = 255
+            const b = scale * 224
+            return rgbToHex(r, g, b)
+        }
+        else {
+            const scale = Math.pow(0.8, (-rating) - 1)
+            const r = 255
+            const g = scale * 224
+            const b = scale * 224
+            return rgbToHex(r, g, b)
+        }
+    }
+
+// Can be used by JSON.stringify to serialize Map type objects
+// i.e. JSON.stringify({object with map}, mapReplacer)
+export function mapReplacer(key: any, value: any) {
+    if (value instanceof Map) {
+        return {
+            dataType: 'Map',
+            value: [...value]
+        }
+    } else {
+        return value
+    }
+}
+
+// Can be used JSON.stringify to de-serialize Map type objects
+// i.e. JSON.parse({object with map}, mapReviver)
+export function mapReviver(key: any, value: any) {
+    if (typeof value === 'object' && value !== null) {
+        if (value.dataType === 'Map') {
+            return new Map(value.value)
+        }
+    }
+    return value
 }

@@ -9,8 +9,11 @@ import * as BotChat from '@conversationlearner/webchat'
 import * as Util from '../../Utils/util'
 import * as BB from 'botbuilder'
 import * as OBIUtils from '../../Utils/obiUtils'
+import * as Test from '../../types/TestObjects'
 import actions from '../../actions'
 import Webchat, { renderActivity } from '../Webchat'
+import { ActivityHeight } from '../../types/models'
+import { autobind } from 'core-decorators'
 import { Activity } from 'botframework-directlinejs'
 import { State } from '../../types'
 import { returntypeof } from 'react-redux-typescript'
@@ -19,39 +22,42 @@ import { connect } from 'react-redux'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { EditDialogType } from '../../types/const'
 import { FM } from '../../react-intl-messages'
-import './CompareDialogsModal.css'
 import './RateDialogsModal.css'
-import { autobind } from 'core-decorators';
 
 interface ComponentState {
-    changedItems: CLM.TranscriptValidationResult[]
+    numberOfNeededRatings: number
+    ratingPair: Test.RatingPair | undefined
     resultIndex: number
     webchatKey: number,
-    activities1: BotChat.Activity[] | undefined
-    activities2: BotChat.Activity[] | undefined
+    activities1: BB.Activity[] | undefined
+    activities2: BB.Activity[] | undefined
     missingLog: boolean,
     // Are webchat columns flipped (for test randomization)
     isFlipped: boolean,
     selectedActivityIndex: number | null
     scrollPosition: number | null
-    betterIds: string[],
-    worseIds: string[],
-    sameIds: string[]
+    haveActivityHeights: boolean
+    activityHeights: ActivityHeight[]
 }
 
 const initialState: ComponentState = {
-    changedItems: [],
+    numberOfNeededRatings: 0,
+    ratingPair: undefined,
     webchatKey: 0,
     resultIndex: 0,
-    activities1: [],
-    activities2: [],
+    activities1: undefined,
+    activities2: undefined,
     missingLog: false,
     isFlipped: false,
     selectedActivityIndex: null,
     scrollPosition: 0,
-    betterIds: [],
-    worseIds: [],
-    sameIds: []
+    haveActivityHeights: false,
+    activityHeights: []
+}
+
+interface RenderData {
+    activities: BB.Activity[] | undefined,
+    sourceName: string
 }
 
 class RateDialogsModal extends React.Component<Props, ComponentState> {
@@ -61,8 +67,8 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
     private sameButtonRef = React.createRef<OF.IButton>()
 
     async componentDidMount() {
-        const changedItems = this.props.transcriptValidationSet.transcriptValidationResults.filter(tr => tr.validity === CLM.TranscriptValidationResultType.CHANGED)
-        await Util.setStateAsync(this, {changedItems})
+        const numberOfNeededRatings = this.props.validationSet.numRatingsNeeded()
+        await Util.setStateAsync(this, { numberOfNeededRatings })
         await this.onChangedDialog()
     }
 
@@ -70,106 +76,141 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
         if (this.state.resultIndex !== prevState.resultIndex) {
             await this.onChangedDialog()
         }
+
+        if (!this.state.haveActivityHeights) {
+            // Check to see if all activity heights have been gathered
+            const haveHeights = this.state.activityHeights.length > 0 && this.state.activityHeights.filter(ah => ah.height === undefined).length === 0
+            
+            if (haveHeights && this.state.activities1) {
+                // If I have them calcluate padding to align acitivity horizontally
+                const activityHeights = [...this.state.activityHeights]
+                const numActivities = this.state.activities1.length
+                for (let index = 0; index < numActivities; index = index + 1) {
+                    // Get max height for this index
+                    const maxHeight = Math.max(...this.state.activityHeights
+                        .filter(ah => ah.index === index) 
+                        .map(ah => ah.height || 0))
+                    
+                    const itemHeights = activityHeights.filter(ah => ah.index === index)
+                    for (const activityHeight of itemHeights) {
+                        if (activityHeight.height) {
+                            // Calcluate padding to make this activity the same height
+                            activityHeight.padding = (maxHeight > activityHeight.height) 
+                                ? maxHeight - activityHeight.height
+                                : 0
+                        }
+                    }
+                }
+                this.setState({
+                    activityHeights, 
+                    scrollPosition: 0,
+                    haveActivityHeights: true})  
+            }
+        }
     }
 
     renderActivity(activityProps: BotChat.WrappedActivityProps, children: React.ReactNode, setRef: (div: HTMLDivElement | null) => void): JSX.Element {
-        return renderActivity(activityProps, children, setRef, null, EditDialogType.IMPORT, this.state.selectedActivityIndex != null)
-    }
 
-    currentLogDialodId(): string {
-        const logDialogId = this.state.changedItems[this.state.resultIndex].logDialogId
-        if (!logDialogId) {
-            throw new Error("Missing log dialog Id")
+        // Pad activity to align the activities in chat window
+        let padding = 0
+        if (this.state.haveActivityHeights && activityProps.activity.id) {
+            // Find height lookup
+            const activityHeight = this.state.activityHeights.find(ah => ah.id === activityProps.activity.id)
+            
+            if (activityHeight && activityHeight.padding) {
+                padding = activityHeight.padding
+            }
         }
-        return logDialogId
+        return renderActivity(activityProps, children, setRef, null, EditDialogType.IMPORT, this.state.selectedActivityIndex != null, padding, !this.state.haveActivityHeights)
     }
 
     @autobind
     async onRight() {
-        const logDialogId = this.currentLogDialodId()
-        if (this.state.isFlipped) {
-            await Util.setStateAsync(this, {worseIds: [...this.state.worseIds, logDialogId]})
-        }
-        else {
-            await Util.setStateAsync(this, {betterIds: [...this.state.betterIds, logDialogId]})
+        if (this.state.ratingPair) {
+            // Make copy so it can be edited
+            const ratingPair = Util.deepCopy(this.state.ratingPair)
+            if (this.state.isFlipped) {
+                ratingPair.result = Test.RatingResult.FIRST
+                await this.props.onRate(ratingPair)
+            }
+            else {
+                ratingPair.result = Test.RatingResult.SECOND
+                await this.props.onRate(ratingPair)
+            }
         }
         this.onNext()
+
     }
 
     @autobind
     async onSame() {
-        const logDialogId = this.currentLogDialodId()
-        await Util.setStateAsync(this, {sameIds: [...this.state.sameIds, logDialogId]})
+        if (this.state.ratingPair) {
+            // Make copy so it can be edited
+            const ratingPair = Util.deepCopy(this.state.ratingPair)
+            ratingPair.result = Test.RatingResult.SAME
+            await this.props.onRate(ratingPair)
+        }
         this.onNext()
     }
 
     @autobind
     async onLeft() {
-        const logDialogId = this.currentLogDialodId()
-        if (this.state.isFlipped) {
-            await Util.setStateAsync(this, {betterIds: [...this.state.betterIds, logDialogId]})
-        }
-        else {
-            await Util.setStateAsync(this, {worseIds: [...this.state.worseIds, logDialogId]})
+        if (this.state.ratingPair) {
+            // Make copy so it can be edited
+            const ratingPair = Util.deepCopy(this.state.ratingPair)
+            if (this.state.isFlipped) {
+                ratingPair.result = Test.RatingResult.SECOND
+                await this.props.onRate(ratingPair)
+            }
+            else {
+                ratingPair.result = Test.RatingResult.FIRST
+                await this.props.onRate(ratingPair)
+            }
         }
         this.onNext()
     }
 
-    //--- SAVE ------
     @autobind
-    saveResults() {
-        const set = Util.deepCopy(this.props.transcriptValidationSet)
-
-        this.state.betterIds.forEach(id => {
-            const result = set.transcriptValidationResults.find(tr => tr.logDialogId === id)
-            if (!result) {
-                throw new Error("Can't find log dialog id")
-            }
-            result.rating = CLM.TranscriptRating.BETTER
-        })
-
-        this.state.worseIds.forEach(id => {
-            const result = set.transcriptValidationResults.find(tr => tr.logDialogId === id)
-            if (!result) {
-                throw new Error("Can't find log dialog id")
-            }
-            result.rating = CLM.TranscriptRating.WORSE
-        })
-
-        this.state.sameIds.forEach(id => {
-            const result = set.transcriptValidationResults.find(tr => tr.logDialogId === id)
-            if (!result) {
-                throw new Error("Can't find log dialog id")
-            }
-            result.rating = CLM.TranscriptRating.SAME
-        })
-
-        this.props.onClose(set)
+    closeModal() {
+        this.props.onClose()
     }
 
     @autobind
     onNext() {
         let resultIndex = this.state.resultIndex + 1
-        if (resultIndex === this.state.changedItems.length) {
-            this.saveResults()
+        if (resultIndex === this.state.numberOfNeededRatings) {
+            this.closeModal()
         }
         this.setState({resultIndex})
     }
 
     async onChangedDialog() {
 
-        if (this.state.resultIndex >= this.state.changedItems.length) {
-            console.log("INVALID INDEX: CompareDialogModal")
+        if (this.state.resultIndex >= this.state.numberOfNeededRatings) {
+            console.log("INVALID INDEX:RateDialogModal")
             return
         }
 
-        const validationResult = this.state.changedItems[this.state.resultIndex]
+        // Get a random pair that still needs rating
+        const ratingPair = this.props.validationSet.getNeededRating()
 
-        let activities1: BotChat.Activity[] = []
-        let activities2: BotChat.Activity[] = []
+        // We're done
+        if (!ratingPair) {
+            this.closeModal()
+            return
+        }
+
+        // Generate activities for rating
+        const source1 = ratingPair.sourceNames[0]
+        const source2 = ratingPair.sourceNames[1]
+        const transcript1 = this.props.validationSet.getTranscript(source1, ratingPair.conversationId)
+        const transcript2 = this.props.validationSet.getTranscript(source2, ratingPair.conversationId)
+        let activities1: BB.Activity[] = []
+        let activities2: BB.Activity[] = []
+
         let missingLog = false
-        if (validationResult.sourceActivities) {
-            let trainDialog = await OBIUtils.trainDialogFromTranscriptImport(validationResult.sourceActivities, null, this.props.entities, this.props.actions, this.props.app)
+        if (transcript1) {
+            let trainDialog = await OBIUtils.trainDialogFromTranscriptImport(transcript1, null, this.props.entities, this.props.actions, this.props.app)
             trainDialog.definitions = {
                 actions: this.props.actions,
                 entities: this.props.entities,
@@ -178,22 +219,20 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
             const teachWithActivities = await ((this.props.fetchActivitiesThunkAsync(this.props.app.appId, trainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithActivities>)
             activities1 = teachWithActivities.activities
         }
-        if (validationResult.logDialogId) {
-            const logDialog = await ((this.props.fetchLogDialogAsync(this.props.app.appId, validationResult.logDialogId, true, true) as any) as Promise<CLM.LogDialog>)
-            if (!logDialog) {
-                activities2 = []
-                missingLog = true
+
+        if (transcript2) {
+            let trainDialog = await OBIUtils.trainDialogFromTranscriptImport(transcript2, null, this.props.entities, this.props.actions, this.props.app)
+            trainDialog.definitions = {
+                actions: this.props.actions,
+                entities: this.props.entities,
+                trainDialogs: []
             }
-            else {
-                const trainDialog = CLM.ModelUtils.ToTrainDialog(logDialog, this.props.actions, this.props.entities)
-                const teachWithActivities = await ((this.props.fetchActivitiesThunkAsync(this.props.app.appId, trainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithActivities>)
-                activities2 = teachWithActivities.activities
-            }
+            const teachWithActivities = await ((this.props.fetchActivitiesThunkAsync(this.props.app.appId, trainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithActivities>)
+            activities2 = teachWithActivities.activities
         }
 
         // Find turn with first inconsistency
         const maxLength = Math.max(activities1.length, activities2.length)
-        let stopTurn = -1
         const replayError = new CLM.ReplayErrorTranscriptValidation()
         for (let i = 0; i < maxLength; i = i + 1) {
             const activity1 = activities1[i] as BB.Activity
@@ -205,25 +244,53 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
                 if (activity2) {
                     activity2.channelData.clData = {...activity2.channelData.clData, replayError  }
                 }
-                stopTurn = i + 1
-                break
             }
         }
 
-        // Cut off activities at first inconsistency
-        activities1 = activities1.slice(0, stopTurn)
-        activities2 = activities2.slice(0, stopTurn)
+        // Trim any extra activities
+        const minLength = Math.min(activities1.length, activities2.length)
+        activities1.splice(minLength)
+        activities2.splice(minLength)
 
-        // Focuse same button (otherwise last choise will be active)
+        // Initialize activity heights for lookup
+        const activityHeights: ActivityHeight[] = []
+        for (const [index, activity] of Object.entries(activities1 as BB.Activity[])) {
+            if (activity.id) {
+                const activityHeight: ActivityHeight = {
+                    sourceName: ratingPair.sourceNames[0],
+                    index: +index,  // Convert to number
+                    id: activity.id,
+                    height: undefined,
+                    padding: undefined
+                }
+                activityHeights.push(activityHeight)
+            }
+        }
+        for (const [index, activity] of Object.entries(activities2 as BB.Activity[])) {
+            if (activity.id) {
+                const activityHeight: ActivityHeight = {
+                    sourceName: ratingPair.sourceNames[1],
+                    index: +index,  // Convert to number
+                    id: activity.id,
+                    height: undefined,
+                    padding: undefined
+                }
+                activityHeights.push(activityHeight)
+            }
+        }
+
+        // Focus same button (otherwise last choice will be active)
         this.focusSameButton()
 
         this.setState({
-            activities1,
+            ratingPair,
+            activities1, 
             activities2,
             missingLog,
             webchatKey: this.state.webchatKey + 1,
-            scrollPosition: 0,
-            isFlipped: Math.random() >= 0.5
+            isFlipped: Math.random() >= 0.5,
+            haveActivityHeights: false,
+            activityHeights
         })
     }
 
@@ -248,61 +315,87 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
         }
     }
 
+    // Keep track of render height for each activity.  This allows us to
+    // align acitivities across multiple webchat windows by adding padding
+    @autobind
+    onActivityHeight(sourceName: string, index: number, height: number): void {
+    
+        // Find height for this item
+        let activityHeight = this.state.activityHeights.find(ac =>
+            ac.sourceName === sourceName && ac.index === index)
+
+        if (activityHeight) {
+            // If height hasn't been set
+            if (!activityHeight.height) {
+                // Set state via function so events don't clobber each other
+                this.setState(prevState => {
+                     // Update height
+                    activityHeight = prevState.activityHeights.find(ac =>
+                        ac.sourceName === sourceName && ac.index === index)!
+                    activityHeight.height = height
+                    return {activityHeights: prevState.activityHeights}
+                })
+            } 
+        }
+    }
+
+    getRenderData(): RenderData[] {
+
+        const renderData: RenderData[] = []
+        if (this.state.ratingPair) {
+            if (this.state.isFlipped) {
+                renderData.push({sourceName: this.state.ratingPair.sourceNames[1], activities: this.state.activities2})
+                renderData.push({sourceName: this.state.ratingPair.sourceNames[0], activities: this.state.activities1})
+            }
+            else {
+                renderData.push({sourceName: this.state.ratingPair.sourceNames[0], activities: this.state.activities1})
+                renderData.push({sourceName: this.state.ratingPair.sourceNames[1], activities: this.state.activities2})
+            }
+        }
+        return renderData
+    }
+
     render() {
-        const leftHistory = this.state.isFlipped ? this.state.activities2 : this.state.activities1
-        const rightHistory = this.state.isFlipped ? this.state.activities1 : this.state.activities2
+
+        const renderData = this.getRenderData()
 
         return (
             <div>
                 <OF.Modal
                     isOpen={true}
                     isBlocking={true}
-                    containerClassName="cl-modal cl-modal--compare-dialogs"
+                    containerClassName="cl-modal cl-modal--rate-dialogs"
                 >
                     <div className="cl-modal_body">
-                        <div className="cl-compare-dialogs-modal">
-                            <div>
-                                <div className="cl-compare-dialogs-webchat">
-                                    <Webchat
-                                        isOpen={leftHistory !== undefined}
-                                        key={`A-${this.state.webchatKey}`}
+                        <div className="cl-rate-dialogs-modal">
+                        {renderData.map(rd => {
+                            return (
+                                <div 
+                                    className="cl-compare-dialogs-webchat"
+                                    key={rd.sourceName}
+                                >
+                                    <Webchat 
+                                        isOpen={rd.activities !== undefined}
+                                        key={`${rd.sourceName}-${this.state.webchatKey}`}
                                         app={this.props.app}
-                                        history={leftHistory || []}
+                                        history={rd.activities as any || []}
                                         onPostActivity={() => {}}
-                                        onSelectActivity={(activity) => this.onSelectActivity(leftHistory, activity)}
+                                        onSelectActivity={(activity) => this.onSelectActivity(rd.activities as any, activity)}
                                         onScrollChange={this.onScrollChange}
                                         hideInput={true}
                                         focusInput={false}
                                         renderActivity={(props, children, setRef) => this.renderActivity(props, children, setRef)}
                                         renderInput={() => null}
+                                        onActivityHeight={(index, height) => this.onActivityHeight(rd.sourceName, index, height)}
                                         selectedActivityIndex={this.state.selectedActivityIndex}
                                         forceScrollPosition={this.state.scrollPosition}
                                         instantScroll={true}
                                         disableCardActions={true}
                                     />
                                 </div>
-                            </div>
-                            <div>
-                                <div className="cl-compare-dialogs-webchat">
-                                    <Webchat
-                                        isOpen={rightHistory !== undefined}
-                                        key={`B-${this.state.webchatKey}`}
-                                        app={this.props.app}
-                                        history={rightHistory || []}
-                                        onPostActivity={() => {}}
-                                        onSelectActivity={(activity) => this.onSelectActivity(rightHistory, activity)}
-                                        onScrollChange={this.onScrollChange}
-                                        hideInput={true}
-                                        focusInput={false}
-                                        renderActivity={(props, children, setRef) => this.renderActivity(props, children, setRef)}
-                                        renderInput={() => null}
-                                        selectedActivityIndex={this.state.selectedActivityIndex}
-                                        forceScrollPosition={this.state.scrollPosition}
-                                        instantScroll={true}
-                                        disableCardActions={true}
-                                    />
-                                </div>
-                            </div>
+                            )
+                            })
+                        }
                         </div>
                     </div>
                     <div>
@@ -332,10 +425,10 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
                         </div>
                         <div className="cl-rate-dialogs-button-bar">
                             <div className="cl-rate-dialogs-count">
-                                {`${this.state.resultIndex + 1} of ${this.state.changedItems.length}`}
+                                {`${this.state.resultIndex + 1} of ${this.state.numberOfNeededRatings}`}
                             </div>
                             <OF.DefaultButton
-                                onClick={this.saveResults}
+                                onClick={this.closeModal}
                                 className='cl-rate-dialogs-close-button'
                                 ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_CLOSE)}
                                 text={Util.formatMessageId(this.props.intl, FM.BUTTON_CLOSE)}
@@ -374,8 +467,9 @@ const mapStateToProps = (state: State) => {
 
 export interface ReceivedProps {
     app: CLM.AppBase
-    transcriptValidationSet: CLM.TranscriptValidationSet
-    onClose: (set: CLM.TranscriptValidationSet) => void
+    validationSet: Test.ValidationSet
+    onRate: (ratingPair: Test.RatingPair) => void
+    onClose: () => void
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps

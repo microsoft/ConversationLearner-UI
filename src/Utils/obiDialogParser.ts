@@ -6,6 +6,7 @@ import * as CLM from '@conversationlearner/models'
 import * as DialogEditing from './dialogEditing'
 import * as OBIUtils from './obiUtils'
 import * as Util from './util'
+import * as stripJson from 'strip-json-comments'
 import { OBIDialog } from '../types/obiTypes'
 
 enum OBIStepType {
@@ -36,8 +37,8 @@ export class ObiDialogParser {
         createEntityThunkAsync: (appId: string, entity: CLM.EntityBase) => Promise<CLM.EntityBase | null>
     ) {
         this.app = app
-        this.actions = actions
-        this.entities = entities
+        this.actions = [...actions]
+        this.entities = [...entities]
         this.createActionThunkAsync = createActionThunkAsync
         this.createEntityThunkAsync = createEntityThunkAsync
     }
@@ -50,7 +51,7 @@ export class ObiDialogParser {
         for (const file of files) {
             if (file.name.endsWith('.dialog')) {
                 const fileText = await Util.readFileAsync(file)
-                const obiDialog: OBIDialog = JSON.parse(fileText)
+                const obiDialog: OBIDialog = JSON.parse(stripJson(fileText))
                 // Set name, removing suffix
                 obiDialog.$id = this.removeSuffix(file.name)
                 dialogs.push(obiDialog)
@@ -249,8 +250,8 @@ export class ObiDialogParser {
         const hashText = JSON.stringify(step)
         let action: CLM.ActionBase | undefined | null = OBIUtils.findActionFromHashText(hashText, this.actions)
         if (!action && this.createActionThunkAsync) {
-            action = await DialogEditing.getPlaceholderAPIAction(this.app.appId, step.url, isTerminal,
-                this.actions, this.createActionThunkAsync as any)
+            action = await DialogEditing.getOrCreatePlaceholderAPIAction(this.app.appId, step.url,
+                isTerminal, this.actions, this.createActionThunkAsync as any)
         }
         // Create an entity for each output parameter in the action.
         let actionOutputEntities: OBIUtils.OBIActionOutput[] = []

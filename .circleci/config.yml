@@ -1,4 +1,69 @@
 version: 2.1
+
+# https://circleci.com/docs/2.0/reusing-config/#the-commands-key
+commands:
+  run-bot-and-ui:
+    description: "Runs the sample bot and the UI to allow E2E test to be run."
+    steps:
+      - checkout
+
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+            - v1-deps-{{ .Branch }}-{{ checksum "package.json" }}
+            - v1-deps-{{ .Branch }}
+            - v1-deps
+
+      - run: node --version
+      - run: npm --version
+      - run: npm ci
+
+      - save_cache:
+          key: v1-deps-{{ .Branch }}-{{ checksum "package.json" }}
+          paths:
+            - ~/.npm
+            - ~/.cache
+
+      # Randomly pick 1 out of 5 LUIS Authoring Keys and set the BASH_ENV with it.
+      - run: node .circleci/SetLuisAuthoringKey.js >> $BASH_ENV
+
+      # Clone the Samples BOT
+      - run: git clone https://github.com/Microsoft/ConversationLearner-Samples -b develop ../cl-samples
+
+      # Install and build sample Bot application
+      - run: cd ../cl-samples && npm ci
+      - run: cd ../cl-samples && npm run build
+
+      # Run sample
+      - run:
+          command: cd ../cl-samples && npm run test-apicallbacks
+          background: true
+
+      # Run UI
+      - run:
+          command: npm start
+          background: true
+
+      # Ensure bot and ui are running
+      # TODO: Find out why this fails.
+      # For some reason this times out as failure even though the bot is running and request should succeed
+      # - run: npx wait-on -- http://localhost:3978
+      - run: npx wait-on -- http://localhost:3000
+  save-test-results:
+    description: "Save artifacts and test results"
+    steps:
+      - store_artifacts:
+          path: results
+
+      - store_artifacts:
+          path: cypress/videos
+
+      - store_artifacts:
+          path: cypress/screenshots
+
+      - store_test_results:
+          path: results
+
 jobs:
   build:
     docker:
@@ -28,7 +93,7 @@ jobs:
       - run: npm run test
       - run: npm run cibuild
 
-  test:
+  test-smoke:
     docker:
       - image: cypress/browsers:chrome65-ff57
         environment:
@@ -37,102 +102,48 @@ jobs:
           ipc: host ## https://github.com/cypress-io/cypress/issues/350
     parallelism: 1
     steps:
-      - checkout
+      - run-bot-and-ui
 
-      # Download and cache dependencies
-      - restore_cache:
-          keys:
-            - v1-deps-{{ .Branch }}-{{ checksum "package.json" }}
-            - v1-deps-{{ .Branch }}
-            - v1-deps
-
-      - run: node --version
-      - run: npm --version
-      - run: npm ci
-
-      - save_cache:
-          key: v1-deps-{{ .Branch }}-{{ checksum "package.json" }}
-          paths:
-            - ~/.npm
-            - ~/.cache
-
-      # Randomly pick 1 out of 5 LUIS Authoring Keys and set the BASH_ENV with it.
-      - run: node .circleci/SetLuisAuthoringKey.js >> $BASH_ENV
-
-      # Clone the Samples BOT
-      - run: git clone https://github.com/Microsoft/ConversationLearner-Samples -b develop ../cl-samples
-      
-      # Install and build sample Bot application
-      - run: cd ../cl-samples && npm ci
-      - run: cd ../cl-samples && npm run build
-
-      # Run sample
-      - run: 
-          command: cd ../cl-samples && npm run test-apicallbacks
-          background: true
-
-      # Run UI
-      - run: 
-          command: npm start
-          background: true
-
-      # Ensure bot and ui are running
-      # TODO: Find out why this fails.
-      # For some reason this times out as failure even though the bot is running and request should succeed
-      # - run: npx wait-on -- http://localhost:3978
-      - run: npx wait-on -- http://localhost:3000
-      
       # Run UI e2e tests
       # Need to add in --parallel once we have a license for it from Cypress
-      # - run: npm run cypress -- run --record false --spec  "cypress/integration/smoke/**/*.spec.*"
+      - run: npm run cypress -- run --record false --spec  "cypress/integration/smoke/required/**/*.spec.*"
+
+      - save-test-results
+
+  test-regression:
+    docker:
+      - image: cypress/browsers:chrome65-ff57
+        environment:
+          ## this enables colors in the output
+          TERM: xterm
+          ipc: host ## https://github.com/cypress-io/cypress/issues/350
+    parallelism: 1
+    steps:
+      - run-bot-and-ui
+
+      # Run UI e2e tests
+      # Need to add in --parallel once we have a license for it from Cypress
       - run: npm run cypress -- run --record false --spec  "cypress/integration/Regression/**/*.spec.js"
 
-      - store_artifacts:
-          path: results
-
-      - store_artifacts:
-          path: cypress/videos
-
-      - store_artifacts:
-          path: cypress/screenshots
-          
-      - store_test_results:
-          path: results
+      - save-test-results
 
       - run:
           command: npm run cypress -- run --record false --spec  "cypress/integration/regressionTs/**/*.spec.*"
           when: always
 
-      - store_artifacts:
-          path: results
+      - save-test-results
 
-      - store_artifacts:
-          path: cypress/videos
-
-      - store_artifacts:
-          path: cypress/screenshots
-          
-      - store_test_results:
-          path: results
-
-      - run: 
+      - run:
           command: npm run cypress -- run --record false --spec "cypress/integration/Tools/DeleteAllTestGeneratedModels.spec.js"
           when: always
 
-      - store_artifacts:
-          path: results
-
-      - store_artifacts:
-          path: cypress/videos
-
-      - store_artifacts:
-          path: cypress/screenshots
-          
-          
 workflows:
   build-test:
     jobs:
       - build
-      - test:
+      - test-smoke:
           requires:
-              - build
+            - build
+      - test-regression:
+          requires:
+            - test-smoke

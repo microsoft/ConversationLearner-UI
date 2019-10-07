@@ -23,6 +23,8 @@ export function renderActivity(
     renderSelected: ((activity: Activity) => JSX.Element | null) | null,
     editType: EditDialogType,
     shouldRenderHighlight: boolean,
+    padding?: number,
+    hidden?: boolean,
 ): JSX.Element {
 
     const timeLine = <span> {activityProps.fromMe ? "User" : "Bot"}</span>;
@@ -60,19 +62,31 @@ export function renderActivity(
         wrapperClassName += ` wc-message-selected`
     }
 
+    const baseStyle = {}
+    if (padding) {
+        // User can pass in padding to align activities
+        baseStyle['paddingBottom'] = padding
+    }
+    if (hidden) {
+        baseStyle['visibility'] = 'hidden'
+    }
+
     return (
         <div
             data-activity-id={activityProps.activity.id}
             className={wrapperClassName}
             onClick={activityProps.onClickActivity}
             role="button"
+            style={baseStyle}
         >
             <div
                 className={`wc-message wc-message-from-${who} ${messageColor} ${messageBorder}`}
                 ref={div => setRef(div)}
                 data-testid="web-chat-utterances"
             >
-                <div className='wc-message-content'>
+                <div 
+                    className='wc-message-content'
+                >
                     <svg className={`wc-message-callout ${messageFillColor}`}>
                         <path className="point-left" d="m0,6 l6 6 v-12 z" />
                         <path className="point-right" d="m6,6 l-6 6 v-12 z" />
@@ -228,6 +242,7 @@ class Webchat extends React.Component<Props> {
         chatProps.hideInput = this.props.hideInput
         chatProps.focusInput = this.props.focusInput
         chatProps.onScrollChange = this.props.onScrollChange
+        chatProps.onActivityHeight = this.props.onActivityHeight
         chatProps.initialScrollPosition = this.props.initialScrollPosition
         chatProps.renderActivity = this.props.renderActivity
         chatProps.renderInput = this.props.renderInput
@@ -278,6 +293,8 @@ export interface ReceivedProps {
     onPostActivity: (a: Activity) => void,
     onScrollChange?: (position: number) => void,
     renderActivity?: (props: BotChat.WrappedActivityProps, children: React.ReactNode, setRef: (div: HTMLDivElement | null) => void) => (JSX.Element | null)
+    // Callback for rendered height of an activity
+    onActivityHeight?: (index: number, height: number) => void
     renderInput?: () => JSX.Element | null
     // Used to select activity from outside webchat
     selectedActivityIndex?: number | null

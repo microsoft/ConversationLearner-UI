@@ -1,3 +1,30 @@
+.cl-rate-dialogs-modal {
+    display: grid;
+    grid-template-columns: 475px 475px;
+    grid-column-gap: 0.5em;
+    height: 100%;
+    overflow-y: hidden;
+}
+
+.cl-rate-dialogs-webchat {
+    height: 100%;
+    position: relative;
+    border: 1px solid var(--cl-color-botchat-grey);
+}
+
+.cl-modal.cl-modal--rate-dialogs {
+    height: 96%;
+    width: 965px;
+}
+
+.cl-modal.cl-modal--rate-dialogs > * {
+    grid-template-rows: 1fr min-content;
+}
+
+.cl-modal.cl-modal--rate-dialogs .cl-modal_footer {
+    padding: 1em;
+}
+
 .cl-rate-dialogs-vote-bar {
     padding: 10px 0px 10px 0px;
     background-color: var(--cl-color-user-import);
