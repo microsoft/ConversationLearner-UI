@@ -951,8 +951,8 @@ export function AbandonDialog() {
   ClickConfirmAbandonDialogButton()
 }
 
-export function EditTrainingByDescriptionAndTags(desctiption, tags) {
-  const funcName = `EditTrainingByDescriptionAndTags(${desctiption}, ${tags})`
+export function EditTrainingByDescriptionAndTags(desciption, tags) {
+  const funcName = `EditTrainingByDescriptionAndTags(${desciption}, ${tags})`
   cy.Enqueue(() => {
     const tagsFromGrid = trainDialogsGrid.GetTags()
     const scenarios = trainDialogsGrid.GetDescription()
@@ -960,13 +960,13 @@ export function EditTrainingByDescriptionAndTags(desctiption, tags) {
     helpers.ConLog(funcName, `Row Count: ${scenarios.length}`)
 
     for (let i = 0; i < scenarios.length; i++) {
-      if (scenarios[i] === desctiption && tagsFromGrid[i] == tags) {
+      if ((!desciption || scenarios[i] === desciption) && (!tags || tagsFromGrid[i] == tags)) {
         helpers.ConLog(funcName, `ClickTraining for row: ${i}`)
         trainDialogsGrid.ClickTraining(i)
         return
       }
     }
-    throw new Error(`Can't Find Training to Edit. The grid should, but does not, contain a row with this data in it: scenario: '${desctiption}' -- tags: ${tags}`)
+    throw new Error(`Can't Find Training to Edit. The grid should, but does not, contain a row with this data in it: scenario: '${desciption}' -- tags: ${tags}`)
   })
 }
 

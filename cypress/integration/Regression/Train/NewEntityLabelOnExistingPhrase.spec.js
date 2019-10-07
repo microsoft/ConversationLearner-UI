@@ -15,15 +15,15 @@ describe('New Entity Label on Existing Phrase - Train Dialog', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
 
   context('Setup', () => {
-    it('Should import a model and wait for training to complete', () => {
+    it('Import a model and wait for training to complete', () => {
       models.ImportModel('z-newEntityLabel', 'z-newEntityLabel.cl')
       modelPage.NavigateToTrainDialogs()
       cy.WaitForTrainingStatusCompleted()
     })
   })
 
-  context('Train Dialog', () => {
-    it('Should create a new Train Dialog', () => {
+  context('One Instance of the Phrase', () => {
+    it('Create a new Train Dialog and add a description for unique identification', () => {
       train.CreateNewTrainDialog()
       train.TypeDescription('Test Generated')
     })
@@ -44,9 +44,6 @@ describe('New Entity Label on Existing Phrase - Train Dialog', () => {
       train.VerifyEntityLabelConflictPopupAndChangeToPevious(undefined, [{ text: 'once', entity: 'anEntity' }])
     })
 
-    // Verify that we can change it back
-    // Verify that we can change alternative test in a different way and screw things up
-    
     it('Verify that the label was removed and then relable it', () => {
       train.SelectTextAction('The only response')
       train.SelectChatTurnExactMatch('Phrase used only once.')
@@ -82,5 +79,8 @@ describe('New Entity Label on Existing Phrase - Train Dialog', () => {
     it('Save the changes', () => {
       train.SaveAsIs()
     })
+
+    // TODO: Still need to verify that the TD Grid has no warnings
   })
+  // Manually EXPORT this to fixtures folder and name it 'z-newEntityLabel.cl'
 })
