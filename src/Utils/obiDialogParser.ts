@@ -7,6 +7,7 @@ import * as DialogEditing from './dialogEditing'
 import * as OBIUtils from './obiUtils'
 import * as Util from './util'
 import * as OBITypes from '../types/obiTypes'
+import * as stripJson from 'strip-json-comments'
 
 enum OBIStepType {
     BEGIN_DIALOG = "Microsoft.BeginDialog",
@@ -62,7 +63,7 @@ export class ObiDialogParser {
         for (const file of files) {
             if (file.name.endsWith('.dialog')) {
                 const fileText = await Util.readFileAsync(file)
-                const obiDialog: OBITypes.OBIDialog = JSON.parse(fileText)
+                const obiDialog: OBITypes.OBIDialog = JSON.parse(stripJson(fileText))
                 // Set name, removing suffix
                 obiDialog.$id = this.removeSuffix(file.name)
                 this.dialogs.push(obiDialog)
