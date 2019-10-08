@@ -2,12 +2,13 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
-import * as BotChat from '@conversationlearner/webchat'
 import * as CLM from '@conversationlearner/models'
 import * as DialogUtils from '../../Utils/dialogUtils'
 import * as OBIUtils from '../../Utils/obiUtils'
 import * as OF from 'office-ui-fabric-react'
 import * as React from 'react'
+import * as BB from 'botbuilder'
+import * as BotChat from '@conversationlearner/webchat'
 import actions from '../../actions'
 import HelpIcon from '../HelpIcon'
 import AddButtonInput from './AddButtonInput'
@@ -22,7 +23,6 @@ import { ImportedAction } from '../../types/models'
 import { formatMessageId, equal, deepCopy } from '../../Utils/util'
 import { State } from '../../types'
 import { EditDialogAdmin } from '.'
-import { Activity } from 'botframework-directlinejs'
 import { EditDialogType, EditState, SelectionType, fromLogTag } from '../../types/const'
 import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
@@ -42,7 +42,7 @@ interface ComponentState {
     addUserInputSelectionType: SelectionType
     isUserBranchModalOpen: boolean
     isSaveConflictModalOpen: boolean
-    selectedActivity: Activity | null
+    selectedActivity: BB.Activity | null
     webchatKey: number
     hasEndSession: boolean
     currentTrainDialog: CLM.TrainDialog | null
@@ -154,7 +154,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    onClickAddScore(activity: BotChat.Activity, selectionType: SelectionType) {
+    onClickAddScore(activity: BB.Activity, selectionType: SelectionType) {
         // TEMP: until server can exclude label conflicts with self
         if (this.showInternalLabelConflict()) {
             return
@@ -313,7 +313,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
 
     // User is continuing the train dialog by typing something new
     @autobind
-    async onWebChatPostActivity(activity: Activity) {
+    async onWebChatPostActivity(activity: BB.Activity) {
 
         if (activity.type === 'message' && activity.text && activity.text !== "") {
 
@@ -379,7 +379,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         }
         return false
     }
-    onWebChatSelectActivity(activity: Activity) {
+    onWebChatSelectActivity(activity: BB.Activity) {
         this.setState({
             selectedActivity: activity,
         })
@@ -397,7 +397,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
 
     // Returns false if dialog has fatal replay error occuring before
     // the selected activity that would prevent a teach
-    canReplay(activity: BotChat.Activity): boolean {
+    canReplay(activity: BB.Activity): boolean {
         if (this.props.activityHistory.length === 0) {
             return true
         }
@@ -434,7 +434,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         return renderActivity(activityProps, children, setRef, this.renderSelectedActivity, this.props.editType, this.state.selectedActivity != null)
     }
 
-    getImportedAction(activity: Activity): ImportedAction | undefined {
+    getImportedAction(activity: BB.Activity): ImportedAction | undefined {
         const clData: CLM.CLChannelData = activity.channelData.clData
         const senderType = clData.senderType
         const scoreIndex = clData.scoreIndex || 0
@@ -458,7 +458,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    renderSelectedActivity(activity: Activity): (JSX.Element | null) {
+    renderSelectedActivity(activity: BB.Activity): (JSX.Element | null) {
 
         if (this.props.editState !== EditState.CAN_EDIT || !this.props.trainDialog) {
             return null
@@ -979,17 +979,6 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         return null
     }
 
-    @autobind
-    private onClickReplayDialog() {
-        const dialog: CLM.TrainDialog = {
-            ...this.props.trainDialog,
-            tags: this.state.tags,
-            description: this.state.description,
-        }
-
-        this.props.onReplayDialog(dialog)
-    }
-
     render() {
         const { intl } = this.props
         // Put mask of webchat if waiting for extraction labelling
@@ -1158,6 +1147,17 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             </OF.Modal>
         );
     }
+
+    @autobind
+    private onClickReplayDialog() {
+        const dialog: CLM.TrainDialog = {
+            ...this.props.trainDialog,
+            tags: this.state.tags,
+            description: this.state.description,
+        }
+
+        this.props.onReplayDialog(dialog)
+    }
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
@@ -1185,7 +1185,7 @@ export interface ReceivedProps {
     originalTrainDialog: CLM.TrainDialog | null
     // If editing a log dialog, this was the source
     editingLogDialogId: string | null
-    activityHistory: Activity[]
+    activityHistory: BB.Activity[]
     // Is it a new dialog, a TrainDialog or LogDialog
     editType: EditDialogType
     // If starting with activity selected
@@ -1195,13 +1195,13 @@ export interface ReceivedProps {
     importCount?: number
     importingOBI?: boolean
 
-    onInsertAction: (trainDialog: CLM.TrainDialog, activity: Activity, isLastActivity: boolean, selectionType: SelectionType) => any
-    onInsertInput: (trainDialog: CLM.TrainDialog, activity: Activity, userText: string, selectionType: SelectionType) => any
-    onChangeExtraction: (trainDialog: CLM.TrainDialog, activity: Activity, extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) => any
-    onChangeAction: (trainDialog: CLM.TrainDialog, activity: Activity, trainScorerStep: CLM.TrainScorerStep) => any
-    onDeleteTurn: (trainDialog: CLM.TrainDialog, activity: Activity) => any
+    onInsertAction: (trainDialog: CLM.TrainDialog, activity: BB.Activity, isLastActivity: boolean, selectionType: SelectionType) => any
+    onInsertInput: (trainDialog: CLM.TrainDialog, activity: BB.Activity, userText: string, selectionType: SelectionType) => any
+    onChangeExtraction: (trainDialog: CLM.TrainDialog, activity: BB.Activity, extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) => any
+    onChangeAction: (trainDialog: CLM.TrainDialog, activity: BB.Activity, trainScorerStep: CLM.TrainScorerStep) => any
+    onDeleteTurn: (trainDialog: CLM.TrainDialog, activity: BB.Activity) => any
     onCloseModal: (reload: boolean, stopImport: boolean) => void
-    onBranchDialog: ((trainDialog: CLM.TrainDialog, activity: Activity, userText: string) => void) | null,
+    onBranchDialog: ((trainDialog: CLM.TrainDialog, activity: BB.Activity, userText: string) => void) | null,
     onContinueDialog: (newTrainDialog: CLM.TrainDialog, initialUserInput: CLM.UserInput) => void
     onSaveDialog: (newTrainDialog: CLM.TrainDialog) => void
     onReplayDialog: (newTrainDialog: CLM.TrainDialog) => void

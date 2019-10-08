@@ -9,6 +9,7 @@ import * as DialogEditing from '../../../Utils/dialogEditing'
 import * as DialogUtils from '../../../Utils/dialogUtils'
 import * as OF from 'office-ui-fabric-react'
 import * as moment from 'moment'
+import * as BB from 'botbuilder'
 import FormattedMessageId from '../../../components/FormattedMessageId'
 import actions from '../../../actions'
 import produce from 'immer'
@@ -23,7 +24,6 @@ import { ChatSessionModal, EditDialogModal, TeachSessionModal, MergeModal, Confi
 import LogConversionConflictModal, { ConflictPair } from '../../../components/modals/LogConversionConflictModal'
 import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../../react-intl-messages'
-import { Activity } from 'botframework-directlinejs'
 import { TeachSessionState } from '../../../types/StateTypes'
 import { EntityLabelConflictError } from '../../../types/errors'
 import { autobind } from 'core-decorators'
@@ -138,7 +138,7 @@ interface ComponentState {
     searchValue: string
     // Allows user to re-open modal for same row ()
     dialogKey: number
-    activityHistory: Activity[]
+    activityHistory: BB.Activity[]
     lastAction: CLM.ActionBase | null
     validationErrors: CLM.ReplayError[]
     // Hack to keep screen from flashing when transition to Edit Page
@@ -407,7 +407,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    async onInsertAction(trainDialog: CLM.TrainDialog, selectedActivity: Activity, isLastActivity: boolean) {
+    async onInsertAction(trainDialog: CLM.TrainDialog, selectedActivity: BB.Activity, isLastActivity: boolean) {
         try {
             const newTrainDialog = await DialogEditing.onInsertAction(
                 trainDialog,
@@ -438,7 +438,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    async onChangeAction(trainDialog: CLM.TrainDialog, selectedActivity: Activity, trainScorerStep: CLM.TrainScorerStep | undefined) {
+    async onChangeAction(trainDialog: CLM.TrainDialog, selectedActivity: BB.Activity, trainScorerStep: CLM.TrainScorerStep | undefined) {
         if (!trainScorerStep) {
             throw new Error("missing args")
         }
@@ -452,6 +452,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 this.props.app.appId,
                 this.props.entities,
                 this.props.actions,
+                undefined,
                 this.props.trainDialogReplayThunkAsync as any,
                 this.props.editActionThunkAsync as any
             )
@@ -464,7 +465,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    async onChangeExtraction(trainDialog: CLM.TrainDialog, selectedActivity: Activity, extractResponse: CLM.ExtractResponse | undefined, textVariations: CLM.TextVariation[] | undefined) {
+    async onChangeExtraction(trainDialog: CLM.TrainDialog, selectedActivity: BB.Activity, extractResponse: CLM.ExtractResponse | undefined, textVariations: CLM.TextVariation[] | undefined) {
         if (!extractResponse || !textVariations) {
             throw new Error("missing args")
         }
@@ -489,7 +490,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    async onDeleteTurn(trainDialog: CLM.TrainDialog, selectedActivity: Activity) {
+    async onDeleteTurn(trainDialog: CLM.TrainDialog, selectedActivity: BB.Activity) {
         const newTrainDialog = await DialogEditing.onDeleteTurn(
             trainDialog,
             selectedActivity,
@@ -521,7 +522,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    async onInsertInput(trainDialog: CLM.TrainDialog, selectedActivity: Activity, inputText: string | undefined) {
+    async onInsertInput(trainDialog: CLM.TrainDialog, selectedActivity: BB.Activity, inputText: string | undefined) {
         if (!inputText) {
             throw new Error("inputText is null")
         }
@@ -626,7 +627,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    async onUpdateActivities(newTrainDialog: CLM.TrainDialog, selectedActivity: Activity | null, selectionType: SelectionType) {
+    async onUpdateActivities(newTrainDialog: CLM.TrainDialog, selectedActivity: BB.Activity | null, selectionType: SelectionType) {
         try {
             const { teachWithActivities, activityIndex } = await DialogEditing.onUpdateActivities(
                 newTrainDialog,
@@ -1137,7 +1138,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     onInsertInput={(trainDialog, activity, userInput) => this.onInsertInput(trainDialog, activity, userInput)}
                     onDeleteTurn={(trainDialog, activity) => this.onDeleteTurn(trainDialog, activity)}
                     onChangeExtraction={(trainDialog, activity, extractResponse, textVariations) => this.onChangeExtraction(trainDialog, activity, extractResponse, textVariations)}
-                    onChangeAction={(trainDialog: CLM.TrainDialog, activity: Activity, trainScorerStep: CLM.TrainScorerStep) => this.onChangeAction(trainDialog, activity, trainScorerStep)}
+                    onChangeAction={(trainDialog: CLM.TrainDialog, activity: BB.Activity, trainScorerStep: CLM.TrainScorerStep) => this.onChangeAction(trainDialog, activity, trainScorerStep)}
                     onBranchDialog={null} // Never branch on LogDialogs
                     onCloseModal={(reload) => this.onCloseEditDialogModal(reload)}
                     onDeleteDialog={this.onDeleteLogDialog}
@@ -1202,7 +1203,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         args: DialogEditing.EditHandlerArgs | undefined,
         tags: string[],
         description: string,
-        editHandler: (trainDialog: CLM.TrainDialog, activity: Activity, args?: DialogEditing.EditHandlerArgs) => any
+        editHandler: (trainDialog: CLM.TrainDialog, activity: BB.Activity, args?: DialogEditing.EditHandlerArgs) => any
     ) {
         try {
             if (!this.props.teachSession.teach) {

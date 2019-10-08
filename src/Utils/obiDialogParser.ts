@@ -6,8 +6,8 @@ import * as CLM from '@conversationlearner/models'
 import * as DialogEditing from './dialogEditing'
 import * as OBIUtils from './obiUtils'
 import * as Util from './util'
+import * as OBITypes from '../types/obiTypes'
 import * as stripJson from 'strip-json-comments'
-import { OBIDialog } from '../types/obiTypes'
 
 enum OBIStepType {
     BEGIN_DIALOG = "Microsoft.BeginDialog",
@@ -21,11 +21,21 @@ enum OBIRuleType {
     INTENT_RULE = "Microsoft.IntentRule"
 }
 
+export interface ObiDialogParserResult {
+    luMap: Map<string, string[]>
+    lgItems: CLM.LGItem[],
+    trainDialogs: CLM.TrainDialog[]
+    warnings: string[]
+}
+
 export class ObiDialogParser {
     private app: CLM.AppBase
-    private composerDialog: OBIUtils.ComposerDialog
+    //private composerDialog: OBIUtils.ComposerDialog
     private actions: CLM.ActionBase[] = []
     private entities: CLM.EntityBase[] = []
+    private dialogs: OBITypes.OBIDialog[]
+    private luMap: Map<string, string[]>
+    private warnings: string[]
     private createActionThunkAsync: (appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null>
     private createEntityThunkAsync: (appId: string, entity: CLM.EntityBase) => Promise<CLM.EntityBase | null>
 
@@ -43,44 +53,52 @@ export class ObiDialogParser {
         this.createEntityThunkAsync = createEntityThunkAsync
     }
 
-    async getTrainDialogs(files: File[]): Promise<CLM.TrainDialog[] | null> {
+    async parse(files: File[]): Promise<ObiDialogParserResult> {
 
-        const dialogs: OBIDialog[] = []
-        const luMap: Map<string, string[]> = new Map()
-        const lgMap: Map<string, CLM.LGItem> = new Map()
+        const lgItems: CLM.LGItem[] = []
+        this.luMap = new Map()
+        this.dialogs = []
+        this.warnings = []
+
         for (const file of files) {
             if (file.name.endsWith('.dialog')) {
                 const fileText = await Util.readFileAsync(file)
-                const obiDialog: OBIDialog = JSON.parse(stripJson(fileText))
+                const obiDialog: OBITypes.OBIDialog = JSON.parse(stripJson(fileText))
                 // Set name, removing suffix
                 obiDialog.$id = this.removeSuffix(file.name)
-                dialogs.push(obiDialog)
+                this.dialogs.push(obiDialog)
             }
             else if (file.name.endsWith('.lu')) {
                 const fileText = await Util.readFileAsync(file)
-                this.addToLUMap(fileText, luMap)
+                this.addToLUMap(fileText, this.luMap)
             }
             else if (file.name.endsWith('.lg')) {
                 const fileText = await Util.readFileAsync(file)
-                CLM.ObiUtils.addToLGMap(fileText, lgMap)
+                CLM.ObiUtils.addToLGMap(fileText, lgItems)
             }
             else {
-                throw new Error(`Expecting .dialog, .lu and .lg files. ${file.name} is of unknown file type`)
+                this.warnings.push(`Expecting .dialog, .lu and .lg files. ${file.name} is of unknown file type`)
             }
         }
 
-        this.composerDialog = {
-            dialogs,
-            luMap,
-            lgMap
-        }
-
-        const mainDialog = this.composerDialog.dialogs.find(d => d.$id === "Entry.main")
+        const mainDialog = this.dialogs.find(d => d.$id === "Entry.main")
         if (!mainDialog) {
-            return null
+            this.warnings.push(`Missing entry point. Expecting a .dialog file called "Entry.main"`)
+            return {
+                luMap: this.luMap,
+                lgItems,
+                trainDialogs: [],
+                warnings: this.warnings
+            }
         }
 
-        return this.getTrainDialogsfromOBIDialog(mainDialog)
+        const trainDialogs = await this.getTrainDialogsfromOBIDialog(mainDialog)
+        return {
+            luMap: this.luMap,
+            lgItems,
+            trainDialogs,
+            warnings: this.warnings
+        } 
     }
 
     private addToLUMap(text: string, luMap: Map<string, string[]>): any {
@@ -94,7 +112,7 @@ export class ObiDialogParser {
         return luMap
     }
 
-    private async getTrainDialogsfromOBIDialog(obiDialog: OBIDialog): Promise<CLM.TrainDialog[]> {
+    private async getTrainDialogsfromOBIDialog(obiDialog: OBITypes.OBIDialog): Promise<CLM.TrainDialog[]> {
 
         let trainDialogs: CLM.TrainDialog[] = []
         if (obiDialog.rules) {
@@ -116,7 +134,7 @@ export class ObiDialogParser {
                             console.log(`Unhandled OBI Type: ${step.$type}`)
                             continue
                         }
-                        const subDialog = this.composerDialog.dialogs.find(d => d.$id === step.dialog)
+                        const subDialog = this.dialogs.find(d => d.$id === step.dialog)
                         if (!subDialog) {
                             throw new Error(`Dialog name ${step.dialog} undefined`)
                         }
@@ -175,7 +193,7 @@ export class ObiDialogParser {
                     trainRound.scorerSteps.push(scorerStep)
                 }
                 else if (step.$type === OBIStepType.BEGIN_DIALOG) {
-                    const subDialog = this.composerDialog.dialogs.find(d => d.$id === step.dialog)
+                    const subDialog = this.dialogs.find(d => d.$id === step.dialog)
                     if (!subDialog) {
                         throw new Error(`Dialog name ${step.dialog} undefined`)
                     }
@@ -209,13 +227,6 @@ export class ObiDialogParser {
     }
 
     private async getScorerStepFromActivity(prompt: string): Promise<CLM.TrainScorerStep> {
-        const parsedActivity = prompt.substring(prompt.indexOf("[") + 1, prompt.lastIndexOf("]")).trim()
-        let response = this.composerDialog.lgMap.get(parsedActivity)
-        if (!response) {
-            // LARS thow error once CCI .dialog transformer has been fixed
-            response = { text: "Can't Parse LG", suggestions: [] }
-            //throw new Error(`LG name ${prompt} undefined`)
-        }
 
         let scoreInput: CLM.ScoreInput = {
             filledEntities: [],
@@ -223,12 +234,11 @@ export class ObiDialogParser {
             maskedActions: []
         }
 
-        const importText = response.suggestions.length > 0 ? JSON.stringify(response) : response.text
         return {
-            importText,
+            importText: prompt,
             input: scoreInput,
             labelAction: CLM.CL_STUB_IMPORT_ACTION_ID,
-            logicResult: undefined,  // LARS handle api calls
+            logicResult: undefined,
             scoredAction: undefined
         }
     }
@@ -239,7 +249,7 @@ export class ObiDialogParser {
      * output parameters of the response object.  Note that as of 2019.09, this field is specific
      * to ConversationLearner and is not part of the OBI spec.
      */
-    private async createActionFromHttpRequest(step: OBIDialog, nextStep: OBIDialog | undefined):
+    private async createActionFromHttpRequest(step: OBITypes.OBIDialog, nextStep: OBITypes.OBIDialog | undefined):
         Promise<CLM.TrainScorerStep> {
         if (!step.url) {
             throw new Error('HTTP requests require url')
@@ -288,12 +298,12 @@ export class ObiDialogParser {
     }
 
     private getTextVariations(intentName: string) {
-        let userInputs = this.composerDialog.luMap.get(intentName)
+        let userInputs = this.luMap.get(intentName)
         if (!userInputs) {
             throw new Error(`Intent name ${intentName} undefined`)
         }
         // Programatically fired events have no intent
-        // Use intent name for now LARS
+        // Use intent name for now
         if (userInputs.length === 0) {
             userInputs = [intentName]
         }

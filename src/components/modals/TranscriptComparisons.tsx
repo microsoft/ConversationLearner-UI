@@ -37,15 +37,15 @@ class TranscriptComparisons extends React.Component<Props, ComponentState> {
 
     componentDidMount() {
         // If no compare selected yet, do compare if more than one source loaded
-        if (!this.state.comparePivot && this.props.validationSet && this.props.validationSet.sourceNames.length > 1) {
-            this.onCompare(this.props.validationSet.sourceNames[0])
+        if (!this.state.comparePivot && this.props.testSet && this.props.testSet.sourceNames.length > 1) {
+            this.onCompare(this.props.testSet.sourceNames[0])
         }
     }
 
     componentDidUpdate() {
         // If no compare selected yet, do compare if more than one source loaded
-        if (!this.state.comparePivot && this.props.validationSet && this.props.validationSet.sourceNames.length > 1) {
-            this.onCompare(this.props.validationSet.sourceNames[0])
+        if (!this.state.comparePivot && this.props.testSet && this.props.testSet.sourceNames.length > 1) {
+            this.onCompare(this.props.testSet.sourceNames[0])
         }
     }
 
@@ -64,20 +64,20 @@ class TranscriptComparisons extends React.Component<Props, ComponentState> {
 
     resultRenderData(): SourceRenderData[] {
 
-        if (!this.props.validationSet) {
+        if (!this.props.testSet) {
             return []
         }
 
         // Gatcher up items by result type
         const renderResults: SourceRenderData[] = []
-        for (const sourceName of this.props.validationSet.sourceNames) {
+        for (const sourceName of this.props.testSet.sourceNames) {
 
-            let items: Test.ValidationItem[] = this.props.validationSet.items
+            let items: Test.TestItem[] = this.props.testSet.items
             .filter(i => i.sourceName === sourceName) 
 
             // Skip the pivot
             if (this.state.comparePivot && sourceName !== this.state.comparePivot) {
-                const comparisons  = this.props.validationSet.getSourceComparisons(sourceName, this.state.comparePivot)
+                const comparisons  = this.props.testSet.getSourceComparisons(sourceName, this.state.comparePivot)
 
                 const reproduced = comparisons.filter(c => c.result === Test.ComparisonResultType.REPRODUCED)
                 const changed = comparisons.filter(c => c.result === Test.ComparisonResultType.CHANGED)
@@ -113,27 +113,27 @@ class TranscriptComparisons extends React.Component<Props, ComponentState> {
         const hasNoTranscript = renderResults.some(rr => rr.no_transcript.length > 0)
         const hasInvalidTranscript = renderResults.some(rr => rr.invalid_transcript.length > 0)
 
-        const numConversations = this.props.validationSet 
-            ? this.props.validationSet.numConversations()
+        const numConversations = this.props.testSet 
+            ? this.props.testSet.numConversations()
             : 0
 
         return (
             <div>
-            {this.props.validationSet && this.props.validationSet.sourceNames.length > 1 
+            {this.props.testSet && this.props.testSet.sourceNames.length > 1 
                 ?
                 <>
                     <div className={`cl-testing-dropbox ${OF.FontClassNames.mediumPlus}`}>
                         <OF.Dropdown
-                            disabled={!this.props.validationSet || this.props.validationSet.sourceNames.length < 2}
+                            disabled={!this.props.testSet || this.props.testSet.sourceNames.length < 2}
                             ariaLabel={Util.formatMessageId(this.props.intl, FM.TRANSCRIPTCOMPARISONS_DROPDOWN_TITLE)}
                             label={Util.formatMessageId(this.props.intl, FM.TRANSCRIPTCOMPARISONS_DROPDOWN_TITLE)}
-                            selectedKey={this.props.validationSet && this.state.comparePivot 
-                                ? this.props.validationSet.sourceNames.indexOf(this.state.comparePivot)
+                            selectedKey={this.props.testSet && this.state.comparePivot 
+                                ? this.props.testSet.sourceNames.indexOf(this.state.comparePivot)
                                 : -1
                             }
                             onChange={this.onChangeCompareSource}
-                            options={this.props.validationSet 
-                                ? this.props.validationSet.sourceNames
+                            options={this.props.testSet 
+                                ? this.props.testSet.sourceNames
                                     .map<OF.IDropdownOption>((tag, i) => ({
                                         key: i,
                                         text: tag
@@ -142,7 +142,7 @@ class TranscriptComparisons extends React.Component<Props, ComponentState> {
                             }
                         />
                     </div>
-                    <div className={`cl-testing-result-group ${!this.props.validationSet || this.props.validationSet.items.length === 0 ? ' cl-test-disabled' : ''}`}>
+                    <div className={`cl-testing-result-group ${!this.props.testSet || this.props.testSet.items.length === 0 ? ' cl-test-disabled' : ''}`}>
                         <div className="cl-testing-result cl-testing-source-title"/>
                         <div className="cl-testing-result">
                             <span className="cl-testing-source-title">Reproduced: </span>
@@ -172,7 +172,7 @@ class TranscriptComparisons extends React.Component<Props, ComponentState> {
                 .map(rr => {
                 return (
                     <div 
-                        className={`cl-testing-result-group ${!this.props.validationSet || this.props.validationSet.items.length === 0 ? ' cl-test-disabled' : ''}`}
+                        className={`cl-testing-result-group ${!this.props.testSet || this.props.testSet.items.length === 0 ? ' cl-test-disabled' : ''}`}
                         key={rr.sourceName}
                     >
                         <div className="cl-testing-result cl-testing-source-title">
@@ -239,7 +239,7 @@ class TranscriptComparisons extends React.Component<Props, ComponentState> {
 }
 
 export interface ReceivedProps {
-    validationSet: Test.ValidationSet | undefined
+    testSet: Test.TestSet | undefined
     onCompare: (comparePivot: string | undefined) => void
     onView: (compareType: Test.ComparisonResultType, comparePivot?: string, compareSource?: string) => void
 }

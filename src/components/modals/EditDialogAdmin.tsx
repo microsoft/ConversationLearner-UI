@@ -6,6 +6,7 @@ import * as React from 'react'
 import * as OF from 'office-ui-fabric-react'
 import * as CLM from '@conversationlearner/models'
 import * as DialogUtils from '../../Utils/dialogUtils'
+import * as BB from 'botbuilder'
 import DialogMetadata from './DialogMetadata'
 import actions from '../../actions'
 import EntityExtractor from './EntityExtractor'
@@ -17,7 +18,6 @@ import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { State } from '../../types'
-import { Activity } from 'botframework-directlinejs'
 import { FM } from '../../react-intl-messages'
 import { EditDialogType, EditState } from '../../types/const'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
@@ -377,7 +377,7 @@ export interface ReceivedProps {
     editingLogDialogId: string | null
     // Train Dialog that this edit originally came from
     originalTrainDialogId: string | null
-    selectedActivity: Activity | null
+    selectedActivity: BB.Activity | null
     isLastActivitySelected: boolean
     editState: EditState
     editType: EditDialogType
