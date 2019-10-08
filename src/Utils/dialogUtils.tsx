@@ -6,10 +6,9 @@ import * as CLM from '@conversationlearner/models'
 import * as React from 'react'
 import * as OF from 'office-ui-fabric-react'
 import * as Util from '../Utils/util'
-import * as BotChat from '@conversationlearner/webchat'
+import * as BB from 'botbuilder'
 import { compareTwoStrings } from 'string-similarity'
 import { deepCopy, getDefaultEntityMap } from './util'
-import { Activity } from 'botframework-directlinejs'
 import { ImportedAction } from '../types/models'
 import TagsReadOnly from '../components/TagsReadOnly'
 import { fromLogTag } from '../types'
@@ -34,7 +33,7 @@ export interface DialogRenderData {
     extractResponses?: CLM.ExtractResponse[]
 }
 
-export function getReplayError(activity: Activity | null): CLM.ReplayError | null | undefined {
+export function getReplayError(activity: BB.Activity | null): CLM.ReplayError | null | undefined {
     if (!activity || !activity.channelData || !activity.channelData.clData) {
         return null
     }
@@ -215,7 +214,7 @@ export function activityIndexFromRound(trainDialog: CLM.TrainDialog, roundIndex:
     return activityIndex
 }
 
-export function matchedActivityIndex(selectedActivity: Activity, activities: Activity[]): number | null {
+export function matchedActivityIndex(selectedActivity: BB.Activity, activities: BB.Activity[]): number | null {
     if (!selectedActivity || activities.length === 0) {
         return null
     }
@@ -358,7 +357,7 @@ export function hasImportActions(trainDialog: CLM.TrainDialog): boolean {
 }
 
 // Do activities have any replay errors
-export function getMostSevereReplayError(activities: BotChat.Activity[]): CLM.ReplayError | null {
+export function getMostSevereReplayError(activities: BB.Activity[]): CLM.ReplayError | null {
     // Return most severe error level found
     let worstReplayError: CLM.ReplayError | null = null
     for (const a of activities) {
@@ -380,7 +379,7 @@ export function getMostSevereReplayError(activities: BotChat.Activity[]): CLM.Re
 }
 
 // Given train dialog and rendered activity, return validity
-export function getTrainDialogValidity(trainDialog: CLM.TrainDialog, activities: BotChat.Activity[]): CLM.Validity | undefined {
+export function getTrainDialogValidity(trainDialog: CLM.TrainDialog, activities: BB.Activity[]): CLM.Validity | undefined {
     // Look for individual replay errors
     const worstReplayError = getMostSevereReplayError(activities)
     if (worstReplayError) {

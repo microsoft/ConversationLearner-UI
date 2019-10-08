@@ -39,7 +39,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
         obiFiles: null,
         autoCreate: true,
         autoMerge: true,
-        autoActionMatch: false
+        autoActionMatch: true
     }
 
     private fileInput: any

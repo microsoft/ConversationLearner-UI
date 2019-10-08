@@ -45,7 +45,7 @@ export class ObiTranscriptParser {
             let source = await Util.readFileAsync(transcriptFile)
             try {
                 const transcript: BB.Activity[] = JSON.parse(source)
-                const transcriptHash = Util.hashText(JSON.stringify(transcript))
+                const transcriptHash = CLM.hashText(JSON.stringify(transcript))
     
                 // If transcript has already been imported, skip it
                 if (!this.hasTranscriptBeenImported(transcriptHash)) {

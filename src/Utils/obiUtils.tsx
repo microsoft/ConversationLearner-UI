@@ -7,7 +7,6 @@ import * as BB from 'botbuilder'
 import * as Util from './util'
 import * as DialogEditing from './dialogEditing'
 import * as DialogUtils from './dialogUtils'
-import * as OBITypes from '../types/obiTypes'
 import Plain from 'slate-plain-serializer'
 import { REPROMPT_SELF } from '../types/const'
 import { ImportedAction } from '../types/models'
@@ -35,12 +34,6 @@ export interface OBIImportData {
     autoCreate: boolean,
     autoMerge: boolean,
     autoActionCreate: boolean
-}
-
-export interface ComposerDialog {
-    dialogs: OBITypes.OBIDialog[]
-    luMap: Map<string, string[]>
-    lgMap: Map<string, CLM.LGItem>
 }
 
 // Return activities for the given logDialogId
@@ -127,8 +120,8 @@ export function isSameActivity(activity1: BB.Activity, activity2: BB.Activity): 
 }
 
 // Add new LG references from .lg file to Map (creates new one if doesn't already exist)
-export async function lgMapFromLGFiles(lgFiles: File[] | null, lgMap?: Map<string, CLM.LGItem>): Promise<Map<string, CLM.LGItem>> {
-    const map = lgMap || new Map<string, CLM.LGItem>()
+export async function lgMapFromLGFiles(lgFiles: File[] | null, lgItemList?: CLM.LGItem[]): Promise<CLM.LGItem[]> {
+    const map = lgItemList || []
     if (lgFiles) {
         for (const lgFile of lgFiles) {
             if (lgFile.name.endsWith('.lg')) {
@@ -143,18 +136,33 @@ export async function lgMapFromLGFiles(lgFiles: File[] | null, lgMap?: Map<strin
     return map
 }
 
-// Given a transcript file, replace and LG references with actual LG content
+// Returns true is any LG is used by this transcxript
+export function usesLG(transcript: BB.Activity[]): boolean {
+
+    for (let activity of transcript) {
+        if (activity.type && activity.type === 'message' && activity.from.role === 'bot') {
+
+            let lgName = lgNameFromImportText(activity.text)
+            if (lgName) {
+                return true
+            }
+        }
+    }
+    return false
+}
+
+// Given a transcript file, replace any LG references with actual LG content
 // Returns true is any LG substitutions were made
-export function substituteLG(transcript: BB.Activity[], lgMap: Map<string, CLM.LGItem>): boolean {
+export function fromLG(transcript: BB.Activity[], lgItemList: CLM.LGItem[]): boolean {
 
     let usedLG = false
     for (let activity of transcript) {
         if (activity.type && activity.type === 'message' && activity.from.role === 'bot') {
 
-            if (activity.text && activity.text.startsWith('[') && activity.text.endsWith(']')) {
+            let lgName = lgNameFromImportText(activity.text)
+            if (lgName) {
                 usedLG = true
-                const lgName = activity.text.substring(activity.text.indexOf("[") + 1, activity.text.lastIndexOf("]")).trim()
-                let response = lgMap.get(lgName)
+                let response = lgItemList.find(lg => lg.lgName === lgName)
                 if (response) {
                     activity.text = (response.suggestions.length > 0) ? JSON.stringify(response) : response.text
                 }
@@ -167,10 +175,25 @@ export function substituteLG(transcript: BB.Activity[], lgMap: Map<string, CLM.L
     return usedLG
 }
 
+// Given a transcript file, replace expanded action references for LG
+export function toLG(transcript: BB.Activity[], lgItemList: CLM.LGItem[], entities: CLM.EntityBase[], actions: CLM.ActionBase[]): void {
+
+    for (let activity of transcript) {
+        if (activity.channelData && activity.channelData.clData && activity.channelData.clData.actionId) {
+            const lgItem = lgItemList.find(lg => lg.actionId === activity.channelData.clData.actionId)
+            if (lgItem) {
+                activity.text = `[${lgItem.lgName}]`
+                delete activity.attachments
+                delete activity.attachmentLayout
+            }
+        }
+    }
+}
+
 // Convert .transcript file into a TrainDialog
 export async function trainDialogFromTranscriptImport(
     transcript: BB.Activity[],
-    lgMap: Map<string, CLM.LGItem> | null,
+    lgItemList: CLM.LGItem[] | null,
     entities: CLM.EntityBase[],
     actions: CLM.ActionBase[],
     app: CLM.AppBase,
@@ -178,7 +201,7 @@ export async function trainDialogFromTranscriptImport(
     createActionThunkAsync?: (appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null>,
     createEntityThunkAsync?: (appId: string, entity: CLM.EntityBase) => Promise<CLM.EntityBase | null>
 ): Promise<CLM.TrainDialog> {
-    const transcriptHash = Util.hashText(JSON.stringify(transcript))
+    const transcriptHash = CLM.hashText(JSON.stringify(transcript))
 
     let trainDialog: CLM.TrainDialog = {
         trainDialogId: undefined!,
@@ -198,8 +221,8 @@ export async function trainDialogFromTranscriptImport(
     }
 
     // If I have an LG map, substitute in LG values
-    if (lgMap) {
-        substituteLG(transcript, lgMap)
+    if (lgItemList) {
+        fromLG(transcript, lgItemList)
     }
 
     let curRound: CLM.TrainRound | null = null
@@ -322,6 +345,15 @@ function findMatchedAction(activity: BB.Activity, entities: CLM.EntityBase[], ac
             }
         }
     }
+    // If importText is an lgName try to look it up in existing actions
+    const lgName = lgNameFromImportText(activity.text)
+    if (lgName) {
+        const action = actions.find(a => a.clientData && a.clientData.lgName === lgName)
+        if (action) {
+            return action
+        }
+    }
+
     // Otherwise try to look it up by hashing the activity content and looking up
     const hashText = hashTextFromActivity(activity, entities, filledEntities)
     return (hashText ? findActionFromHashText(hashText, actions) : undefined)
@@ -374,7 +406,7 @@ export function importTextWithEntityIds(importText: string, valueMap: Map<string
 export function replaceImportActions(trainDialog: CLM.TrainDialog, actions: CLM.ActionBase[], entities: CLM.EntityBase[]): boolean {
 
     // Filter out actions that have no hash lookups. If there are none, terminate early
-    const actionsWithHash = actions.filter(a => a.clientData != null && a.clientData.importHashes && a.clientData.importHashes.length > 0)
+    const actionsWithHash = actions.filter(a => a.clientData != null && a.clientData.actionHashes && a.clientData.actionHashes.length > 0)
     if (actionsWithHash.length === 0) {
         return false
     }
@@ -384,7 +416,7 @@ export function replaceImportActions(trainDialog: CLM.TrainDialog, actions: CLM.
     trainDialog.rounds.forEach(round => {
         round.scorerSteps.forEach(scorerStep => {
 
-            let foundAction = findActionFromScorerStepHash(scorerStep, actionsWithHash, entities)
+            let foundAction = findActionFromScorerStep(scorerStep, actionsWithHash, entities)
 
             // If action found replace labelled action with match
             if (foundAction) {
@@ -397,14 +429,40 @@ export function replaceImportActions(trainDialog: CLM.TrainDialog, actions: CLM.
     return match
 }
 
+export function expandLGItems(trainDialog: CLM.TrainDialog, lgItems: CLM.LGItem[]): void {
+    for (const round of trainDialog.rounds) {
+        for (const scorerStep of round.scorerSteps) {
+                const lgName = scorerStep.importText ? lgNameFromImportText(scorerStep.importText) : null
+                if (lgName) {
+                    let lgItem = lgItems.find(lg => lg.lgName === lgName)
+                    if (lgItem) {
+                        scorerStep.importText = lgItem.text
+                    }
+                }
+        }
+    }
+}
+function lgNameFromImportText(importText: string): string {
+    return importText.substring(importText.indexOf("[") + 1, importText.lastIndexOf("]")).trim()
+}
+
 // Attempt to find action for the given scorer step
-function findActionFromScorerStepHash(scorerStep: CLM.TrainScorerStep, actions: CLM.ActionBase[], entities: CLM.EntityBase[]): CLM.ActionBase | undefined {
+function findActionFromScorerStep(scorerStep: CLM.TrainScorerStep, actions: CLM.ActionBase[], entities: CLM.EntityBase[]): CLM.ActionBase | undefined {
 
     let hashText: string | null = null
 
     // If replacing imported action
     if (scorerStep.importText) {
-        // Substitue entityIds back into import text to build import hash lookup
+
+        // If importText is an lgName try to look it up in existing actions
+        const lgName = lgNameFromImportText(scorerStep.importText)
+        if (lgName) {
+            const action = actions.find(a => a.clientData && a.clientData.lgName === lgName)
+            if (action) {
+                return action
+            }
+        }
+        // Otherwise substitue entityIds back into import text to build import hash lookup
         const filledEntityMap = DialogUtils.filledEntityIdMap(scorerStep.input.filledEntities, entities)
         hashText = importTextWithEntityIds(scorerStep.importText, filledEntityMap)
     }
@@ -426,6 +484,8 @@ export async function createImportedActions(
     appId: string,
     trainDialog: CLM.TrainDialog,
     templates: CLM.Template[],
+    lgItems: CLM.LGItem[] | undefined,
+    actions: CLM.ActionBase[],
     createActionThunkAsync: (appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null>,
 ): Promise<void> {
 
@@ -438,14 +498,43 @@ export async function createImportedActions(
                 let action: CLM.ActionBase | undefined
 
                 // First check to see if matching action already exists
-                // TODO: Support for entities / entity substitution
-                action = findActionFromScorerStepHash(scorerStep, newActions, [])
+                action = findActionFromScorerStep(scorerStep, [...newActions, ...actions], [])
 
                 // Otherwise create a new one
                 if (!action) {
+
                     const isTerminal = round.scorerSteps.length === scoreIndex + 1
-                    const importedAction = importedActionFromImportText(scorerStep.importText, isTerminal)
-                    action = await createActionFromImport(appId, importedAction, scorerStep.importText, templates, createActionThunkAsync)
+                    let importedAction: ImportedAction | undefined
+                    if (lgItems) {
+                        const lgName = lgNameFromImportText(scorerStep.importText)
+                        if (lgName) {
+                            let lgItem = lgItems.find(lg => lg.lgName === lgName)
+                            if (lgItem) {
+                                importedAction = { 
+                                    text: lgItem.text, 
+                                    buttons: lgItem.suggestions, 
+                                    isTerminal, 
+                                    reprompt: lgItem.suggestions.length > 0,
+                                    lgName
+                                }
+                            }
+                            else {
+                                // LARS thow error once CCI .dialog transformer has been fixed
+                                lgItem = { lgName: "", text: "Can't Parse LG", suggestions: [] }
+                                //throw new Error(`LG name ${prompt} undefined`)
+                            }
+                        }
+                    }
+                    if (!importedAction) {
+                        importedAction = { 
+                            text: scorerStep.importText, 
+                            buttons: [], 
+                            isTerminal, 
+                            reprompt: false,
+                            actionHash: CLM.hashText(scorerStep.importText)}
+                    }
+
+                    action = await createActionFromImport(appId, importedAction, templates, createActionThunkAsync)
                     newActions.push(action)
                 }
 
@@ -461,10 +550,10 @@ export async function createImportedActions(
 async function createActionFromImport(
     appId: string,
     importedAction: ImportedAction,
-    importText: string,
     templates: CLM.Template[],
     createActionThunkAsync: (appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null>,
 ): Promise<CLM.ActionBase> {
+
     const template = DialogUtils.bestTemplateMatch(importedAction, templates)
     const actionType = template ? CLM.ActionTypes.CARD : CLM.ActionTypes.TEXT
     const repromptActionId = template && importedAction.buttons.length > 0 ? REPROMPT_SELF : undefined
@@ -523,7 +612,9 @@ async function createActionFromImport(
         actionType,
         entityId: undefined,
         enumValueId: undefined,
-        clientData: { importHashes: [Util.hashText(importText)] }
+        clientData: { 
+            actionHashes: importedAction.actionHash ? [importedAction.actionHash] : [], 
+            lgName: importedAction.lgName }
     })
 
     const newAction = await createActionThunkAsync(appId, action)
@@ -550,11 +641,11 @@ export function importedActionFromImportText(importText: string, isTerminal: boo
 // Search for an action by hash
 export function findActionFromHashText(hashText: string, actions: CLM.ActionBase[]): CLM.ActionBase | undefined {
 
-    const importHash = Util.hashText(hashText)
+    const importHash = CLM.hashText(hashText)
 
     // Try to find matching action with same hash
     let matchedActions = actions.filter(a => {
-        return a.clientData && a.clientData.importHashes && a.clientData.importHashes.indexOf(importHash) > -1
+        return a.clientData && a.clientData.actionHashes && a.clientData.actionHashes.indexOf(importHash) > -1
     })
 
     // If more than one, prefer the one that isn't a placeholder
@@ -566,8 +657,8 @@ export function findActionFromHashText(hashText: string, actions: CLM.ActionBase
 }
 
 // Transcripts are partials of partials of BB.Activity, so RecusivePartial
-export function areTranscriptsEqual(transcript1: Util.RecursivePartial<BB.Activity>[], transcript2: Util.RecursivePartial<BB.Activity>[]): boolean {
-    if (transcript1.length !== transcript2.length) {
+export function areTranscriptsEqual(transcript1: Util.RecursivePartial<BB.Activity>[], transcript2: Util.RecursivePartial<BB.Activity>[], excessOk: boolean = false): boolean {
+    if (!excessOk && transcript1.length !== transcript2.length) {
         return false
     }
     if (transcript1.length === 0 || transcript2.length === 0) {
@@ -582,7 +673,7 @@ export function areTranscriptsEqual(transcript1: Util.RecursivePartial<BB.Activi
     if (transcript1[0].channelId === transcript2[0].channelId) {
         throw new Error("Not a valid comparison.  Same channel.") 
     }
-    for (let i = 0; i < transcript1.length; i = i + 1) {
+    for (let i = 0; i < Math.min(transcript1.length, transcript2.length); i = i + 1) {
         const activity1 = transcript1[i]
         const activity2 = transcript2[i]
         if (activity1.type !== activity2.type) {

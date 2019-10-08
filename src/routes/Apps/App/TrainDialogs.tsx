@@ -13,12 +13,14 @@ import * as OBIDialogParser from '../../../Utils/obiDialogParser'
 import * as OBITranscriptParser from '../../../Utils/obiTranscriptParser'
 import * as OF from 'office-ui-fabric-react'
 import * as moment from 'moment'
+import * as BB from 'botbuilder'
 import FormattedMessageId from '../../../components/FormattedMessageId'
 import actions from '../../../actions'
 import TreeView from '../../../components/modals/TreeView/TreeView'
 import TranscriptImporter from '../../../components/modals/TranscriptImporter'
 import TranscriptImportWaitModal from '../../../components/modals/TranscriptImportWaitModal'
 import ProgressModal from '../../../components/modals/ProgressModal'
+import { PartialTrainDialog } from '../../../types/models'
 import { withRouter } from 'react-router-dom'
 import { RouteComponentProps } from 'react-router'
 import { bindActionCreators } from 'redux'
@@ -29,12 +31,10 @@ import { EditDialogType, EditState, SelectionType, FeatureStrings } from '../../
 import { TeachSessionModal, EditDialogModal, MergeModal } from '../../../components/modals'
 import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../../react-intl-messages'
-import { Activity } from 'botframework-directlinejs'
 import { TeachSessionState } from '../../../types/StateTypes'
 import { autobind } from 'core-decorators'
 import { DispatcherAlgorithmType } from '../../../components/modals/DispatcherCreator'
 import './TrainDialogs.css'
-import { PartialTrainDialog } from 'src/types/models'
 
 export interface EditHandlerArgs {
     userInput?: string,
@@ -150,7 +150,7 @@ const getDialogKey = (trainDialog: OF.IObjectWithKey) => (trainDialog as CLM.Tra
 interface ComponentState {
     columns: IRenderableColumn[]
     sortColumn: IRenderableColumn
-    activityHistory: Activity[]
+    activityHistory: BB.Activity[]
     lastAction: CLM.ActionBase | null
     isTeachDialogModalOpen: boolean
     isEditDialogModalOpen: boolean
@@ -158,6 +158,7 @@ interface ComponentState {
     isImportWaitModalOpen: boolean
     importIndex: number | undefined
     importedTrainDialogs: CLM.TrainDialog[] | undefined
+    importedLGItems: CLM.LGItem[] | undefined
     importAutoCreate: boolean
     importAutoMerge: boolean
     importAutoActionCreate: boolean
@@ -219,6 +220,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             isImportWaitModalOpen: false,
             importIndex: undefined,
             importedTrainDialogs: undefined,
+            importedLGItems: undefined,
             importAutoCreate: false,
             importAutoMerge: false,
             importAutoActionCreate: false,
@@ -531,7 +533,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
         if (this.state.importedTrainDialogs && this.state.importedTrainDialogs.length > 0) {
             if (stopImport) {
-                this.setState({ importedTrainDialogs: undefined })
+                this.setState({ importedTrainDialogs: undefined, importedLGItems: undefined })
             }
             else {
                 await this.onImportNextTrainDialog()
@@ -564,7 +566,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    async onInsertAction(trainDialog: CLM.TrainDialog, selectedActivity: Activity, isLastActivity: boolean, selectionType: SelectionType) {
+    async onInsertAction(trainDialog: CLM.TrainDialog, selectedActivity: BB.Activity, isLastActivity: boolean, selectionType: SelectionType) {
         try {
             const newTrainDialog = await DialogEditing.onInsertAction(
                 trainDialog,
@@ -585,7 +587,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    async onChangeAction(trainDialog: CLM.TrainDialog, selectedActivity: Activity, trainScorerStep: CLM.TrainScorerStep | undefined) {
+    async onChangeAction(trainDialog: CLM.TrainDialog, selectedActivity: BB.Activity, trainScorerStep: CLM.TrainScorerStep | undefined) {
         if (!trainScorerStep) {
             throw new Error(`You attempted to change an Action but the step you are editing was undefined. Please open an issue.`)
         }
@@ -599,6 +601,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 this.props.app.appId,
                 this.props.entities,
                 this.props.actions,
+                this.state.importedLGItems,
                 this.props.trainDialogReplayThunkAsync as any,
                 this.props.editActionThunkAsync as any
             )
@@ -611,7 +614,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    async onChangeExtraction(trainDialog: CLM.TrainDialog, selectedActivity: Activity, extractResponse: CLM.ExtractResponse | undefined, textVariations: CLM.TextVariation[] | undefined) {
+    async onChangeExtraction(trainDialog: CLM.TrainDialog, selectedActivity: BB.Activity, extractResponse: CLM.ExtractResponse | undefined, textVariations: CLM.TextVariation[] | undefined) {
         if (!extractResponse || !textVariations) {
             throw new Error("missing args")
         }
@@ -636,7 +639,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    async onDeleteTurn(trainDialog: CLM.TrainDialog, selectedActivity: Activity) {
+    async onDeleteTurn(trainDialog: CLM.TrainDialog, selectedActivity: BB.Activity) {
         const newTrainDialog = await DialogEditing.onDeleteTurn(
             trainDialog,
             selectedActivity,
@@ -668,7 +671,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    async onBranchTrainDialog(trainDialog: CLM.TrainDialog, selectedActivity: Activity, inputText: string) {
+    async onBranchTrainDialog(trainDialog: CLM.TrainDialog, selectedActivity: BB.Activity, inputText: string) {
 
         try {
             const clData: CLM.CLChannelData = selectedActivity.channelData.clData
@@ -719,7 +722,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    async onInsertInput(trainDialog: CLM.TrainDialog, selectedActivity: Activity, inputText: string, selectionType: SelectionType) {
+    async onInsertInput(trainDialog: CLM.TrainDialog, selectedActivity: BB.Activity, inputText: string, selectionType: SelectionType) {
         try {
             const newTrainDialog = await DialogEditing.onInsertInput(
                 trainDialog,
@@ -864,7 +867,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    async onUpdateActivities(newTrainDialog: CLM.TrainDialog, selectedActivity: Activity | null, selectionType: SelectionType, editDialogType: EditDialogType) {
+    async onUpdateActivities(newTrainDialog: CLM.TrainDialog, selectedActivity: BB.Activity | null, selectionType: SelectionType, editDialogType: EditDialogType) {
         const originalId = this.state.originalTrainDialog || this.state.currentTrainDialog
 
         try {
@@ -1094,11 +1097,15 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         const obiDialogParser = new OBIDialogParser.ObiDialogParser(this.props.app, this.props.actions, this.props.entities,
             this.props.createActionThunkAsync as any, this.props.createEntityThunkAsync as any)
         try {
-            const importedTrainDialogs = await obiDialogParser.getTrainDialogs(obiImportData.files)
+            const obiParseResult = await obiDialogParser.parse(obiImportData.files)
 
+            if (obiParseResult && obiParseResult.warnings.length > 0) {
+                this.props.setErrorDisplay(ErrorType.Error, "Import Warning", obiParseResult.warnings.join("\n\n"), null)
+            }
             await Util.setStateAsync(this, {
                 importIndex: undefined,
-                importedTrainDialogs,
+                importedTrainDialogs: obiParseResult ? obiParseResult.trainDialogs : undefined,
+                importedLGItems: obiParseResult ? obiParseResult.lgItems : undefined,
                 importAutoCreate: obiImportData.autoCreate,
                 importAutoMerge: obiImportData.autoMerge,
                 importAutoActionCreate: obiImportData.autoActionCreate
@@ -1108,7 +1115,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         }
         catch (error) {
             await Util.setStateAsync(this, {
-                importedTrainDialogs: undefined
+                importedTrainDialogs: undefined,
+                importedLGItems: undefined
             })
             this.props.setErrorDisplay(ErrorType.Error, "Import Failed", error.message, null)
         }
@@ -1188,6 +1196,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         if (this.state.importIndex === undefined || this.state.importIndex >= this.state.importedTrainDialogs.length) {
             this.setState({
                 importedTrainDialogs: undefined,
+                importedLGItems: undefined,
                 isImportWaitModalOpen: false
             })
             return
@@ -1222,6 +1231,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 this.props.app.appId,
                 newTrainDialog,
                 this.props.botInfo.templates,
+                this.state.importedLGItems,
+                this.props.actions,
                 this.props.createActionThunkAsync as any)
 
             // Replay to validate
@@ -1251,6 +1262,10 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             await this.onCreateTrainDialog(newTrainDialog)
         }
         else {
+            // Expand LGItems from name to full text
+            if (this.state.importedLGItems) {
+                OBIUtils.expandLGItems(newTrainDialog, this.state.importedLGItems)
+            }
             this.setState({ isImportWaitModalOpen: false })
             await this.openTrainDialog(newTrainDialog, EditDialogType.IMPORT)
         }
@@ -1318,7 +1333,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 }
                 // Otherwise just clear dialogs to be imported
                 else {
-                    this.setState({ importedTrainDialogs: undefined })
+                    this.setState({ importedTrainDialogs: undefined, importedLGItems: undefined })
                 }
             }
             else {
@@ -1819,7 +1834,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         args: DialogEditing.EditHandlerArgs | undefined,
         tags: string[],
         description: string,
-        editHandler: (trainDialog: CLM.TrainDialog, activity: Activity, args?: DialogEditing.EditHandlerArgs) => any
+        editHandler: (trainDialog: CLM.TrainDialog, activity: BB.Activity, args?: DialogEditing.EditHandlerArgs) => any
     ) {
         try {
             if (!this.props.teachSession.teach) {
