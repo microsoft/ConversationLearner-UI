@@ -188,20 +188,7 @@ const Component: React.FC<Props> = (props) => {
     }
 
     const onClickExistingCondition = (condition: CLM.Condition) => {
-        // If EnumCondition
-        if (condition.valueId) {
-            setSelectedOperatorOption(equalOperatorOption)
-        }
-        // Other ValueCondition (If valueId is falsy this has to be truthy, but check for TypeScript)
-        else if (condition.value) {
-            const operatorOption = operatorOptions.find(o => o.key === condition.condition)
-            if (!operatorOption) {
-                throw new Error(`User clicked on existing condition, but could not find matching operator for condition.`)
-            }
-
-            setSelectedOperatorOption(operatorOption)
-            setNumberValue(condition.value)
-        }
+        props.onClickCreate(condition)
     }
 
     const isOperatorDisabled = selectedEntityOption && (selectedEntityOption.data as CLM.EntityBase).entityType === CLM.EntityType.ENUM
@@ -221,7 +208,7 @@ const Component: React.FC<Props> = (props) => {
                 {entityOptions.length === 0
                     ? <h2>You may only create conditions on enum entities or those with resolver type number which is required. Your model does not have either type available. Please create either of these types of entities to create a condition.</h2>
                     : <>
-                        <h2 className={OF.FontClassNames.large}>Current Condition:</h2>
+                        <h2 style={{ fontWeight: OF.FontWeights.semibold as number }} className={OF.FontClassNames.large}>Current Condition:</h2>
                         <div className="cl-condition-creator__expression">
                             <OF.Dropdown
                                 label="Entity"
@@ -262,7 +249,7 @@ const Component: React.FC<Props> = (props) => {
                                 />}
                         </div>
 
-                        <h2 style={{ fontWeight: OF.FontWeights.bold as number }} className={OF.FontClassNames.large}>Existing Conditions:</h2>
+                        <h2 style={{ fontWeight: OF.FontWeights.semibold as number }} className={OF.FontClassNames.large}>Existing Conditions:</h2>
                         <div className="cl-condition-creator__existing-conditions">
                             {conditionsUsingEntity.map(condition => {
                                 const conditionalTag = convertConditionToConditionalTag(condition, props.entities)
