@@ -19,7 +19,16 @@ export function ClickDeleteModelButton(row) { return cy.Get(`[data-list-index="$
 
 export function WaitForModelListToLoad() {
   let lastRowCount = 0
-  cy.scrollTo('bottom') 
+
+  // TODO: This block of code is NOT working, but for the CircleCI runs it does not matter since the list of models should be so
+  //       short that there is no scroll bar, which was the first issue noticed, we were getting an error that there was no scroll
+  //       bar for the scrollTo command. However, when run locally I expect it can cause an issue.
+  // cy.get('body').then((element) => {
+  //   if (Cypress.dom.isScrollable(element)) {
+  //     cy.scrollTo('bottom')     
+  //   }
+  // })
+
   cy.wrap(1, {timeout: 10000}).should(() => {
     // Subtract 1 because it includes the header row.
     const rowCount = +Cypress.$('[data-automationid="DetailsList"] > [role="grid"]').attr('aria-rowcount') - 1
