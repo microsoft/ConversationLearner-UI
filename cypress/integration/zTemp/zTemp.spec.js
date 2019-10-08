@@ -12,10 +12,25 @@ import * as trainDialogsGrid from '../../support/components/TrainDialogsGrid'
 
 describe('zTemp', () => {
   it('Temporary Experimental Test', () => {
-    models.ImportModel('z-importTest', 'z-whatsYourName.cl')
+    //models.ImportModel('z-importTest', 'z-whatsYourName.cl')
     
-    // homePage.Visit()
-    // cy.pause()
+    homePage.Visit()
+
+    cy.get(document).then((element) => {
+    // cy.get('div.cl-app_content')
+    //   .parent('div.cl-o-app-columns')
+    //   .then((element) => {
+      helpers.ConLog('ScrollBar', `isScrollable: ${Cypress.dom.isScrollable(element)}`)
+      if (Cypress.dom.isScrollable(element)) {
+        cy.scrollTo('bottom')     
+      }
+
+      if (Cypress.$(document).height() > Cypress.$(window).height()) { 
+        helpers.ConLog('ScrollBar', `isScrollable!!!`)
+        cy.scrollTo('bottom')     
+      }
+
+    })
   })
 
   it.skip('Temporary Experimental Test', () => {
