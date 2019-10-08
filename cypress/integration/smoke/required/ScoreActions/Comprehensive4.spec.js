@@ -3,15 +3,12 @@
  * Licensed under the MIT License.
 */
 
-import * as models from '../../../support/Models'
-import * as modelPage from '../../../support/components/ModelPage'
-import * as entities from '../../../support/Entities'
-import * as actions from '../../../support/Actions'
-import * as actionModal from '../../../support/components/ActionModal'
-import * as scorerModal from '../../../support/components/ScorerModal'
-import * as train from '../../../support/Train'
-import * as common from '../../../support/Common'
-import * as helpers from '../../../support/Helpers'
+import * as models from '../../../../support/Models'
+import * as modelPage from '../../../../support/components/ModelPage'
+import * as actions from '../../../../support/Actions'
+import * as scorerModal from '../../../../support/components/ScorerModal'
+import * as train from '../../../../support/Train'
+import * as helpers from '../../../../support/Helpers'
 
 describe('Comprehensive 4 - Score Actions', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)

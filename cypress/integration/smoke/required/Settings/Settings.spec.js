@@ -3,15 +3,14 @@
  * Licensed under the MIT License.
 */
 
-import * as homePage from '../../../support/components/HomePage'
-import * as models from '../../../support/Models'
-import * as modelPage from '../../../support/components/ModelPage'
-import * as entitiesGrid from '../../../support/components/EntitiesGrid'
-import * as actionsGrid from '../../../support/components/ActionsGrid'
-import * as train from '../../../support/Train'
-import * as settings from '../../../support/components/Settings'
-import * as exportModelModal from '../../../support/components/ExportModelModal'
-import * as helpers from '../../../support/Helpers'
+import * as homePage from '../../../../support/components/HomePage'
+import * as models from '../../../../support/Models'
+import * as modelPage from '../../../../support/components/ModelPage'
+import * as entitiesGrid from '../../../../support/components/EntitiesGrid'
+import * as actionsGrid from '../../../../support/components/ActionsGrid'
+import * as train from '../../../../support/Train'
+import * as settings from '../../../../support/components/Settings'
+import * as helpers from '../../../../support/Helpers'
 
 describe("Settings - Settings", () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
