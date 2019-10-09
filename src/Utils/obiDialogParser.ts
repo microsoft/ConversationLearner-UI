@@ -44,6 +44,7 @@ export class ObiDialogParser {
     private actions: CLM.ActionBase[] = []
     private entities: CLM.EntityBase[] = []
     private dialogs: Map<string, OBITypes.OBIDialog>
+    private lgItems: CLM.LGItem[]
     private luMap: Map<string, string[]>
     private warnings: string[]
     private createActionThunkAsync: (appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null>
@@ -64,23 +65,22 @@ export class ObiDialogParser {
     }
 
     // Reads input files; packs data into dialog / LU / LG maps according to file extensions.
-    async readDialogFiles(files: File[], dialogs: Map<string, OBITypes.OBIDialog>, luMap: Map<string, string[]>,
-        lgItems: CLM.LGItem[]) {
+    async readDialogFiles(files: File[]) {
         for (const file of files) {
             if (file.name.endsWith('.dialog')) {
                 const fileText = await Util.readFileAsync(file)
                 const obiDialog: OBITypes.OBIDialog = JSON.parse(stripJsonComments(fileText))
                 // Set name, removing suffix
                 obiDialog.$id = this.removeSuffix(file.name)
-                dialogs.set(obiDialog.$id, obiDialog)
+                this.dialogs.set(obiDialog.$id, obiDialog)
             }
             else if (file.name.endsWith('.lu')) {
                 const fileText = await Util.readFileAsync(file)
-                this.addToLUMap(fileText, luMap)
+                this.addToLUMap(fileText, this.luMap)
             }
             else if (file.name.endsWith('.lg')) {
                 const fileText = await Util.readFileAsync(file)
-                CLM.ObiUtils.addToLGMap(fileText, lgItems)
+                CLM.ObiUtils.addToLGMap(fileText, this.lgItems)
             }
             else {
                 this.warnings.push(`Expecting .dialog, .lu and .lg files. ${file.name} is of unknown file type`)
@@ -89,30 +89,24 @@ export class ObiDialogParser {
     }
 
     async parse(files: File[]): Promise<ObiDialogParserResult> {
-        const lgItems: CLM.LGItem[] = []
+        this.lgItems = []
         this.luMap = new Map()
         this.dialogs = new Map()
         this.warnings = []
 
-        await this.readDialogFiles(files, this.dialogs, this.luMap, lgItems)
+        await this.readDialogFiles(files)
 
         const mainDialog = this.dialogs.get("Entry.main")
+        let trainDialogs: CLM.TrainDialog[] = []
         if (!mainDialog) {
             this.warnings.push(`Missing entry point. Expecting a .dialog file called "Entry.main"`)
-            return {
-                luMap: this.luMap,
-                lgItems,
-                trainDialogs: [],
-                warnings: this.warnings
-            }
+        } else {
+            const rootNode = await this.collectDialogNodes(mainDialog)
+            await this.getTrainDialogs(rootNode, trainDialogs)
         }
-
-        const rootNode = await this.collectDialogNodes(mainDialog)
-        let trainDialogs: CLM.TrainDialog[] = []
-        await this.getTrainDialogs(rootNode, trainDialogs)
         return {
             luMap: this.luMap,
-            lgItems,
+            lgItems: this.lgItems,
             trainDialogs,
             warnings: this.warnings
         }
