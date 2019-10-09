@@ -19,7 +19,7 @@ export function ClickDeleteModelButton(row) { return cy.Get(`[data-list-index="$
 
 export function WaitForModelListToLoad() {
   let lastRowCount = 0
-  
+
   // TODO: This block of code is NOT working, but for the CircleCI runs it does not matter since the list of models should be so
   //       short that there is no scroll bar, which was the first issue noticed, we were getting an error that there was no scroll
   //       bar for the scrollTo command. However, when run locally I expect it can cause an issue.

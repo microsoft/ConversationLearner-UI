@@ -9,6 +9,7 @@ import * as Util from '../../Utils/util'
 import * as DialogUtils from '../../Utils/dialogUtils'
 import * as DialogEditing from '../../Utils/dialogEditing'
 import * as CLM from '@conversationlearner/models'
+import * as BB from 'botbuilder'
 import AddButtonInput from './AddButtonInput'
 import AddButtonScore from './AddButtonScore'
 import actions from '../../actions'
@@ -26,7 +27,6 @@ import { ErrorHandler } from '../../Utils/ErrorHandler'
 import { AT } from '../../types/ActionTypes'
 import { State, TeachSessionState } from '../../types'
 import { renderReplayError } from '../../Utils/RenderReplayError'
-import { Activity } from 'botframework-directlinejs'
 import { FM } from '../../react-intl-messages'
 import { EditDialogType, SelectionType, fromLogTag } from '../../types/const'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
@@ -48,7 +48,7 @@ interface ComponentState {
     // If activity selected its index
     selectedActivityIndex: number | null,
     // If activity was part of existing history, the actual item
-    selectedHistoryActivity: Activity | null,
+    selectedHistoryActivity: BB.Activity | null,
     // For handling button sumbits
     ignoreSelectionCount: number,
     replaceActivityText: string | null
@@ -264,7 +264,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
         this.props.toggleAutoTeach(isChecked);
     }
 
-    async onWebChatSelectActivity(activity: Activity) {
+    async onWebChatSelectActivity(activity: BB.Activity) {
 
         // If last action was button submit will generate two calls, ignore the selection
         if (this.state.ignoreSelectionCount > 0) {
@@ -293,7 +293,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
         }
     }
 
-    async onWebChatPostActivity(activity: Activity) {
+    async onWebChatPostActivity(activity: BB.Activity) {
 
         if (activity.type === 'message' && activity.text && activity.text !== "") {
             if (!this.props.teachSession.teach) {
@@ -486,7 +486,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    renderSelectedActivity(activity: Activity): (JSX.Element | null) {
+    renderSelectedActivity(activity: BB.Activity): (JSX.Element | null) {
 
         if (this.state.selectedActivityIndex === null) {
             return null
@@ -848,12 +848,12 @@ const mapStateToProps = (state: State) => {
 export interface ReceivedProps {
     isOpen: boolean
     onClose: (save: boolean, tags?: string[], description?: string, stopImport?: boolean) => void
-    onEditTeach: (historyIndex: number | null, args: DialogEditing.EditHandlerArgs | null, tags: string[], description: string, editHandler: (trainDialog: CLM.TrainDialog, activity: Activity, args: DialogEditing.EditHandlerArgs) => any) => void
-    onInsertAction: (trainDialog: CLM.TrainDialog, activity: Activity, args: DialogEditing.EditHandlerArgs) => any
-    onInsertInput: (trainDialog: CLM.TrainDialog, activity: Activity, args: DialogEditing.EditHandlerArgs) => any
-    onChangeExtraction: (trainDialog: CLM.TrainDialog, activity: Activity, args: DialogEditing.EditHandlerArgs) => any
-    onChangeAction: (trainDialog: CLM.TrainDialog, activity: Activity, args: DialogEditing.EditHandlerArgs) => any
-    onDeleteTurn: (trainDialog: CLM.TrainDialog, activity: Activity) => any
+    onEditTeach: (historyIndex: number | null, args: DialogEditing.EditHandlerArgs | null, tags: string[], description: string, editHandler: (trainDialog: CLM.TrainDialog, activity: BB.Activity, args: DialogEditing.EditHandlerArgs) => any) => void
+    onInsertAction: (trainDialog: CLM.TrainDialog, activity: BB.Activity, args: DialogEditing.EditHandlerArgs) => any
+    onInsertInput: (trainDialog: CLM.TrainDialog, activity: BB.Activity, args: DialogEditing.EditHandlerArgs) => any
+    onChangeExtraction: (trainDialog: CLM.TrainDialog, activity: BB.Activity, args: DialogEditing.EditHandlerArgs) => any
+    onChangeAction: (trainDialog: CLM.TrainDialog, activity: BB.Activity, args: DialogEditing.EditHandlerArgs) => any
+    onDeleteTurn: (trainDialog: CLM.TrainDialog, activity: BB.Activity) => any
     onEndSessionActivity: (tags: string[], description: string) => any
     onReplayDialog: (trainDialog: CLM.TrainDialog) => any
     onSetInitialEntities: ((initialFilledEntityMap: CLM.FilledEntityMap) => Promise<void>) | null
@@ -867,7 +867,7 @@ export interface ReceivedProps {
     // Train Dialog that this edit originally came from (not same as sourceTrainDialog)
     originalTrainDialogId: string | null,
     // When editing, the initial history before teach starts
-    initialHistory: Activity[]
+    initialHistory: BB.Activity[]
     lastAction: CLM.ActionBase | null
     allUniqueTags: string[]
     importIndex?: number

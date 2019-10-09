@@ -84,35 +84,39 @@ class TranscriptList extends React.Component<Props, ComponentState> {
     async onLoadLGFiles(files: any): Promise<void> {
         await this.props.onLoadLGFiles(files)
 
-        // Clear input so user can reload same file
+        // If still open clear input so user can reload same file
         let fileInput = (this.loadLGFileInput as HTMLInputElement)
-        fileInput.value = ""
+        if (fileInput) {
+            fileInput.value = ""
+        }
     }
 
     @autobind
     async onLoadTranscriptFiles(files: any): Promise<void> {
         await this.props.onLoadTranscriptFiles(files)
 
-        // Clear input so user can reload same file
+        // If still open, clear input so user can reload same file
         let fileInput = (this.loadTranscriptsFileInput as HTMLInputElement)
-        fileInput.value = ""
+        {
+            fileInput.value = ""
+        }
     }
 
     renderData(): RenderData[] {
 
-        if (!this.props.validationSet) {
+        if (!this.props.testSet) {
             return []
         }
         const renderResults: RenderData[] = []
-        for (const sourceName of this.props.validationSet.sourceNames) {
+        for (const sourceName of this.props.testSet.sourceNames) {
 
-            let items: Test.ValidationItem[] = this.props.validationSet.items
+            let items: Test.TestItem[] = this.props.testSet.items
             .filter(i => i.sourceName === sourceName) 
 
             renderResults.push({
                 sourceName: sourceName,
                 transcriptCount: items.length,
-                usesLG: this.props.validationSet.usesLgMap.get(sourceName) || false
+                usesLG: this.props.testSet.usesLgMap.get(sourceName) || false
             })
         }
         return renderResults
@@ -156,12 +160,12 @@ class TranscriptList extends React.Component<Props, ComponentState> {
                         {Util.formatMessageId(this.props.intl, FM.TRANSCRIPTLIST_WARNING_TITLE)}
                     </div>
                     }
-                    {this.props.validationSet && this.props.validationSet.lgMap.size > 0 &&
+                    {this.props.testSet && this.props.testSet.lgItems.length > 0 &&
                         <div className="cl-testing-lglabel">
-                            {`${this.props.validationSet.lgMap.size} ${Util.formatMessageId(this.props.intl, FM.TRANSCRIPTLIST_LGLOADED)}`}
+                            {`${this.props.testSet.lgItems.length} ${Util.formatMessageId(this.props.intl, FM.TRANSCRIPTLIST_LGLOADED)}`}
                         </div>
                     }
-                    {this.props.validationSet && this.props.validationSet.lgMap.size === 0 && this.props.validationSet.usesLG() &&
+                    {this.props.testSet && this.props.testSet.lgItems.length === 0 && this.props.testSet.usesLG() &&
                         <div className="cl-testing-lglabel cl-text--warning">
                             {Util.formatMessageId(this.props.intl, FM.TRANSCRIPTLIST_NOLG)}
                         </div>
@@ -183,7 +187,7 @@ class TranscriptList extends React.Component<Props, ComponentState> {
                         </div>
                         <div className="cl-modal-buttons_primary">
                             <OF.DefaultButton
-                                disabled={!this.props.validationSet}
+                                disabled={!this.props.testSet}
                                 onClick={() => this.props.onView(Test.ComparisonResultType.ALL)}
                                 ariaDescription={Util.formatMessageId(this.props.intl, FM.TRANSCRIPTLIST_BUTTON_VIEW)}
                                 text={Util.formatMessageId(this.props.intl, FM.TRANSCRIPTLIST_BUTTON_VIEW)}
@@ -205,7 +209,7 @@ class TranscriptList extends React.Component<Props, ComponentState> {
 }
 
 export interface ReceivedProps {
-    validationSet: Test.ValidationSet | undefined
+    testSet: Test.TestSet | undefined
     onView: (compareType: Test.ComparisonResultType, comparePivot?: string, compareSource?: string) => void
     onLoadTranscriptFiles: (transcriptFiles: any) => Promise<void>
     onLoadLGFiles: (lgFiles: any) => Promise<void>

@@ -48,16 +48,16 @@ class TranscriptRatings extends React.Component<Props, ComponentState> {
     }
 
     componentDidMount() {
-        if (this.props.validationSet) {
-            this.onUpdatePivot(this.state.ratePivot || this.props.validationSet.sourceNames[0])
+        if (this.props.testSet) {
+            this.onUpdatePivot(this.state.ratePivot || this.props.testSet.sourceNames[0])
         }
     }
 
     componentDidUpdate(prevProps: Props) {
-        if (this.props.validationSet && prevProps.validationSet 
-            && (prevProps.validationSet.sourceNames.length !== this.props.validationSet.sourceNames.length
-                || this.props.validationSet.ratingPairs !== prevProps.validationSet.ratingPairs)) {
-            this.onUpdatePivot(this.state.ratePivot || this.props.validationSet.sourceNames[0])
+        if (this.props.testSet && prevProps.testSet 
+            && (prevProps.testSet.sourceNames.length !== this.props.testSet.sourceNames.length
+                || this.props.testSet.ratingPairs !== prevProps.testSet.ratingPairs)) {
+            this.onUpdatePivot(this.state.ratePivot || this.props.testSet.sourceNames[0])
         }
     }
 
@@ -70,7 +70,7 @@ class TranscriptRatings extends React.Component<Props, ComponentState> {
 
     @autobind
     onUpdatePivot(ratePivot: string | undefined): void {
-        if (!ratePivot || !this.props.validationSet || this.props.validationSet.sourceNames.length < 2) {
+        if (!ratePivot || !this.props.testSet || this.props.testSet.sourceNames.length < 2) {
             this.setState({
                 sourceRankMap: new Map<string, RankCount[]>(),
                 unRatableMap: new Map<string, string[]>(),
@@ -84,7 +84,7 @@ class TranscriptRatings extends React.Component<Props, ComponentState> {
         }
 
         // Calculate possible bounds of ranks
-        const maxRank = (this.props.validationSet.sourceNames.length - 1)
+        const maxRank = (this.props.testSet.sourceNames.length - 1)
         const minRank = -maxRank
         const numRanks = (maxRank * 2) + 1
 
@@ -92,7 +92,7 @@ class TranscriptRatings extends React.Component<Props, ComponentState> {
         const sourceRankMap = new Map<string, RankCount[]>()
         const unRatableMap = new Map<string, string[]>()
         const notRatedMap = new Map<string, string[]>()
-        for (const sourceName of this.props.validationSet.sourceNames) {
+        for (const sourceName of this.props.testSet.sourceNames) {
             // Don't generate for pivot source
             if (sourceName !== ratePivot) {
                 const rankCounts: RankCount[] = []
@@ -101,23 +101,23 @@ class TranscriptRatings extends React.Component<Props, ComponentState> {
                 }
                 sourceRankMap.set(sourceName, rankCounts)
                 // Get number that aren't rankable (as they don't have matching transcript)
-                unRatableMap.set(sourceName, this.props.validationSet.unratableConversationIds(sourceName, ratePivot))
-                notRatedMap.set(sourceName, this.props.validationSet.unratedConversationIds(sourceName, ratePivot))
+                unRatableMap.set(sourceName, this.props.testSet.unratableConversationIds(sourceName, ratePivot))
+                notRatedMap.set(sourceName, this.props.testSet.unratedConversationIds(sourceName, ratePivot))
             }
         }
 
         // Calculate rankings relative to pivot
-        const conversationIds = this.props.validationSet.getAllConversationIds()
+        const conversationIds = this.props.testSet.getAllConversationIds()
         for (const conversationId of conversationIds) {
             // Get ranking of pivot item
-            const baseItem = this.props.validationSet.getItem(ratePivot, conversationId)
+            const baseItem = this.props.testSet.getTestItem(ratePivot, conversationId)
             if (baseItem && baseItem.ranking !== undefined) {
-                for (const sourceName of this.props.validationSet.sourceNames) {
+                for (const sourceName of this.props.testSet.sourceNames) {
                     // Skip the source being pivoted on
                     if (sourceName !== ratePivot) {
-                        const rating = this.props.validationSet.getRating(ratePivot, sourceName, conversationId)
+                        const rating = this.props.testSet.getRating(ratePivot, sourceName, conversationId)
                         if (rating !== Test.RatingResult.UNKNOWN) {
-                            const sourceItem = this.props.validationSet.getItem(sourceName, conversationId)
+                            const sourceItem = this.props.testSet.getTestItem(sourceName, conversationId)
                             if (sourceItem && sourceItem.ranking !== undefined) {
                                 // Adjust rank relative to pivot
                                 const rank = sourceItem.ranking - baseItem.ranking
@@ -131,7 +131,7 @@ class TranscriptRatings extends React.Component<Props, ComponentState> {
             }
         }
 
-        const numConversations = this.props.validationSet.numConversations()
+        const numConversations = this.props.testSet.numConversations()
 
         this.setState({
             ratePivot, 
@@ -149,7 +149,7 @@ class TranscriptRatings extends React.Component<Props, ComponentState> {
         
         return (
             <div>
-            {!this.props.validationSet || this.props.validationSet.sourceNames.length < 2 
+            {!this.props.testSet || this.props.testSet.sourceNames.length < 2 
                 ?
                 <div className="cl-testing-warning">
                     {Util.formatMessageId(this.props.intl, FM.TRANSCRIPTRATINGS_WARNING_TITLE)}
@@ -158,16 +158,16 @@ class TranscriptRatings extends React.Component<Props, ComponentState> {
                 <>
                 <div className={`cl-testing-dropbox ${OF.FontClassNames.mediumPlus}`}>
                     <OF.Dropdown
-                        disabled={!this.props.validationSet || this.props.validationSet.sourceNames.length < 2}
+                        disabled={!this.props.testSet || this.props.testSet.sourceNames.length < 2}
                         ariaLabel={Util.formatMessageId(this.props.intl, FM.TRANSCRIPTRATINGS_DROPDOWN_TITLE)}
                         label={Util.formatMessageId(this.props.intl, FM.TRANSCRIPTRATINGS_DROPDOWN_TITLE)}
-                        selectedKey={this.props.validationSet && this.state.ratePivot 
-                            ? this.props.validationSet.sourceNames.indexOf(this.state.ratePivot)
+                        selectedKey={this.props.testSet && this.state.ratePivot 
+                            ? this.props.testSet.sourceNames.indexOf(this.state.ratePivot)
                             : -1
                         }
                         onChange={this.onChangeRateSource}
-                        options={this.props.validationSet 
-                            ? this.props.validationSet.sourceNames
+                        options={this.props.testSet 
+                            ? this.props.testSet.sourceNames
                                 .map<OF.IDropdownOption>((tag, i) => ({
                                     key: i,
                                     text: tag
@@ -177,7 +177,7 @@ class TranscriptRatings extends React.Component<Props, ComponentState> {
                     />
                 </div>
                 <div>
-                    {this.props.validationSet && this.props.validationSet.sourceNames.length > 1 &&
+                    {this.props.testSet && this.props.testSet.sourceNames.length > 1 &&
                         <div className="cl-transcriptrating-ranktitles">
                             <div className="cl-testing-result-title">{'\u00A0'}</div>
                             <div>
@@ -219,7 +219,7 @@ class TranscriptRatings extends React.Component<Props, ComponentState> {
                                     className="cl-testing-source-title cl-transcriptrating-rankbutton"
                                 >
                                     <OF.DefaultButton
-                                        disabled={!this.props.validationSet || this.props.validationSet.sourceNames.length < 2}
+                                        disabled={!this.props.testSet || this.props.testSet.sourceNames.length < 2}
                                         onClick={this.props.onRate}
                                         ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_RATE)}
                                         text={Util.formatMessageId(this.props.intl, FM.BUTTON_RATE)}
@@ -301,7 +301,7 @@ class TranscriptRatings extends React.Component<Props, ComponentState> {
 }
 
 export interface ReceivedProps {
-    validationSet: Test.ValidationSet | undefined
+    testSet: Test.TestSet | undefined
     onView: (conversationIds: string[], conversationPivot?: string) => void
     onRate: () => void
 }

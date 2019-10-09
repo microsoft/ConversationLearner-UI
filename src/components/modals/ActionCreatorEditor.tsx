@@ -956,7 +956,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             enumValueId: this.state.selectedEnumValueOptionKey,
             clientData: this.props.action
                 ? this.props.action.clientData
-                : { importHashes: [] }
+                : { actionHashes: [] }
         })
 
         if (this.state.isEditing && this.props.action) {
