@@ -13,7 +13,7 @@ describe('New Entity Label on Existing Phrase 2 - Train Dialog', () => {
 
   context('Setup', () => {
     it('Import a model and wait for training to complete', () => {
-      models.ImportModel('z-newEntityLabel', 'z-newEntityLabel1.cl')
+      models.ImportModel('z-newEntityLabel2', 'z-newEntityLabel1.cl')
       modelPage.NavigateToTrainDialogs()
       cy.WaitForTrainingStatusCompleted()
     })
@@ -87,29 +87,4 @@ describe('New Entity Label on Existing Phrase 2 - Train Dialog', () => {
     // TODO: Still need to verify that the TD Grid has no warnings
     //       Also need to verify the warning count, since there should be 2 of them.
    })
-
-  context('Three Instances of the Phrase', () => {
-
-    it('', () => {
-    })
-    
-    it('', () => {
-    })
-    
-    it('', () => {
-    })
-    
-    it('', () => {
-    })
-    
-    it('', () => {
-    })
-    
-    it('', () => {
-    })
-    
-    it('', () => {
-    })
-    
-  })
 })

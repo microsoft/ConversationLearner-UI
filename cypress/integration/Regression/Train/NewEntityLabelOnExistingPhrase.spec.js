@@ -16,7 +16,7 @@ describe('New Entity Label on Existing Phrase - Train Dialog', () => {
 
   context('Setup', () => {
     it('Import a model and wait for training to complete', () => {
-      models.ImportModel('z-newEntityLabel', 'z-newEntityLabel.cl')
+      models.ImportModel('z-newEntityLabel1', 'z-newEntityLabel.cl')
       modelPage.NavigateToTrainDialogs()
       cy.WaitForTrainingStatusCompleted()
     })
