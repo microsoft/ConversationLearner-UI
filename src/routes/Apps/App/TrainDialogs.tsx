@@ -1120,7 +1120,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 transcriptImport
             })
 
-            if (!obiParseResult.warnings) {
+            if (obiParseResult.warnings.length === 0) {
                 await this.onImportNextTrainDialog()
             }
         }
@@ -1776,20 +1776,18 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     importCount={(this.state.transcriptImport && this.state.transcriptImport.trainDialogs) ? this.state.transcriptImport.trainDialogs.length : undefined}
                     importingOBI={this.props.obiImportData && this.props.obiImportData.appId === this.props.app.appId}
                 />
-                {this.state.transcriptImport && this.state.transcriptImport.warnings &&
+                {this.state.transcriptImport && this.state.transcriptImport.warnings && this.state.transcriptImport.warnings.length > 0 &&
                     <ConfirmCancelModal
                         open={true}
                         onCancel={() => this.onCloseImportWarning(true)}
                         onOk={() => this.onCloseImportWarning(false)}
                         title={Util.formatMessageId(intl, FM.TRAINDIALOGS_IMPORT_WARNING)}
                         message={() => 
-                            <div className="cl-traindialogs-import-warning">
-                                <OF.List 
-                                    className="cl-traindialogs-import-warning"
-                                    items={this.state.transcriptImport ? this.state.transcriptImport.warnings : []} 
-                                    onRenderCell={(item: string, index: number) => { return item}}
-                                />
-                            </div>
+                            <OF.List 
+                                className="cl-traindialogs-import-warning"
+                                items={this.state.transcriptImport ? this.state.transcriptImport.warnings : []} 
+                                onRenderCell={(item: string, index: number) => { return item}}
+                            />
                         }
                     />
                 }
