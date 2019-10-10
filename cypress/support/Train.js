@@ -780,7 +780,7 @@ export function SaveAsIs(verificationFunction) {
 
     cy.WaitForStableDOM()
     let renderingShouldBeCompleteTime = new Date().getTime() + 1000
-    cy.wrap(1, {timeout: 10000}).should(() => {
+    cy.wrap(1, {timeout: 60000}).should(() => {
       if (mergeModal.IsVisible()) {
         helpers.ConLog(funcName, 'mergeModal.IsVisible')
 
@@ -819,7 +819,7 @@ function VerifyTrainingSummaryIsInGrid(trainingSummary) {
   helpers.ConLog(funcName, `MomentTrainingEnded: ${trainingSummary.MomentTrainingEnded.format()}`)
 
   let renderingShouldBeCompleteTime = new Date().getTime()
-  cy.Get('[data-testid="train-dialogs-turns"]', {timeout: 10000})
+  cy.Get('[data-testid="train-dialogs-turns"]', {timeout: 60000})
     .should(elements => { 
       if (modelPage.IsOverlaid()) {
         helpers.ConLog(funcName, 'modalPage.IsOverlaid')

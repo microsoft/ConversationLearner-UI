@@ -5,13 +5,10 @@
 
 import * as models from '../../../support/Models'
 import * as modelPage from '../../../support/components/ModelPage'
-import * as memoryTableComponent from '../../../support/components/MemoryTableComponent'
-import * as scorerModal from '../../../support/components/ScorerModal'
 import * as train from '../../../support/Train'
-import * as common from '../../../support/Common'
 import * as helpers from '../../../support/Helpers'
 
-describe('New Entity Label on Existing Phrase - Train Dialog', () => {
+describe('New Entity Label on Existing Phrase 1 - Entity Labeling', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
 
   context('Setup', () => {
@@ -39,7 +36,7 @@ describe('New Entity Label on Existing Phrase - Train Dialog', () => {
       train.VerifyEntityLabel('once', 'anEntity')
     })
 
-    it('Score Actions, verify that the Entitly Label Conflict modal pops up and that we can change our labeling', () => {
+    it('Change to Previously Submitted Labels from other Train Dialogs...after we Score Actions', () => {
       train.ClickScoreActionsButton()
       train.VerifyEntityLabelConflictPopupAndChangeToPevious(undefined, [{ text: 'once', entity: 'anEntity' }])
     })
@@ -51,7 +48,7 @@ describe('New Entity Label on Existing Phrase - Train Dialog', () => {
       train.LabelTextAsEntity('once', 'anEntity')
     })
 
-    it('Score Actions, verify that the Entitly Label Conflict modal pops up and that we can change our labeling', () => {
+    it('Change to Attempted labels all matching phrases found in other Train Dialogs...after we Score Actions', () => {
       train.ClickSubmitChangesButton()
       train.VerifyEntityLabelConflictPopupAndChangeToAttempted(undefined, [{ text: 'once', entity: 'anEntity' }])
     })

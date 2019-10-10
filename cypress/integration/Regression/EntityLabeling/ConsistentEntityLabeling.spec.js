@@ -8,9 +8,7 @@ import * as modelPage from '../../../support/components/ModelPage'
 import * as train from '../../../support/Train'
 import * as helpers from '../../../support/Helpers'
 
-describe('Consistent Entity Labeling - Train', () => {
-  // TODO: Need to add another test case or expand this one so that tagging something
-  //       that was NOT tagged in another instance causes the UI to complain.
+describe('Consistent Entity Labeling', () => {
   const textEntityPairs = [{ text: 'Tag', entity: 'multi' }, { text: 'Frog', entity: 'multi' }]
 
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
@@ -91,6 +89,39 @@ describe('Consistent Entity Labeling - Train', () => {
       train.SelectTextAction('Hi')
 
       train.SaveAsIsVerifyInGrid()
+    })
+  })
+
+  context('Edit Train Dialog', () => {
+    it('Should edit the training and verify the entities are labeled', () => {
+      train.EditTraining('This is Tag.', 'This is Tag.', 'Hi')
+      train.SelectChatTurnExactMatch('This is Tag.')
+
+      train.VerifyEntityLabelWithinSpecificInput([textEntityPairs[0]], 0)
+      train.VerifyEntityLabelWithinSpecificInput(textEntityPairs, 1)
+      train.VerifyEntityLabelWithinSpecificInput(textEntityPairs, 2)
+    })
+
+    it('Should remove two entity labels from alternative input', () => {
+      train.RemoveEntityLabel('Tag', 'multi', 1)
+      train.RemoveEntityLabel('Frog', 'multi', 2)
+    })
+    
+    it('Should verify user cannot submit changes without accepting auto-re-labling of the 1st alternative input that we changed', () => {
+      train.ClickSubmitChangesButton()
+      train.VerifyEntityLabelConflictPopupAndClose(textEntityPairs)
+      train.ClickSubmitChangesButton()
+      train.VerifyEntityLabelConflictPopupAndChangeToPevious(textEntityPairs)
+    })
+
+    it('Should verify user cannot submit changes without accepting auto-re-labling of the 2nd alternative input that we changed', () => {
+      train.VerifyEntityLabelConflictPopupAndClose(textEntityPairs)
+      train.ClickSubmitChangesButton()
+      train.VerifyEntityLabelConflictPopupAndChangeToPevious(textEntityPairs)
+    })
+
+    it('Should abandon the changes', () => {
+      train.AbandonDialog()
     })
   })
     // Manually EXPORT this to fixtures folder and name it 'z-cnstntEntLabel.cl'

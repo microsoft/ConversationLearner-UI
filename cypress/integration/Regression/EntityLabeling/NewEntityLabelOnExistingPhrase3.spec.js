@@ -8,7 +8,7 @@ import * as modelPage from '../../../support/components/ModelPage'
 import * as train from '../../../support/Train'
 import * as helpers from '../../../support/Helpers'
 
-describe('New Entity Label on Existing Phrase 2 - Train Dialog', () => {
+describe('New Entity Label on Existing Phrase 2 - Entity Labeling', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
 
   context('Setup', () => {

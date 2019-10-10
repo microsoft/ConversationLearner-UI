@@ -8,12 +8,12 @@ import * as modelPage from '../../../support/components/ModelPage'
 import * as train from '../../../support/Train'
 import * as helpers from '../../../support/Helpers'
 
-describe('New Entity Label on Existing Phrase 2 - Train Dialog', () => {
+describe('New Entity Label on Existing Phrase 2 - Entity Labeling', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
 
   context('Setup', () => {
     it('Import a model and wait for training to complete', () => {
-      models.ImportModel('z-newEntityLabel2', 'z-newEntityLabel1.cl')
+      models.ImportModel('z-newEntityLabel2', 'z-newEntityLabel.cl')
       modelPage.NavigateToTrainDialogs()
       cy.WaitForTrainingStatusCompleted()
     })
@@ -28,16 +28,34 @@ describe('New Entity Label on Existing Phrase 2 - Train Dialog', () => {
 
     it('User utters another existing phrase and labels an entity', () => {
       train.TypeYourMessage('Two instances of this phrase there are.')
-      train.LabelTextAsEntity('Two', 'anEntity') // many gifts are given...LOL
+      train.LabelTextAsEntity('Two', 'anEntity')
+      train.LabelTextAsEntity('phrase', 'anEntity')
     })
 
-    it('Score Actions, verify that the Entitly Label Conflict modal pops up and that we can change our labeling', () => {
+    it('Score Actions, verify that the Entitly Label Conflict modal pops up and that we can close it without change to our labeling', () => {
       train.ClickScoreActionsButton()
-      train.VerifyEntityLabelConflictPopupAndChangeToAttempted(undefined, [{ text: 'Two', entity: 'anEntity' }])
+      train.VerifyEntityLabelConflictPopupAndClose(undefined, [{ text: 'Two', entity: 'anEntity' }, { text: 'phrase', entity: 'anEntity' }])
+      train.VerifyEntityLabel('Two', 'anEntity')
+      train.VerifyEntityLabel('phrase', 'anEntity')
     })
 
-    it('Select the only Bot response', () => {
+    it('Change to Previously Submitted Labels from other Train Dialogs...after we Score Actions', () => {
+      train.ClickScoreActionsButton()
+      train.VerifyEntityLabelConflictPopupAndChangeToPevious(undefined, [{ text: 'Two', entity: 'anEntity' }, { text: 'phrase', entity: 'anEntity' }])
+    })
+
+    it('Verify that the label was removed and then relable it', () => {
       train.SelectTextAction('The only response')
+      train.SelectChatTurnExactMatch('Two instances of this phrase there are.')
+      train.VerifyWordNotLabeledAsEntity('Two', 'anEntity')
+      train.VerifyWordNotLabeledAsEntity('phrase', 'anEntity')
+      train.LabelTextAsEntity('Two', 'anEntity')
+      train.LabelTextAsEntity('phrase', 'anEntity')
+    })
+
+    it('Change to Attempted labels all matching phrases found in other Train Dialogs...after we Score Actions', () => {
+      train.ClickSubmitChangesButton()
+      train.VerifyEntityLabelConflictPopupAndChangeToAttempted(undefined, [{ text: 'Two', entity: 'anEntity' }, { text: 'phrase', entity: 'anEntity' }])
     })
 
     it('Save the Train Dialog and verify that it is in the grid', () => {

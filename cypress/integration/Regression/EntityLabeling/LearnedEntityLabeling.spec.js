@@ -15,7 +15,7 @@ import * as helpers from '../../../support/Helpers'
 // this "Learned Entity Labeling" test scenario is Part 2 in that 
 // it continues from where the 1st test case left off by using the
 // model created by that test scenario.
-describe('Learned Entity Labeling - Train Dialog', () => {
+describe('Learned Entity Labeling', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
   let generatedScoreActionsData = new scorerModal.GeneratedData('learnedEntityLabeling.json')
 
