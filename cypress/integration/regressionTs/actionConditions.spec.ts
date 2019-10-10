@@ -17,13 +17,13 @@ describe('Action Conditions', () => {
             whatIsNumber: 'What is the number?',
             low: 'Your number is low!',
             normal: 'Your number is normal.',
-            high: 'Your number is hight!',
+            high: 'Your number is high!',
         },
         conditions: {
             gte5: `myNumber >= 5`,
             lt5: `myNumber < 5`,
             gte30: `myNumber >= 30`,
-            lt30: `myNumber >= 30`,
+            lt30: `myNumber < 30`,
         },
     }
 
@@ -37,7 +37,7 @@ describe('Action Conditions', () => {
         cy.get(s.trainingStatus.completed, { timeout: constants.training.timeout })
     })
 
-    xdescribe(`Condition Creation`, () => {
+    describe(`Condition Creation`, () => {
         before(() => {
             cy.get(s.model.buttonNavActions)
                 .click()
@@ -175,55 +175,158 @@ describe('Action Conditions', () => {
         it(`should properly constrain actions based on true conditions`, () => {
             cy.get(s.model.buttonNavTrainDialogs).click()
             cy.get(s.trainDialogs.buttonNew).click()
+
+            // Start dialog
             util.inputText('hi')
             cy.get(s.trainDialog.buttonScoreActions).click()
+            cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+                .should('not.exist')
             util.selectAction(s.trainDialog.actionScorerTextActions, testData.actions.whatIsNumber)
 
-            // Enter low number
+            // Enter 'low' number
             util.inputText('3')
-
             cy.get(s.trainDialog.buttonScoreActions).click()
+            cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+                .should('not.exist')
 
             // Verify conditions on other actions are disqualified
-            cy.get(s.trainDialog.actionScorerTextActions)
-                .contains(testData.actions.normal)
-                .parents(s.trainDialog.actionScorer.rowField)
-                .then(() => {
-                    cy.get(s.trainDialog.buttonSelectActionDisabled)
-                        .should('have.class', 'is-disabled')
+            const lowInputActionConditionStates = [
+                {
+                    text: testData.actions.normal,
+                    conditions: [
+                        {
+                            text: testData.conditions.gte5,
+                            match: false,
+                        },
+                        {
+                            text: testData.conditions.lt30,
+                            match: true,
+                        },
+                    ],
+                },
+                {
+                    text: testData.actions.high,
+                    conditions: [
+                        {
+                            text: testData.conditions.gte30,
+                            match: false,
+                        },
+                    ],
+                },
+                {
+                    text: testData.actions.low,
+                    conditions: [
+                        {
+                            text: testData.conditions.lt5,
+                            match: true,
+                        },
+                    ],
+                }
+            ]
 
-                    cy.get(s.trainDialog.actionScorer.condition)
-                        .contains(testData.conditions.gte5)
-                        .should('have.class', 'cl-entity--mismatch')
-
-                    cy.get(s.trainDialog.actionScorer.condition)
-                        .contains(testData.conditions.lt30)
-                        .should('have.class', 'cl-entity--match')
-                })
-
-            verifyActionState({
-                text: testData.actions.high,
-                conditions: [
-                    {
-                        text: testData.conditions.gte30,
-                        match: false,
-                    },
-                ],
-            })
-
-            cy.get(s.trainDialog.actionScorerTextActions)
-                .contains(testData.actions.low)
-                .parents(s.trainDialog.actionScorer.rowField)
-                .then(() => {
-                    cy.get(s.trainDialog.actionScorer.condition)
-                        .contains(testData.conditions.lt5)
-                        .should('have.class', 'cl-entity--match')
-                })
+            lowInputActionConditionStates.forEach(acs => verifyActionConditionsState(acs))
 
             util.selectAction(s.trainDialog.actionScorerTextActions, testData.actions.low)
             util.selectAction(s.trainDialog.actionScorerTextActions, testData.actions.whatIsNumber)
-            util.inputText('9')
 
+            // Enter 'Normal' number
+            util.inputText('9')
+            cy.get(s.trainDialog.buttonScoreActions).click()
+            cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+                .should('not.exist')
+
+            const normalInputActionConditionStates = [
+                {
+                    text: testData.actions.normal,
+                    conditions: [
+                        {
+                            text: testData.conditions.gte5,
+                            match: true,
+                        },
+                        {
+                            text: testData.conditions.lt30,
+                            match: true,
+                        },
+                    ],
+                },
+                {
+                    text: testData.actions.high,
+                    conditions: [
+                        {
+                            text: testData.conditions.gte30,
+                            match: false,
+                        },
+                    ],
+                },
+                {
+                    text: testData.actions.low,
+                    conditions: [
+                        {
+                            text: testData.conditions.lt5,
+                            match: false,
+                        },
+                    ],
+                }
+            ]
+
+            normalInputActionConditionStates.forEach(acs => verifyActionConditionsState(acs))
+
+            util.selectAction(s.trainDialog.actionScorerTextActions, testData.actions.normal)
+            util.selectAction(s.trainDialog.actionScorerTextActions, testData.actions.whatIsNumber)
+
+            // Enter 'Normal' number
+            util.inputText('89')
+            cy.get(s.trainDialog.buttonScoreActions).click()
+            cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+                .should('not.exist')
+
+            const highInputActionConditionStates = [
+                {
+                    text: testData.actions.normal,
+                    conditions: [
+                        {
+                            text: testData.conditions.gte5,
+                            match: true,
+                        },
+                        {
+                            text: testData.conditions.lt30,
+                            match: false,
+                        },
+                    ],
+                },
+                {
+                    text: testData.actions.high,
+                    conditions: [
+                        {
+                            text: testData.conditions.gte30,
+                            match: true,
+                        },
+                    ],
+                },
+                {
+                    text: testData.actions.low,
+                    conditions: [
+                        {
+                            text: testData.conditions.lt5,
+                            match: false,
+                        },
+                    ],
+                }
+            ]
+
+            highInputActionConditionStates.forEach(acs => verifyActionConditionsState(acs))
+
+            util.selectAction(s.trainDialog.actionScorerTextActions, testData.actions.high)
+            util.selectAction(s.trainDialog.actionScorerTextActions, testData.actions.whatIsNumber)
+
+            cy.get(s.trainDialog.buttonSave)
+                .click()
+
+            cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+                .should('not.exist')
+
+            cy.get(s.mergeModal.buttonSaveAsIs)
+                .click()
         })
     })
 })
@@ -236,7 +339,7 @@ type ActionQuality = {
     }[]
 }
 
-function verifyActionState(actionQualities: ActionQuality) {
+function verifyActionConditionsState(actionQualities: ActionQuality) {
     cy.get(s.trainDialog.actionScorerTextActions)
         .contains(actionQualities.text)
         .parents(s.trainDialog.actionScorer.rowField)
