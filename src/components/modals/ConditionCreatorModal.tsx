@@ -157,6 +157,8 @@ const Component: React.FC<Props> = (props) => {
     // If modal has opened (from false to true)
     React.useLayoutEffect(() => {
         if (props.isOpen) {
+            // Reset operator and value
+            setSelectedOperatorOption(equalOperatorOption)
             setNumberValue(0)
         }
     }, [props.isOpen])
@@ -198,6 +200,7 @@ const Component: React.FC<Props> = (props) => {
     return <OF.Modal
         isOpen={props.isOpen}
         containerClassName="cl-modal cl-modal--medium"
+        data-testid="condition-creator-modal-title"
     >
         <div className="cl-modal_header" data-testid="condition-creator-title">
             <span className={OF.FontClassNames.xxLarge}>Create a Condition</span>
@@ -212,12 +215,14 @@ const Component: React.FC<Props> = (props) => {
                         <div className="cl-condition-creator__expression">
                             <OF.Dropdown
                                 label="Entity"
+                                data-testid="condition-creator-modal-dropdown-entity"
                                 selectedKey={selectedEntityOption && selectedEntityOption.key}
                                 options={entityOptions}
                                 onChange={onChangeEntity}
                             />
                             <OF.Dropdown
                                 label="Operator"
+                                data-testid="condition-creator-modal-dropdown-operator"
                                 selectedKey={selectedOperatorOption.key}
                                 disabled={isOperatorDisabled}
                                 options={operatorOptions}
@@ -225,7 +230,7 @@ const Component: React.FC<Props> = (props) => {
                             />
                             {/* Little awkward to checkEnumValueOption here, but do it for type safety */}
                             {(showNumberValue || !selectedEnumValueOption)
-                                ? <div>
+                                ? <div data-testid="condition-creator-modal-dropdown-numbervalue">
                                     <OF.Label>Number</OF.Label>
                                     <OF.SpinButton
                                         value={numberValue.toString()}
@@ -243,6 +248,7 @@ const Component: React.FC<Props> = (props) => {
                                 </div>
                                 : <OF.Dropdown
                                     label="Enum Value"
+                                    data-testid="condition-creator-modal-dropdown-enumvalue"
                                     selectedKey={selectedEnumValueOption.key}
                                     options={enumValueOptions}
                                     onChange={onChangeEnumValueOption}
@@ -256,11 +262,13 @@ const Component: React.FC<Props> = (props) => {
                                 const isActive = isConditionEqual(condition, currentCondition)
 
                                 return <React.Fragment key={conditionalTag.key}>
-                                    <div className="cl-condition-creator__existing-condition">
+                                    <div className="cl-condition-creator__existing-condition"
+                                        data-testid="condition-creator-modal-existing-condition">
                                         {conditionalTag.name}
                                     </div>
 
                                     <OF.DefaultButton
+                                        data-testid="condition-creator-modal-button-use-condition"
                                         onClick={() => onClickExistingCondition(conditionalTag.condition!)}
                                     >
                                         Use Condition
@@ -270,6 +278,7 @@ const Component: React.FC<Props> = (props) => {
                                         {isActive
                                             && <OF.Icon
                                                 className="cl-text--success"
+                                                data-testid="condition-creator-modal-existing-condition-match"
                                                 iconName="Accept"
                                             />}
                                     </div>

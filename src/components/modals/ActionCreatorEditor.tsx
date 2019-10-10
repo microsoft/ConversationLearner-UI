@@ -1351,6 +1351,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 <OF.PrimaryButton
                     text="Add Condition"
                     iconProps={{ iconName: 'Add' }}
+                    data-testid="action-creator-modal-button-add-condition"
                 />
             </div>
         }
