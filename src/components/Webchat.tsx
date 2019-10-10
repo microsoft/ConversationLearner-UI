@@ -3,15 +3,16 @@
  * Licensed under the MIT License.
  */
 import * as React from 'react'
+import * as BotChat from '@conversationlearner/webchat'
+import * as CLM from '@conversationlearner/models'
+import * as BB from 'botbuilder'
+import actions from '../actions'
 import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { State } from '../types'
-import * as BotChat from '@conversationlearner/webchat'
-import * as CLM from '@conversationlearner/models'
 import { BehaviorSubject, Observable, Subscription } from 'rxjs'
-import { Activity, Message } from 'botframework-directlinejs'
-import actions from '../actions'
+import { Message } from 'botframework-directlinejs'
 import { BOT_HOST_NAME, EditDialogType } from '../types/const'
 
 const SUBMIT_KEY = 'submit'
@@ -20,7 +21,7 @@ export function renderActivity(
     activityProps: BotChat.WrappedActivityProps,
     children: React.ReactNode,
     setRef: (div: HTMLDivElement | null) => void,
-    renderSelected: ((activity: Activity) => JSX.Element | null) | null,
+    renderSelected: ((activity: BB.Activity) => React.ReactNode | null) | null,
     editType: EditDialogType,
     shouldRenderHighlight: boolean,
     padding?: number,
@@ -94,7 +95,7 @@ export function renderActivity(
                     {children}
                 </div>
             </div>
-            {activityProps.selected && renderSelected && renderSelected(activityProps.activity)}
+            {activityProps.selected && renderSelected && renderSelected(activityProps.activity as BB.Activity)}
             {clData && clData.validWaitAction !== undefined ?
                 (
                     <svg className="wc-message-downarrow">
@@ -163,7 +164,7 @@ class Webchat extends React.Component<Props> {
             this.behaviorSubject = new BehaviorSubject<any>({});
             this.subscription = this.behaviorSubject.subscribe((value) => {
                 if (value.activity) {
-                    this.props.onSelectActivity(value.activity as Activity)
+                    this.props.onSelectActivity(value.activity as BB.Activity)
                 }
             })
         }
@@ -204,7 +205,7 @@ class Webchat extends React.Component<Props> {
             }
 
             if (this.props.history.length > 0) {
-                botConnection.activity$ = Observable.from(this.props.history).concat(dl.activity$)
+                botConnection.activity$ = Observable.from(this.props.history).concat(dl.activity$) as any
             }
 
             dl.connectionStatus$.subscribe((status) => this.getConversationId(status));
@@ -284,16 +285,16 @@ const mapStateToProps = (state: State, ownProps: any) => {
 export interface ReceivedProps {
     isOpen: boolean,
     app: CLM.AppBase | null,
-    history: Activity[],
+    history: BB.Activity[],
     hideInput: boolean,
     focusInput: boolean,
     // Disable message sent via direct line
     disableDL?: boolean,
-    onSelectActivity: (a: Activity) => void,
-    onPostActivity: (a: Activity) => void,
+    onSelectActivity: (a: BB.Activity) => void,
+    onPostActivity: (a: BB.Activity) => void,
     onScrollChange?: (position: number) => void,
     renderActivity?: (props: BotChat.WrappedActivityProps, children: React.ReactNode, setRef: (div: HTMLDivElement | null) => void) => (JSX.Element | null)
-    // Callback for rendered height of an activity
+    // Called when rendered height of an activity changes
     onActivityHeight?: (index: number, height: number) => void
     renderInput?: () => JSX.Element | null
     // Used to select activity from outside webchat

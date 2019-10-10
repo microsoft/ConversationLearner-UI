@@ -14,7 +14,6 @@ import actions from '../../actions'
 import Webchat, { renderActivity } from '../Webchat'
 import { ActivityHeight } from '../../types/models'
 import { autobind } from 'core-decorators'
-import { Activity } from 'botframework-directlinejs'
 import { State } from '../../types'
 import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
@@ -67,7 +66,7 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
     private sameButtonRef = React.createRef<OF.IButton>()
 
     async componentDidMount() {
-        const numberOfNeededRatings = this.props.validationSet.numRatingsNeeded()
+        const numberOfNeededRatings = this.props.testSet.numRatingsNeeded()
         await Util.setStateAsync(this, { numberOfNeededRatings })
         await this.onChangedDialog()
     }
@@ -192,7 +191,7 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
         }
 
         // Get a random pair that still needs rating
-        const ratingPair = this.props.validationSet.getNeededRating()
+        const ratingPair = this.props.testSet.getNeededRating()
 
         // We're done
         if (!ratingPair) {
@@ -203,8 +202,8 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
         // Generate activities for rating
         const source1 = ratingPair.sourceNames[0]
         const source2 = ratingPair.sourceNames[1]
-        const transcript1 = this.props.validationSet.getTranscript(source1, ratingPair.conversationId)
-        const transcript2 = this.props.validationSet.getTranscript(source2, ratingPair.conversationId)
+        const transcript1 = this.props.testSet.getTranscript(source1, ratingPair.conversationId)
+        const transcript2 = this.props.testSet.getTranscript(source2, ratingPair.conversationId)
         let activities1: BB.Activity[] = []
         let activities2: BB.Activity[] = []
 
@@ -301,7 +300,7 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    onSelectActivity(history: BotChat.Activity[] | undefined, activity: Activity) {
+    onSelectActivity(history: BB.Activity[] | undefined, activity: BB.Activity) {
         if (!history || history.length === 0) {
             return
         }
@@ -467,7 +466,7 @@ const mapStateToProps = (state: State) => {
 
 export interface ReceivedProps {
     app: CLM.AppBase
-    validationSet: Test.ValidationSet
+    testSet: Test.TestSet
     onRate: (ratingPair: Test.RatingPair) => void
     onClose: () => void
 }

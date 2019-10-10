@@ -7,13 +7,13 @@ import * as CLM from '@conversationlearner/models'
 import * as Util from './util'
 import * as DialogUtils from './dialogUtils'
 import * as OBIUtils from './obiUtils'
-import { Activity } from 'botframework-directlinejs'
+import * as BB from 'botbuilder'
 import { SelectionType, User } from '../types'
 import { EditDialogType } from '../types/const';
 
 export async function onInsertAction(
     trainDialog: CLM.TrainDialog,
-    selectedActivity: Activity,
+    selectedActivity: BB.Activity,
     isLastActivity: boolean,
 
     entities: CLM.EntityBase[],
@@ -106,7 +106,7 @@ export async function onInsertAction(
 
 export async function onInsertInput(
     trainDialog: CLM.TrainDialog,
-    selectedActivity: Activity,
+    selectedActivity: BB.Activity,
     inputText: string,
 
     appId: string,
@@ -194,12 +194,13 @@ export async function onInsertInput(
 
 export async function onChangeAction(
     trainDialog: CLM.TrainDialog,
-    selectedActivity: Activity,
+    selectedActivity: BB.Activity,
     trainScorerStep: CLM.TrainScorerStep,
     editType: EditDialogType,
     appId: string,
     entities: CLM.EntityBase[],
     actions: CLM.ActionBase[],
+    lgItems: CLM.LGItem[] | undefined,
     trainDialogReplay: (appId: string, trainDialog: CLM.TrainDialog) => Promise<CLM.TrainDialog>,
     editActionThunkAsync: (appId: string, action: CLM.ActionBase) => Promise<void>
 ) {
@@ -232,24 +233,34 @@ export async function onChangeAction(
             // Substitue entityIds back into import text to build import hash lookup
             const filledEntityIdMap = DialogUtils.filledEntityIdMap(trainScorerStep.input.filledEntities, entities)
             const importText = OBIUtils.importTextWithEntityIds(oldTrainScorerStep.importText, filledEntityIdMap)
-            importHash = Util.hashText(importText)
+            importHash = CLM.hashText(importText)
         }
         // If replacing placeholder action
         else if (CLM.ActionBase.isPlaceholderAPI(replacedAction)) {
             const apiAction = new CLM.ApiAction(replacedAction as any)
-            importHash = Util.hashText(apiAction.name)
+            importHash = CLM.hashText(apiAction.name)
         }
 
         // Attach hash of import text to selected action for future lookups
         if (importHash) {
             const action = actions.find(a => a.actionId === trainScorerStep.labelAction)
             if (action) {
-                // Add new hash to action and save it
+                // Add new hash and lgRef to action and save it
                 const newAction = Util.deepCopy(action)
-                if (!newAction.clientData || !newAction.clientData.importHashes) {
-                    newAction.clientData = { importHashes: []}
+
+                if (!newAction.clientData || !newAction.clientData.actionHashes) {
+                    newAction.clientData = { actionHashes: []}
                 }
-                newAction.clientData.importHashes!.push(importHash)
+                // Look for lgItem by checking hash
+                if (oldTrainScorerStep.importText && lgItems) {
+                    const lgHash = CLM.hashText(oldTrainScorerStep.importText)
+                    const lgItem = lgItems.find(lg => lg.hash === lgHash)
+                    if (lgItem) {
+                        newAction.clientData.lgName = lgItem.lgName
+                    }
+                }
+
+                newAction.clientData.actionHashes!.push(importHash)
                 await editActionThunkAsync(appId, newAction)
 
                 // Test if new lookup can be used on any other imported actions
@@ -266,7 +277,7 @@ export async function onChangeAction(
 
 export async function onChangeExtraction(
     trainDialog: CLM.TrainDialog,
-    selectedActivity: Activity,
+    selectedActivity: BB.Activity,
     textVariations: CLM.TextVariation[],
     editType: EditDialogType,
     appId: string,
@@ -299,7 +310,7 @@ export async function onChangeExtraction(
 
 export async function onDeleteTurn(
     trainDialog: CLM.TrainDialog,
-    selectedActivity: Activity,
+    selectedActivity: BB.Activity,
 
     appId: string,
     entities: CLM.EntityBase[],
@@ -375,7 +386,7 @@ export async function onReplayTrainDialog(
 
 export async function onUpdateActivities(
     newTrainDialog: CLM.TrainDialog,
-    selectedActivity: Activity | null,
+    selectedActivity: BB.Activity | null,
     selectionType: SelectionType,
 
     appId: string,
@@ -428,7 +439,7 @@ export async function onEditTeach(
     args: EditHandlerArgs | undefined,
     tags: string[],
     description: string,
-    editHandler: (trainDialog: CLM.TrainDialog, activity: Activity, args?: EditHandlerArgs) => any,
+    editHandler: (trainDialog: CLM.TrainDialog, activity: BB.Activity, args?: EditHandlerArgs) => any,
     teachSession: CLM.Teach,
     app: CLM.AppBase,
     user: User,
@@ -481,9 +492,9 @@ export async function getOrCreatePlaceholderAPIAction(
     createActionThunkAsync: (appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null> | null
 ): Promise<CLM.ActionBase | undefined> {
     // Get the action if it has been attached to real API call.
-    const apiHash = Util.hashText(placeholderName)
-    let placeholder = actions.find(a => {return a.clientData && a.clientData.importHashes
-        ? (a.clientData.importHashes.find(h => h === apiHash) !== undefined)
+    const apiHash = CLM.hashText(placeholderName)
+    let placeholder = actions.find(a => {return a.clientData && a.clientData.actionHashes
+        ? (a.clientData.actionHashes.find(h => h === apiHash) !== undefined)
         : false
     })
 
@@ -503,7 +514,7 @@ export async function getOrCreatePlaceholderAPIAction(
         const newPlaceholder = CLM.ActionBase.createPlaceholderAPIAction(placeholderName, isTerminal)
 
         // If placeholder was created by import, add hash for future matching
-        newPlaceholder.clientData = { importHashes: [apiHash]}
+        newPlaceholder.clientData = { actionHashes: [apiHash]}
 
         const newAction = await createActionThunkAsync(appId, newPlaceholder)
         if (!newAction) {
@@ -515,7 +526,7 @@ export async function getOrCreatePlaceholderAPIAction(
     return undefined
 }
 
-export function scorerStepFromActivity(trainDialog: CLM.TrainDialog, selectedActivity: Activity): CLM.TrainScorerStep | undefined {
+export function scorerStepFromActivity(trainDialog: CLM.TrainDialog, selectedActivity: BB.Activity): CLM.TrainScorerStep | undefined {
 
     if (!selectedActivity) {
         return undefined

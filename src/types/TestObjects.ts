@@ -15,12 +15,9 @@ export enum ComparisonResultType {
     NO_TRANSCRIPT = 'NOTRANSCRIPT'
 }
 
-export interface ValidationItem {
+export interface TestItem {
     sourceName: string
     conversationId: string
-    // Raw transcript before LG substitution
-    rawTranscript?: BB.Activity[]
-    // Transcript after LG substitution
     transcript?: BB.Activity[]
     ranking?: number
     logDialogId: string | null
@@ -47,54 +44,41 @@ export interface RatingPair {
     result: RatingResult 
 }
 
-export class ValidationSet {
+export class TestSet {
     appId?: string
     fileName?: string
-    items: ValidationItem[]
+    items: TestItem[]
     sourceNames: string[]
     ratingPairs: RatingPair[]
-    lgMap: Map<string, CLM.LGItem>    // <lgName, LGItem>
+    lgItems: CLM.LGItem[]    
     usesLgMap: Map<string, boolean>   // <sourceName, does it use  LG>
 
     private comparisons: SourceComparison[]
     
-    static Create(source?: Partial<ValidationSet>): ValidationSet {
+    static Create(source?: Partial<TestSet>): TestSet {
         let init = Util.deepCopy(source)
-        return new ValidationSet(init)
+        return new TestSet(init)
     }
 
-    static Deserialize(fileText: string): ValidationSet {
+    static Deserialize(fileText: string): TestSet {
 
         const set = JSON.parse(fileText, Util.mapReviver)
-        const validationSet = this.Create(set)
+        const testSet = this.Create(set)
 
-        if (validationSet.items.length === 0) {
+        if (testSet.items.length === 0) {
             throw new Error("No test results found in file")
         }
         /* TODO: Allow for now. 
-        if (validationSet.appId !== this.props.app.appId) {
+        if (testSet.appId !== this.props.app.appId) {
             throw new Error("Loaded results are from a different Model")
         }*/
 
-        // Rehydrate transcripts from rawTranscripts (that have LG refs)
-        validationSet.generateFullTranscripts()
-
-        return validationSet
+        return testSet
     }
 
     // Create blob for saving
     serialize(): Blob {
-        // Make a copy and remove extraneous fields
-        const saveData = Util.deepCopy(this)
-        for (const item of saveData.items) {
-            // Test results won't have raw transcript, so copy to transcript
-            if (!item.rawTranscript) {
-                item.rawTranscript = item.transcript
-            }
-            // Only save raw transcripts (with LG refs)
-            delete item.transcript
-        }
-        return new Blob([JSON.stringify(saveData, Util.mapReplacer)], { type: "text/plain;charset=utf-8" })
+        return new Blob([JSON.stringify(this, Util.mapReplacer)], { type: "text/plain;charset=utf-8" })
     }
 
     // Returns number of unique conversationIds included in set
@@ -124,13 +108,13 @@ export class ValidationSet {
         return item ? item.transcript : undefined
     }
 
-    getItem(sourceName: string, conversationId: string): ValidationItem | undefined {
+    getTestItem(sourceName: string, conversationId: string): TestItem | undefined {
         return this.items
             .find(i => i.sourceName === sourceName
                 && conversationId === i.conversationId)
     }
 
-    getItems(sourceName: string, conversationIds?: string[]): ValidationItem[] {
+    getTestItems(sourceName: string, conversationIds?: string[]): TestItem[] {
         return this.items
             .filter(i => i.sourceName === sourceName
                 && (!conversationIds || conversationIds.includes(i.conversationId)))
@@ -151,38 +135,27 @@ export class ValidationSet {
     }
 
     async addLGFiles(lgFiles: File[]): Promise<void> {
-        this.lgMap = await OBIUtils.lgMapFromLGFiles(lgFiles, this.lgMap)
-
-        // Re-generate transcript files
-        this.generateFullTranscripts()
+        this.lgItems = await OBIUtils.lgMapFromLGFiles(lgFiles, this.lgItems)
     }
 
     async addTranscriptFiles(transcriptFiles: File[]): Promise<void> {
         for (const file of transcriptFiles) {
             let fileContent = await Util.readFileAsync(file)
 
-            // Store both the raw and substituted transcript
-            // Raw one is used for save 
-            const rawTranscript: BB.Activity[] = JSON.parse(fileContent)
-            const transcript = Util.deepCopy(rawTranscript)
-            let transcriptUsesLG = false
-            if (this.lgMap) {
-                transcriptUsesLG = OBIUtils.substituteLG(transcript, this.lgMap)
-            }
+            const transcript: BB.Activity[] = JSON.parse(fileContent)
+            let transcriptUsesLG = OBIUtils.usesLG(transcript)
+            const sourceName = this.sourceName(transcript)
+            const conversationId = this.conversationId(transcript)
 
-            const sourceName = this.sourceName(rawTranscript)
-            const conversationId = this.conversationId(rawTranscript)
-
-            const item: ValidationItem = { 
+            const item: TestItem = { 
                 sourceName: sourceName,
                 conversationId,
                 logDialogId: null, 
                 ranking: undefined,
-                rawTranscript,
                 transcript
             }
 
-            this.addValidationResult(item)
+            this.addTestItem(item)
 
             if (transcriptUsesLG) {
                 this.usesLgMap.set(sourceName, transcriptUsesLG)
@@ -196,7 +169,7 @@ export class ValidationSet {
         }
     }
 
-    addValidationResult(item: ValidationItem): void {
+    addTestItem(item: TestItem): void {
         // Check that is a valid transcript
         if (!item.transcript || item.transcript.length === 0) {
             throw new Error("Transcript has no rounds")
@@ -216,21 +189,7 @@ export class ValidationSet {
         if (!this.sourceNames.includes(item.sourceName)) {
             this.sourceNames.push(item.sourceName)
             this.sourceNames.sort()
-            // Validation results never have LG as they come from logDialogs
-            this.usesLgMap.set(item.sourceName, false)
         }
-    }
-
-    // Add a rating pair result
-    addRatingResult(ratingPair: RatingPair) {
-        // Remove existing rating
-        this.ratingPairs = this.ratingPairs.filter(rp =>
-            !(rp.conversationId === ratingPair.conversationId &&
-            rp.sourceNames[0] === ratingPair.sourceNames[0] &&
-            rp.sourceNames[1] === ratingPair.sourceNames[1]))
-
-        // Add new one
-        this.ratingPairs.push(ratingPair)
     }
 
     compareAll() {
@@ -270,7 +229,7 @@ export class ValidationSet {
                                 })
                             }
                             else {
-                                const result = OBIUtils.areTranscriptsEqual(innerItem.transcript, outerItem.transcript)
+                                const result = OBIUtils.areTranscriptsEqual(innerItem.transcript, outerItem.transcript, true)
                                     ? ComparisonResultType.REPRODUCED 
                                     : ComparisonResultType.CHANGED
 
@@ -347,7 +306,51 @@ export class ValidationSet {
     numRatingsNeeded(): number {
         return this.ratingPairs.filter(rp => rp.result === RatingResult.UNKNOWN).length
     }
+    
+    getRating(pivotSource: string, source: string, conversationId: string): RatingResult {
+        // Lookup is always alphabetical
+        const sourceNames = [pivotSource, source].sort()
+        const ratingPair = this.ratingPairs.find(rp => 
+            rp.conversationId === conversationId
+            && rp.sourceNames[0] === sourceNames[0]
+            && rp.sourceNames[1] === sourceNames[1]) 
+        return ratingPair ? ratingPair.result : RatingResult.UNKNOWN
+    }
 
+    // Add a rating pair result
+    addRatingResult(ratingPair: RatingPair) {
+        // Remove existing rating
+        this.ratingPairs = this.ratingPairs.filter(rp =>
+            !(rp.conversationId === ratingPair.conversationId &&
+            rp.sourceNames[0] === ratingPair.sourceNames[0] &&
+            rp.sourceNames[1] === ratingPair.sourceNames[1]))
+
+        // Add new one
+        this.ratingPairs.push(ratingPair)
+/*
+        // Check if other sources share the same transcript
+        // If so we can set that rating too
+        const sameAsSource0 = this.ratingPairs
+                .filter(rp => 
+                    rp.conversationId === ratingPair.conversationId
+                    && rp.sourceNames.includes[ratingPair.sourceNames[0]]
+                    && !rp.sourceNames.includes[ratingPair.sourceNames[1]]
+                    && rp.result === RatingResult.SAME)
+                .map(rp => rp.sourceNames[1])
+
+        const sameAsSource1 = this.ratingPairs
+            .filter(rp => 
+                rp.conversationId === ratingPair.conversationId
+                && rp.sourceNames.includes[ratingPair.sourceNames[1]]
+                && !rp.sourceNames.includes[ratingPair.sourceNames[0]]
+                && rp.result === RatingResult.SAME)
+            .map(rp => rp.sourceNames[0])
+
+        // if A=B and A=C then B=C)
+        sameAsSource0.
+*/
+    }
+        
     // Converts pairwise ratings between transcripts to a ranking between all (>2 transcripts)
     calcRankings(): void {
 
@@ -404,16 +407,6 @@ export class ValidationSet {
                 .map(rp => rp.conversationId)
     }
 
-    getRating(pivotSource: string, source: string, conversationId: string): RatingResult {
-        // Lookup is always alphabetical
-        const sourceNames = [pivotSource, source].sort()
-        const ratingPair = this.ratingPairs.find(rp => 
-            rp.conversationId === conversationId
-            && rp.sourceNames[0] === sourceNames[0]
-            && rp.sourceNames[1] === sourceNames[1]) 
-        return ratingPair ? ratingPair.result : RatingResult.UNKNOWN
-    }
-
     // Return a random pair of sources needing to be rated
     getNeededRating(): RatingPair | undefined {
 
@@ -451,17 +444,7 @@ export class ValidationSet {
         return transcript[0].channelId
     }
 
-    // Re-generate transcript files from rawTranscripts and lgMap
-    private generateFullTranscripts(): void {
-        for (const item of this.items) {
-            item.transcript = Util.deepCopy(item.rawTranscript)
-            if (item.transcript && this.lgMap) {
-                OBIUtils.substituteLG(item.transcript, this.lgMap)
-            }
-        }
-    }
-
-    private constructor(init?: Partial<ValidationSet>) {
+    private constructor(init?: Partial<TestSet>) {
         Object.assign(this, init)
         if (!this.sourceNames) {
             this.sourceNames = []
@@ -475,8 +458,8 @@ export class ValidationSet {
         if (!this.ratingPairs) {
             this.ratingPairs = []
         }
-        if (!this.lgMap) {
-            this.lgMap = new Map<string, CLM.LGItem>()
+        if (!this.lgItems) {
+            this.lgItems = []
         }
         if (!this.usesLgMap) {
             this.usesLgMap = new Map<string, boolean>()

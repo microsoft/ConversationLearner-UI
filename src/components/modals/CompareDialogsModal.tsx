@@ -18,7 +18,6 @@ import { ActivityHeight } from '../../types/models'
 import { autobind } from 'core-decorators';
 import { withRouter } from 'react-router-dom'
 import { RouteComponentProps } from 'react-router'
-import { Activity } from 'botframework-directlinejs'
 import { State } from '../../types'
 import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
@@ -33,7 +32,7 @@ interface ComponentState {
     webchatKey: number
     activityMap: {[key: string]: BB.Activity[]}
     rankMap: {[key: string]: number | undefined}
-    sourceItemMap: {[key: string]: Test.ValidationItem[]} | undefined
+    sourceItemMap: {[key: string]: Test.TestItem[]} | undefined
     selectedActivityIndex: number | null
     scrollPosition: number | null
     logDialogId: string | undefined
@@ -66,9 +65,9 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
     async componentDidMount() {
 
         // Gather source items for for the requested conversations
-        const sourceItemMap = new Map<string, Test.ValidationItem[]>()
-        for (const sourceName of this.props.validationSet.sourceNames) {
-            const sourceItems = this.props.validationSet.getItems(sourceName, this.props.conversationIds)
+        const sourceItemMap = new Map<string, Test.TestItem[]>()
+        for (const sourceName of this.props.testSet.sourceNames) {
+            const sourceItems = this.props.testSet.getTestItems(sourceName, this.props.conversationIds)
             sourceItemMap[sourceName] = sourceItems
         }
 
@@ -187,20 +186,20 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
         // Baseline rank is determined by pivot item (if provided)
         let baseRank = 0
         if (this.props.conversationPivot) {
-            const pivotItem = this.props.validationSet.getItem(this.props.conversationPivot, conversationId)
+            const pivotItem = this.props.testSet.getTestItem(this.props.conversationPivot, conversationId)
             if (pivotItem && pivotItem.ranking) {
                 baseRank = pivotItem.ranking
             }
         }
 
         let minActivities: number = 0
-        for (let sourceName of this.props.validationSet.sourceNames) {
+        for (let sourceName of this.props.testSet.sourceNames) {
 
-            const unratedConversationIds = this.props.validationSet.unratedConversationIds(sourceName, this.props.conversationPivot)
-            const validationItems = this.state.sourceItemMap[sourceName]
+            const unratedConversationIds = this.props.testSet.unratedConversationIds(sourceName, this.props.conversationPivot)
+            const testItems = this.state.sourceItemMap[sourceName]
 
-            if (validationItems) {
-                const curItem = validationItems.find(i => i.conversationId === conversationId)
+            if (testItems) {
+                const curItem = testItems.find(i => i.conversationId === conversationId)
                 if (curItem) {
                     const curTranscript = curItem.transcript
                     // If I have a transcript for the given conversationId, generate actitityMap
@@ -225,7 +224,7 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
                         rankMap[sourceName] = undefined
                     }
                     // Compute rank with pivot offset (doesn't apply when only one source)
-                    else if (this.props.validationSet.sourceNames.length > 1) {
+                    else if (this.props.testSet.sourceNames.length > 1) {
                         // Will set rank of base source to 0 and offset other from the base
                         rankMap[sourceName] = curItem.ranking !== undefined ? curItem.ranking - baseRank : undefined
                     }
@@ -290,7 +289,7 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    onSelectActivity(activities: BotChat.Activity[] | undefined, activity: Activity) {
+    onSelectActivity(activities: BB.Activity[] | undefined, activity: BB.Activity) {
         if (!activities || activities.length === 0) {
             return
         }
@@ -331,7 +330,7 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
     getRenderData(): RenderData[] {
 
         const renderData: RenderData[] = []
-        this.props.validationSet.sourceNames.map(sourceName => {
+        this.props.testSet.sourceNames.map(sourceName => {
             const activities = this.state.activityMap[sourceName]
             const ranking = this.state.rankMap[sourceName]
             renderData.push({
@@ -460,7 +459,7 @@ const mapStateToProps = (state: State) => {
 
 export interface ReceivedProps {
     app: CLM.AppBase
-    validationSet: Test.ValidationSet
+    testSet: Test.TestSet
     conversationIds: string[]
     conversationPivot?: string
     onClose: () => void
