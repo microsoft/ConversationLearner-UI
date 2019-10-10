@@ -123,7 +123,7 @@ export const convertConditionToConditionalTag = (condition: CLM.Condition, entit
         name = getValueConditionName(entity, condition)
     }
 
-    const key = Util.hashText(name)
+    const key = CLM.hashText(name)
     conditionalTag = {
         key,
         name,
