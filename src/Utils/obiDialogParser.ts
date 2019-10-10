@@ -22,7 +22,7 @@ enum OBIRuleType {
 }
 
 export interface ObiDialogParserResult {
-    luMap: Map<string, string[]>
+    luMap: { [key: string]: string[] }
     lgItems: CLM.LGItem[],
     trainDialogs: CLM.TrainDialog[]
     warnings: string[]
@@ -34,7 +34,7 @@ export class ObiDialogParser {
     private actions: CLM.ActionBase[] = []
     private entities: CLM.EntityBase[] = []
     private dialogs: OBITypes.OBIDialog[]
-    private luMap: Map<string, string[]>
+    private luMap: { [key: string]: string[] }
     private warnings: string[]
     private createActionThunkAsync: (appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null>
     private createEntityThunkAsync: (appId: string, entity: CLM.EntityBase) => Promise<CLM.EntityBase | null>
@@ -56,7 +56,7 @@ export class ObiDialogParser {
     async parse(files: File[]): Promise<ObiDialogParserResult> {
 
         const lgItems: CLM.LGItem[] = []
-        this.luMap = new Map()
+        this.luMap = {}
         this.dialogs = []
         this.warnings = []
 
@@ -101,12 +101,12 @@ export class ObiDialogParser {
         } 
     }
 
-    private addToLUMap(text: string, luMap: Map<string, string[]>): any {
+    private addToLUMap(text: string, luMap: { [key: string]: string[] }): any {
         const keys = text.split('##')
         for (const key of keys) {
             if (!key.startsWith(">")) {
                 const inputs = key.split('- ').map(i => i.trim())
-                luMap.set(inputs[0], inputs.slice(1))
+                luMap[inputs[0]] = inputs.slice(1)
             }
         }
         return luMap
@@ -298,7 +298,7 @@ export class ObiDialogParser {
     }
 
     private getTextVariations(intentName: string) {
-        let userInputs = this.luMap.get(intentName)
+        let userInputs = this.luMap[intentName]
         if (!userInputs) {
             throw new Error(`Intent name ${intentName} undefined`)
         }
