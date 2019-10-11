@@ -308,47 +308,104 @@ export class TestSet {
     }
     
     getRating(pivotSource: string, source: string, conversationId: string): RatingResult {
-        // Lookup is always alphabetical
-        const sourceNames = [pivotSource, source].sort()
-        const ratingPair = this.ratingPairs.find(rp => 
-            rp.conversationId === conversationId
-            && rp.sourceNames[0] === sourceNames[0]
-            && rp.sourceNames[1] === sourceNames[1]) 
+        const ratingPair = this.getRatingPair(pivotSource, source, conversationId)
         return ratingPair ? ratingPair.result : RatingResult.UNKNOWN
     }
 
+    getRatingPair(pivotSource: string, source: string, conversationId: string): RatingPair | undefined {
+        // Lookup is always alphabetical
+        const sourceNames = [pivotSource, source].sort()
+        return this.ratingPairs.find(rp => 
+            rp.conversationId === conversationId
+            && rp.sourceNames[0] === sourceNames[0]
+            && rp.sourceNames[1] === sourceNames[1]) 
+    }
+
     // Add a rating pair result
-    addRatingResult(ratingPair: RatingPair) {
+    addRatingResult(pairAB: RatingPair) {
+
+        const sourceA = pairAB.sourceNames[0]
+        const sourceB = pairAB.sourceNames[1]
+        const conversationId = pairAB.conversationId
+
         // Remove existing rating
         this.ratingPairs = this.ratingPairs.filter(rp =>
-            !(rp.conversationId === ratingPair.conversationId &&
-            rp.sourceNames[0] === ratingPair.sourceNames[0] &&
-            rp.sourceNames[1] === ratingPair.sourceNames[1]))
+            !(rp.conversationId === pairAB.conversationId &&
+            rp.sourceNames[0] === sourceA &&
+            rp.sourceNames[1] === sourceB))
 
         // Add new one
-        this.ratingPairs.push(ratingPair)
-/*
-        // Check if other sources share the same transcript
-        // If so we can set that rating too
-        const sameAsSource0 = this.ratingPairs
-                .filter(rp => 
-                    rp.conversationId === ratingPair.conversationId
-                    && rp.sourceNames.includes[ratingPair.sourceNames[0]]
-                    && !rp.sourceNames.includes[ratingPair.sourceNames[1]]
-                    && rp.result === RatingResult.SAME)
-                .map(rp => rp.sourceNames[1])
+        this.ratingPairs.push(pairAB)
 
-        const sameAsSource1 = this.ratingPairs
-            .filter(rp => 
-                rp.conversationId === ratingPair.conversationId
-                && rp.sourceNames.includes[ratingPair.sourceNames[1]]
-                && !rp.sourceNames.includes[ratingPair.sourceNames[0]]
-                && rp.result === RatingResult.SAME)
-            .map(rp => rp.sourceNames[0])
+        // Now apply any transient relationships to reduce
+        // number of ratings that are needed
+        // Get list of all rating pairs for this conversation
+        const checkPairs = this.ratingPairs.filter(rp => rp.conversationId === pairAB.conversationId)
 
-        // if A=B and A=C then B=C)
-        sameAsSource0.
-*/
+        checkPairs.forEach(rp => {
+
+            let sourceC: string | undefined
+
+            // Find items matched to A or B (and not both)
+            if (rp.sourceNames.includes(sourceA) && !rp.sourceNames[1].includes(sourceB)) {
+                sourceC = rp.sourceNames[1]
+            }
+            else if (!rp.sourceNames.includes(sourceA) && rp.sourceNames[1].includes(sourceB)) {
+                sourceC = rp.sourceNames[0]
+            }
+
+            // If one is found
+            if (sourceC) {
+                const pairAC = this.getRatingPair(sourceA, sourceC, conversationId)
+                const pairBC = this.getRatingPair(sourceB, sourceC, conversationId)
+
+                if (pairAC && pairBC) {
+
+                    // If A=B and A=C then B=C
+                    if (pairAB.result === RatingResult.SAME && pairAC.result === RatingResult.SAME) {
+                        pairBC.result = RatingResult.SAME
+                    }
+                    // If A=B and B=C then A=C
+                    if (pairAB.result === RatingResult.SAME && pairBC.result === RatingResult.SAME) {
+                        pairAC.result = RatingResult.SAME
+                    }
+
+                    const betterAB = this.whichIsBetter(sourceA, sourceB, conversationId)
+                    const betterAC = this.whichIsBetter(sourceA, sourceC, conversationId)
+                    const betterBC = this.whichIsBetter(sourceB, sourceC, conversationId)
+
+                    // If A>B and B=C then A>C
+                    if (betterAB === sourceA && pairBC.result === RatingResult.SAME) {
+                        this.setFirstIsBetter(sourceA, sourceC, conversationId)
+                    }
+
+                    // If A<B and B=C then A<C 
+                    if (betterAB === sourceB && pairBC.result === RatingResult.SAME) {
+                        this.setFirstIsBetter(sourceC, sourceA, conversationId)
+                    }
+
+                    // CAB: If A>B and C>A than C>B
+                    if (betterAB === sourceA && betterAC === sourceC) {
+                        this.setFirstIsBetter(sourceC, sourceB, conversationId)
+                    }
+
+                    // ABC: If A>B and B>C than A>C
+                    if (betterAB === sourceA && betterBC === sourceB) {
+                        this.setFirstIsBetter(sourceA, sourceC, conversationId)
+                    }
+
+                    // BAC: If B>A and A>C than B>C
+                    if (betterAB === sourceB && betterAC === sourceA) {
+                        this.setFirstIsBetter(sourceB, sourceC, conversationId)
+                    }
+
+                    // CBA: If B>A and C>B than C>A
+                    if (betterAB === sourceB && betterBC === sourceC) {
+                        this.setFirstIsBetter(sourceC, sourceA, conversationId)
+                    }
+                }
+            }
+        })
     }
         
     // Converts pairwise ratings between transcripts to a ranking between all (>2 transcripts)
@@ -442,6 +499,33 @@ export class TestSet {
             throw new Error("Transcript does not have a channelId")
         }
         return transcript[0].channelId
+    }
+
+    // Return sourceName of better source (if there is a better one)
+    whichIsBetter(better: string, worse: string, conversationId: string): string | null {
+        const ratingPair = this.getRatingPair(better, worse, conversationId)
+        if (ratingPair) {
+            if (ratingPair.result === RatingResult.FIRST) { 
+                return ratingPair.sourceNames[0]
+            }   
+            else if (ratingPair.result === RatingResult.SECOND) { 
+                return ratingPair.sourceNames[1]
+            }
+        }
+        return null
+    }
+
+    // Update rating pairs to indicate one source is better than another
+    setFirstIsBetter(better: string, worse: string, conversationId: string) {
+        const ratingPair = this.getRatingPair(better, worse, conversationId)
+        if (ratingPair) {
+            if (better.localeCompare(worse) <= 0)  {
+                ratingPair.result = RatingResult.FIRST
+            }
+            else {
+                ratingPair.result = RatingResult.SECOND
+            }
+        }
     }
 
     private constructor(init?: Partial<TestSet>) {
