@@ -40,7 +40,11 @@ interface IRenderableColumn extends OF.IColumn {
     render: (actionForRender: ActionForRender, component: ActionScorer, index: number) => React.ReactNode
 }
 
-const isConditionTrue = (condition: CLM.Condition, memory: CLM.Memory): boolean => {
+const findNumberFromMemory = (memory: CLM.Memory, isMultivalue: boolean): number | undefined => {
+    if (isMultivalue) {
+        return memory.entityValues.length
+    }
+
     const valueString: string | undefined = memory
         && memory.entityValues[0]
         && (memory.entityValues[0].resolution ? true : undefined)
@@ -50,15 +54,19 @@ const isConditionTrue = (condition: CLM.Condition, memory: CLM.Memory): boolean 
         ? parseInt(valueString)
         : undefined
 
+    return value
+}
+
+const isValueConditionTrue = (condition: CLM.Condition, numberValue: number): boolean => {
     let isTrue = false
 
-    if (value && condition.value) {
-        isTrue = (condition.condition === CLM.ConditionType.EQUAL && value == condition.value)
-            || (condition.condition === CLM.ConditionType.NOT_EQUAL && value != condition.value)
-            || (condition.condition === CLM.ConditionType.GREATER_THAN && value > condition.value)
-            || (condition.condition === CLM.ConditionType.GREATER_THAN_OR_EQUAL && value >= condition.value)
-            || (condition.condition === CLM.ConditionType.LESS_THAN && value < condition.value)
-            || (condition.condition === CLM.ConditionType.LESS_THEN_OR_EQUAL && value <= condition.value)
+    if (condition.value) {
+        isTrue = (condition.condition === CLM.ConditionType.EQUAL && numberValue == condition.value)
+            || (condition.condition === CLM.ConditionType.NOT_EQUAL && numberValue != condition.value)
+            || (condition.condition === CLM.ConditionType.GREATER_THAN && numberValue > condition.value)
+            || (condition.condition === CLM.ConditionType.GREATER_THAN_OR_EQUAL && numberValue >= condition.value)
+            || (condition.condition === CLM.ConditionType.LESS_THAN && numberValue < condition.value)
+            || (condition.condition === CLM.ConditionType.LESS_THEN_OR_EQUAL && numberValue <= condition.value)
     }
 
     return isTrue
@@ -597,7 +605,10 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                 && memory.entityValues[0]
                 && memory.entityValues[0].enumValueId === condition.valueId
 
-            const value = enumValue ? enumValue.enumValue : "NOT FOUND"
+            const value = enumValue
+                ? enumValue.enumValue
+                : "NOT FOUND"
+
             return {
                 match,
                 name: `${entity.entityName} == ${value}`
@@ -606,9 +617,13 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         // If ValueCondition
         else if (condition.value) {
             const name = getValueConditionName(entity, condition)
-            const match = memory
-                ? isConditionTrue(condition, memory)
-                : false
+            let match = false
+            if (memory) {
+                const numberValue = findNumberFromMemory(memory, entity.isMultivalue)
+                if (numberValue) {
+                    match = isValueConditionTrue(condition, numberValue)
+                }
+            }
 
             return {
                 match,

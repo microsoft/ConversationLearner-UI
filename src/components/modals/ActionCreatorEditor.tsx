@@ -172,13 +172,33 @@ const convertEntityToConditionalTags = (entity: CLM.EntityBase, expand = true): 
 }
 
 // Entities that can be chosen for required / blocking
-const conditionalEntityTags = (entities: CLM.EntityBase[]): IConditionalTag[] => {
-    return entities
+const conditionalEntityTags = (entities: CLM.EntityBase[], actions: CLM.ActionBase[]): IConditionalTag[] => {
+    // Might have duplicates since different actions can have same conditions
+    const actionConditionTags = actions
+        .map(a => [...a.requiredConditions, ...a.negativeConditions])
+        .reduce((a, b) => [...a, ...b], [])
+        .map(c => convertConditionToConditionalTag(c, entities))
+
+    const entityTags = entities
         // Ignore resolvers and negative entities
         .filter(e => !e.doNotMemorize && !e.positiveId)
         // Convert each entity to condition tag
         .map(e => convertEntityToConditionalTags(e))
         .reduce((a, b) => [...a, ...b], [])
+
+    const uniqueConditionTags = [
+        ...entityTags,
+        ...actionConditionTags,
+    ].reduce<IConditionalTag[]>((conditions, condition) => {
+        const isConditionDuplicate = conditions.some(c => c.key === condition.key)
+        if (!isConditionDuplicate) {
+            conditions.push(condition)
+        }
+
+        return conditions
+    }, [])
+
+    return uniqueConditionTags
 }
 
 export const isConditionEqual = (conditionA: CLM.Condition, conditionB: CLM.Condition): boolean => {
@@ -391,7 +411,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     }
 
     initProps(): ComponentState {
-        const { entities, botInfo } = this.props
+        const { actions, entities, botInfo } = this.props
         const apiOptions = botInfo.callbacks.map<OF.IDropdownOption>(convertCallbackToOption)
         const cardOptions = botInfo.templates.map<OF.IDropdownOption>(convertTemplateToOption)
         const entityOptions = entities
@@ -404,7 +424,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             apiOptions,
             cardOptions,
             availableExpectedEntityTags: availableExpectedEntityTags(entities),
-            availableConditionalTags: conditionalEntityTags(entities),
+            availableConditionalTags: conditionalEntityTags(entities, actions),
             isEditing: !!this.props.action
         }
     }
@@ -428,7 +448,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     newState = {
                         ...newState,
                         availableExpectedEntityTags: availableExpectedEntityTags(this.props.entities),
-                        availableConditionalTags: conditionalEntityTags(this.props.entities),
+                        availableConditionalTags: conditionalEntityTags(this.props.entities, this.props.actions),
                     }
                 }
 
