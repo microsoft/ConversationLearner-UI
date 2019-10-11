@@ -5,14 +5,14 @@
 import * as React from 'react';
 import * as ActionPayloadRenderers from '../actionPayloadRenderers'
 import * as CLM from '@conversationlearner/models'
-import * as OF from 'office-ui-fabric-react';
+import * as OF from 'office-ui-fabric-react'
 import * as Util from '../../Utils/util'
 import * as DialogEditing from '../../Utils/dialogEditing'
 import actions from '../../actions'
 import ConfirmCancelModal from './ConfirmCancelModal'
 import actionTypeRenderer from '../ActionTypeRenderer'
 import EditApiPlaceholder from '../modals/EditApiPlaceholder'
-import ActionCreatorEditor, { getValueConditionName } from './ActionCreatorEditor'
+import ActionCreatorEditor from './ActionCreatorEditor'
 import AdaptiveCardViewer, { getRawTemplateText } from './AdaptiveCardViewer/AdaptiveCardViewer'
 import { ImportedAction } from '../../types/models'
 import { compareTwoStrings } from 'string-similarity'
@@ -25,6 +25,7 @@ import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../react-intl-messages'
 import './ActionScorer.css'
 import { autobind } from 'core-decorators';
+import { getValueConditionName } from '../../Utils/actionCondition'
 
 const MISSING_ACTION = 'missing_action'
 

@@ -25,7 +25,7 @@ import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { FeatureStrings, State } from '../../types'
-import { REPROMPT_SELF, conditionDisplay } from '../../types/const'
+import { REPROMPT_SELF } from '../../types/const'
 import { CLTagItem, ICLPickerItemProps } from './CLTagItem'
 import { withRouter } from 'react-router-dom'
 import { RouteComponentProps } from 'react-router'
@@ -34,6 +34,7 @@ import { FM } from '../../react-intl-messages'
 import './ActionCreatorEditor.css'
 import { autobind } from 'core-decorators';
 import { TagItemSuggestion } from 'office-ui-fabric-react'
+import { IConditionalTag, getEnumConditionName, convertConditionToConditionalTag, isConditionEqual } from 'src/Utils/actionCondition'
 
 const TEXT_SLOT = '#TEXT_SLOT#'
 
@@ -85,55 +86,6 @@ const convertEntityIdsToTags = (ids: string[], entities: CLM.EntityBase[], expan
         .filter(e => ids.some(id => id === e.entityId))
         .map(e => convertEntityToConditionalTags(e, expand))
         .reduce((a, b) => [...a, ...b], [])
-}
-
-export const getEnumConditionName = (entity: CLM.EntityBase, enumValue: CLM.EnumValue): string => {
-    return `${entity.entityName} = ${enumValue.enumValue}`
-}
-
-export const getValueConditionName = (entity: CLM.EntityBase, condition: CLM.Condition): string => {
-    return `${entity.entityName} ${conditionDisplay[condition.condition]} ${condition.value}`
-}
-
-export const convertConditionToConditionalTag = (condition: CLM.Condition, entities: CLM.EntityBase[]): IConditionalTag => {
-    const entity = entities.find(e => e.entityId === condition.entityId)
-    if (!entity) {
-        throw new Error(`Condition refers to non-existent Entity ${condition.entityId}`)
-    }
-
-    let conditionalTag: IConditionalTag
-    if (entity.entityType === CLM.EntityType.ENUM) {
-        if (!entity.enumValues) {
-            throw new Error(`Condition refers to Entity without Enums ${entity.entityName}`)
-        }
-
-        const enumValueId = condition.valueId
-        if (!enumValueId) {
-            throw new Error(`Condition refers to enum entity, but condition did not have enum value id.`)
-        }
-        const enumValue = entity.enumValues.find(e => e.enumValueId === enumValueId)
-        if (!enumValue) {
-            throw new Error(`Condition refers to non-existent EnumValue: ${enumValueId}`)
-        }
-
-        const name = getEnumConditionName(entity, enumValue)
-        conditionalTag = {
-            key: enumValue.enumValueId!,
-            name,
-            condition,
-        }
-    }
-    else {
-        const name = getValueConditionName(entity, condition)
-        const key = CLM.hashText(name)
-        conditionalTag = {
-            key,
-            name,
-            condition,
-        }
-    }
-
-    return conditionalTag
 }
 
 /**
@@ -199,12 +151,6 @@ const conditionalEntityTags = (entities: CLM.EntityBase[], actions: CLM.ActionBa
     return uniqueConditionTags
 }
 
-export const isConditionEqual = (conditionA: CLM.Condition, conditionB: CLM.Condition): boolean => {
-    return conditionA.entityId === conditionB.entityId
-        && conditionA.condition === conditionB.condition
-        && conditionA.valueId === conditionB.valueId
-        && conditionA.value === conditionB.value
-}
 
 const getUniqueConditions = (actions: CLM.ActionBase[]): CLM.Condition[] => {
     const allConditions = actions
@@ -312,9 +258,7 @@ const actionTypeOptions = (Object.values(CLM.ActionTypes) as string[])
 
 type SlateValueMap = { [slot: string]: ActionPayloadEditor.SlateValue }
 
-interface IConditionalTag extends OF.ITag {
-    condition: CLM.Condition | null
-}
+
 
 interface ComponentState {
     entityOptions: OF.IDropdownOption[]

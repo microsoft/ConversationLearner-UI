@@ -19,7 +19,7 @@ import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../react-intl-messages'
 import './ActionDetailsList.css'
 import { autobind } from 'core-decorators'
-import { getValueConditionName } from './modals/ActionCreatorEditor'
+import { getValueConditionName } from '../Utils/actionCondition'
 
 interface ComponentState {
     columns: IRenderableColumn[]

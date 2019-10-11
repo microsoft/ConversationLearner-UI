@@ -1,0 +1,75 @@
+/**
+ * Copyright (c) Microsoft Corporation. All rights reserved.
+ * Licensed under the MIT License.
+ */
+import * as CLM from '@conversationlearner/models'
+import * as OF from 'office-ui-fabric-react'
+
+export interface IConditionalTag extends OF.ITag {
+    condition: CLM.Condition | null
+}
+
+export const conditionDisplay: Record<CLM.ConditionType, string> = {
+    [CLM.ConditionType.EQUAL]: '==',
+    [CLM.ConditionType.NOT_EQUAL]: '!=',
+    [CLM.ConditionType.GREATER_THAN]: '>',
+    [CLM.ConditionType.GREATER_THAN_OR_EQUAL]: '>=',
+    [CLM.ConditionType.LESS_THAN]: '<',
+    [CLM.ConditionType.LESS_THEN_OR_EQUAL]: '<=',
+}
+
+export const getEnumConditionName = (entity: CLM.EntityBase, enumValue: CLM.EnumValue): string => {
+    return `${entity.entityName} == ${enumValue.enumValue}`
+}
+
+export const getValueConditionName = (entity: CLM.EntityBase, condition: CLM.Condition): string => {
+    return `${entity.entityName} ${conditionDisplay[condition.condition]} ${condition.value}`
+}
+
+export const convertConditionToConditionalTag = (condition: CLM.Condition, entities: CLM.EntityBase[]): IConditionalTag => {
+    const entity = entities.find(e => e.entityId === condition.entityId)
+    if (!entity) {
+        throw new Error(`Condition refers to non-existent Entity ${condition.entityId}`)
+    }
+
+    let conditionalTag: IConditionalTag
+    if (entity.entityType === CLM.EntityType.ENUM) {
+        if (!entity.enumValues) {
+            throw new Error(`Condition refers to Entity without Enums ${entity.entityName}`)
+        }
+
+        const enumValueId = condition.valueId
+        if (!enumValueId) {
+            throw new Error(`Condition refers to enum entity, but condition did not have enum value id.`)
+        }
+        const enumValue = entity.enumValues.find(e => e.enumValueId === enumValueId)
+        if (!enumValue) {
+            throw new Error(`Condition refers to non-existent EnumValue: ${enumValueId}`)
+        }
+
+        const name = getEnumConditionName(entity, enumValue)
+        conditionalTag = {
+            key: enumValue.enumValueId!,
+            name,
+            condition,
+        }
+    }
+    else {
+        const name = getValueConditionName(entity, condition)
+        const key = CLM.hashText(name)
+        conditionalTag = {
+            key,
+            name,
+            condition,
+        }
+    }
+
+    return conditionalTag
+}
+
+export const isConditionEqual = (conditionA: CLM.Condition, conditionB: CLM.Condition): boolean => {
+    return conditionA.entityId === conditionB.entityId
+        && conditionA.condition === conditionB.condition
+        && conditionA.valueId === conditionB.valueId
+        && conditionA.value === conditionB.value
+}

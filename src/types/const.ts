@@ -2,8 +2,6 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
-import * as CLM from '@conversationlearner/models'
-
 export enum ErrorType {
     Error,
     Warning
@@ -64,12 +62,3 @@ export enum FeatureStrings {
 }
 
 export const fromLogTag = 'from-log'
-
-export const conditionDisplay: Record<CLM.ConditionType, string> = {
-    [CLM.ConditionType.EQUAL]: '==',
-    [CLM.ConditionType.NOT_EQUAL]: '!=',
-    [CLM.ConditionType.GREATER_THAN]: '>',
-    [CLM.ConditionType.GREATER_THAN_OR_EQUAL]: '>=',
-    [CLM.ConditionType.LESS_THAN]: '<',
-    [CLM.ConditionType.LESS_THEN_OR_EQUAL]: '<=',
-}

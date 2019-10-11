@@ -7,8 +7,7 @@ import { FM } from '../../react-intl-messages'
 import './ConditionCreatorModal.css'
 import { Position } from 'office-ui-fabric-react/lib/utilities/positioning'
 import { PreBuilts } from 'src/types'
-import { conditionDisplay } from '../../types/const'
-import { convertConditionToConditionalTag, isConditionEqual } from './ActionCreatorEditor'
+import { conditionDisplay, convertConditionToConditionalTag, isConditionEqual } from '../../Utils/actionCondition'
 
 const entityIsAllowedInCondition = (entity: CLM.EntityBase): boolean => {
     if (entity.entityType == CLM.EntityType.ENUM) {
