@@ -21,6 +21,10 @@ const entityIsAllowedInCondition = (entity: CLM.EntityBase): boolean => {
         return true
     }
 
+    if (entity.isMultivalue === true) {
+        return true
+    }
+
     return false
 }
 
