@@ -502,7 +502,11 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         if (sourceTrainDialogId) {
                             await ((this.props.trainDialogReplaceThunkAsync(this.props.app.appId, sourceTrainDialogId, newTrainDialog) as any) as Promise<void>)
                             // Grab the replaced version
-                            newTrainDialog = this.props.trainDialogs.find(td => td.trainDialogId === sourceTrainDialogId)!
+                            const updatedTrainDialog = this.props.trainDialogs.find(td => td.trainDialogId === sourceTrainDialogId)
+                            if (!updatedTrainDialog) {
+                                throw new Error(`Unexpected missing TrainDialog ${sourceTrainDialogId}`)
+                            }
+                            newTrainDialog = updatedTrainDialog
                         }
 
                         await this.handlePotentialMerge(newTrainDialog, matchedTrainDialog)
