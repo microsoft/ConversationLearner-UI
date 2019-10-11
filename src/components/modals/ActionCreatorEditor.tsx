@@ -540,11 +540,11 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                         return [...entities, ...newEntities.filter(ne => !entities.some(e => e.key === ne.key))]
                     }, [])
 
-                const requiredEntityTags = convertEntityIdsToTags(action.requiredEntities, this.props.entities, false)
+                const requiredEntityOrConditionTags = convertEntityIdsToTags(action.requiredEntities, this.props.entities, false)
                     .filter(t => !requiredEntityTagsFromPayload.some(tag => tag.key === t.key))
 
                 if (action.requiredConditions) {
-                    requiredEntityTags.push(...convertConditionsToTags(action.requiredConditions, prevProps.entities))
+                    requiredEntityOrConditionTags.push(...convertConditionsToTags(action.requiredConditions, prevProps.entities))
                 }
 
                 if (action.negativeConditions) {
@@ -563,7 +563,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     expectedEntityTags,
                     negativeEntityTags,
                     requiredEntityTagsFromPayload,
-                    requiredEntityOrConditionTags: requiredEntityTags,
+                    requiredEntityOrConditionTags,
                     isTerminal: action.isTerminal,
                     reprompt: action.repromptActionId !== undefined,
                     isEntryNode: action.isEntryNode,
@@ -1303,7 +1303,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         }))
     }
 
-    onResolveRequiredEntityTags = (filterText: string, selectedTags: OF.ITag[]): OF.ITag[] => {
+    onResolveRequiredEntityOrConditionTags = (filterText: string, selectedTags: OF.ITag[]): OF.ITag[] => {
         const suggestedTags = getSuggestedTags(
             filterText,
             this.state.availableConditionalTags,
@@ -1317,7 +1317,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         ]
     }
 
-    onChangeRequiredEntityTags = (tags: IConditionalTag[]) => {
+    onChangeRequiredEntityOrConditionTags = (tags: IConditionalTag[]) => {
         const containsAddConditionPlaceholder = tags.some(t => t.key === addConditionPlaceholder.key)
         // Assume if list has this item the user clicked the suggestion and intends to add condition
         if (containsAddConditionPlaceholder) {
@@ -1332,7 +1332,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         })
     }
 
-    onRenderRequiredEntityTag = (props: ICLPickerItemProps<OF.ITag>): JSX.Element => {
+    onRenderRequiredEntityOrConditionTag = (props: ICLPickerItemProps<OF.ITag>): JSX.Element => {
         const renderProps = { ...props }
         const locked = this.state.requiredEntityTagsFromPayload.some(t => t.key === props.key)
 
@@ -1345,7 +1345,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    onRenderRequiredEntitySuggestion(tag: OF.ITag, itemProps: OF.ISuggestionItemProps<OF.ITag>): JSX.Element {
+    onRenderRequiredEntityOrConditionSuggestion(tag: OF.ITag, itemProps: OF.ISuggestionItemProps<OF.ITag>): JSX.Element {
         if (tag.key === addConditionPlaceholder.key) {
             return <div className="cl-tag-item-suggestion--add-condition">
                 <OF.PrimaryButton
@@ -1811,11 +1811,11 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                         nonRemovableTags={this.state.requiredEntityTagsFromPayload}
                                         nonRemoveableStrikethrough={false}
                                         label="Required Entities or Conditions"
-                                        onResolveSuggestions={this.onResolveRequiredEntityTags}
-                                        onRenderItem={this.onRenderRequiredEntityTag}
-                                        onRenderSuggestionsItem={this.onRenderRequiredEntitySuggestion}
+                                        onResolveSuggestions={this.onResolveRequiredEntityOrConditionTags}
+                                        onRenderItem={this.onRenderRequiredEntityOrConditionTag}
+                                        onRenderSuggestionsItem={this.onRenderRequiredEntityOrConditionSuggestion}
                                         getTextFromItem={item => item.name}
-                                        onChange={this.onChangeRequiredEntityTags}
+                                        onChange={this.onChangeRequiredEntityOrConditionTags}
                                         pickerSuggestionsProps={
                                             {
                                                 suggestionsHeaderText: 'Entities or Conditions',
