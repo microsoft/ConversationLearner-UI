@@ -291,7 +291,7 @@ export class ObiDialogParser {
         return {
             importText: undefined,
             input: scoreInput,
-            labelAction: CLM.CL_STUB_IMPORT_ACTION_ID,
+            labelAction: action ? action.actionId : CLM.CL_STUB_IMPORT_ACTION_ID,
             logicResult: undefined,
             scoredAction
         }
