@@ -490,7 +490,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     const sourceTrainDialogId = this.sourceTrainDialogId()
 
                     // Delete the teach session and retrieve the new TrainDialog
-                    const newTrainDialog = await ((this.props.deleteTeachSessionThunkAsync(this.props.teachSession.teach, this.props.app, true, sourceTrainDialogId) as any) as Promise<CLM.TrainDialog>)
+                    let newTrainDialog = await ((this.props.deleteTeachSessionThunkAsync(this.props.teachSession.teach, this.props.app, true, sourceTrainDialogId) as any) as Promise<CLM.TrainDialog>)
                     newTrainDialog.tags = tags
                     newTrainDialog.description = description
 
@@ -501,6 +501,12 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         // If editing an existing Train Dialog, replace existing with the new one
                         if (sourceTrainDialogId) {
                             await ((this.props.trainDialogReplaceThunkAsync(this.props.app.appId, sourceTrainDialogId, newTrainDialog) as any) as Promise<void>)
+                            // Grab the replaced version
+                            const updatedTrainDialog = this.props.trainDialogs.find(td => td.trainDialogId === sourceTrainDialogId)
+                            if (!updatedTrainDialog) {
+                                throw new Error(`Unexpected missing TrainDialog ${sourceTrainDialogId}`)
+                            }
+                            newTrainDialog = updatedTrainDialog
                         }
 
                         await this.handlePotentialMerge(newTrainDialog, matchedTrainDialog)
