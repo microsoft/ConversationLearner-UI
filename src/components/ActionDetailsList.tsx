@@ -310,23 +310,25 @@ function renderConditions(entityIds: string[], conditions: CLM.Condition[], allE
     const elementsFromConditions = conditions
         .map(condition => {
             const entity = allEntities.find(e => e.entityId === condition.entityId)
-            if (!entity) {
-                return renderCondition(`Error - Missing Entity ID: ${condition.entityId}`, isRequired)
-            }
 
-            if (condition.valueId) {
+            let name: string
+            if (!entity) {
+                name = `Error - Missing Entity ID: ${condition.entityId}`
+            }
+            else if (condition.valueId) {
                 const enumValue = entity.enumValues ? entity.enumValues.find(eid => eid.enumValueId === condition.valueId) : undefined
                 if (!enumValue) {
-                    return renderCondition(`Error - Missing Enum: ${condition.valueId}`, isRequired)
+                    name = `Error - Missing Enum: ${condition.valueId}`
                 }
                 else {
-                    return renderCondition(`${entity.entityName} = ${enumValue.enumValue}`, isRequired)
+                    name = `${entity.entityName} = ${enumValue.enumValue}`
                 }
             }
             else {
-                const conditionName = getValueConditionName(entity, condition)
-                return renderCondition(conditionName, isRequired)
+                name = getValueConditionName(entity, condition)
             }
+
+            return renderCondition(name, isRequired)
         })
 
     return [...elementsForEntityIds, ...elementsFromConditions]
