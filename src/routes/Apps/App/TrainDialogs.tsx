@@ -155,7 +155,7 @@ interface TranscriptImportData {
     autoCreate: boolean
     autoMerge: boolean
     autoActionCreate: boolean
-    warnings: string[] | undefined
+    warnings: string[]
 }
 
 interface ComponentState {
@@ -1141,7 +1141,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         }
         // Otherwise start the import
         else if (this.state.transcriptImport) {
-            await Util.setStateAsync(this, {transcriptImport: {...this.state.transcriptImport, warnings: undefined}})
+            await Util.setStateAsync(this, {transcriptImport: {...this.state.transcriptImport, warnings: []}})
             await this.onImportNextTrainDialog()
         }
     }
@@ -1193,7 +1193,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 autoActionCreate,
                 trainDialogs,
                 lgItems: undefined,
-                warnings: undefined
+                warnings: []
             }
             
             await Util.setStateAsync(this, {
