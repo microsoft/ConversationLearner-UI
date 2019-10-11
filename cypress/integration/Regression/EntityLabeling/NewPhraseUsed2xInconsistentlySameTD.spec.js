@@ -32,24 +32,62 @@ describe('New Entity Label on Existing Phrase 1 - Entity Labeling', () => {
       train.SelectTextAction('The only response')
     })
 
-    it('User types the same unique phrase but does not label it', () => {
+    it('User types the same unique phrase but does not label it, then score actions', () => {
       train.TypeYourMessage('A totally unique phrase')
+      train.ClickScoreActionsButton()
     })
 
-    it('Change to Previously Submitted Label from prior turn...after we Score Actions', () => {
-      train.ClickScoreActionsButton()
-      train.VerifyEntityLabelConflictPopupAndChangeToPevious(undefined, [{ text: 'unique', entity: 'anEntity' }])
+    it('Change to Previously Submitted Label from prior turn, then select the only Bot response', () => {
+      train.VerifyEntityLabelConflictPopupAndChangeToPevious([{ text: 'unique', entity: 'anEntity' }])
       train.SelectTextAction('The only response')
+    })
+  
+  // -----------------------------------------------------------------------------------------------------------------------------
+  // Bug 2301: "Change attempted labels to match..." option fails to update the markup on affected chat turns
+  // Once this bug is fixed comment out this block of code.
+  })
+  context('A detour to verify that Bug 2301 reproduced and work around it', () => {
+    it('Verify that both user turns have the expected markup, taking the bug into consideration', () => {
+      train.VerifyChatTurnIsAnExactMatchWithMarkup('A totally <strong><em>unique</em></strong> phrase', 4, 0)
+      train.VerifyChatTurnIsAnExactMatchWithMarkup('A totally unique phrase<br>', 4, 2)
+    })
+
+    it('Save the Train Dialog and Re-edit the same', () => {
+      train.SaveAsIs()
+      train.EditTraining('A totally unique phrase', 'A totally unique phrase', 'The only response')
+    })
+  })
+
+  context('Resume the normal test path...', () => {
+  // -----------------------------------------------------------------------------------------------------------------------------
+
+    it('Verify that both user turns have the expected markup', () => {
+      train.VerifyChatTurnIsAnExactMatchWithMarkup('A totally <strong><em>unique</em></strong> phrase', 4, 0)
+      train.VerifyChatTurnIsAnExactMatchWithMarkup('A totally <strong><em>unique</em></strong> phrase', 4, 2)
+    })
+    
+    it('Remove the Entity label from one of the phrases', () => {
+      train.SelectChatTurnExactMatch('A totally unique phrase')
+      train.RemoveEntityLabel('unique', 'anEntity')
+      train.ClickSubmitChangesButton()
+    })
+    
+    it('Change the other turn in this TD to our Attempted change', () => {
+      train.VerifyEntityLabelConflictPopupAndChangeToAttempted([{ text: 'unique', entity: 'anEntity' }])
+    })
+
+  // -----------------------------------------------------------------------------------------------------------------------------
+  // Bug 2323: "Change attempted labels to match..." option fails to update the markup on affected chat turns
+  // Once this bug is fixed comment out this block of code.
+
+    it('Verify that both user turns have the expected markup', () => {
+      train.VerifyChatTurnIsAnExactMatchWithMarkup('A totally <strong><em>unique</em></strong> phrase', 4, 0)
+      train.VerifyChatTurnIsAnExactMatchWithMarkup('A totally <strong><em>unique</em></strong> phrase', 4, 2)
     })
 
     it('Verify that both user turns have the expected markup', () => {
-      train.VerifyChatTurnIsAnExactMatchWithMarkup('A totally unique phrase', 4, 0)
-    })
-    
-    it('', () => {
-    })
-    
-    it('', () => {
+      train.VerifyChatTurnIsAnExactMatchWithMarkup('A totally unique phrase<br>', 4, 0)
+      train.VerifyChatTurnIsAnExactMatchWithMarkup('A totally unique phrase<br>', 4, 2)
     })
     
     it('', () => {

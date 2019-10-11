@@ -121,7 +121,7 @@ export function GetAllChatMessageElements() {
 }
 
 export function GetChatTurnText(element, retainMarkup = false) {
-  let pElements = Cypress.$(element).find('p')
+  let pElements = Cypress.$(element).find('p, span.format-plain > span')
   let text = ''
   for (let ip = 0; ip < pElements.length; ip++) {
     text += retainMarkup ? pElements[ip].innerHTML : helpers.TextContentWithoutNewlines(pElements[ip])
@@ -507,7 +507,7 @@ export function VerifyChatTurnIsAnExactMatchWithMarkup(expectedTurnText, expecte
   VerifyChatTurnInternal(expectedTurnCount, turnIndex, chatMessageFound => {
     if (chatMessageFound !== expectedTurnText) { 
       if (chatMessageFound !== expectedTurnText) {
-        throw new Error(`Chat turn ${turnIndex} should be an exact match to: ${expectedTurnText}, however, we found ${chatMessageFound} instead`) 
+        throw new Error(`Chat turn ${turnIndex} should be an exact match to: '${expectedTurnText}', however, we found '${chatMessageFound}' instead`) 
       }
     }
   }, true)
