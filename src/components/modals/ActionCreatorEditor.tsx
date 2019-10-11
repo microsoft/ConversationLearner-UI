@@ -102,7 +102,6 @@ export const convertConditionToConditionalTag = (condition: CLM.Condition, entit
     }
 
     let conditionalTag: IConditionalTag
-    let name: string
     if (entity.entityType === CLM.EntityType.ENUM) {
         if (!entity.enumValues) {
             throw new Error(`Condition refers to Entity without Enums ${entity.entityName}`)
@@ -117,25 +116,24 @@ export const convertConditionToConditionalTag = (condition: CLM.Condition, entit
             throw new Error(`Condition refers to non-existent EnumValue: ${enumValueId}`)
         }
 
-        name = getEnumConditionName(entity, enumValue)
+        const name = getEnumConditionName(entity, enumValue)
+        conditionalTag = {
+            key: enumValue.enumValueId!,
+            name,
+            condition,
+        }
     }
     else {
-        name = getValueConditionName(entity, condition)
-    }
-
-    const key = CLM.hashText(name)
-    conditionalTag = {
-        key,
-        name,
-        condition,
+        const name = getValueConditionName(entity, condition)
+        const key = CLM.hashText(name)
+        conditionalTag = {
+            key,
+            name,
+            condition,
+        }
     }
 
     return conditionalTag
-}
-
-const convertConditionsToTags = (conditions: CLM.Condition[], entities: CLM.EntityBase[]): IConditionalTag[] => {
-    return conditions
-        .map(c => convertConditionToConditionalTag(c, entities))
 }
 
 /**
@@ -350,7 +348,7 @@ interface ComponentState {
     expectedEntityTags: OF.ITag[]
     requiredEntityTagsFromPayload: OF.ITag[]
     requiredEntityOrConditionTags: IConditionalTag[]
-    negativeEntityTags: IConditionalTag[]
+    negativeEntityOrConditionTags: IConditionalTag[]
     slateValuesMap: SlateValueMap
     secondarySlateValuesMap: SlateValueMap
     isTerminal: boolean
@@ -391,7 +389,7 @@ const initialState: Readonly<ComponentState> = {
     expectedEntityTags: [],
     requiredEntityTagsFromPayload: [],
     requiredEntityOrConditionTags: [],
-    negativeEntityTags: [],
+    negativeEntityOrConditionTags: [],
     slateValuesMap: {
         [TEXT_SLOT]: Plain.deserialize('')
     },
@@ -424,7 +422,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             apiOptions,
             cardOptions,
             availableExpectedEntityTags: availableExpectedEntityTags(entities),
-            availableConditionalTags: conditionalEntityTags(entities, actions),
+            availableConditionalTags: conditionalEntityTags(entities, actions).sort((a, b) => a.name.localeCompare(b.name)),
             isEditing: !!this.props.action
         }
     }
@@ -448,7 +446,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     newState = {
                         ...newState,
                         availableExpectedEntityTags: availableExpectedEntityTags(this.props.entities),
-                        availableConditionalTags: conditionalEntityTags(this.props.entities, this.props.actions),
+                        availableConditionalTags: conditionalEntityTags(this.props.entities, this.props.actions).sort((a, b) => a.name.localeCompare(b.name)),
                     }
                 }
 
@@ -476,7 +474,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 const action = this.props.action
 
                 const payloadOptions = prevProps.entities.map(convertEntityToOption)
-                const negativeEntityTags = convertEntityIdsToTags(action.negativeEntities, this.props.entities, false)
+                const negativeEntityOrConditionTags = convertEntityIdsToTags(action.negativeEntities, this.props.entities, false)
                 const expectedEntityTags = convertEntityIdsToTags((action.suggestedEntity ? [action.suggestedEntity] : []), this.props.entities)
                 let selectedApiOptionKey: string | undefined
                 let selectedCardOptionKey: string | undefined
@@ -564,11 +562,13 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     .filter(t => !requiredEntityTagsFromPayload.some(tag => tag.key === t.key))
 
                 if (action.requiredConditions) {
-                    requiredEntityOrConditionTags.push(...convertConditionsToTags(action.requiredConditions, prevProps.entities))
+                    const tags = action.requiredConditions.map(c => convertConditionToConditionalTag(c, prevProps.entities))
+                    requiredEntityOrConditionTags.push(...tags)
                 }
 
                 if (action.negativeConditions) {
-                    negativeEntityTags.push(...convertConditionsToTags(action.negativeConditions, prevProps.entities))
+                    const tags = action.negativeConditions.map(c => convertConditionToConditionalTag(c, prevProps.entities))
+                    negativeEntityOrConditionTags.push(...tags)
                 }
 
                 newState = {
@@ -581,7 +581,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     slateValuesMap,
                     secondarySlateValuesMap,
                     expectedEntityTags,
-                    negativeEntityTags,
+                    negativeEntityOrConditionTags,
                     requiredEntityTagsFromPayload,
                     requiredEntityOrConditionTags,
                     isTerminal: action.isTerminal,
@@ -614,7 +614,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
         const expectedEntitiesChanged = !initialEditState || !this.areTagsIdentical(this.state.expectedEntityTags, initialEditState.expectedEntityTags)
         const requiredEntitiesChanged = !initialEditState || !this.areTagsIdentical(this.state.requiredEntityOrConditionTags, initialEditState.requiredEntityOrConditionTags)
-        const disqualifyingEntitiesChanged = !initialEditState || !this.areTagsIdentical(this.state.negativeEntityTags, initialEditState.negativeEntityTags)
+        const disqualifyingEntitiesChanged = !initialEditState || !this.areTagsIdentical(this.state.negativeEntityOrConditionTags, initialEditState.negativeEntityOrConditionTags)
 
         const isTerminalChanged = initialEditState.isTerminal !== this.state.isTerminal
         const isRepromptChanged = initialEditState.reprompt !== this.state.reprompt
@@ -1003,9 +1003,9 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         }
 
         const requiredTags = this.state.requiredEntityOrConditionTags.filter(t => !t.condition)
-        const negativeTags = this.state.negativeEntityTags.filter(t => !t.condition)
+        const negativeTags = this.state.negativeEntityOrConditionTags.filter(t => !t.condition)
         const requiredConditions = this.state.requiredEntityOrConditionTags.filter(t => t.condition).map(t => t.condition!)
-        const negativeConditions = this.state.negativeEntityTags.filter(t => t.condition).map(t => t.condition!)
+        const negativeConditions = this.state.negativeEntityOrConditionTags.filter(t => t.condition).map(t => t.condition!)
 
         // TODO: This should be new type such as ActionInput for creation only.
         const action = new CLM.ActionBase({
@@ -1317,9 +1317,9 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         const newExpectedEntityTag = tags[0]
         this.setState(prevState => ({
             expectedEntityTags: tags,
-            negativeEntityTags: (!newExpectedEntityTag || prevState.negativeEntityTags.some(tag => tag.key === newExpectedEntityTag.key))
-                ? prevState.negativeEntityTags
-                : [...prevState.negativeEntityTags, newExpectedEntityTag]
+            negativeEntityOrConditionTags: (!newExpectedEntityTag || prevState.negativeEntityOrConditionTags.some(tag => tag.key === newExpectedEntityTag.key))
+                ? prevState.negativeEntityOrConditionTags
+                : [...prevState.negativeEntityOrConditionTags, newExpectedEntityTag]
         }))
     }
 
@@ -1327,7 +1327,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         const suggestedTags = getSuggestedTags(
             filterText,
             this.state.availableConditionalTags,
-            [...selectedTags, ...this.state.requiredEntityTagsFromPayload, ...this.state.negativeEntityTags, ...this.state.expectedEntityTags],
+            [...selectedTags, ...this.state.requiredEntityTagsFromPayload, ...this.state.negativeEntityOrConditionTags, ...this.state.expectedEntityTags],
             this.state.requiredEntityOrConditionTags
         )
 
@@ -1389,7 +1389,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
     onChangeNegativeEntityTags = (tags: IConditionalTag[]) => {
         this.setState({
-            negativeEntityTags: tags
+            negativeEntityOrConditionTags: tags
         })
     }
 
@@ -1531,7 +1531,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 && (this.state.cardOptions.length === 0));
 
         // Available Mentions: All entities - expected entity - required entities from payload - disqualified entities
-        const unavailableTags = [...this.state.expectedEntityTags, ...this.state.negativeEntityTags]
+        const unavailableTags = [...this.state.expectedEntityTags, ...this.state.negativeEntityOrConditionTags]
         const optionsAvailableForPayload = this.props.entities
             .filter(e => !unavailableTags.some(t => t.key === e.entityId))
             // Remove negative entities (Those which have a positiveId)
@@ -1862,7 +1862,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                                 noResultsFoundText: 'No Entities or Conditions Found'
                                             }
                                         }
-                                        selectedItems={this.state.negativeEntityTags}
+                                        selectedItems={this.state.negativeEntityOrConditionTags}
                                         tipType={ToolTip.TipType.ACTION_NEGATIVE}
                                         onDismiss={this.onDismissPicker}
                                     />
