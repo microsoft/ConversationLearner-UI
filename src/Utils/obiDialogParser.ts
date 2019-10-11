@@ -33,7 +33,7 @@ class ObiDialogNode {
 }
 
 export interface ObiDialogParserResult {
-    luMap: Map<string, string[]>
+    luMap: { [key: string]: string[] }
     lgItems: CLM.LGItem[],
     trainDialogs: CLM.TrainDialog[]
     warnings: string[]
@@ -43,9 +43,9 @@ export class ObiDialogParser {
     private app: CLM.AppBase
     private actions: CLM.ActionBase[] = []
     private entities: CLM.EntityBase[] = []
-    private dialogs: Map<string, OBITypes.OBIDialog>
+    private dialogs: { [key: string]: OBITypes.OBIDialog }
     private lgItems: CLM.LGItem[]
-    private luMap: Map<string, string[]>
+    private luMap: { [key: string]: string[] }
     private warnings: string[]
     private createActionThunkAsync: (appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null>
     private createEntityThunkAsync: (appId: string, entity: CLM.EntityBase) => Promise<CLM.EntityBase | null>
@@ -66,14 +66,14 @@ export class ObiDialogParser {
 
     async parse(files: File[]): Promise<ObiDialogParserResult> {
         this.lgItems = []
-        this.luMap = new Map()
-        this.dialogs = new Map()
+        this.luMap = {}
+        this.dialogs ={}
         this.warnings = []
 
         await this.readDialogFiles(files)
 
-        const mainDialog = this.dialogs.get("Entry.main")
         let trainDialogs: CLM.TrainDialog[] = []
+        const mainDialog = this.dialogs["Entry.main"]
         if (!mainDialog) {
             this.warnings.push(`Missing entry point. Expecting a .dialog file called "Entry.main"`)
         } else {
@@ -96,7 +96,7 @@ export class ObiDialogParser {
                 const obiDialog: OBITypes.OBIDialog = JSON.parse(stripJsonComments(fileText))
                 // Set name, removing suffix
                 obiDialog.$id = this.removeSuffix(file.name)
-                this.dialogs.set(obiDialog.$id, obiDialog)
+                this.dialogs[obiDialog.$id] = obiDialog
             }
             else if (file.name.endsWith('.lu')) {
                 const fileText = await Util.readFileAsync(file)
@@ -112,12 +112,12 @@ export class ObiDialogParser {
         }
     }
 
-    private addToLUMap(text: string, luMap: Map<string, string[]>): any {
+    private addToLUMap(text: string, luMap: { [key: string]: string[] }): any {
         const keys = text.split('##')
         for (const key of keys) {
             if (!key.startsWith(">")) {
                 const inputs = key.split('- ').map(i => i.trim())
-                luMap.set(inputs[0], inputs.slice(1))
+                luMap[inputs[0]] = inputs.slice(1)
             }
         }
         return luMap
@@ -143,25 +143,27 @@ export class ObiDialogParser {
     private async collectDialogRuleChildren(node: ObiDialogNode, rules: OBITypes.MicrosoftIRule[]) {
         for (const rule of rules) {
             if (rule.$type !== OBIRuleType.INTENT_RULE) {
-                console.log(`Unhandled OBI rule type: ${rule.$type}`)
+                this.warnings.push(`Unhandled OBI rule type: ${rule.$type} in ${node.dialog.$id}`)
                 continue
             }
             const intent = rule.intent
             if (!intent) {
-                throw new Error(`Rule is missing intent property`)
+                this.warnings.push(`Rule is missing intent property in ${node.dialog.$id}`)
+                continue
             }
             if (!rule.steps) {
                 continue
             }
             for (const step of rule.steps) {
                 if (typeof step === "string") {
-                    throw new Error("Unexpected string step")
-                }
-                if (step.$type !== OBIStepType.BEGIN_DIALOG || typeof step.dialog !== "string") {
-                    console.log(`Unhandled OBI Type: ${step.$type}`)
+                    this.warnings.push(`Unexpected string step in ${node.dialog.$id}`)
                     continue
                 }
-                const subDialog = this.dialogs.get(step.dialog)
+                if (step.$type !== OBIStepType.BEGIN_DIALOG || typeof step.dialog !== "string") {
+                    this.warnings.push(`Unhandled OBI step type: ${step.$type} in ${node.dialog.$id}`)
+                    continue
+                }
+                const subDialog = this.dialogs[step.dialog]
                 if (!subDialog) {
                     throw new Error(`Dialog name ${step.dialog} undefined`)
                 }
@@ -182,17 +184,18 @@ export class ObiDialogParser {
     private async collectDialogStepChildren(node: ObiDialogNode, steps: (string | OBITypes.OBIDialog)[]) {
         for (const step of steps) {
             if (typeof step === "string") {
-                throw new Error("Unexected step of type string")
+                this.warnings.push(`Unexpected string step in ${node.dialog.$id}`)
+                continue
             }
             // Handle any steps that may contain an expansion of the dialog tree.
             // TODO(thpar) : handle Microsoft.SwitchCondition.
             switch (step.$type) {
                 case OBIStepType.BEGIN_DIALOG:
                     if (!step.dialog || typeof step.dialog !== "string") {
-                        console.log(`Unhandled OBI Type: ${step.$type}`)
+                        this.warnings.push(`Invalid dialog in ${node.dialog.$id}`)
                         continue
                     }
-                    const subDialog = this.dialogs.get(step.dialog)
+                    const subDialog = this.dialogs[step.dialog]
                     if (!subDialog) {
                         throw new Error(`Dialog name ${step.dialog} undefined`)
                     }
@@ -255,7 +258,8 @@ export class ObiDialogParser {
         for (const [i, step] of steps.entries()) {
             const nextStep = (i + 1 < steps.length) ? steps[i + 1] : undefined
             if (typeof step === "string" || typeof nextStep === "string") {
-                throw new Error("Unexected step of type string")
+                this.warnings.push(`Unexpected string step`)
+                continue
             }
             switch (step.$type) {
                 case OBIStepType.SEND_ACTIVITY: {
@@ -304,7 +308,7 @@ export class ObiDialogParser {
                 }
                 default: {
                     if (step.$type !== OBIStepType.END_TURN) {
-                        console.log(`Unhandled OBI Type: ${step.$type}`)
+                        this.warnings.push(`Unhandled OBI Type: ${step.$type}`)
                     }
                 }
             }
@@ -384,7 +388,7 @@ export class ObiDialogParser {
     }
 
     private getTextVariations(intentName: string) {
-        let userInputs = this.luMap.get(intentName)
+        let userInputs = this.luMap[intentName]
         if (!userInputs) {
             throw new Error(`Intent name ${intentName} undefined`)
         }
