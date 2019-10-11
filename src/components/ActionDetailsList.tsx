@@ -19,7 +19,7 @@ import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../react-intl-messages'
 import './ActionDetailsList.css'
 import { autobind } from 'core-decorators'
-import { getValueConditionName } from '../Utils/actionCondition'
+import { getValueConditionName, getEnumConditionName } from '../Utils/actionCondition'
 
 interface ComponentState {
     columns: IRenderableColumn[]
@@ -302,9 +302,11 @@ function renderConditions(entityIds: string[], conditions: CLM.Condition[], allE
 
     const elementsForEntityIds = entityIds.map(entityId => {
         const entity = allEntities.find(e => e.entityId === entityId)
-        return !entity
-            ? renderCondition(`Error - Missing Entity ID: ${entityId}`, isRequired)
-            : renderCondition(entity.entityName, isRequired)
+        const name = !entity
+            ? `Error - Missing Entity ID: ${entityId}`
+            : entity.entityName
+
+        return renderCondition(name, isRequired)
     })
 
     const elementsFromConditions = conditions
@@ -317,12 +319,9 @@ function renderConditions(entityIds: string[], conditions: CLM.Condition[], allE
             }
             else if (condition.valueId) {
                 const enumValue = entity.enumValues ? entity.enumValues.find(eid => eid.enumValueId === condition.valueId) : undefined
-                if (!enumValue) {
-                    name = `Error - Missing Enum: ${condition.valueId}`
-                }
-                else {
-                    name = `${entity.entityName} = ${enumValue.enumValue}`
-                }
+                name = !enumValue
+                    ? `Error - Missing Enum: ${condition.valueId}`
+                    : getEnumConditionName(entity, enumValue)
             }
             else {
                 name = getValueConditionName(entity, condition)
