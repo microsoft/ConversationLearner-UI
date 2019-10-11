@@ -64,8 +64,32 @@ export class ObiDialogParser {
         this.createEntityThunkAsync = createEntityThunkAsync
     }
 
+    async parse(files: File[]): Promise<ObiDialogParserResult> {
+        this.lgItems = []
+        this.luMap = new Map()
+        this.dialogs = new Map()
+        this.warnings = []
+
+        await this.readDialogFiles(files)
+
+        const mainDialog = this.dialogs.get("Entry.main")
+        let trainDialogs: CLM.TrainDialog[] = []
+        if (!mainDialog) {
+            this.warnings.push(`Missing entry point. Expecting a .dialog file called "Entry.main"`)
+        } else {
+            const rootNode = await this.collectDialogNodes(mainDialog)
+            trainDialogs = await this.getTrainDialogs(rootNode)
+        }
+        return {
+            luMap: this.luMap,
+            lgItems: this.lgItems,
+            trainDialogs,
+            warnings: this.warnings
+        }
+    }
+
     // Reads input files; packs data into dialog / LU / LG maps according to file extensions.
-    async readDialogFiles(files: File[]) {
+    private async readDialogFiles(files: File[]) {
         for (const file of files) {
             if (file.name.endsWith('.dialog')) {
                 const fileText = await Util.readFileAsync(file)
@@ -85,30 +109,6 @@ export class ObiDialogParser {
             else {
                 this.warnings.push(`Expecting .dialog, .lu and .lg files. ${file.name} is of unknown file type`)
             }
-        }
-    }
-
-    async parse(files: File[]): Promise<ObiDialogParserResult> {
-        this.lgItems = []
-        this.luMap = new Map()
-        this.dialogs = new Map()
-        this.warnings = []
-
-        await this.readDialogFiles(files)
-
-        const mainDialog = this.dialogs.get("Entry.main")
-        let trainDialogs: CLM.TrainDialog[] = []
-        if (!mainDialog) {
-            this.warnings.push(`Missing entry point. Expecting a .dialog file called "Entry.main"`)
-        } else {
-            const rootNode = await this.collectDialogNodes(mainDialog)
-            await this.getTrainDialogs(rootNode, trainDialogs)
-        }
-        return {
-            luMap: this.luMap,
-            lgItems: this.lgItems,
-            trainDialogs,
-            warnings: this.warnings
         }
     }
 
@@ -210,15 +210,15 @@ export class ObiDialogParser {
     }
 
     // Generates TrainDialog instances from the dialog tree.
-    private async getTrainDialogs(node: ObiDialogNode, dialogs: CLM.TrainDialog[]) {
-        await this.getTrainDialogsIter(node, [], dialogs)
+    private async getTrainDialogs(node: ObiDialogNode): Promise<CLM.TrainDialog[]> {
+        return this.getTrainDialogsIter(node, [])
     }
 
     // Recursive helper.
-    private async getTrainDialogsIter(node: ObiDialogNode, currentRounds: CLM.TrainRound[],
-        dialogs: CLM.TrainDialog[]) {
+    private async getTrainDialogsIter(node: ObiDialogNode, currentRounds: CLM.TrainRound[]):
+        Promise<CLM.TrainDialog[]> {
         if (!node) {
-            return
+            return []
         }
         let rounds = [...currentRounds]
         // Build up a training round from any applicable steps in this node.
@@ -239,13 +239,14 @@ export class ObiDialogParser {
         if (!node.children || node.children.length === 0) {
             let dialog = this.makeEmptyTrainDialog()
             dialog.rounds = [...rounds]
-            dialogs.push(dialog)
-            return
+            return [dialog]
         }
         // This is not a leaf node; continue building up the dialog tree from the rounded visited so far.
+        let dialogs: CLM.TrainDialog[] = []
         for (const child of node.children) {
-            await this.getTrainDialogsIter(child, rounds, dialogs)
+            dialogs = [...dialogs, ...(await this.getTrainDialogsIter(child, rounds))]
         }
+        return dialogs
     }
 
     private async getTrainRoundfromOBIDialogSteps(steps: (string | OBITypes.OBIDialog)[]):
