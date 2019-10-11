@@ -41,6 +41,12 @@ interface IRenderableColumn extends OF.IColumn {
     render: (actionForRender: ActionForRender, component: ActionScorer, index: number) => React.ReactNode
 }
 
+/**
+ * Given memory value,
+ * If entity is multivalue returns the number of labels/values
+ * If entity has number resolution return number from label
+ * Otherwise, return undefined to indicate number can't be parsed from memory
+ */
 const findNumberFromMemory = (memory: CLM.Memory, isMultivalue: boolean): number | undefined => {
     if (isMultivalue) {
         return memory.entityValues.length
