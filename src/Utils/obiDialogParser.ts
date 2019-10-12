@@ -67,7 +67,7 @@ export class ObiDialogParser {
     async parse(files: File[]): Promise<ObiDialogParserResult> {
         this.lgItems = []
         this.luMap = {}
-        this.dialogs ={}
+        this.dialogs = {}
         this.warnings = []
 
         await this.readDialogFiles(files)
