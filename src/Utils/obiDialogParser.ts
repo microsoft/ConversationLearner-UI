@@ -7,7 +7,7 @@ import * as DialogEditing from './dialogEditing'
 import * as OBIUtils from './obiUtils'
 import * as Util from './util'
 import * as OBITypes from '../types/obiTypes'
-import * as stripJson from 'strip-json-comments'
+import * as stripJsonComments from 'strip-json-comments'
 
 enum OBIStepType {
     BEGIN_DIALOG = "Microsoft.BeginDialog",
@@ -21,6 +21,17 @@ enum OBIRuleType {
     INTENT_RULE = "Microsoft.IntentRule"
 }
 
+// A node in a dialog tree.
+class ObiDialogNode {
+    readonly dialog: OBITypes.OBIDialog
+    intent?: string
+    children: ObiDialogNode[]
+    constructor(dialog: OBITypes.OBIDialog) {
+        this.dialog = dialog
+        this.children = []
+    }
+}
+
 export interface ObiDialogParserResult {
     luMap: { [key: string]: string[] }
     lgItems: CLM.LGItem[],
@@ -30,10 +41,10 @@ export interface ObiDialogParserResult {
 
 export class ObiDialogParser {
     private app: CLM.AppBase
-    //private composerDialog: OBIUtils.ComposerDialog
     private actions: CLM.ActionBase[] = []
     private entities: CLM.EntityBase[] = []
-    private dialogs: OBITypes.OBIDialog[]
+    private dialogs: { [key: string]: OBITypes.OBIDialog }
+    private lgItems: CLM.LGItem[]
     private luMap: { [key: string]: string[] }
     private warnings: string[]
     private createActionThunkAsync: (appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null>
@@ -54,19 +65,38 @@ export class ObiDialogParser {
     }
 
     async parse(files: File[]): Promise<ObiDialogParserResult> {
-
-        const lgItems: CLM.LGItem[] = []
+        this.lgItems = []
         this.luMap = {}
-        this.dialogs = []
+        this.dialogs = {}
         this.warnings = []
 
+        await this.readDialogFiles(files)
+
+        let trainDialogs: CLM.TrainDialog[] = []
+        const mainDialog = this.dialogs["Entry.main"]
+        if (!mainDialog) {
+            this.warnings.push(`Missing entry point. Expecting a .dialog file called "Entry.main"`)
+        } else {
+            const rootNode = await this.collectDialogNodes(mainDialog)
+            trainDialogs = await this.getTrainDialogs(rootNode)
+        }
+        return {
+            luMap: this.luMap,
+            lgItems: this.lgItems,
+            trainDialogs,
+            warnings: this.warnings
+        }
+    }
+
+    // Reads input files; packs data into dialog / LU / LG maps according to file extensions.
+    private async readDialogFiles(files: File[]) {
         for (const file of files) {
             if (file.name.endsWith('.dialog')) {
                 const fileText = await Util.readFileAsync(file)
-                const obiDialog: OBITypes.OBIDialog = JSON.parse(stripJson(fileText))
+                const obiDialog: OBITypes.OBIDialog = JSON.parse(stripJsonComments(fileText))
                 // Set name, removing suffix
                 obiDialog.$id = this.removeSuffix(file.name)
-                this.dialogs.push(obiDialog)
+                this.dialogs[obiDialog.$id] = obiDialog
             }
             else if (file.name.endsWith('.lu')) {
                 const fileText = await Util.readFileAsync(file)
@@ -74,31 +104,12 @@ export class ObiDialogParser {
             }
             else if (file.name.endsWith('.lg')) {
                 const fileText = await Util.readFileAsync(file)
-                CLM.ObiUtils.addToLGMap(fileText, lgItems)
+                CLM.ObiUtils.addToLGMap(fileText, this.lgItems)
             }
             else {
                 this.warnings.push(`Expecting .dialog, .lu and .lg files. ${file.name} is of unknown file type`)
             }
         }
-
-        const mainDialog = this.dialogs.find(d => d.$id === "Entry.main")
-        if (!mainDialog) {
-            this.warnings.push(`Missing entry point. Expecting a .dialog file called "Entry.main"`)
-            return {
-                luMap: this.luMap,
-                lgItems,
-                trainDialogs: [],
-                warnings: this.warnings
-            }
-        }
-
-        const trainDialogs = await this.getTrainDialogsfromOBIDialog(mainDialog)
-        return {
-            luMap: this.luMap,
-            lgItems,
-            trainDialogs,
-            warnings: this.warnings
-        } 
     }
 
     private addToLUMap(text: string, luMap: { [key: string]: string[] }): any {
@@ -112,51 +123,146 @@ export class ObiDialogParser {
         return luMap
     }
 
-    private async getTrainDialogsfromOBIDialog(obiDialog: OBITypes.OBIDialog): Promise<CLM.TrainDialog[]> {
-
-        let trainDialogs: CLM.TrainDialog[] = []
+    /**
+     * Walks the dialog tree from the given node.  Validates types of nodes in the tree and returns an
+     * in-memory representation of the tree.
+     * Tree construction is slightly complicated since child nodes can be referenced in `rules` or `steps`.
+     */
+    private async collectDialogNodes(obiDialog: OBITypes.OBIDialog): Promise<ObiDialogNode> {
+        let node: ObiDialogNode = new ObiDialogNode(obiDialog)
         if (obiDialog.rules) {
-            for (const rule of obiDialog.rules) {
-                if (rule.$type === OBIRuleType.INTENT_RULE) {
+            await this.collectDialogRuleChildren(node, obiDialog.rules)
+        }
+        if (obiDialog.steps) {
+            await this.collectDialogStepChildren(node, obiDialog.steps)
+        }
+        return node
+    }
 
-                    const textVariations = this.getTextVariations(rule.intent!)
-                    const extractorStep: CLM.TrainExtractorStep = {
-                        textVariations: textVariations
-                    }
-                    if (!rule.steps) {
-                        continue
-                    }
-                    for (const step of rule.steps) {
-                        if (typeof step === "string") {
-                            throw new Error("Unexpected string step")
-                        }
-                        if (step.$type !== OBIStepType.BEGIN_DIALOG || typeof step.dialog !== "string") {
-                            console.log(`Unhandled OBI Type: ${step.$type}`)
-                            continue
-                        }
-                        const subDialog = this.dialogs.find(d => d.$id === step.dialog)
-                        if (!subDialog) {
-                            throw new Error(`Dialog name ${step.dialog} undefined`)
-                        }
-                        const childDialogs = await this.getTrainDialogsfromOBIDialog(subDialog)
-                        // Add extractor step to all the children
-                        childDialogs.forEach(td => {
-                            td.rounds[0].extractorStep = extractorStep
-                        })
-                        // Add children to train dialog list
-                        trainDialogs = [...trainDialogs, ...childDialogs]
-                    }
+    // Collects dialog tree nodes from `Microsoft.IntentRule` elements in the dialog `rules` section.
+    private async collectDialogRuleChildren(node: ObiDialogNode, rules: OBITypes.MicrosoftIRule[]) {
+        for (const rule of rules) {
+            if (rule.$type !== OBIRuleType.INTENT_RULE) {
+                this.warnings.push(`Unhandled OBI rule type: ${rule.$type} in ${node.dialog.$id}`)
+                continue
+            }
+            const intent = rule.intent
+            if (!intent) {
+                this.warnings.push(`Rule is missing intent property in ${node.dialog.$id}`)
+                continue
+            }
+            if (!rule.steps) {
+                continue
+            }
+            for (const step of rule.steps) {
+                if (typeof step === "string") {
+                    this.warnings.push(`Unexpected string step in ${node.dialog.$id}`)
+                    continue
+                }
+                if (step.$type !== OBIStepType.BEGIN_DIALOG || typeof step.dialog !== "string") {
+                    this.warnings.push(`Unhandled OBI step type: ${step.$type} in ${node.dialog.$id}`)
+                    continue
+                }
+                const subDialog = this.dialogs[step.dialog]
+                if (!subDialog) {
+                    throw new Error(`Dialog name ${step.dialog} undefined`)
+                }
+                // Add children to train dialog list, if applicable
+                const child = await this.collectDialogNodes(subDialog)
+                if (child) {
+                    // Add this node's intent string to all children.
+                    child.intent = intent
+                    node.children.push(child)
                 }
             }
         }
-        let trainRound: CLM.TrainRound | undefined
+    }
+
+    /**
+     * Collects dialog nodes from dialog-redirecting elements in the dialog `steps` section.
+     */
+    private async collectDialogStepChildren(node: ObiDialogNode, steps: (string | OBITypes.OBIDialog)[]) {
+        for (const step of steps) {
+            if (typeof step === "string") {
+                this.warnings.push(`Unexpected string step in ${node.dialog.$id}`)
+                continue
+            }
+            // Handle any steps that may contain an expansion of the dialog tree.
+            // TODO(thpar) : handle Microsoft.SwitchCondition.
+            switch (step.$type) {
+                case OBIStepType.BEGIN_DIALOG:
+                    if (!step.dialog || typeof step.dialog !== "string") {
+                        this.warnings.push(`Invalid dialog in ${node.dialog.$id}`)
+                        continue
+                    }
+                    const subDialog = this.dialogs[step.dialog]
+                    if (!subDialog) {
+                        throw new Error(`Dialog name ${step.dialog} undefined`)
+                    }
+                    const childDialogs = await this.collectDialogNodes(subDialog)
+                    if (childDialogs) {
+                        // Add children to train dialog list
+                        node.children.push(childDialogs)
+                    }
+                    break
+                default:
+                // No child nodes, so nothing to do here.
+                // The actions in this step will be handled later.
+            }
+        }
+    }
+
+    // Generates TrainDialog instances from the dialog tree.
+    private async getTrainDialogs(node: ObiDialogNode): Promise<CLM.TrainDialog[]> {
+        return this.getTrainDialogsIter(node, [])
+    }
+
+    // Recursive helper.
+    private async getTrainDialogsIter(node: ObiDialogNode, currentRounds: CLM.TrainRound[]):
+        Promise<CLM.TrainDialog[]> {
+        if (!node) {
+            return []
+        }
+        let rounds = [...currentRounds]
+        // Build up a training round from any applicable steps in this node.
+        const obiDialog = node.dialog
         if (obiDialog.steps) {
-            for (const [i, step] of obiDialog.steps.entries()) {
-                const nextStep = (i + 1 < obiDialog.steps.length) ? obiDialog.steps[i + 1] : undefined
-                if (typeof step === "string" || typeof nextStep === "string") {
-                    throw new Error("Unexected step of type string")
+            let trainRound = await this.getTrainRoundfromOBIDialogSteps(obiDialog.steps)
+            if (trainRound) {
+                if (node.intent) {
+                    const extractorStep: CLM.TrainExtractorStep = {
+                        textVariations: this.getTextVariations(node.intent)
+                    }
+                    trainRound.extractorStep = extractorStep
                 }
-                if (step.$type === OBIStepType.SEND_ACTIVITY) {
+                rounds.push(trainRound)
+            }
+        }
+        // This is a leaf node of the conversational tree; build a dialog containing the visited rounds.
+        if (!node.children || node.children.length === 0) {
+            let dialog = this.makeEmptyTrainDialog()
+            dialog.rounds = [...rounds]
+            return [dialog]
+        }
+        // This is not a leaf node; continue building up the dialog tree from the rounded visited so far.
+        let dialogs: CLM.TrainDialog[] = []
+        for (const child of node.children) {
+            dialogs = [...dialogs, ...(await this.getTrainDialogsIter(child, rounds))]
+        }
+        return dialogs
+    }
+
+    private async getTrainRoundfromOBIDialogSteps(steps: (string | OBITypes.OBIDialog)[]):
+        Promise<CLM.TrainRound | undefined> {
+        let trainRound: CLM.TrainRound | undefined
+        for (const [i, step] of steps.entries()) {
+            const nextStep = (i + 1 < steps.length) ? steps[i + 1] : undefined
+            if (typeof step === "string" || typeof nextStep === "string") {
+                this.warnings.push(`Unexpected string step`)
+                continue
+            }
+            switch (step.$type) {
+                case OBIStepType.SEND_ACTIVITY: {
                     if (!trainRound) {
                         trainRound = {
                             extractorStep: { textVariations: [] },
@@ -168,8 +274,9 @@ export class ObiDialogParser {
                     }
                     const scorerStep = await this.getScorerStepFromActivity(step.activity)
                     trainRound.scorerSteps.push(scorerStep)
+                    break
                 }
-                else if (step.$type === OBIStepType.TEXT_INPUT) {
+                case OBIStepType.TEXT_INPUT: {
                     if (!trainRound) {
                         trainRound = {
                             extractorStep: { textVariations: [] },
@@ -181,8 +288,9 @@ export class ObiDialogParser {
                     }
                     const scorerStep = await this.getScorerStepFromActivity(step.prompt)
                     trainRound.scorerSteps.push(scorerStep)
+                    break
                 }
-                else if (step.$type === OBIStepType.HTTP_REQUEST) {
+                case OBIStepType.HTTP_REQUEST: {
                     if (!trainRound) {
                         trainRound = {
                             extractorStep: { textVariations: [] },
@@ -191,39 +299,21 @@ export class ObiDialogParser {
                     }
                     const scorerStep = await this.createActionFromHttpRequest(step, nextStep)
                     trainRound.scorerSteps.push(scorerStep)
+                    break
                 }
-                else if (step.$type === OBIStepType.BEGIN_DIALOG) {
-                    const subDialog = this.dialogs.find(d => d.$id === step.dialog)
-                    if (!subDialog) {
-                        throw new Error(`Dialog name ${step.dialog} undefined`)
-                    }
-
-                    const childDialogs = await this.getTrainDialogsfromOBIDialog(subDialog)
-
-                    // Add children to train dialog list
-                    trainDialogs = [...trainDialogs, ...childDialogs]
+                // TODO(thpar) : handle Microsoft.SwitchCondition.
+                case OBIStepType.BEGIN_DIALOG: {
+                    // Nothing to do here, the child dialogs were already expanded.
+                    break
                 }
-                else if (step.$type !== OBIStepType.END_TURN) {
-                    console.log(`Unhandled OBI Type: ${step.$type}`)
-                }
-            }
-            if (trainRound) {
-                if (trainDialogs.length === 0) {
-                    trainDialogs.push(this.makeEmptyTrainDialog())
-                }
-                for (const td of trainDialogs) {
-                    // If susequent round has no extractor step, just prepend scorer steps
-                    if (td.rounds.length > 0 && td.rounds[0].extractorStep.textVariations.length === 0) {
-                        td.rounds[0].scorerSteps = [...trainRound.scorerSteps, ...td.rounds[0].scorerSteps]
-                    }
-                    // Otherwise prepend round
-                    else {
-                        td.rounds = [trainRound, ...td.rounds]
+                default: {
+                    if (step.$type !== OBIStepType.END_TURN) {
+                        this.warnings.push(`Unhandled OBI Type: ${step.$type}`)
                     }
                 }
             }
         }
-        return trainDialogs
+        return trainRound
     }
 
     private async getScorerStepFromActivity(prompt: string): Promise<CLM.TrainScorerStep> {
