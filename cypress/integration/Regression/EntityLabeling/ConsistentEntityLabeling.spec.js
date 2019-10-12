@@ -14,7 +14,7 @@ describe('Consistent Entity Labeling', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
   
   context('Setup', () => {
-    it('Should import a model, wait for training to complete and start a new Train Dialog', () => {
+    it('Import a model, wait for training to complete and start a new Train Dialog', () => {
       models.ImportModel('z-cnstntEntLabel', 'z-entityLabeling.cl')
       modelPage.NavigateToTrainDialogs()
       cy.WaitForTrainingStatusCompleted()
@@ -56,7 +56,7 @@ describe('Consistent Entity Labeling', () => {
   })
 
   context('Setup for next phase', () => {
-    it('Should abandon Train Dialog, wait for training status to complete and start a new Train Dialog', () => {
+    it('Abandon Train Dialog, wait for training status to complete and start a new Train Dialog', () => {
       train.AbandonDialog()
       cy.WaitForTrainingStatusCompleted()
       train.CreateNewTrainDialog()
@@ -64,7 +64,7 @@ describe('Consistent Entity Labeling', () => {
   })
 
   context('Train - Alternative Input', () => {
-    it('Should automatically label entites in alternative input', () => {
+    it('Automatically label entites in alternative input', () => {
       train.TypeYourMessage('This is Tag.')
       train.TypeAlternativeInput('This is Frog and Tag.')
       train.TypeAlternativeInput('This is Tag and Frog.')
@@ -92,8 +92,8 @@ describe('Consistent Entity Labeling', () => {
     })
   })
 
-  context('Edit Train Dialog', () => {
-    it('Should edit the training and verify the entities are labeled', () => {
+  context('Edit and Change to Previous Submited Labels', () => {
+    it('Edit the training and verify the entities are labeled', () => {
       train.EditTraining('This is Tag.', 'This is Tag.', 'Hi')
       train.SelectChatTurnExactMatch('This is Tag.')
 
@@ -102,27 +102,66 @@ describe('Consistent Entity Labeling', () => {
       train.VerifyEntityLabelWithinSpecificInput(textEntityPairs, 2)
     })
 
-    it('Should remove two entity labels from alternative input', () => {
+    it('Remove two entity labels from alternative input', () => {
       train.RemoveEntityLabel('Tag', 'multi', 1)
       train.RemoveEntityLabel('Frog', 'multi', 2)
     })
     
-    it('Should verify user cannot submit changes without accepting auto-re-labling of the 1st alternative input that we changed', () => {
+    it('Verify user cannot submit changes without accepting auto-re-labling of the 1st alternative input that we changed', () => {
       train.ClickSubmitChangesButton()
       train.VerifyEntityLabelConflictPopupAndClose(textEntityPairs)
       train.ClickSubmitChangesButton()
       train.VerifyEntityLabelConflictPopupAndChangeToPevious(textEntityPairs)
     })
 
-    it('Should verify user cannot submit changes without accepting auto-re-labling of the 2nd alternative input that we changed', () => {
+    it('Verify user cannot submit changes without accepting auto-re-labling of the 2nd alternative input that we changed', () => {
       train.VerifyEntityLabelConflictPopupAndClose(textEntityPairs)
       train.ClickSubmitChangesButton()
       train.VerifyEntityLabelConflictPopupAndChangeToPevious(textEntityPairs)
     })
 
-    it('Should abandon the changes', () => {
+    it('Abandon the changes', () => {
       train.AbandonDialog()
     })
   })
-    // Manually EXPORT this to fixtures folder and name it 'z-cnstntEntLabel.cl'
+
+  context('Edit and Preserve Attempted Labels', () => {
+    it('Edit the training', () => {
+      train.EditTrainingByDescriptionAndTags('Both Tag & Frog')
+    })
+
+    it('Remove both Entity labels', () => {
+      train.SelectChatTurnExactMatch('This is Frog and Tag.')
+      train.RemoveEntityLabel('Tag', 'multi')
+      train.RemoveEntityLabel('Frog', 'multi')
+    })
+
+    it('Change other instance of the phrase to attempted changes we just made', () => {
+      train.ClickSubmitChangesButton()
+      train.VerifyEntityLabelConflictPopupAndChangeToAttempted(textEntityPairs)
+    })
+
+    it('Save the changes', () => {
+      train.SaveAsIs()
+    })
+    
+    it('Edit the Train Dialog that got changed', () => {
+      train.EditTraining('This is Tag.', 'This is Tag.', 'Hi')
+    })
+
+    it('Select the user turn and verify that the alternative text at index 1 is not labeled.', () => {
+      train.SelectChatTurnExactMatch('This is Tag.')
+      train.VerifyTextIsNotLabeledAsEntity('Tag', 'multi', 1)
+      train.VerifyTextIsNotLabeledAsEntity('Frog', 'multi', 1)
+    })
+
+    it('Close the Train Dialog', () => {
+      train.ClickSaveCloseButton()
+    })
+    
+    it('', () => {
+    })
+    it('', () => {
+    })
+  })
 })

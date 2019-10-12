@@ -306,15 +306,22 @@ export function VerifyTextIsLabeledAsEntity(text, entity) {
   })
 }
 
-export function VerifyTextIsNotLabeledAsEntity(text, entity) {
+export function VerifyTextIsNotLabeledAsEntity(text, entity, index = 0) {
   cy.WaitForStableDOM().then(() => {
-    if (IsWordLabeledAsEntity(text, entity)) { throw new Error(`We found that "${text}" is labeled as "${entity}" - it should have no label`) }
+    if (IsWordLabeledAsEntity(text, entity, index)) { 
+      throw new Error(`At index ${index} we found that "${text}" is labeled as "${entity}" - it should have no label`) 
+    }
   })
 }
 
-function IsWordLabeledAsEntity(word, entity) {
-  var wordWasFound = false
-  const elements = Cypress.$('[data-testid="token-node-entity-value"] > span > span')
+function IsWordLabeledAsEntity(word, entity, index = 0) {
+  let elements = Cypress.$('div.slate-editor')
+  if (index > elements.length - 1) {
+    throw new Error(`IsWordLabeledAsEntity - invalid index: ${index} - maximum index is: ${elements.length - 1} `)
+  }
+
+  let wordWasFound = false
+  elements = Cypress.$(elements[index]).find('[data-testid="token-node-entity-value"] > span > span')
   helpers.ConLog('IsWordLabeledAsEntity', `Number of elements found: ${elements.length}`)
 
   // If you need to find a phrase, this part of the code will fail, 
@@ -360,7 +367,7 @@ export function LabelTextAsEntity(text, entity, itMustNotBeLabeledYet = true) {
 // *** word that uniquely identifies the labeled text
 export function SelectEntityLabel(word, entity, index = 0) {
   cy.Get('div.slate-editor').then(elements => {
-    expect(elements.length).to.be.at.least(index - 1)
+    expect(elements.length).to.be.at.least(index + 1)
     cy.wrap(elements[index]).within(() => {
       cy.Get('[data-testid="token-node-entity-value"] > span > span')
         .ExactMatch(word)
@@ -371,6 +378,7 @@ export function SelectEntityLabel(word, entity, index = 0) {
     })
   })
 }
+
 export function RemoveEntityLabel(word, entity, index = 0) {
   SelectEntityLabel(word, entity, index)
   cy.Get('button[title="Unselect Entity"]').Click() 
@@ -424,12 +432,12 @@ function VerifyEntityLabelConflictPopupAndClickButton(previousTextEntityPairs, a
     cy.Get('[data-testid="extract-conflict-modal-conflicting-labels"]')
       .siblings('[data-testid="extractor-response-editor-entity-labeler"]')
       .within(() => { attemptedTextEntityPairs.forEach(textEntityPair => VerifyEntityLabel(textEntityPair.text, textEntityPair.entity)) })
-    
-    if (selectAttempted) {
-      cy.Get('[data-testid="extract-conflict-modal-conflicting-labels"]').click()
-    }
   }
   
+  if (selectAttempted) {
+    cy.Get('[data-testid="extract-conflict-modal-conflicting-labels"]').click()
+  }
+
   cy.get(buttonSelector).Click()
   helpers.ConLog('VerifyEntityLabelConflictPopupAndClickButton', 'end')
 }
