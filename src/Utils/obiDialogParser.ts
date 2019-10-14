@@ -8,6 +8,7 @@ import * as OBIUtils from './obiUtils'
 import * as Util from './util'
 import * as OBITypes from '../types/obiTypes'
 import * as stripJsonComments from 'strip-json-comments'
+import { makeScorerSteps } from './testDataUtil'
 
 enum OBIStepType {
     BEGIN_DIALOG = "Microsoft.BeginDialog",
@@ -32,6 +33,26 @@ class ObiDialogNode {
         this.dialog = dialog
         this.children = []
     }
+}
+
+// A tree of scorer steps, used to build TrainRound instances.
+// The tree will branch at switch conditions; when these are encountered, we want to generate separate rounds
+// for each branch.
+class ScorerStepNode {
+    scorerSteps: CLM.TrainScorerStep[]
+    children?: ScorerStepNode[]
+
+    constructor() {
+        this.scorerSteps = []
+    }
+
+    addChild(node: ScorerStepNode): void {
+        if (!this.children) {
+            this.children = []
+        }
+        this.children.push(node)
+    }
+    isEmpty(): boolean { return this.scorerSteps.length === 0 && !this.children }
 }
 
 export interface ObiDialogParserResult {
@@ -81,6 +102,7 @@ export class ObiDialogParser {
         } else {
             let conditionalEntities: { [key: string]: Set<string> } = {}
             const rootNode = await this.collectDialogNodes(mainDialog, conditionalEntities)
+            // TODO(thpar) : Create the conditional entities.
             trainDialogs = await this.getTrainDialogs(rootNode)
         }
         return {
@@ -210,24 +232,24 @@ export class ObiDialogParser {
                         node.children.push(childDialogs)
                     }
                     break
-                    case OBIStepType.SWITCH_CONDITION:
-                            if (!step.cases && !step.default) {
-                                throw new Error("SwitchCondition must have at least one case or default")
+                case OBIStepType.SWITCH_CONDITION:
+                    if (!step.cases && !step.default) {
+                        throw new Error("SwitchCondition must have at least one case or default")
+                    }
+                    if (step.cases) {
+                        for (const branch of step.cases) {
+                            if (!branch.steps) {
+                                throw new Error("Each case in SwitchCondition must have at least one step")
                             }
-                            if (step.cases) {
-                                // Collect the entities and values used in expressions
-                                for (const branch of step.cases) {
-                                    if (!branch.steps) {
-                                        throw new Error("Each case in SwitchCondition must have at least one step")
-                                    }
-                                    OBIUtils.parseEntityConditionFromDialogCase(branch, conditionalEntities)
-                                    await this.collectDialogStepChildren(node, branch.steps, conditionalEntities)
-                                }
-                            }
-                            if (step.default) {
-                                await this.collectDialogStepChildren(node, step.default, conditionalEntities)
-                            }
-                            break
+                            // Collect the entities and values used in case expressions.
+                            OBIUtils.parseEntityConditionFromDialogCase(branch, conditionalEntities)
+                            await this.collectDialogStepChildren(node, branch.steps, conditionalEntities)
+                        }
+                    }
+                    if (step.default) {
+                        await this.collectDialogStepChildren(node, step.default, conditionalEntities)
+                    }
+                    break
                 default:
                 // No child nodes, so nothing to do here.
                 // The actions in this step will be handled later.
@@ -260,7 +282,7 @@ export class ObiDialogParser {
         // Build up a training round from any applicable steps in this node.
         const obiDialog = node.dialog
         if (obiDialog.steps) {
-            let trainRound = await this.getTrainRoundfromOBIDialogSteps(obiDialog.steps)
+            let scorerSteps = await this.getScorerStepsromOBIDialogSteps(obiDialog.steps)
             if (trainRound) {
                 if (currentIntent) {
                     const extractorStep: CLM.TrainExtractorStep = {
@@ -294,9 +316,9 @@ export class ObiDialogParser {
         return dialogs
     }
 
-    private async getTrainRoundfromOBIDialogSteps(steps: (string | OBITypes.OBIDialog)[]):
-        Promise<CLM.TrainRound | undefined> {
-        let trainRound: CLM.TrainRound | undefined
+    private async getScorerStepsromOBIDialogSteps(steps: (string | OBITypes.OBIDialog)[]):
+        Promise<ScorerStepNode> {
+        let node: ScorerStepNode = new ScorerStepNode()
         for (const [i, step] of steps.entries()) {
             const nextStep = (i + 1 < steps.length) ? steps[i + 1] : undefined
             if (typeof step === "string" || typeof nextStep === "string") {
@@ -305,70 +327,56 @@ export class ObiDialogParser {
             }
             switch (step.$type) {
                 case OBIStepType.SEND_ACTIVITY: {
-                    if (!trainRound) {
-                        trainRound = {
-                            extractorStep: { textVariations: [] },
-                            scorerSteps: []
-                        }
-                    }
                     if (!step.activity) {
-                        throw new Error("Expected activity to be set")
+                        throw new Error("Expected activity to be set in steps")
                     }
                     const scorerStep = await this.getScorerStepFromActivity(step.activity)
-                    trainRound.scorerSteps.push(scorerStep)
+                    node.scorerSteps.push(scorerStep)
                     break
                 }
                 case OBIStepType.TEXT_INPUT: {
-                    if (!trainRound) {
-                        trainRound = {
-                            extractorStep: { textVariations: [] },
-                            scorerSteps: []
-                        }
-                    }
                     if (!step.prompt) {
-                        throw new Error("Expected activity to be set")
+                        throw new Error("Expected activity to be set in steps")
                     }
                     const scorerStep = await this.getScorerStepFromActivity(step.prompt)
-                    trainRound.scorerSteps.push(scorerStep)
+                    node.scorerSteps.push(scorerStep)
                     break
                 }
                 case OBIStepType.HTTP_REQUEST: {
-                    if (!trainRound) {
-                        trainRound = {
-                            extractorStep: { textVariations: [] },
-                            scorerSteps: []
-                        }
-                    }
                     const scorerStep = await this.createActionFromHttpRequest(step, nextStep)
-                    trainRound.scorerSteps.push(scorerStep)
+                    node.scorerSteps.push(scorerStep)
                     break
                 }
                 case OBIStepType.SWITCH_CONDITION: {
                     // NOTA BENE : We currently assume that switch nodes will only be acting on values returned by
                     // API calls, and that values will be compared using strict string equality.
-                    if (!trainRound) {
-                        trainRound = {
-                            extractorStep: { textVariations: [] },
-                            scorerSteps: []
-                        }
-                    }
-                    // TODO - this is broken.  We actually need to return *different* rounds for each case.
                     if (step.cases) {
                         for (const branch of step.cases) {
                             if (!branch.steps) {
                                 throw new Error("Case branch must contain steps")
                             }
-                            const childRound = await this.getTrainRoundfromOBIDialogSteps(branch.steps)
-                            if (childRound) {
-                                trainRound.scorerSteps = [...trainRound.scorerSteps, ...childRound.scorerSteps]
+                            let childNode = await this.getScorerStepsromOBIDialogSteps(branch.steps)
+                            if (!childNode.isEmpty()) {
+                                node.addChild(childNode)
                             }
                         }
                     }
                     if (step.default) {
-                        const childRound = await this.getTrainRoundfromOBIDialogSteps(step.default)
-                        if (childRound) {
-                            trainRound.scorerSteps = [...trainRound.scorerSteps, ...childRound.scorerSteps]
+                        const childNode = await this.getScorerStepsromOBIDialogSteps(step.default)
+                        if (!childNode.isEmpty()) {
+                            node.addChild(childNode)
                         }
+                    }
+                    if (node.children && node.children.length > 1) {
+                        // This node has created a branch in the dialog flow.
+                        // We need to parse the remainer of the dialog steps and add the result to each of the branches.
+                        const nextSteps = steps.slice(i + 1)
+                        const nextNode = await this.getScorerStepsromOBIDialogSteps(nextSteps)
+                        for (let child of node.children) {
+                            child.addChild(nextNode)
+                        }
+                        // Return now; we've explicitly parsed the remainder of the tree above.
+                        return node
                     }
                     break
                 }
@@ -385,7 +393,7 @@ export class ObiDialogParser {
                 }
             }
         }
-        return trainRound
+        return node
     }
 
     private async getScorerStepFromActivity(prompt: string): Promise<CLM.TrainScorerStep> {
