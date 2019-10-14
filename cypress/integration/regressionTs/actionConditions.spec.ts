@@ -24,6 +24,9 @@ describe('Action Conditions', () => {
             one: 'You have one fruit',
             some: 'You have some fruits',
             many: 'You have many fruits',
+
+            setEnumTwo: 'myEnumEntity: TWO',
+            enumTwo: 'Enum Value is set to Two!',
         },
         conditions: {
             gte5: `myNumber >= 5`,
@@ -34,7 +37,11 @@ describe('Action Conditions', () => {
             gt1: `myMultiValueEntity > 1`,
             lte3: `myMultiValueEntity <= 3`,
             gt3: `myMultiValueEntity > 3`,
+            enumTwo: 'myEnumEntity == TWO'
         },
+        inputs: {
+            setEnumValue: 'Set the enum value!',
+        }
     }
 
     const conditionDisplay = `${testData.entities.number} ${testData.operator} ${testData.constantValue}`
@@ -187,153 +194,376 @@ describe('Action Conditions', () => {
     })
 
     describe(`Action Constraints`, () => {
-        describe(`Single Value Entity - Number (label value)`, () => {
-            it(`should properly constrain actions based on true ValueConditions`, () => {
+        describe(`ValueConditions`, () => {
+            describe(`Single Value Entity - Number Value (number from label)`, () => {
+                it(`should properly constrain actions`, () => {
+                    cy.get(s.model.buttonNavTrainDialogs).click()
+                    cy.get(s.trainDialogs.buttonNew).click()
+
+                    // Start dialog
+                    util.inputText('hi')
+                    cy.get(s.trainDialog.buttonScoreActions).click()
+                    cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+                        .should('not.exist')
+                    util.selectAction(s.trainDialog.actionScorerTextActions, testData.actions.whatIsNumber)
+
+                    // Enter 'low' number
+                    util.inputText('3')
+                    cy.get(s.trainDialog.buttonScoreActions).click()
+                    cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+                        .should('not.exist')
+
+                    // Verify conditions on other actions are disqualified
+                    const lowInputActionConditionStates = [
+                        {
+                            text: testData.actions.normal,
+                            conditions: [
+                                {
+                                    text: testData.conditions.gte5,
+                                    match: false,
+                                },
+                                {
+                                    text: testData.conditions.lt30,
+                                    match: true,
+                                },
+                            ],
+                        },
+                        {
+                            text: testData.actions.high,
+                            conditions: [
+                                {
+                                    text: testData.conditions.gte30,
+                                    match: false,
+                                },
+                            ],
+                        },
+                        {
+                            text: testData.actions.low,
+                            conditions: [
+                                {
+                                    text: testData.conditions.lt5,
+                                    match: true,
+                                },
+                            ],
+                        }
+                    ]
+
+                    lowInputActionConditionStates.forEach(acs => verifyActionConditionsState(acs))
+
+                    util.selectAction(s.trainDialog.actionScorerTextActions, testData.actions.low)
+                    util.selectAction(s.trainDialog.actionScorerTextActions, testData.actions.whatIsNumber)
+
+                    // Enter 'Normal' number
+                    util.inputText('9')
+                    cy.get(s.trainDialog.buttonScoreActions).click()
+                    cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+                        .should('not.exist')
+
+                    const normalInputActionConditionStates = [
+                        {
+                            text: testData.actions.normal,
+                            conditions: [
+                                {
+                                    text: testData.conditions.gte5,
+                                    match: true,
+                                },
+                                {
+                                    text: testData.conditions.lt30,
+                                    match: true,
+                                },
+                            ],
+                        },
+                        {
+                            text: testData.actions.high,
+                            conditions: [
+                                {
+                                    text: testData.conditions.gte30,
+                                    match: false,
+                                },
+                            ],
+                        },
+                        {
+                            text: testData.actions.low,
+                            conditions: [
+                                {
+                                    text: testData.conditions.lt5,
+                                    match: false,
+                                },
+                            ],
+                        }
+                    ]
+
+                    normalInputActionConditionStates.forEach(acs => verifyActionConditionsState(acs))
+
+                    util.selectAction(s.trainDialog.actionScorerTextActions, testData.actions.normal)
+                    util.selectAction(s.trainDialog.actionScorerTextActions, testData.actions.whatIsNumber)
+
+                    // Enter 'High' number
+                    util.inputText('89')
+                    cy.get(s.trainDialog.buttonScoreActions).click()
+                    cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+                        .should('not.exist')
+
+                    const highInputActionConditionStates = [
+                        {
+                            text: testData.actions.normal,
+                            conditions: [
+                                {
+                                    text: testData.conditions.gte5,
+                                    match: true,
+                                },
+                                {
+                                    text: testData.conditions.lt30,
+                                    match: false,
+                                },
+                            ],
+                        },
+                        {
+                            text: testData.actions.high,
+                            conditions: [
+                                {
+                                    text: testData.conditions.gte30,
+                                    match: true,
+                                },
+                            ],
+                        },
+                        {
+                            text: testData.actions.low,
+                            conditions: [
+                                {
+                                    text: testData.conditions.lt5,
+                                    match: false,
+                                },
+                            ],
+                        }
+                    ]
+
+                    highInputActionConditionStates.forEach(acs => verifyActionConditionsState(acs))
+
+                    util.selectAction(s.trainDialog.actionScorerTextActions, testData.actions.high)
+                    util.selectAction(s.trainDialog.actionScorerTextActions, testData.actions.whatIsNumber)
+
+                    cy.get(s.trainDialog.buttonSave)
+                        .click()
+
+                    cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+                        .should('not.exist')
+
+                    cy.get(s.mergeModal.buttonSaveAsIs)
+                        .click()
+
+                    cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+                        .should('not.exist')
+                })
+            })
+
+            describe(`Multi Value Entity - Cardinality (number of labels)`, () => {
+                it(`should properly constrain actions`, () => {
+                    cy.get(s.model.buttonNavTrainDialogs).click()
+                    cy.get(s.trainDialogs.buttonNew).click()
+
+                    // Start dialog
+                    util.inputText('lets do things based on number of fruits')
+                    cy.get(s.trainDialog.buttonScoreActions).click()
+                    cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+                        .should('not.exist')
+                    util.selectAction(s.trainDialog.actionScorerTextActions, testData.actions.listFruits)
+
+                    // Enter one fruit
+                    util.inputText('i like apples')
+                    cy.get(s.trainDialog.buttonScoreActions).click()
+                    cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+                        .should('not.exist')
+
+                    // Verify conditions on other actions are disqualified
+                    const oneFruitActionConditionStates = [
+                        {
+                            text: testData.actions.one,
+                            conditions: [
+                                {
+                                    text: testData.conditions.eq1,
+                                    match: true,
+                                },
+                            ],
+                        },
+                        {
+                            text: testData.actions.some,
+                            conditions: [
+                                {
+                                    text: testData.conditions.gt1,
+                                    match: false,
+                                },
+                                {
+                                    text: testData.conditions.lte3,
+                                    match: true,
+                                },
+                            ],
+                        },
+                        {
+                            text: testData.actions.many,
+                            conditions: [
+                                {
+                                    text: testData.conditions.gt3,
+                                    match: false,
+                                },
+                            ],
+                        }
+                    ]
+
+                    oneFruitActionConditionStates.forEach(acs => verifyActionConditionsState(acs))
+
+                    util.selectAction(s.trainDialog.actionScorerTextActions, testData.actions.one)
+                    util.selectAction(s.trainDialog.actionScorerTextActions, testData.actions.listFruits)
+
+                    // Enter one fruit
+                    util.inputText('i like oranges and grapes')
+                    cy.get(s.trainDialog.buttonScoreActions).click()
+                    cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+                        .should('not.exist')
+
+                    // Verify conditions on other actions are disqualified
+                    const someFruitActionConditionStates = [
+                        {
+                            text: testData.actions.one,
+                            conditions: [
+                                {
+                                    text: testData.conditions.eq1,
+                                    match: false,
+                                },
+                            ],
+                        },
+                        {
+                            text: testData.actions.some,
+                            conditions: [
+                                {
+                                    text: testData.conditions.gt1,
+                                    match: true,
+                                },
+                                {
+                                    text: testData.conditions.lte3,
+                                    match: true,
+                                },
+                            ],
+                        },
+                        {
+                            text: testData.actions.many,
+                            conditions: [
+                                {
+                                    text: testData.conditions.gt3,
+                                    match: false,
+                                },
+                            ],
+                        }
+                    ]
+
+                    someFruitActionConditionStates.forEach(acs => verifyActionConditionsState(acs))
+
+                    util.selectAction(s.trainDialog.actionScorerTextActions, testData.actions.some)
+                    util.selectAction(s.trainDialog.actionScorerTextActions, testData.actions.listFruits)
+
+                    // Enter one fruit
+                    util.inputText('i like pears and plums')
+                    cy.get(s.trainDialog.buttonScoreActions).click()
+                    cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+                        .should('not.exist')
+
+                    // Verify conditions on other actions are disqualified
+                    const manyFruitActionConditionStates = [
+                        {
+                            text: testData.actions.one,
+                            conditions: [
+                                {
+                                    text: testData.conditions.eq1,
+                                    match: false,
+                                },
+                            ],
+                        },
+                        {
+                            text: testData.actions.some,
+                            conditions: [
+                                {
+                                    text: testData.conditions.gt1,
+                                    match: true,
+                                },
+                                {
+                                    text: testData.conditions.lte3,
+                                    match: false,
+                                },
+                            ],
+                        },
+                        {
+                            text: testData.actions.many,
+                            conditions: [
+                                {
+                                    text: testData.conditions.gt3,
+                                    match: true,
+                                },
+                            ],
+                        }
+                    ]
+
+                    manyFruitActionConditionStates.forEach(acs => verifyActionConditionsState(acs))
+
+                    util.selectAction(s.trainDialog.actionScorerTextActions, testData.actions.many)
+                    util.selectAction(s.trainDialog.actionScorerTextActions, testData.actions.listFruits)
+
+                    cy.get(s.trainDialog.buttonSave)
+                        .click()
+
+                    cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+                        .should('not.exist')
+
+                    cy.get(s.mergeModal.buttonSaveAsIs)
+                        .click()
+
+                    cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+                        .should('not.exist')
+                })
+            })
+        })
+
+        describe(`EnumConditions`, () => {
+            it(`should properly constrain actions`, () => {
                 cy.get(s.model.buttonNavTrainDialogs).click()
                 cy.get(s.trainDialogs.buttonNew).click()
 
                 // Start dialog
-                util.inputText('hi')
-                cy.get(s.trainDialog.buttonScoreActions).click()
-                cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
-                    .should('not.exist')
-                util.selectAction(s.trainDialog.actionScorerTextActions, testData.actions.whatIsNumber)
-
-                // Enter 'low' number
-                util.inputText('3')
+                util.inputText('Set enum value!')
                 cy.get(s.trainDialog.buttonScoreActions).click()
                 cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
                     .should('not.exist')
 
-                // Verify conditions on other actions are disqualified
-                const lowInputActionConditionStates = [
+                const enumActionConditionStates = [
                     {
-                        text: testData.actions.normal,
+                        text: testData.actions.enumTwo,
                         conditions: [
                             {
-                                text: testData.conditions.gte5,
-                                match: false,
-                            },
-                            {
-                                text: testData.conditions.lt30,
-                                match: true,
-                            },
-                        ],
-                    },
-                    {
-                        text: testData.actions.high,
-                        conditions: [
-                            {
-                                text: testData.conditions.gte30,
+                                text: testData.conditions.enumTwo,
                                 match: false,
                             },
                         ],
                     },
-                    {
-                        text: testData.actions.low,
-                        conditions: [
-                            {
-                                text: testData.conditions.lt5,
-                                match: true,
-                            },
-                        ],
-                    }
                 ]
 
-                lowInputActionConditionStates.forEach(acs => verifyActionConditionsState(acs))
+                enumActionConditionStates.forEach(acs => verifyActionConditionsState(acs))
 
-                util.selectAction(s.trainDialog.actionScorerTextActions, testData.actions.low)
-                util.selectAction(s.trainDialog.actionScorerTextActions, testData.actions.whatIsNumber)
+                util.selectAction(s.trainDialog.actionScorer.enumActions, testData.actions.setEnumTwo)
 
-                // Enter 'Normal' number
-                util.inputText('9')
-                cy.get(s.trainDialog.buttonScoreActions).click()
-                cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
-                    .should('not.exist')
-
-                const normalInputActionConditionStates = [
+                const enumAcs = [
                     {
-                        text: testData.actions.normal,
+                        text: testData.actions.enumTwo,
                         conditions: [
                             {
-                                text: testData.conditions.gte5,
-                                match: true,
-                            },
-                            {
-                                text: testData.conditions.lt30,
+                                text: testData.conditions.enumTwo,
                                 match: true,
                             },
                         ],
                     },
-                    {
-                        text: testData.actions.high,
-                        conditions: [
-                            {
-                                text: testData.conditions.gte30,
-                                match: false,
-                            },
-                        ],
-                    },
-                    {
-                        text: testData.actions.low,
-                        conditions: [
-                            {
-                                text: testData.conditions.lt5,
-                                match: false,
-                            },
-                        ],
-                    }
                 ]
 
-                normalInputActionConditionStates.forEach(acs => verifyActionConditionsState(acs))
+                enumAcs.forEach(acs => verifyActionConditionsState(acs))
 
-                util.selectAction(s.trainDialog.actionScorerTextActions, testData.actions.normal)
-                util.selectAction(s.trainDialog.actionScorerTextActions, testData.actions.whatIsNumber)
-
-                // Enter 'Normal' number
-                util.inputText('89')
-                cy.get(s.trainDialog.buttonScoreActions).click()
-                cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
-                    .should('not.exist')
-
-                const highInputActionConditionStates = [
-                    {
-                        text: testData.actions.normal,
-                        conditions: [
-                            {
-                                text: testData.conditions.gte5,
-                                match: true,
-                            },
-                            {
-                                text: testData.conditions.lt30,
-                                match: false,
-                            },
-                        ],
-                    },
-                    {
-                        text: testData.actions.high,
-                        conditions: [
-                            {
-                                text: testData.conditions.gte30,
-                                match: true,
-                            },
-                        ],
-                    },
-                    {
-                        text: testData.actions.low,
-                        conditions: [
-                            {
-                                text: testData.conditions.lt5,
-                                match: false,
-                            },
-                        ],
-                    }
-                ]
-
-                highInputActionConditionStates.forEach(acs => verifyActionConditionsState(acs))
-
-                util.selectAction(s.trainDialog.actionScorerTextActions, testData.actions.high)
-                util.selectAction(s.trainDialog.actionScorerTextActions, testData.actions.whatIsNumber)
+                util.selectAction(s.trainDialog.actionScorerTextActions, testData.actions.enumTwo)
 
                 cy.get(s.trainDialog.buttonSave)
                     .click()
@@ -348,153 +578,101 @@ describe('Action Conditions', () => {
                     .should('not.exist')
             })
         })
+    })
 
-        describe(`Multi Value Entity - Cardinality (number of labels)`, () => {
-            it(`should properly constrain actions based`, () => {
-                cy.get(s.model.buttonNavTrainDialogs).click()
-                cy.get(s.trainDialogs.buttonNew).click()
+    describe(`Dialog Validity`, () => {
+        before(() => {
+            cy.get(s.model.buttonNavTrainDialogs).click()
+        })
 
-                // Start dialog
-                util.inputText('lets do things based on number of fruits')
-                cy.get(s.trainDialog.buttonScoreActions).click()
-                cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
-                    .should('not.exist')
-                util.selectAction(s.trainDialog.actionScorerTextActions, testData.actions.listFruits)
+        describe(`ValueConditions`, () => {
+            describe('Single Value Entity - Number Value (number from label)', () => {
+                it(`when changing labels activities should be marked with errors if constraints not satisfied`, () => {
+                    cy.get(s.trainDialogs.descriptions)
+                        .contains('The numbers are 4 and 21')
+                        .click()
 
-                // Enter one fruit
-                util.inputText('i like apples')
-                cy.get(s.trainDialog.buttonScoreActions).click()
-                cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
-                    .should('not.exist')
+                    cy.get(s.webChat.messageFromBotException)
+                        .should('not.exist')
 
-                // Verify conditions on other actions are disqualified
-                const oneFruitActionConditionStates = [
-                    {
-                        text: testData.actions.one,
-                        conditions: [
-                            {
-                                text: testData.conditions.eq1,
-                                match: true,
-                            },
-                        ],
-                    },
-                    {
-                        text: testData.actions.some,
-                        conditions: [
-                            {
-                                text: testData.conditions.gt1,
-                                match: false,
-                            },
-                            {
-                                text: testData.conditions.lte3,
-                                match: true,
-                            },
-                        ],
-                    },
-                    {
-                        text: testData.actions.many,
-                        conditions: [
-                            {
-                                text: testData.conditions.gt3,
-                                match: false,
-                            },
-                        ],
-                    }
-                ]
+                    cy.get(s.webChat.activities)
+                        .contains('The numbers are 4 and 21')
+                        .click()
 
-                oneFruitActionConditionStates.forEach(acs => verifyActionConditionsState(acs))
+                    util.removeLabel('4')
 
-                util.selectAction(s.trainDialog.actionScorerTextActions, testData.actions.one)
-                util.selectAction(s.trainDialog.actionScorerTextActions, testData.actions.listFruits)
+                    cy.get('body')
+                        .trigger(constants.events.selectWord, { detail: '21' })
 
-                // Enter one fruit
-                util.inputText('i like oranges and grapes')
-                cy.get(s.trainDialog.buttonScoreActions).click()
-                cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
-                    .should('not.exist')
+                    cy.get(s.entityPicker.inputSearch)
+                        .type(testData.entities.number)
+                        .type(`{enter}`)
 
-                // Verify conditions on other actions are disqualified
-                const someFruitActionConditionStates = [
-                    {
-                        text: testData.actions.one,
-                        conditions: [
-                            {
-                                text: testData.conditions.eq1,
-                                match: false,
-                            },
-                        ],
-                    },
-                    {
-                        text: testData.actions.some,
-                        conditions: [
-                            {
-                                text: testData.conditions.gt1,
-                                match: true,
-                            },
-                            {
-                                text: testData.conditions.lte3,
-                                match: true,
-                            },
-                        ],
-                    },
-                    {
-                        text: testData.actions.many,
-                        conditions: [
-                            {
-                                text: testData.conditions.gt3,
-                                match: false,
-                            },
-                        ],
-                    }
-                ]
+                    cy.get(s.extractionEditor.buttonSubmitChanges)
+                        .click()
 
-                someFruitActionConditionStates.forEach(acs => verifyActionConditionsState(acs))
+                    cy.get(s.webChat.messageFromBotException)
+                    cy.get(s.trainDialog.buttonAbandon)
+                        .click()
 
-                util.selectAction(s.trainDialog.actionScorerTextActions, testData.actions.some)
-                util.selectAction(s.trainDialog.actionScorerTextActions, testData.actions.listFruits)
+                    cy.get(s.confirmCancelModal.buttonConfirm)
+                        .click()
 
-                // Enter one fruit
-                util.inputText('i like pears and plums')
-                cy.get(s.trainDialog.buttonScoreActions).click()
-                cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+                    cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+                        .should('not.exist')
+                })
+            })
+
+            describe('Multi Value Entity - Cardinality (number of labels)', () => {
+                it(`when changing labels activities should be marked with errors if constraints not satisfied`, () => {
+                    cy.get(s.trainDialogs.descriptions)
+                        .contains(testData.inputs.setEnumValue)
+                        .click()
+
+                    cy.get(s.webChat.messageFromBotException)
+                        .should('not.exist')
+
+                    cy.get(s.webChat.activities)
+                        .contains('memory.Set(myEnumEntity, TWO)')
+                        .click()
+
+                    util.selectAction(s.trainDialog.actionScorer.enumActions, 'myEnumEntity: THREE')
+                    cy.get(s.webChat.messageFromBotException)
+                    cy.get(s.trainDialog.buttonAbandon)
+                        .click()
+
+                    cy.get(s.confirmCancelModal.buttonConfirm)
+                        .click()
+
+                    cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+                        .should('not.exist')
+                })
+            })
+        })
+
+        describe(`EnumConditions`, () => {
+            it(`when selecting different enum activities dependent on original enum should be marked with errors`, () => {
+                cy.get(s.trainDialogs.descriptions)
+                    .contains(testData.inputs.setEnumValue)
+                    .click()
+
+                cy.get(s.webChat.messageFromBotException)
                     .should('not.exist')
 
-                // Verify conditions on other actions are disqualified
-                const manyFruitActionConditionStates = [
-                    {
-                        text: testData.actions.one,
-                        conditions: [
-                            {
-                                text: testData.conditions.eq1,
-                                match: false,
-                            },
-                        ],
-                    },
-                    {
-                        text: testData.actions.some,
-                        conditions: [
-                            {
-                                text: testData.conditions.gt1,
-                                match: true,
-                            },
-                            {
-                                text: testData.conditions.lte3,
-                                match: false,
-                            },
-                        ],
-                    },
-                    {
-                        text: testData.actions.many,
-                        conditions: [
-                            {
-                                text: testData.conditions.gt3,
-                                match: true,
-                            },
-                        ],
-                    }
-                ]
+                cy.get(s.webChat.activities)
+                    .contains('memory.Set(myEnumEntity, TWO)')
+                    .click()
 
-                manyFruitActionConditionStates.forEach(acs => verifyActionConditionsState(acs))
+                util.selectAction(s.trainDialog.actionScorer.enumActions, 'myEnumEntity: THREE')
+                cy.get(s.webChat.messageFromBotException)
+                cy.get(s.trainDialog.buttonAbandon)
+                    .click()
+
+                cy.get(s.confirmCancelModal.buttonConfirm)
+                    .click()
+
+                cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+                    .should('not.exist')
             })
         })
     })

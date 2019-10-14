@@ -124,6 +124,7 @@ const selectors = {
         actionScorerSetEntityActions: '[data-testid="action-scorer-action-set-entity"]',
         actionScorerTextActions: '[data-testid="action-scorer-text-response"]',
         actionScorer: {
+            enumActions: '[data-testid="action-scorer-action-set-entity"]',
             rowField: '[data-automationid="DetailsRowFields"]',
             buttonCreate: '[data-testid="action-scorer-add-action-button"]',
             buttonSelected: '[data-testid="action-scorer-button-selected"]',
@@ -205,6 +206,7 @@ const selectors = {
         messageFromMeException: '.wc-border-error-from-me',
         messageColorException: '.wc-message-color-exception',
         messageDownArrow: '.wc-message-downarrow',
+        activities: '[data-testid="web-chat-utterances"]',
         buttonAddAction: '[data-testid="chat-edit-add-bot-response-button"]',
         buttonAddInput: '[data-testid="chat-edit-add-user-input-button"]',
         buttonBranch: '[data-testid="edit-dialog-modal-branch-button"]',
