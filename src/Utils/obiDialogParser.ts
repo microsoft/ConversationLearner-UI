@@ -214,14 +214,24 @@ export class ObiDialogParser {
 
     // Generates TrainDialog instances from the dialog tree.
     private async getTrainDialogs(node: ObiDialogNode): Promise<CLM.TrainDialog[]> {
-        return this.getTrainDialogsIter(node, [])
+        return this.getTrainDialogsIter(node, [], node.intent)
     }
 
     // Recursive helper.
-    private async getTrainDialogsIter(node: ObiDialogNode, currentRounds: CLM.TrainRound[]):
+    private async getTrainDialogsIter(node: ObiDialogNode, currentRounds: CLM.TrainRound[],
+        intent: string | undefined):
         Promise<CLM.TrainDialog[]> {
         if (!node) {
             return []
+        }
+        // Intent may be carried forward from a previous node if that node did not create a TrainRound.
+        let currentIntent = intent
+        if (currentIntent) {
+            if (node.intent && node.intent !== currentIntent) {
+                throw Error(`Node intent ${node.intent} conflicts with incoming intent ${currentIntent}`)
+            }
+        } else {
+            currentIntent = node.intent
         }
         let rounds = [...currentRounds]
         // Build up a training round from any applicable steps in this node.
@@ -229,11 +239,12 @@ export class ObiDialogParser {
         if (obiDialog.steps) {
             let trainRound = await this.getTrainRoundfromOBIDialogSteps(obiDialog.steps)
             if (trainRound) {
-                if (node.intent) {
+                if (currentIntent) {
                     const extractorStep: CLM.TrainExtractorStep = {
-                        textVariations: this.getTextVariations(node.intent)
+                        textVariations: this.getTextVariations(currentIntent)
                     }
                     trainRound.extractorStep = extractorStep
+                    currentIntent = undefined  // Used the intent in this round, so reset it.
                 }
                 rounds.push(trainRound)
             }
@@ -247,7 +258,7 @@ export class ObiDialogParser {
         // This is not a leaf node; continue building up the dialog tree from the rounded visited so far.
         let dialogs: CLM.TrainDialog[] = []
         for (const child of node.children) {
-            dialogs = [...dialogs, ...(await this.getTrainDialogsIter(child, rounds))]
+            dialogs = [...dialogs, ...(await this.getTrainDialogsIter(child, rounds, currentIntent))]
         }
         return dialogs
     }
