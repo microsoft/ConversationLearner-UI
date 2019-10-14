@@ -15,6 +15,7 @@ enum OBIStepType {
     END_TURN = "Microsoft.EndTurn",  // TODO(thpar) : Obsolete / delete ?
     HTTP_REQUEST = "Microsoft.HttpRequest",
     SEND_ACTIVITY = "Microsoft.SendActivity",
+    SWITCH_CONDITION = "Microsoft.SwitchCondition",
     TEXT_INPUT = "Microsoft.TextInput"
 }
 

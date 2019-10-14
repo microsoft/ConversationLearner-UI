@@ -2,14 +2,15 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
-import * as CLM from '@conversationlearner/models'
 import * as BB from 'botbuilder'
-import * as Util from './util'
+import * as CLM from '@conversationlearner/models'
 import * as DialogEditing from './dialogEditing'
 import * as DialogUtils from './dialogUtils'
+import * as Util from './util'
 import Plain from 'slate-plain-serializer'
 import { REPROMPT_SELF } from '../types/const'
 import { ImportedAction } from '../types/models'
+import { Case } from '../types/obiTypes'
 import { User } from '../types'
 
 export async function toTranscripts(
@@ -372,6 +373,32 @@ export function generateEntityMapForAction(action: CLM.ActionBase, filledEntityM
         }
     })
     return map
+}
+
+export function parseEntityConditionFromDialogCase(branch: Case, entityConditions: Map<string, Set<string>>) {
+    if (!branch.value) {
+        throw new Error("SwitchCondition cases must have value")
+    }
+    // Currently we only support equality expressions.
+    const tokens = branch.value.split("==").map(
+        (i) => {
+            const trimmed = i.trim()
+            if (trimmed.length === 0) {
+                throw new Error("SwitchCondition entity and value must be non-empty")
+            }
+            return trimmed
+        }
+    )
+    if (tokens.length !== 2) {
+        throw new Error("SwitchCondition case is expected to have format 'x == y'")
+    }
+    const [entity, value] = tokens
+    let conditionValues = entityConditions.get(entity)
+    if (!conditionValues) {
+        conditionValues = new Set<string>()
+        entityConditions.set(entity, conditionValues)
+    }
+    conditionValues.add(value)
 }
 
 // Return hash text for the given activity

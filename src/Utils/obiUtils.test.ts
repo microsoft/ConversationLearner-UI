@@ -3,8 +3,9 @@
  * Licensed under the MIT License.
  */
 
-import * as ObiUtils from './obiUtils'
 import * as BB from 'botbuilder'
+import * as ObiTypes from '../types/obiTypes'
+import * as ObiUtils from './obiUtils'
 import { deepCopy, RecursivePartial } from './util'
 
 describe('obiUtils', () => {
@@ -151,6 +152,56 @@ describe('obiUtils', () => {
             }
 
             expect(() => ObiUtils.areTranscriptsEqual(t1 , t2)).toThrow()
+        })
+    })
+    // Test cases for parsing conditions from Microsoft.SwitchCondition statements.
+    describe('ConditionParsing', () => {
+        test('Test single condition', () => {
+            let entityConditions: Map<string, Set<string>> = new Map()
+            let testData: ObiTypes.Case = {
+                value: "$foo == bar"
+            }
+            ObiUtils.parseEntityConditionFromDialogCase(testData, entityConditions)
+            expect(entityConditions.has("$foo")).toBe(true)
+            expect(entityConditions.get("$foo")).toEqual(new Set(["bar"]))
+        })
+        test('Test multiple conditions', () => {
+            let entityConditions: Map<string, Set<string>> = new Map()
+            // Set up an existing condition.
+            let valueSet: Set<string> = new Set(["one"])
+            entityConditions.set("$foo", valueSet)
+            let testData: ObiTypes.Case = {
+                value: "$foo == two"
+            }
+            ObiUtils.parseEntityConditionFromDialogCase(testData, entityConditions)
+            expect(entityConditions.has("$foo")).toBe(true)
+            expect(entityConditions.get("$foo")).toEqual(new Set(["one", "two"]))
+        })
+        test('Missing condition token', () => {
+            let entityConditions: Map<string, Set<string>> = new Map()
+            for (const value of ["$foo ==", "== bar", "=="]) {
+                let testData: ObiTypes.Case = { value }
+                try {
+                    ObiUtils.parseEntityConditionFromDialogCase(testData, entityConditions)
+                    fail("Did not get expected exception")
+                }
+                catch (err) {
+                    expect(err instanceof Error).toBe(true)
+                    expect(Error(err).message).toBe("Error: SwitchCondition entity and value must be non-empty")
+                }
+            }
+        })
+        test('Missing ==', () => {
+            let entityConditions: Map<string, Set<string>> = new Map()
+            let testData: ObiTypes.Case = { value: "foo" }
+            try {
+                ObiUtils.parseEntityConditionFromDialogCase(testData, entityConditions)
+                fail("Did not get expected exception")
+            }
+            catch (err) {
+                expect(err instanceof Error).toBe(true)
+                expect(Error(err).message).toBe("Error: SwitchCondition case is expected to have format 'x == y'")
+            }
         })
     })
 })
