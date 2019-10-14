@@ -11,7 +11,8 @@ import * as stripJsonComments from 'strip-json-comments'
 
 enum OBIStepType {
     BEGIN_DIALOG = "Microsoft.BeginDialog",
-    END_TURN = "Microsoft.EndTurn",
+    END_DIALOG = "Microsoft.EndDialog",
+    END_TURN = "Microsoft.EndTurn",  // TODO(thpar) : Obsolete / delete ?
     HTTP_REQUEST = "Microsoft.HttpRequest",
     SEND_ACTIVITY = "Microsoft.SendActivity",
     TEXT_INPUT = "Microsoft.TextInput"
@@ -325,6 +326,7 @@ export class ObiDialogParser {
                     // Nothing to do here, the child dialogs were already expanded.
                     break
                 }
+                case OBIStepType.END_DIALOG:
                 case OBIStepType.END_TURN:
                     // Noop.
                     break
