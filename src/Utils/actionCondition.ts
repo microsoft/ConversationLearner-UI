@@ -73,3 +73,51 @@ export const isConditionEqual = (conditionA: CLM.Condition, conditionB: CLM.Cond
         && conditionA.valueId === conditionB.valueId
         && conditionA.value === conditionB.value
 }
+
+
+/**
+ * Given memory value,
+ * If entity is multivalue returns the number of labels/values
+ * If entity has number resolution return number from label
+ * Otherwise, return undefined to indicate number can't be parsed from memory
+ */
+export const findNumberFromMemory = (memory: CLM.Memory, isMultivalue: boolean): number | undefined => {
+    if (isMultivalue) {
+        return memory.entityValues.length
+    }
+
+    const valueString: string | undefined = memory
+        && memory.entityValues[0]
+        && (memory.entityValues[0].resolution ? true : undefined)
+        && (memory.entityValues[0].resolution as any).value as string
+
+    const value = valueString
+        ? parseInt(valueString)
+        : undefined
+
+    return value
+}
+
+export const isValueConditionTrue = (condition: CLM.Condition, numberValue: number): boolean => {
+    let isTrue = false
+
+    if (condition.value) {
+        isTrue = (condition.condition === CLM.ConditionType.EQUAL && numberValue == condition.value)
+            || (condition.condition === CLM.ConditionType.NOT_EQUAL && numberValue != condition.value)
+            || (condition.condition === CLM.ConditionType.GREATER_THAN && numberValue > condition.value)
+            || (condition.condition === CLM.ConditionType.GREATER_THAN_OR_EQUAL && numberValue >= condition.value)
+            || (condition.condition === CLM.ConditionType.LESS_THAN && numberValue < condition.value)
+            || (condition.condition === CLM.ConditionType.LESS_THEN_OR_EQUAL && numberValue <= condition.value)
+    }
+
+    return isTrue
+}
+
+export const isEnumConditionTrue = (condition: CLM.Condition, memory: CLM.Memory): boolean => {
+    const enumValueId = memory
+        && memory.entityValues[0]
+        && memory.entityValues[0].enumValueId
+
+    return condition.valueId !== undefined
+        && condition.valueId === enumValueId 
+}

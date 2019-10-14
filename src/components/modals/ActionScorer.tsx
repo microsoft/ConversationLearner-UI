@@ -25,7 +25,7 @@ import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../react-intl-messages'
 import './ActionScorer.css'
 import { autobind } from 'core-decorators';
-import { getValueConditionName } from '../../Utils/actionCondition'
+import { getValueConditionName, findNumberFromMemory, isValueConditionTrue, isEnumConditionTrue } from '../../Utils/actionCondition'
 
 const MISSING_ACTION = 'missing_action'
 
@@ -41,43 +41,6 @@ interface IRenderableColumn extends OF.IColumn {
     render: (actionForRender: ActionForRender, component: ActionScorer, index: number) => React.ReactNode
 }
 
-/**
- * Given memory value,
- * If entity is multivalue returns the number of labels/values
- * If entity has number resolution return number from label
- * Otherwise, return undefined to indicate number can't be parsed from memory
- */
-const findNumberFromMemory = (memory: CLM.Memory, isMultivalue: boolean): number | undefined => {
-    if (isMultivalue) {
-        return memory.entityValues.length
-    }
-
-    const valueString: string | undefined = memory
-        && memory.entityValues[0]
-        && (memory.entityValues[0].resolution ? true : undefined)
-        && (memory.entityValues[0].resolution as any).value as string
-
-    const value = valueString
-        ? parseInt(valueString)
-        : undefined
-
-    return value
-}
-
-const isValueConditionTrue = (condition: CLM.Condition, numberValue: number): boolean => {
-    let isTrue = false
-
-    if (condition.value) {
-        isTrue = (condition.condition === CLM.ConditionType.EQUAL && numberValue == condition.value)
-            || (condition.condition === CLM.ConditionType.NOT_EQUAL && numberValue != condition.value)
-            || (condition.condition === CLM.ConditionType.GREATER_THAN && numberValue > condition.value)
-            || (condition.condition === CLM.ConditionType.GREATER_THAN_OR_EQUAL && numberValue >= condition.value)
-            || (condition.condition === CLM.ConditionType.LESS_THAN && numberValue < condition.value)
-            || (condition.condition === CLM.ConditionType.LESS_THEN_OR_EQUAL && numberValue <= condition.value)
-    }
-
-    return isTrue
-}
 
 function getColumns(intl: InjectedIntl): IRenderableColumn[] {
     return [
@@ -608,13 +571,12 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         // If EnumCondition
         if (condition.valueId) {
             const enumValue = entity.enumValues && entity.enumValues.find(ev => ev.enumValueId === condition.valueId)
-            const match = memory !== undefined
-                && memory.entityValues[0]
-                && memory.entityValues[0].enumValueId === condition.valueId
-
             const value = enumValue
                 ? enumValue.enumValue
                 : "NOT FOUND"
+
+            const match = memory !== undefined
+                && isEnumConditionTrue(condition, memory)
 
             return {
                 match,
