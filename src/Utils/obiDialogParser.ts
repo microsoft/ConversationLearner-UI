@@ -306,10 +306,11 @@ export class ObiDialogParser {
                     // Nothing to do here, the child dialogs were already expanded.
                     break
                 }
+                case OBIStepType.END_TURN:
+                    // Noop.
+                    break
                 default: {
-                    if (step.$type !== OBIStepType.END_TURN) {
-                        this.warnings.push(`Unhandled OBI Type: ${step.$type}`)
-                    }
+                    this.warnings.push(`Unhandled OBI Type: ${step.$type}`)
                 }
             }
         }
