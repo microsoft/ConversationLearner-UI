@@ -234,8 +234,8 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
         const maxLength = Math.max(activities1.length, activities2.length)
         const replayError = new CLM.ReplayErrorTranscriptValidation()
         for (let i = 0; i < maxLength; i = i + 1) {
-            const activity1 = activities1[i] as BB.Activity
-            const activity2 = activities2[i] as BB.Activity
+            const activity1 = activities1[i]
+            const activity2 = activities2[i]
             if (!OBIUtils.isSameActivity(activity1, activity2)) {
                 if (activity1) {
                     activity1.channelData.clData = {...activity1.channelData.clData, replayError  }
@@ -253,7 +253,7 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
 
         // Initialize activity heights for lookup
         const activityHeights: ActivityHeight[] = []
-        for (const [index, activity] of Object.entries(activities1 as BB.Activity[])) {
+        for (const [index, activity] of Object.entries(activities1)) {
             if (activity.id) {
                 const activityHeight: ActivityHeight = {
                     sourceName: ratingPair.sourceNames[0],
@@ -265,7 +265,7 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
                 activityHeights.push(activityHeight)
             }
         }
-        for (const [index, activity] of Object.entries(activities2 as BB.Activity[])) {
+        for (const [index, activity] of Object.entries(activities2)) {
             if (activity.id) {
                 const activityHeight: ActivityHeight = {
                     sourceName: ratingPair.sourceNames[1],
@@ -467,7 +467,7 @@ const mapStateToProps = (state: State) => {
 export interface ReceivedProps {
     app: CLM.AppBase
     testSet: Test.TestSet
-    onRate: (ratingPair: Test.RatingPair) => void
+    onRate: (ratingPair: Test.RatingPair) => Promise<void>
     onClose: () => void
 }
 
