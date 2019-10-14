@@ -12,7 +12,7 @@ import * as stripJsonComments from 'strip-json-comments'
 enum OBIStepType {
     BEGIN_DIALOG = "Microsoft.BeginDialog",
     END_DIALOG = "Microsoft.EndDialog",
-    END_TURN = "Microsoft.EndTurn",  // TODO(thpar) : Obsolete / delete ?
+    END_TURN = "Microsoft.EndTurn",
     HTTP_REQUEST = "Microsoft.HttpRequest",
     SEND_ACTIVITY = "Microsoft.SendActivity",
     TEXT_INPUT = "Microsoft.TextInput"
@@ -219,7 +219,9 @@ export class ObiDialogParser {
     }
 
     // Recursive helper.
-    private async getTrainDialogsIter(node: ObiDialogNode, currentRounds: CLM.TrainRound[],
+    private async getTrainDialogsIter(
+        node: ObiDialogNode,
+        currentRounds: CLM.TrainRound[],
         intent: string | undefined):
         Promise<CLM.TrainDialog[]> {
         if (!node) {
