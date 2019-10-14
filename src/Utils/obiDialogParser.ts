@@ -245,8 +245,16 @@ export class ObiDialogParser {
                     }
                     trainRound.extractorStep = extractorStep
                     currentIntent = undefined  // Used the intent in this round, so reset it.
+                    rounds.push(trainRound)
+                } else {
+                    // If we get here, then the current node has steps to execute *without* an intervening intent
+                    // (user utterance).  We therefore must append these scorer steps to the previous round.
+                    if (currentRounds.length === 0) {
+                        throw Error(`Attempting to append scorer steps to a non-existent round in node ${obiDialog.$id}`)
+                    }
+                    let round = currentRounds[currentRounds.length - 1]
+                    round.scorerSteps = [...round.scorerSteps, ...trainRound.scorerSteps]
                 }
-                rounds.push(trainRound)
             }
         }
         // This is a leaf node of the conversational tree; build a dialog containing the visited rounds.
