@@ -156,29 +156,24 @@ describe('obiUtils', () => {
     })
     // Test cases for parsing conditions from Microsoft.SwitchCondition statements.
     describe('ConditionParsing', () => {
+        let entityConditions: { [key: string]: Set<string> } = {}
         test('Test single condition', () => {
-            let entityConditions: Map<string, Set<string>> = new Map()
             let testData: ObiTypes.Case = {
                 value: "$foo == bar"
             }
             ObiUtils.parseEntityConditionFromDialogCase(testData, entityConditions)
-            expect(entityConditions.has("$foo")).toBe(true)
-            expect(entityConditions.get("$foo")).toEqual(new Set(["bar"]))
+            expect(entityConditions.$foo).toEqual(new Set(["bar"]))
         })
         test('Test multiple conditions', () => {
-            let entityConditions: Map<string, Set<string>> = new Map()
             // Set up an existing condition.
-            let valueSet: Set<string> = new Set(["one"])
-            entityConditions.set("$foo", valueSet)
+            entityConditions.$foo = new Set(["one"])
             let testData: ObiTypes.Case = {
                 value: "$foo == two"
             }
             ObiUtils.parseEntityConditionFromDialogCase(testData, entityConditions)
-            expect(entityConditions.has("$foo")).toBe(true)
-            expect(entityConditions.get("$foo")).toEqual(new Set(["one", "two"]))
+            expect(entityConditions.$foo).toEqual(new Set(["one", "two"]))
         })
         test('Missing condition token', () => {
-            let entityConditions: Map<string, Set<string>> = new Map()
             for (const value of ["$foo ==", "== bar", "=="]) {
                 let testData: ObiTypes.Case = { value }
                 try {
@@ -192,7 +187,6 @@ describe('obiUtils', () => {
             }
         })
         test('Missing ==', () => {
-            let entityConditions: Map<string, Set<string>> = new Map()
             let testData: ObiTypes.Case = { value: "foo" }
             try {
                 ObiUtils.parseEntityConditionFromDialogCase(testData, entityConditions)

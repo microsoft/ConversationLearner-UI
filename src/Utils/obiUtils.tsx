@@ -375,7 +375,7 @@ export function generateEntityMapForAction(action: CLM.ActionBase, filledEntityM
     return map
 }
 
-export function parseEntityConditionFromDialogCase(branch: Case, entityConditions: Map<string, Set<string>>) {
+export function parseEntityConditionFromDialogCase(branch: Case, entityConditions: { [key: string]: Set<string> }) {
     if (!branch.value) {
         throw new Error("SwitchCondition cases must have value")
     }
@@ -393,10 +393,10 @@ export function parseEntityConditionFromDialogCase(branch: Case, entityCondition
         throw new Error("SwitchCondition case is expected to have format 'x == y'")
     }
     const [entity, value] = tokens
-    let conditionValues = entityConditions.get(entity)
+    let conditionValues = entityConditions[entity]
     if (!conditionValues) {
         conditionValues = new Set<string>()
-        entityConditions.set(entity, conditionValues)
+        entityConditions[entity] = conditionValues
     }
     conditionValues.add(value)
 }

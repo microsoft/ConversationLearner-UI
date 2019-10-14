@@ -79,7 +79,8 @@ export class ObiDialogParser {
         if (!mainDialog) {
             this.warnings.push(`Missing entry point. Expecting a .dialog file called "Entry.main"`)
         } else {
-            const rootNode = await this.collectDialogNodes(mainDialog)
+            let conditionalEntities: { [key: string]: Set<string> } = {}
+            const rootNode = await this.collectDialogNodes(mainDialog, conditionalEntities)
             trainDialogs = await this.getTrainDialogs(rootNode)
         }
         return {
@@ -130,19 +131,21 @@ export class ObiDialogParser {
      * in-memory representation of the tree.
      * Tree construction is slightly complicated since child nodes can be referenced in `rules` or `steps`.
      */
-    private async collectDialogNodes(obiDialog: OBITypes.OBIDialog): Promise<ObiDialogNode> {
+    private async collectDialogNodes(obiDialog: OBITypes.OBIDialog, conditionalEntities: { [key: string]: Set<string> }):
+        Promise<ObiDialogNode> {
         let node: ObiDialogNode = new ObiDialogNode(obiDialog)
         if (obiDialog.rules) {
-            await this.collectDialogRuleChildren(node, obiDialog.rules)
+            await this.collectDialogRuleChildren(node, obiDialog.rules, conditionalEntities)
         }
         if (obiDialog.steps) {
-            await this.collectDialogStepChildren(node, obiDialog.steps)
+            await this.collectDialogStepChildren(node, obiDialog.steps, conditionalEntities)
         }
         return node
     }
 
     // Collects dialog tree nodes from `Microsoft.IntentRule` elements in the dialog `rules` section.
-    private async collectDialogRuleChildren(node: ObiDialogNode, rules: OBITypes.MicrosoftIRule[]) {
+    private async collectDialogRuleChildren(node: ObiDialogNode, rules: OBITypes.MicrosoftIRule[],
+        conditionalEntities: { [key: string]: Set<string> }) {
         for (const rule of rules) {
             if (rule.$type !== OBIRuleType.INTENT_RULE) {
                 this.warnings.push(`Unhandled OBI rule type: ${rule.$type} in ${node.dialog.$id}`)
@@ -170,7 +173,7 @@ export class ObiDialogParser {
                     throw new Error(`Dialog name ${step.dialog} undefined`)
                 }
                 // Add children to train dialog list, if applicable
-                const child = await this.collectDialogNodes(subDialog)
+                const child = await this.collectDialogNodes(subDialog, conditionalEntities)
                 if (child) {
                     // Add this node's intent string to all children.
                     child.intent = intent
@@ -183,14 +186,14 @@ export class ObiDialogParser {
     /**
      * Collects dialog nodes from dialog-redirecting elements in the dialog `steps` section.
      */
-    private async collectDialogStepChildren(node: ObiDialogNode, steps: (string | OBITypes.OBIDialog)[]) {
+    private async collectDialogStepChildren(node: ObiDialogNode, steps: (string | OBITypes.OBIDialog)[],
+        conditionalEntities: { [key: string]: Set<string> }) {
         for (const step of steps) {
             if (typeof step === "string") {
                 this.warnings.push(`Unexpected string step in ${node.dialog.$id}`)
                 continue
             }
             // Handle any steps that may contain an expansion of the dialog tree.
-            // TODO(thpar) : handle Microsoft.SwitchCondition.
             switch (step.$type) {
                 case OBIStepType.BEGIN_DIALOG:
                     if (!step.dialog || typeof step.dialog !== "string") {
@@ -201,12 +204,30 @@ export class ObiDialogParser {
                     if (!subDialog) {
                         throw new Error(`Dialog name ${step.dialog} undefined`)
                     }
-                    const childDialogs = await this.collectDialogNodes(subDialog)
+                    const childDialogs = await this.collectDialogNodes(subDialog, conditionalEntities)
                     if (childDialogs) {
                         // Add children to train dialog list
                         node.children.push(childDialogs)
                     }
                     break
+                    case OBIStepType.SWITCH_CONDITION:
+                            if (!step.cases && !step.default) {
+                                throw new Error("SwitchCondition must have at least one case or default")
+                            }
+                            if (step.cases) {
+                                // Collect the entities and values used in expressions
+                                for (const branch of step.cases) {
+                                    if (!branch.steps) {
+                                        throw new Error("Each case in SwitchCondition must have at least one step")
+                                    }
+                                    OBIUtils.parseEntityConditionFromDialogCase(branch, conditionalEntities)
+                                    await this.collectDialogStepChildren(node, branch.steps, conditionalEntities)
+                                }
+                            }
+                            if (step.default) {
+                                await this.collectDialogStepChildren(node, step.default, conditionalEntities)
+                            }
+                            break
                 default:
                 // No child nodes, so nothing to do here.
                 // The actions in this step will be handled later.
@@ -322,7 +343,35 @@ export class ObiDialogParser {
                     trainRound.scorerSteps.push(scorerStep)
                     break
                 }
-                // TODO(thpar) : handle Microsoft.SwitchCondition.
+                case OBIStepType.SWITCH_CONDITION: {
+                    // NOTA BENE : We currently assume that switch nodes will only be acting on values returned by
+                    // API calls, and that values will be compared using strict string equality.
+                    if (!trainRound) {
+                        trainRound = {
+                            extractorStep: { textVariations: [] },
+                            scorerSteps: []
+                        }
+                    }
+                    // TODO - this is broken.  We actually need to return *different* rounds for each case.
+                    if (step.cases) {
+                        for (const branch of step.cases) {
+                            if (!branch.steps) {
+                                throw new Error("Case branch must contain steps")
+                            }
+                            const childRound = await this.getTrainRoundfromOBIDialogSteps(branch.steps)
+                            if (childRound) {
+                                trainRound.scorerSteps = [...trainRound.scorerSteps, ...childRound.scorerSteps]
+                            }
+                        }
+                    }
+                    if (step.default) {
+                        const childRound = await this.getTrainRoundfromOBIDialogSteps(step.default)
+                        if (childRound) {
+                            trainRound.scorerSteps = [...trainRound.scorerSteps, ...childRound.scorerSteps]
+                        }
+                    }
+                    break
+                }
                 case OBIStepType.BEGIN_DIALOG: {
                     // Nothing to do here, the child dialogs were already expanded.
                     break
