@@ -155,7 +155,7 @@ interface TranscriptImportData {
     autoCreate: boolean
     autoMerge: boolean
     autoActionCreate: boolean
-    warnings: string[] | undefined
+    warnings: string[]
 }
 
 interface ComponentState {
@@ -490,7 +490,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     const sourceTrainDialogId = this.sourceTrainDialogId()
 
                     // Delete the teach session and retrieve the new TrainDialog
-                    const newTrainDialog = await ((this.props.deleteTeachSessionThunkAsync(this.props.teachSession.teach, this.props.app, true, sourceTrainDialogId) as any) as Promise<CLM.TrainDialog>)
+                    let newTrainDialog = await ((this.props.deleteTeachSessionThunkAsync(this.props.teachSession.teach, this.props.app, true, sourceTrainDialogId) as any) as Promise<CLM.TrainDialog>)
                     newTrainDialog.tags = tags
                     newTrainDialog.description = description
 
@@ -501,6 +501,12 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         // If editing an existing Train Dialog, replace existing with the new one
                         if (sourceTrainDialogId) {
                             await ((this.props.trainDialogReplaceThunkAsync(this.props.app.appId, sourceTrainDialogId, newTrainDialog) as any) as Promise<void>)
+                            // Grab the replaced version
+                            const updatedTrainDialog = this.props.trainDialogs.find(td => td.trainDialogId === sourceTrainDialogId)
+                            if (!updatedTrainDialog) {
+                                throw new Error(`Unexpected missing TrainDialog ${sourceTrainDialogId}`)
+                            }
+                            newTrainDialog = updatedTrainDialog
                         }
 
                         await this.handlePotentialMerge(newTrainDialog, matchedTrainDialog)
@@ -1141,7 +1147,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         }
         // Otherwise start the import
         else if (this.state.transcriptImport) {
-            await Util.setStateAsync(this, {transcriptImport: {...this.state.transcriptImport, warnings: undefined}})
+            await Util.setStateAsync(this, {transcriptImport: {...this.state.transcriptImport, warnings: []}})
             await this.onImportNextTrainDialog()
         }
     }
@@ -1193,7 +1199,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 autoActionCreate,
                 trainDialogs,
                 lgItems: undefined,
-                warnings: undefined
+                warnings: []
             }
             
             await Util.setStateAsync(this, {
