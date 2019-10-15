@@ -42,6 +42,15 @@ const addConditionPlaceholder: OF.ITag = {
     key: 'addConditionPlaceholder',
     name: 'Add Condition',
 }
+const addConditionPlaceholderButton = (
+    <div className="cl-tag-item-suggestion--add-condition">
+        <OF.PrimaryButton
+            text="Add Condition"
+            iconProps={{ iconName: 'Add' }}
+            data-testid="action-creator-modal-button-add-condition"
+        />
+    </div>
+)
 
 const convertEntityToDropdownOption = (entity: CLM.EntityBase): OF.IDropdownOption =>
     ({
@@ -266,6 +275,7 @@ interface ComponentState {
     apiOptions: OF.IDropdownOption[]
     renderOptions: OF.IDropdownOption[]
     cardOptions: OF.IDropdownOption[]
+    conditionCreatorType: "required" | "disqualified"
     selectedEntityOptionKey: string | undefined
     selectedEnumValueOptionKey: string | undefined
     selectedApiOptionKey: string | number | undefined
@@ -307,6 +317,7 @@ const initialState: Readonly<ComponentState> = {
     apiOptions: [],
     renderOptions: [],
     cardOptions: [],
+    conditionCreatorType: "required",
     selectedEntityOptionKey: undefined,
     selectedEnumValueOptionKey: undefined,
     selectedApiOptionKey: undefined,
@@ -1073,15 +1084,29 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     onClickCreateConditionCreator(condition: CLM.Condition) {
         const conditionalTag = convertConditionToConditionalTag(condition, this.props.entities)
 
-        const isUnique = !this.state.requiredEntityOrConditionTags
-            .filter(ct => ct.condition)
-            // condition guaranteed to exist based on filter above
-            .some(ct => isConditionEqual(ct.condition!, condition))
+        if (this.state.conditionCreatorType === "required") {
+            const isUnique = !this.state.requiredEntityOrConditionTags
+                .filter(ct => ct.condition)
+                // condition guaranteed to exist based on filter above
+                .some(ct => isConditionEqual(ct.condition!, condition))
 
-        if (isUnique) {
-            this.setState(prevState => ({
-                requiredEntityOrConditionTags: [...prevState.requiredEntityOrConditionTags, conditionalTag],
-            }))
+            if (isUnique) {
+                this.setState(prevState => ({
+                    requiredEntityOrConditionTags: [...prevState.requiredEntityOrConditionTags, conditionalTag],
+                }))
+            }
+        }
+        else if (this.state.conditionCreatorType === "disqualified") {
+            const isUnique = !this.state.negativeEntityOrConditionTags
+                .filter(ct => ct.condition)
+                // condition guaranteed to exist based on filter above
+                .some(ct => isConditionEqual(ct.condition!, condition))
+
+            if (isUnique) {
+                this.setState(prevState => ({
+                    negativeEntityOrConditionTags: [...prevState.negativeEntityOrConditionTags, conditionalTag],
+                }))
+            }
         }
 
         this.setState({
@@ -1277,7 +1302,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
         return [
             addConditionPlaceholder,
-            ...suggestedTags
+            ...suggestedTags,
         ]
     }
 
@@ -1287,6 +1312,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         if (containsAddConditionPlaceholder) {
             this.setState({
                 isConditionCreatorModalOpen: true,
+                conditionCreatorType: "required",
             })
             return
         }
@@ -1309,29 +1335,36 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    onRenderRequiredEntityOrConditionSuggestion(tag: OF.ITag, itemProps: OF.ISuggestionItemProps<OF.ITag>): JSX.Element {
-        if (tag.key === addConditionPlaceholder.key) {
-            return <div className="cl-tag-item-suggestion--add-condition">
-                <OF.PrimaryButton
-                    text="Add Condition"
-                    iconProps={{ iconName: 'Add' }}
-                    data-testid="action-creator-modal-button-add-condition"
-                />
-            </div>
-        }
-
-        return <TagItemSuggestion>{tag.name}</TagItemSuggestion>
+    onRenderEntityOrConditionSuggestion(tag: OF.ITag, itemProps: OF.ISuggestionItemProps<OF.ITag>): JSX.Element {
+        return tag.key === addConditionPlaceholder.key
+            ? addConditionPlaceholderButton
+            : <TagItemSuggestion>{tag.name}</TagItemSuggestion>
     }
 
     onResolveNegativeEntityTags = (filterText: string, selectedTags: OF.ITag[]): OF.ITag[] => {
-        return getSuggestedTags(
+        const suggestedTags = getSuggestedTags(
             filterText,
             this.state.availableConditionalTags,
             [...selectedTags, ...this.state.requiredEntityTagsFromPayload, ...this.state.requiredEntityOrConditionTags]
         )
+
+        return [
+            addConditionPlaceholder,
+            ...suggestedTags,
+        ]
     }
 
-    onChangeNegativeEntityTags = (tags: IConditionalTag[]) => {
+    onChangeNegativeEntityOrConditionTags = (tags: IConditionalTag[]) => {
+        const containsAddConditionPlaceholder = tags.some(t => t.key === addConditionPlaceholder.key)
+        // Assume if list has this item the user clicked the suggestion and intends to add condition
+        if (containsAddConditionPlaceholder) {
+            this.setState({
+                isConditionCreatorModalOpen: true,
+                conditionCreatorType: "disqualified",
+            })
+            return
+        }
+
         this.setState({
             negativeEntityOrConditionTags: tags
         })
@@ -1777,7 +1810,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                         label="Required Entities or Conditions"
                                         onResolveSuggestions={this.onResolveRequiredEntityOrConditionTags}
                                         onRenderItem={this.onRenderRequiredEntityOrConditionTag}
-                                        onRenderSuggestionsItem={this.onRenderRequiredEntityOrConditionSuggestion}
+                                        onRenderSuggestionsItem={this.onRenderEntityOrConditionSuggestion}
                                         getTextFromItem={item => item.name}
                                         onChange={this.onChangeRequiredEntityOrConditionTags}
                                         pickerSuggestionsProps={
@@ -1798,8 +1831,9 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                         label="Disqualifying Entities or Conditions"
                                         onResolveSuggestions={this.onResolveNegativeEntityTags}
                                         onRenderItem={this.onRenderNegativeEntityTag}
+                                        onRenderSuggestionsItem={this.onRenderEntityOrConditionSuggestion}
                                         getTextFromItem={item => item.name}
-                                        onChange={this.onChangeNegativeEntityTags}
+                                        onChange={this.onChangeNegativeEntityOrConditionTags}
                                         pickerSuggestionsProps={
                                             {
                                                 suggestionsHeaderText: 'Entities or Conditions',
