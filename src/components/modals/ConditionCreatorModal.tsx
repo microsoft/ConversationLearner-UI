@@ -95,7 +95,9 @@ const Component: React.FC<Props> = (props) => {
 
     const [selectedEntityOption, setSelectedEntityOption] = React.useState(entityOptions[0])
     React.useEffect(() => {
-        setSelectedEntityOption(entityOptions[0])
+        if (entityOptions.length > 0) {
+            setSelectedEntityOption(entityOptions[0])
+        }
     }, [props.entities])
 
     const onChangeEntity = (event: React.FormEvent<HTMLDivElement>, option?: OF.IDropdownOption | undefined, index?: number | undefined) => {
