@@ -16,3 +16,8 @@
     background-color: var(--color-neutralQuaternaryAlt);
     padding: 6px 10px;
 }
+
+/** Hack to preserve white text. Do not repeat, dependency on non cl prefixed class names. */
+.ms-Suggestions-itemButton:hover .ms-Button-icon {
+    color: white;
+}
