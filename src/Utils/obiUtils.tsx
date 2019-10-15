@@ -39,16 +39,16 @@ export interface OBIImportData {
 
 // Return activities for the given logDialogId
 export async function getLogDialogActivities(
-    appId: string, 
-    logDialogId: string, 
-    user: User, 
+    appId: string,
+    logDialogId: string,
+    user: User,
     actions: CLM.ActionBase[],
     entities: CLM.EntityBase[],
     conversationId: string | undefined,
     channelId: string | undefined,
     fetchLogDialogThunkAsync: (appId: string, logDialogId: string, replaceLocal: boolean, nullOnNotFound: boolean) => Promise<CLM.LogDialog>,
     fetchActivitiesAsync: (appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string, useMarkdown: boolean) => Promise<CLM.TeachWithActivities>
-    ): Promise<Util.RecursivePartial<BB.Activity>[]> {
+): Promise<Util.RecursivePartial<BB.Activity>[]> {
 
     // Fetch the LogDialog
     const logDialog = await fetchLogDialogThunkAsync(appId, logDialogId, true, true)
@@ -82,7 +82,7 @@ function addActivityReferences(activities: Util.RecursivePartial<BB.Activity>[],
 
 async function getActivities(appId: string, trainDialog: CLM.TrainDialog, user: User, definitions: CLM.AppDefinition,
     fetchActivitiesAsync: (appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string, useMarkdown: boolean) => Promise<CLM.TeachWithActivities>
-    ): Promise<BB.Transcript> {
+): Promise<BB.Transcript> {
     const newTrainDialog = Util.deepCopy(trainDialog)
     newTrainDialog.definitions = definitions
 
@@ -375,6 +375,8 @@ export function generateEntityMapForAction(action: CLM.ActionBase, filledEntityM
     return map
 }
 
+// NOTA BENE : We currently assume that switch nodes will only be acting on values returned by
+// API calls, and that values will be compared using strict string equality.
 export function parseEntityConditionFromDialogCase(branch: Case, entityConditions: { [key: string]: Set<string> }) {
     if (!branch.value) {
         throw new Error("SwitchCondition cases must have value")
@@ -459,13 +461,13 @@ export function replaceImportActions(trainDialog: CLM.TrainDialog, actions: CLM.
 export function expandLGItems(trainDialog: CLM.TrainDialog, lgItems: CLM.LGItem[]): void {
     for (const round of trainDialog.rounds) {
         for (const scorerStep of round.scorerSteps) {
-                const lgName = scorerStep.importText ? lgNameFromImportText(scorerStep.importText) : null
-                if (lgName) {
-                    let lgItem = lgItems.find(lg => lg.lgName === lgName)
-                    if (lgItem) {
-                        scorerStep.importText = lgItem.text
-                    }
+            const lgName = scorerStep.importText ? lgNameFromImportText(scorerStep.importText) : null
+            if (lgName) {
+                let lgItem = lgItems.find(lg => lg.lgName === lgName)
+                if (lgItem) {
+                    scorerStep.importText = lgItem.text
                 }
+            }
         }
     }
 }
@@ -537,10 +539,10 @@ export async function createImportedActions(
                         if (lgName) {
                             let lgItem = lgItems.find(lg => lg.lgName === lgName)
                             if (lgItem) {
-                                importedAction = { 
-                                    text: lgItem.text, 
-                                    buttons: lgItem.suggestions, 
-                                    isTerminal, 
+                                importedAction = {
+                                    text: lgItem.text,
+                                    buttons: lgItem.suggestions,
+                                    isTerminal,
                                     reprompt: lgItem.suggestions.length > 0,
                                     lgName
                                 }
@@ -553,12 +555,13 @@ export async function createImportedActions(
                         }
                     }
                     if (!importedAction) {
-                        importedAction = { 
-                            text: scorerStep.importText, 
-                            buttons: [], 
-                            isTerminal, 
+                        importedAction = {
+                            text: scorerStep.importText,
+                            buttons: [],
+                            isTerminal,
                             reprompt: false,
-                            actionHash: CLM.hashText(scorerStep.importText)}
+                            actionHash: CLM.hashText(scorerStep.importText)
+                        }
                     }
 
                     action = await createActionFromImport(appId, importedAction, templates, createActionThunkAsync)
@@ -639,9 +642,10 @@ async function createActionFromImport(
         actionType,
         entityId: undefined,
         enumValueId: undefined,
-        clientData: { 
-            actionHashes: importedAction.actionHash ? [importedAction.actionHash] : [], 
-            lgName: importedAction.lgName }
+        clientData: {
+            actionHashes: importedAction.actionHash ? [importedAction.actionHash] : [],
+            lgName: importedAction.lgName
+        }
     })
 
     const newAction = await createActionThunkAsync(appId, action)
@@ -698,7 +702,7 @@ export function areTranscriptsEqual(transcript1: Util.RecursivePartial<BB.Activi
         throw new Error("Not a valid comparison.  ConversationIds do not match.")
     }
     if (transcript1[0].channelId === transcript2[0].channelId) {
-        throw new Error("Not a valid comparison.  Same channel.") 
+        throw new Error("Not a valid comparison.  Same channel.")
     }
     for (let i = 0; i < Math.min(transcript1.length, transcript2.length); i = i + 1) {
         const activity1 = transcript1[i]
