@@ -989,29 +989,21 @@ export function VerifyListOfTrainDialogs(expectedTrainDialogs) {
   const funcName = `VerifyListOfTrainDialogs(expectedRowCount: ${expectedRowCount})`
   cy.log('Verify List of Train Dialogs', expectedRowCount)
 
-  cy.Get('[data-testid="train-dialogs-turns"]').should('have.length', expectedRowCount).then(() => {
-    const firstInputs = trainDialogsGrid.GetFirstInputs()
-    const lastInputs = trainDialogsGrid.GetLastInputs()
-    const lastResponses = trainDialogsGrid.GetLastResponses()
-
+  cy.wrap(1).should(() => {
+    return trainDialogsGrid.GetTdGrid(expectedRowCount)
+  }).then(tdGrid => {
     let errors = false
     expectedTrainDialogs.forEach(trainDialog => {
       helpers.ConLog(funcName, `Find - "${trainDialog.firstInput}", "${trainDialog.lastInput}", "${trainDialog.lastResponse}"`)
-      let found = false
-      for (let i = 0; i < firstInputs.length; i++) {
-        if (firstInputs[i] == trainDialog.firstInput && lastInputs[i] == trainDialog.lastInput && lastResponses[i] == trainDialog.lastResponse) {
-          found = true
-          helpers.ConLog(funcName, `Found on row ${i}`)
-          break;
-        }
-      }
-      
-      if (!found) {
+      let iRow = tdGrid.FindGridRow(trainDialog.firstInput, trainDialog.lastInput, trainDialog.lastResponse)
+      if (!iRow) {
         helpers.ConLog(funcName, 'ERROR - NOT Found')
         errors = true
       }
+      
+      helpers.ConLog(funcName, `Found on row ${iRow}`)
     })
-    
+  
     if (errors) {
       throw new Error('Did not find 1 or more of the expected Train Dialogs in the grid. Refer to the log file for details.')
     }

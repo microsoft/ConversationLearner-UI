@@ -67,3 +67,76 @@ export function VerifyIncidentTriangleFoundInTrainDialogsGrid(firstInput, lastIn
     throw new Error(`Can't Find Training to Verify it contains errors. The grid should, but does not, contain a row with this data in it: FirstInput: ${firstInput} -- LastInput: ${lastInput} -- LastResponse: ${lastResponse}`)
   })
 }
+
+export class tdGrid {
+  constructor() {
+  }
+
+  static ExpectGridChange(expectedRowCount) {
+    tdGrid.expectedRowCount = expectedRowCount
+    tdGrid.isStable = false
+    tdGrid.renderingShouldBeCompleteTime = new Date().getTime() + 1000
+    setTimeout(() => MonitorGrid, 50) 
+  }
+
+  static MonitorGrid() {
+    const funcName = 'tdGrid.MonitorGrid'
+    if (modelPage.IsOverlaid()) {
+      helpers.ConLog(funcName, 'Overlay found thus Train Dialog Grid is not stable yet')
+      tdGrid.renderingShouldBeCompleteTime = new Date().getTime() + 1000
+      setTimeout(() => MonitorGrid, 50)
+      return
+    }
+    
+    if (new Date().getTime() < renderingShouldBeCompleteTime) {
+      helpers.ConLog(funcName, 'No Overlay this time, but we are still watching to make sure no overlay shows up for at least 1 second')
+      setTimeout(() => MonitorGrid, 50)
+      return
+    }
+
+    const elements = Cypress.$('[data-testid="train-dialogs-turns"]')
+    if (elements.length != tdGrid.expectedRowCount) { 
+      helpers.ConLog(funcName, `Expected Row Count: ${tdGrid.expectedRowCount} - Actual Row Count: ${elements.length}`)
+      setTimeout(() => MonitorGrid, 50)
+      return
+    }
+
+    helpers.ConLog(funcName, `Found the expected row count: ${elements.length}`)
+    tdGrid.isStable = true
+  }
+
+  static GetTdGrid(expectedRowCount) {
+    if (expectedRowCount != tdGrid.expectedRowCount) {
+      // TODO: come up with a better more understandable message
+      throw new Error(`tdGrid.GetTdGrid is not being used correctly. It was called with Expected Row Count: ${expectedRowCount}, but was tdGid.ExpectGridChange was called with Expected Row Count: ${tdGrid.expectedRowCount}`)
+    }
+    
+    if (tdGrid.isStable) {
+      return new tdGrid()
+    }
+    
+    throw new Error(`Train Dialog Grid is not stable yet.`)
+  }
+
+  // Returns the index of the row that was found or undefined if not found
+  FindGridRow(firstInput, lastInput, lastResponse){
+    this.firstInputs = trainDialogsGrid.GetFirstInputs()
+    this.lastInputs = trainDialogsGrid.GetLastInputs()
+    this.lastResponses = trainDialogsGrid.GetLastResponses()
+
+    if (this.expectedRowCount != this.firstInputs.length || this.expectedRowCount != this.lastInputs.length || this.expectedRowCount != this.lastResponses.length) {
+      throw new Error(`Somethings wrong in this.FindGridRow - Expected Row Count: ${tdGrid.expectedRowCount} - other counts: ${this.firstInputs.length}, ${this.lastInputs.length}, ${this.lastResponses.length}`)
+    }
+
+    for (let i = 0; i < firstInputs.length; i++) {
+      if (this.firstInputs[i] == firstInput && this.lastInputs[i] == lastInput && this.lastResponses[i] == lastResponse) {
+        return i
+      }
+    }
+    return undefined
+  }
+}
+
+tdGrid.expectedRowCount = undefined
+tdGrid.isStable = false
+tdGrid.renderingShouldBeCompleteTime = undefined
