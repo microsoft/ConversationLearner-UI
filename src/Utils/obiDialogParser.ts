@@ -8,12 +8,11 @@ import * as OBIUtils from './obiUtils'
 import * as Util from './util'
 import * as OBITypes from '../types/obiTypes'
 import * as stripJsonComments from 'strip-json-comments'
-import { makeScorerSteps } from './testDataUtil'
 
 enum OBIStepType {
     BEGIN_DIALOG = "Microsoft.BeginDialog",
     END_DIALOG = "Microsoft.EndDialog",
-    END_TURN = "Microsoft.EndTurn",  // TODO(thpar) : Obsolete / delete ?
+    END_TURN = "Microsoft.EndTurn",
     HTTP_REQUEST = "Microsoft.HttpRequest",
     SEND_ACTIVITY = "Microsoft.SendActivity",
     SWITCH_CONDITION = "Microsoft.SwitchCondition",
@@ -263,7 +262,9 @@ export class ObiDialogParser {
     }
 
     // Recursive helper.
-    private async getTrainDialogsIter(node: ObiDialogNode, currentRounds: CLM.TrainRound[],
+    private async getTrainDialogsIter(
+        node: ObiDialogNode,
+        currentRounds: CLM.TrainRound[],
         intent: string | undefined):
         Promise<CLM.TrainDialog[]> {
         if (!node) {
