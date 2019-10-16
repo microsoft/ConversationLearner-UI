@@ -485,13 +485,13 @@ const validateTranscriptFulfilled = (): ActionObject =>
         type: AT.FETCH_TRANSCRIPT_VALIDATION_FULFILLED
     })
 
-export const fetchTranscriptValidationThunkAsync = (appId: string, packageId: string, userId: string, transcriptValidationTurns: CLM.TranscriptValidationTurn[]) => {
+export const fetchTranscriptValidationThunkAsync = (appId: string, packageId: string, testId: string, transcriptValidationTurns: CLM.TranscriptValidationTurn[]) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.FETCH_TRANSCRIPT_VALIDATION_ASYNC)
         dispatch(validateTranscriptAsync())
 
         try {
-            const transcriptValidationResult = await clClient.validateTranscript(appId, packageId, userId, transcriptValidationTurns)
+            const transcriptValidationResult = await clClient.validateTranscript(appId, packageId, testId, transcriptValidationTurns)
             dispatch(validateTranscriptFulfilled())
             return transcriptValidationResult
         }
