@@ -826,53 +826,33 @@ function VerifyTrainingSummaryIsInGrid(trainingSummary) {
   helpers.ConLog(funcName, `MomentTrainingStarted: ${trainingSummary.MomentTrainingStarted.format()}`)
   helpers.ConLog(funcName, `MomentTrainingEnded: ${trainingSummary.MomentTrainingEnded.format()}`)
 
-  let renderingShouldBeCompleteTime = new Date().getTime()
-  cy.Get('[data-testid="train-dialogs-turns"]', {timeout: 60000})
-    .should(elements => { 
-      if (modelPage.IsOverlaid()) {
-        helpers.ConLog(funcName, 'modalPage.IsOverlaid')
-        renderingShouldBeCompleteTime = new Date().getTime() + 1000
-        throw new Error('Overlay found thus Train Dialog Grid is not stable...retry until it is')
-      } else if (new Date().getTime() < renderingShouldBeCompleteTime) {
-        helpers.ConLog(funcName, 'Wait for no overlays for at least 1 second')
-        throw new Error(`Waiting till no overlays show up for at least 1 second...retry '${funcName}'`)
-      }
-
-      if (elements.length != trainingSummary.TrainGridRowCount) { 
-        helpers.ConLog(funcName, `Did NOT find the expected row count: ${elements.length}.`)
-        throw new Error(`${elements.length} rows found in the training grid, however we were expecting ${trainingSummary.TrainGridRowCount}`)
-      }
-
-      helpers.ConLog(funcName, `Found the expected row count: ${elements.length}`)
-
+  let tdGrid
+  cy.wrap(1, {timeout: 60000}).should(() => {
+    tdGrid = trainDialogsGrid.TdGrid.GetTdGrid(trainingSummary.TrainGridRowCount)
+  }).then(() => {
+    let iRow = tdGrid.FindGridRow(trainingSummary.FirstInput, trainingSummary.LastInput, trainingSummary.LastResponse)
+    if (iRow >= 0) {
       const turns = trainDialogsGrid.GetTurns()
-      const firstInputs = trainDialogsGrid.GetFirstInputs()
-      const lastInputs = trainDialogsGrid.GetLastInputs()
-      const lastResponses = trainDialogsGrid.GetLastResponses()
       const lastModifiedDates = trainDialogsGrid.GetLastModifiedDates()
       const createdDates = trainDialogsGrid.GetCreatedDates()
-  
-      for (let i = 0; i < trainingSummary.TrainGridRowCount; i++) {
-        // Keep these lines of logging code in this method, they come in handy when things go bad.
-        helpers.ConLog(funcName, `CreatedDates[${i}]: ${createdDates[i]} --- ${helpers.Moment(createdDates[i]).isBetween(trainingSummary.MomentTrainingStarted, trainingSummary.MomentTrainingEnded)}`)
-        helpers.ConLog(funcName, `LastModifiedDates[${i}]: ${lastModifiedDates[i]} --- ${helpers.Moment(lastModifiedDates[i]).isBetween(trainingSummary.MomentTrainingStarted, trainingSummary.MomentTrainingEnded)}`)
-        helpers.ConLog(funcName, `Turns[${i}]: ${turns[i]}`)
-  
-        if (((trainingSummary.LastModifiedDate && lastModifiedDates[i] == trainingSummary.LastModifiedDate) ||
-            helpers.Moment(lastModifiedDates[i]).isBetween(trainingSummary.MomentTrainingStarted, trainingSummary.MomentTrainingEnded)) &&
-            turns[i] == trainingSummary.Turns &&
-            ((trainingSummary.CreatedDate && createdDates[i] == trainingSummary.CreatedDate) ||
-              helpers.Moment(createdDates[i]).isBetween(trainingSummary.MomentTrainingStarted, trainingSummary.MomentTrainingEnded)) &&
-            firstInputs[i] == trainingSummary.FirstInput &&
-            lastInputs[i] == trainingSummary.LastInput &&
-            lastResponses[i] == trainingSummary.LastResponse) {
+      
+      // Keep these lines of logging code in this method, they come in handy when things go bad.
+      helpers.ConLog(funcName, `CreatedDates[${iRow}]: ${createdDates[iRow]} --- ${helpers.Moment(createdDates[iRow]).isBetween(trainingSummary.MomentTrainingStarted, trainingSummary.MomentTrainingEnded)}`)
+      helpers.ConLog(funcName, `LastModifiedDates[${iRow}]: ${lastModifiedDates[iRow]} --- ${helpers.Moment(lastModifiedDates[iRow]).isBetween(trainingSummary.MomentTrainingStarted, trainingSummary.MomentTrainingEnded)}`)
+      helpers.ConLog(funcName, `Turns[${iRow}]: ${turns[iRow]}`)
 
-          helpers.ConLog(funcName, 'Found all of the expected data. Validation PASSES!')
-          return; // Fully VALIDATED! We found what we expected.
-        }
+      if (((trainingSummary.LastModifiedDate && lastModifiedDates[iRow] == trainingSummary.LastModifiedDate) ||
+          helpers.Moment(lastModifiedDates[iRow]).isBetween(trainingSummary.MomentTrainingStarted, trainingSummary.MomentTrainingEnded)) &&
+          turns[iRow] == trainingSummary.Turns &&
+          ((trainingSummary.CreatedDate && createdDates[iRow] == trainingSummary.CreatedDate) ||
+            helpers.Moment(createdDates[iRow]).isBetween(trainingSummary.MomentTrainingStarted, trainingSummary.MomentTrainingEnded))) {
+
+        helpers.ConLog(funcName, 'Found all of the expected data. Validation PASSES!')
+        return // Fully VALIDATED! We found what we expected.
       }
-      throw new Error(`The grid should, but does not, contain a row with this data in it: FirstInput: ${trainingSummary.FirstInput} -- LastInput: ${trainingSummary.LastInput} -- LastResponse: ${trainingSummary.LastResponse} -- Turns: ${trainingSummary.Turns} -- LastModifiedDate: ${trainingSummary.LastModifiedDate} -- CreatedDate: ${trainingSummary.CreatedDate}`)
-    })
+    }
+    throw new Error(`The grid should, but does not, contain a row with this data in it: FirstInput: ${trainingSummary.FirstInput} -- LastInput: ${trainingSummary.LastInput} -- LastResponse: ${trainingSummary.LastResponse} -- Turns: ${trainingSummary.Turns} -- LastModifiedDate: ${trainingSummary.LastModifiedDate} -- CreatedDate: ${trainingSummary.CreatedDate}`)
+  })
 }
 
 export function VerifyAllChatMessages(chatMessagesToBeVerified) {

@@ -53,7 +53,7 @@ describe('Action Unavailable - ErrorHandling', () => {
     it('Should save the training with errors', () => {
       train.ClickSaveCloseButton()
       modelPage.VerifyErrorTriangleForTrainDialogs()
-      trainDialogsGrid.VerifyIncidentTriangleFoundInTrainDialogsGrid(`Joe`, 'Joe', "Hello $name")
+      trainDialogsGrid.VerifyIncidentTriangleFoundInTrainDialogsGrid(1, `Joe`, 'Joe', "Hello $name")
     })
   })
 

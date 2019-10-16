@@ -5,6 +5,7 @@
 
 import * as modelPage from './ModelPage'
 import * as helpers from '../Helpers'
+import { func } from 'prop-types'
 
 // Path to product code: ConversationLearner-UI\src\routes\Apps\App\TrainDialogs.tsx
 export function VerifyPageTitle() { 
@@ -48,26 +49,6 @@ export function VerifyErrorIconForTrainGridRow(rowIndex) { cy.Get(`div.ms-List-c
 
 export function VerifyDescriptionForRow(row, description) { cy.Get(`div[data-item-index=${row}][data-automationid="DetailsRow"]`).find('span[data-testid="train-dialogs-description"]').contains(description) }
 
-export function VerifyIncidentTriangleFoundInTrainDialogsGrid(firstInput, lastInput, lastResponse) {
-  const funcName = `VerifyIncidentTriangleFoundInTrainDialogsGrid(${firstInput}, ${lastInput}, ${lastResponse})`
-  cy.Enqueue(() => {
-    const firstInputs = GetFirstInputs()
-    const lastInputs = GetLastInputs()
-    const lastResponses = GetLastResponses()
-
-    helpers.ConLog(funcName, `Before Loop of ${firstInputs.length}, ${lastInputs[0]}, ${lastInputs[1]}, ${lastInputs[2]}`)
-
-    for (let i = 0; i < firstInputs.length; i++) {
-      if (firstInputs[i] == firstInput && lastInputs[i] == lastInput && lastResponses[i] == lastResponse) {
-        helpers.ConLog(funcName, `Found it at Index: ${i} - ${firstInputs[i]}, ${lastInputs[i]}, ${lastResponses[i]}`)
-        VerifyErrorIconForTrainGridRow(i)
-        return
-      }
-    }
-    throw new Error(`Can't Find Training to Verify it contains errors. The grid should, but does not, contain a row with this data in it: FirstInput: ${firstInput} -- LastInput: ${lastInput} -- LastResponse: ${lastResponse}`)
-  })
-}
-
 export class TdGrid {
   // 1) Start here. This is intended to be used from a cy.something().should(()=>{tdGridObj = tdGrid.GetTdGrid()})
   // .then(() =>{use the returned object to call FindGridRow})
@@ -84,7 +65,7 @@ export class TdGrid {
         TdGrid.monitorIsActivated = true
         TdGrid.MonitorGrid()
       } else if (expectedRowCount != TdGrid.expectedRowCount) {
-        throw new Exception(`The monitor is active, but the expected row count (${TdGrid.expectedRowCount}) it is looking for is different than this request ${expectedRowCount}`)
+        throw new Error(`The monitor is active, but the expected row count (${TdGrid.expectedRowCount}) it is looking for is different than this request ${expectedRowCount}`)
       }
       
       if (TdGrid.isStable) {
@@ -162,3 +143,21 @@ TdGrid.expectedRowCount = undefined
 TdGrid.isStable = false
 TdGrid.monitorIsActivated = false
 TdGrid.renderingShouldBeCompleteTime = undefined
+
+
+export function VerifyIncidentTriangleFoundInTrainDialogsGrid(expectedRowCount, firstInput, lastInput, lastResponse) {
+  const funcName = `VerifyIncidentTriangleFoundInTrainDialogsGrid(${firstInput}, ${lastInput}, ${lastResponse})`
+  helpers.ConLog(funcName, 'Start')
+
+  let tdGrid
+  cy.wrap(1).should(() => {
+    tdGrid = TdGrid.GetTdGrid(expectedRowCount)
+  }).then(() => {
+    let iRow = tdGrid.FindGridRow(firstInput, lastInput, lastResponse)
+    if (iRow >= 0) { 
+      VerifyErrorIconForTrainGridRow(iRow)
+      return
+    }
+    throw new Error(`Can't Find Training to Verify it contains errors. The grid should, but does not, contain a row with this data in it: FirstInput: ${firstInput} -- LastInput: ${lastInput} -- LastResponse: ${lastResponse}`)
+  })
+}
