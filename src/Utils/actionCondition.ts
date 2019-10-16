@@ -119,7 +119,7 @@ export const isEnumConditionTrue = (condition: CLM.Condition, memory: CLM.Memory
         && memory.entityValues[0].enumValueId
 
     return condition.valueId !== undefined
-        && condition.valueId === enumValueId 
+        && condition.valueId === enumValueId
 }
 
 export const getUniqueConditions = (actions: CLM.ActionBase[]): CLM.Condition[] => {
