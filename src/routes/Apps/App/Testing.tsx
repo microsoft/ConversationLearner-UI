@@ -260,9 +260,6 @@ class Testing extends React.Component<Props, ComponentState> {
                         this.props.fetchActivitiesThunkAsync as any) as BB.Activity[]
                 }
 
-                if (Math.random() < 0.1) {
-                    throw new Error("ooops")
-                }
                 // Substitute back in any LG refs
                 const transcript = Util.deepCopy(resultTranscript) || []
                 OBIUtils.toLG(transcript, this.state.testSet.lgItems, this.props.entities, this.props.actions)
