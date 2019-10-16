@@ -391,7 +391,6 @@ export class ObiDialogParser {
 
     /**
      * Creates enum entities and values for elements used in SwitchCondition comparisons, if they do not already exist.
-     * Noop for values that have already been created.
      * 
      * @param conditionalEntities dictionary key is the name of the value used in comparison (entity name);
      *     dictionary values are the distinct string values used across all comparisons of that entity.
