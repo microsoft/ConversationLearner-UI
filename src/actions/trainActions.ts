@@ -601,13 +601,10 @@ export const deleteTrainDialogThunkAsync = (app: CLM.AppBase, trainDialogId: str
 // ----------------------------------------
 // Activities
 // ----------------------------------------
-const fetchActivitiesAsync = (appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string): ActionObject => {
+const fetchActivitiesAsync = (noSpinner: boolean): ActionObject => {
     return {
         type: AT.FETCH_ACTIVITIES_ASYNC,
-        appId: appId,
-        userName: userName,
-        userId: userId,
-        trainDialog: trainDialog
+        noSpinner
     }
 }
 
@@ -619,10 +616,10 @@ const fetchActivitiesFulfilled = (teachWithActivities: CLM.TeachWithActivities):
     }
 }
 
-export const fetchActivitiesThunkAsync = (appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string, useMarkdown: boolean = true) => {
+export const fetchActivitiesThunkAsync = (appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string, useMarkdown: boolean = true, noSpinner: boolean = false) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.FETCH_ACTIVITIES_ASYNC)
-        dispatch(fetchActivitiesAsync(appId, trainDialog, userName, userId))
+        dispatch(fetchActivitiesAsync(noSpinner))
 
         try {
             const teachWithActivities = await clClient.history(appId, trainDialog, userName, userId, useMarkdown)
