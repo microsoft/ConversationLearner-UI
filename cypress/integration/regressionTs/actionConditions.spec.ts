@@ -679,7 +679,7 @@ describe('Action Conditions', () => {
             })
         })
 
-        describe.only(`Condition Editing`, () => {
+        describe(`Condition Editing`, () => {
             before(() => {
                 cy.get(s.model.buttonNavEntities)
                     .click()
