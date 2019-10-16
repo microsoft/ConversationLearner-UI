@@ -268,9 +268,8 @@ const Component: React.FC<Props> = (props) => {
     return <OF.Modal
         isOpen={props.isOpen}
         containerClassName="cl-modal cl-modal--medium"
-        data-testid="condition-creator-modal-title"
     >
-        <div className="cl-modal_header" data-testid="condition-creator-title">
+        <div className="cl-modal_header" data-testid="condition-creator-modal-title">
             <span className={OF.FontClassNames.xxLarge}>
                 {props.condition
                     ? 'Edit Condition'
@@ -281,7 +280,7 @@ const Component: React.FC<Props> = (props) => {
         <div className="cl-modal_body">
             <div>
                 {entityOptions.length === 0
-                    ? <p className="cl-text--warning"><OF.Icon iconName='Warning' /> You may only create conditions on enum entities or those with resolver type number which is required. Your model does not have either type available. Please create either of these types of entities to create a condition.</p>
+                    ? <p data-testid="condition-creator-modal-warning" className="cl-text--warning"><OF.Icon iconName='Warning' /> You may only create conditions on enum entities or those with resolver type number which is required. Your model does not have either type available. Please create either of these types of entities to create a condition.</p>
                     : <>
                         <h2 style={{ fontWeight: OF.FontWeights.semibold as number }} className={OF.FontClassNames.large}>Current Condition:</h2>
                         <div className="cl-condition-creator__expression">
@@ -329,7 +328,7 @@ const Component: React.FC<Props> = (props) => {
                         </div>
 
                         <h2 style={{ fontWeight: OF.FontWeights.semibold as number }} className={OF.FontClassNames.large}>Existing Conditions:</h2>
-                        <div className="cl-condition-creator__existing-conditions">
+                        <div className="cl-condition-creator__existing-conditions" data-testid="condition-creator-existing-conditions">
                             {conditionsUsingEntity.map(condition => {
                                 const conditionalTag = convertConditionToConditionalTag(condition, props.entities)
                                 const isActive = currentCondition
@@ -373,8 +372,12 @@ const Component: React.FC<Props> = (props) => {
                     data-testid="condition-creator-button-create"
                     disabled={isCreateDisabled}
                     onClick={onClickCreate}
-                    ariaDescription={Util.formatMessageId(props.intl, FM.BUTTON_CREATE)}
-                    text={Util.formatMessageId(props.intl, FM.BUTTON_CREATE)}
+                    ariaDescription={props.condition
+                        ? Util.formatMessageId(props.intl, FM.BUTTON_SAVE_EDIT)
+                        : Util.formatMessageId(props.intl, FM.BUTTON_CREATE)}
+                    text={props.condition
+                        ? Util.formatMessageId(props.intl, FM.BUTTON_SAVE_EDIT)
+                        : Util.formatMessageId(props.intl, FM.BUTTON_CREATE)}
                     iconProps={{ iconName: 'Accept' }}
                 />
 

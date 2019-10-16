@@ -223,13 +223,14 @@ const EditComponent: React.FC<Props> = (props) => {
                     {props.conditions.map((c, i) => {
                         return (
                             <React.Fragment key={i}>
-                                <div className="cl-entity-creator__existing-condition">
+                                <div className="cl-entity-creator__existing-condition" data-testid={`entity-creator-existing-condition-${i}`}>
                                     {props.entity
                                         ? getValueConditionName(props.entity, c)
                                         : 'Cannot Display Conditions without associated Entity'}
                                 </div>
 
                                 <OF.DefaultButton
+                                    data-testid={`entity-creator-button-use-condition-${i}`}
                                     text="Edit"
                                     iconProps={{ iconName: 'Edit' }}
                                     onClick={() => props.onClickEditCondition(c)}

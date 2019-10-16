@@ -17,6 +17,7 @@ export const CLTagItem = (props: ICLPickerItemProps<ITag>) => (
         className={`ms-TagItem ${props.highlight ? 'ms-TagItem-text--highlight' : ''}`}
         data-selection-index={props.index}
         data-is-focusable={!props.disabled && true}
+        data-testid="tag-item"
     >
         <span
             className={`ms-TagItem-text ${props.strike ? 'ms-TagItem-text--strike' : ''}`}

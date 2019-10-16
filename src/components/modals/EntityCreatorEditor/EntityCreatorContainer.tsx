@@ -46,13 +46,13 @@ const initState: ComponentState = {
 
     isConditionCreatorModalOpen: false,
     conditions: [],
-    selectedCondition: undefined
+    selectedCondition: undefined,
 }
 
 interface ComponentState {
     entityNameVal: string
     entityTypeVal: string
-    entityResolverVal: string,
+    entityResolverVal: string
     isPrebuilt: boolean
     isMultivalueVal: boolean
     isNegatableVal: boolean
@@ -60,14 +60,14 @@ interface ComponentState {
     enumValues: (CLM.EnumValue | null)[]
     title: string
     hasPendingChanges: boolean
-    isConfirmEditModalOpen: boolean,
-    isConfirmDeleteModalOpen: boolean,
-    needPrebuiltWarning: string | null,
-    isDeleteErrorModalOpen: boolean,
-    deleteEnumCheck: CLM.EnumValue | null,
-    showValidationWarning: boolean,
-    newOrEditedEntity: CLM.EntityBase | null,
-    isConditionCreatorModalOpen: boolean,
+    isConfirmEditModalOpen: boolean
+    isConfirmDeleteModalOpen: boolean
+    needPrebuiltWarning: string | null
+    isDeleteErrorModalOpen: boolean
+    deleteEnumCheck: CLM.EnumValue | null
+    showValidationWarning: boolean
+    newOrEditedEntity: CLM.EntityBase | null
+    isConditionCreatorModalOpen: boolean
     conditions: CLM.Condition[]
     selectedCondition: CLM.Condition | undefined
 }
@@ -136,76 +136,81 @@ class Container extends React.Component<Props, ComponentState> {
     }
 
     UNSAFE_componentWillReceiveProps(nextProps: Props) {
-        if (nextProps.open === true && this.props.open === false) {
-            // Build entity options based on current model locale
-            const currentAppLocale = nextProps.app.locale
-            const preBuiltLocale = PreBuiltEntities.find(entitiesList => entitiesList.locale === currentAppLocale)
-            if (!preBuiltLocale) {
-                throw new Error(`Could not find locale: ${currentAppLocale} within list of supported locales: ${PreBuiltEntities.map(e => e.locale).join(', ')}`)
+        if (nextProps.open) {
+            // If modal is being opened
+            if (this.props.open === false) {
+                // Build entity options based on current model locale
+                const currentAppLocale = nextProps.app.locale
+                const preBuiltLocale = PreBuiltEntities.find(entitiesList => entitiesList.locale === currentAppLocale)
+                if (!preBuiltLocale) {
+                    throw new Error(`Could not find locale: ${currentAppLocale} within list of supported locales: ${PreBuiltEntities.map(e => e.locale).join(', ')}`)
+                }
+
+                const localePreBuiltOptions = preBuiltLocale.preBuiltEntities
+                    .map<CLDropdownOption>(entityName =>
+                        ({
+                            key: entityName,
+                            text: entityName,
+                            itemType: OF.DropdownMenuItemType.Normal,
+                            style: 'clDropdown--normal'
+                        }))
+
+                if (nextProps.entity === null) {
+                    const filteredPreBuiltOptions = localePreBuiltOptions.filter(entityOption => !nextProps.entities.some(e => !e.doNotMemorize && e.entityType === entityOption.key))
+                    this.entityOptions = [...this.staticEntityOptions, ...filteredPreBuiltOptions]
+                    this.resolverOptions = [...this.staticResolverOptions, ...localePreBuiltOptions]
+
+                    this.setState({
+                        ...initState,
+                        title: nextProps.intl.formatMessage({
+                            id: FM.ENTITYCREATOREDITOR_TITLE_CREATE,
+                            defaultMessage: 'Create an Entity'
+                        }),
+                        entityTypeVal: CLM.EntityType.LUIS,
+                        entityResolverVal: (nextProps.entityTypeFilter && nextProps.entityTypeFilter !== CLM.EntityType.LUIS)
+                            ? nextProps.entityTypeFilter
+                            : NONE_RESOLVER_KEY,
+                        enumValues: this.initEnumValues(undefined)
+                    });
+                } else {
+                    this.entityOptions = [...this.staticEntityOptions, ...localePreBuiltOptions]
+                    this.resolverOptions = [...this.staticResolverOptions, ...localePreBuiltOptions]
+                    const entityType = nextProps.entity.entityType
+                    const isPrebuilt = CLM.isPrebuilt(nextProps.entity)
+                    const resolverType = nextProps.entity.resolverType === null
+                        ? NONE_RESOLVER_KEY
+                        : nextProps.entity.resolverType
+
+                    this.setState({
+                        entityNameVal: nextProps.entity.entityName,
+                        entityTypeVal: entityType,
+                        entityResolverVal: resolverType,
+                        isPrebuilt: isPrebuilt,
+                        isMultivalueVal: nextProps.entity.isMultivalue,
+                        isNegatableVal: nextProps.entity.isNegatible,
+                        isResolutionRequired: nextProps.entity.isResolutionRequired,
+                        title: nextProps.intl.formatMessage({
+                            id: FM.ENTITYCREATOREDITOR_TITLE_EDIT,
+                            defaultMessage: 'Edit Entity'
+                        }),
+                        enumValues: this.initEnumValues(nextProps.entity.enumValues),
+                    })
+                }
+
             }
 
-            const localePreBuiltOptions = preBuiltLocale.preBuiltEntities
-                .map<CLDropdownOption>(entityName =>
-                    ({
-                        key: entityName,
-                        text: entityName,
-                        itemType: OF.DropdownMenuItemType.Normal,
-                        style: 'clDropdown--normal'
-                    }))
-
-            if (nextProps.entity === null) {
-                const filteredPreBuiltOptions = localePreBuiltOptions.filter(entityOption => !nextProps.entities.some(e => !e.doNotMemorize && e.entityType === entityOption.key))
-                this.entityOptions = [...this.staticEntityOptions, ...filteredPreBuiltOptions]
-                this.resolverOptions = [...this.staticResolverOptions, ...localePreBuiltOptions]
+            // Recompute conditions while modal is open
+            if (nextProps.entity) {
+                const entity = nextProps.entity
+                const conditions = entity.entityType === CLM.EntityType.LUIS
+                    ? getUniqueConditions(this.props.actions)
+                        .filter(c => c.entityId === entity.entityId)
+                    : []
 
                 this.setState({
-                    ...initState,
-                    title: nextProps.intl.formatMessage({
-                        id: FM.ENTITYCREATOREDITOR_TITLE_CREATE,
-                        defaultMessage: 'Create an Entity'
-                    }),
-                    entityTypeVal: CLM.EntityType.LUIS,
-                    entityResolverVal: (nextProps.entityTypeFilter && nextProps.entityTypeFilter !== CLM.EntityType.LUIS)
-                        ? nextProps.entityTypeFilter
-                        : NONE_RESOLVER_KEY,
-                    enumValues: this.initEnumValues(undefined)
-                });
-            } else {
-                this.entityOptions = [...this.staticEntityOptions, ...localePreBuiltOptions]
-                this.resolverOptions = [...this.staticResolverOptions, ...localePreBuiltOptions]
-                const entityType = nextProps.entity.entityType
-                const isPrebuilt = CLM.isPrebuilt(nextProps.entity)
-                const resolverType = nextProps.entity.resolverType === null
-                    ? NONE_RESOLVER_KEY
-                    : nextProps.entity.resolverType
-
-                this.setState({
-                    entityNameVal: nextProps.entity.entityName,
-                    entityTypeVal: entityType,
-                    entityResolverVal: resolverType,
-                    isPrebuilt: isPrebuilt,
-                    isMultivalueVal: nextProps.entity.isMultivalue,
-                    isNegatableVal: nextProps.entity.isNegatible,
-                    isResolutionRequired: nextProps.entity.isResolutionRequired,
-                    title: nextProps.intl.formatMessage({
-                        id: FM.ENTITYCREATOREDITOR_TITLE_EDIT,
-                        defaultMessage: 'Edit Entity'
-                    }),
-                    enumValues: this.initEnumValues(nextProps.entity.enumValues),
+                    conditions,
                 })
             }
-        }
-
-        if (nextProps.entity !== null) {
-            const entity = nextProps.entity
-            const conditions = entity.entityType !== CLM.EntityType.LOCAL
-                ? getUniqueConditions(this.props.actions)
-                    .filter(c => c.entityId === entity.entityId)
-                : []
-
-            this.setState({
-                conditions,
-            })
         }
     }
 
