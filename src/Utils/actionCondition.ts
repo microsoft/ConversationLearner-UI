@@ -140,3 +140,35 @@ export const getUniqueConditions = (actions: CLM.ActionBase[]): CLM.Condition[] 
 
     return uniqueConditions
 }
+
+/**
+ * Returns actions using the existing condition with modifications of replaces it with the new condition.
+ * Could be split into a filter then map, but the work to find if action is using condition is close to work to replace.
+ * 
+ * @param actions List of actions
+ * @param existingCondition Existing Condition
+ * @param newCondition New Condition
+ */
+export const getUpdateActionsUsingCondition = (actions: CLM.ActionBase[], existingCondition: CLM.Condition, newCondition: CLM.Condition): CLM.ActionBase[] => {
+    return actions.reduce<CLM.ActionBase[]>((actionsUsingCondition, action) => {
+        let isActionUsingCondition = false
+        const requiredConditionIndex = action.requiredConditions.findIndex(c => isConditionEqual(c, existingCondition))
+        if (requiredConditionIndex >= 0) {
+            action.requiredConditions.splice(requiredConditionIndex, 1, newCondition)
+            isActionUsingCondition = true
+        }
+
+        const negativeConditionIndex = action.negativeConditions.findIndex(c => isConditionEqual(c, existingCondition))
+        if (negativeConditionIndex >= 0) {
+            action.negativeConditions.splice(negativeConditionIndex, 1, newCondition)
+            isActionUsingCondition = true
+        }
+
+        if (isActionUsingCondition) {
+            actionsUsingCondition.push(action)
+        }
+
+        return actionsUsingCondition
+    }, [])
+}
+

@@ -90,6 +90,7 @@ const convertEnumValueToDropdownOption = (enumValue: CLM.EnumValue): EnumOption 
 
 type Props = InjectedIntlProps
     & {
+        condition?: CLM.Condition,
         entities: CLM.EntityBase[],
         isOpen: boolean,
         conditions: CLM.Condition[],
@@ -180,6 +181,37 @@ const Component: React.FC<Props> = (props) => {
         setIsCreateDisabled(!isValid)
     }, [selectedEntityOption, selectedOperatorOption, numberValue, selectedEnumValueOption])
 
+    // If condition is present we must be editing
+    // Set all options to those on condition
+    const condition = props.condition
+    React.useEffect(() => {
+        if (!condition) {
+            return
+        }
+
+        const matchingEntityOption = entityOptions.find(eo => eo.data.entityId === condition.entityId)
+        if (matchingEntityOption) {
+            setSelectedEntityOption(matchingEntityOption)
+        }
+
+        // TODO: Fix weird naming, why do conditions objects have condition property?! same with enum value objects
+        const matchOperatorOption = operatorOptions.find(o => o.data === condition.condition)
+        if (matchOperatorOption) {
+            setSelectedOperatorOption(matchOperatorOption)
+        }
+
+        if (condition.valueId) {
+            const matchingEnumOption = enumValueOptions.find(o => o.data.enumValueId === condition.valueId)
+            if (matchingEnumOption) {
+                setSelectedEnumValueOption(matchingEnumOption)
+            }
+        }
+
+        if (condition.value) {
+            setNumberValue(condition.value)
+        }
+    }, [props.condition])
+
     // If modal has opened (from false to true)
     React.useLayoutEffect(() => {
         if (props.isOpen) {
@@ -239,7 +271,11 @@ const Component: React.FC<Props> = (props) => {
         data-testid="condition-creator-modal-title"
     >
         <div className="cl-modal_header" data-testid="condition-creator-title">
-            <span className={OF.FontClassNames.xxLarge}>Create a Condition</span>
+            <span className={OF.FontClassNames.xxLarge}>
+                {props.condition
+                    ? 'Edit Condition'
+                    : 'Create a Condition'}
+            </span>
         </div>
 
         <div className="cl-modal_body">
@@ -253,6 +289,7 @@ const Component: React.FC<Props> = (props) => {
                                 label="Entity"
                                 data-testid="condition-creator-modal-dropdown-entity"
                                 selectedKey={selectedEntityOption && selectedEntityOption.key}
+                                disabled={props.condition !== undefined}
                                 options={entityOptions}
                                 onChange={onChangeEntity}
                             />

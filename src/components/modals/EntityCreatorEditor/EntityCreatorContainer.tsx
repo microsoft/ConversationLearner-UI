@@ -17,7 +17,8 @@ import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { withRouter } from 'react-router-dom'
 import { RouteComponentProps } from 'react-router'
 import Component, { IEnumValueForDisplay } from './EntityCreatorComponent'
-import { autobind } from 'core-decorators';
+import { autobind } from 'core-decorators'
+import { getUniqueConditions, getUpdateActionsUsingCondition } from 'src/Utils/actionCondition'
 
 const entityNameMaxLength = 30
 const enumMaxLength = 10
@@ -41,7 +42,11 @@ const initState: ComponentState = {
     isDeleteErrorModalOpen: false,
     deleteEnumCheck: null,
     showValidationWarning: false,
-    newOrEditedEntity: null
+    newOrEditedEntity: null,
+
+    isConditionCreatorModalOpen: false,
+    conditions: [],
+    selectedCondition: undefined
 }
 
 interface ComponentState {
@@ -61,7 +66,10 @@ interface ComponentState {
     isDeleteErrorModalOpen: boolean,
     deleteEnumCheck: CLM.EnumValue | null,
     showValidationWarning: boolean,
-    newOrEditedEntity: CLM.EntityBase | null
+    newOrEditedEntity: CLM.EntityBase | null,
+    isConditionCreatorModalOpen: boolean,
+    conditions: CLM.Condition[]
+    selectedCondition: CLM.Condition | undefined
 }
 
 export const getPrebuiltEntityName = (preBuiltType: string): string => {
@@ -128,7 +136,7 @@ class Container extends React.Component<Props, ComponentState> {
     }
 
     UNSAFE_componentWillReceiveProps(nextProps: Props) {
-        if (nextProps.open !== this.props.open) {
+        if (nextProps.open === true && this.props.open === false) {
             // Build entity options based on current model locale
             const currentAppLocale = nextProps.app.locale
             const preBuiltLocale = PreBuiltEntities.find(entitiesList => entitiesList.locale === currentAppLocale)
@@ -183,9 +191,21 @@ class Container extends React.Component<Props, ComponentState> {
                         id: FM.ENTITYCREATOREDITOR_TITLE_EDIT,
                         defaultMessage: 'Edit Entity'
                     }),
-                    enumValues: this.initEnumValues(nextProps.entity.enumValues)
+                    enumValues: this.initEnumValues(nextProps.entity.enumValues),
                 })
             }
+        }
+
+        if (nextProps.entity !== null) {
+            const entity = nextProps.entity
+            const conditions = entity.entityType !== CLM.EntityType.LOCAL
+                ? getUniqueConditions(this.props.actions)
+                    .filter(c => c.entityId === entity.entityId)
+                : []
+
+            this.setState({
+                conditions,
+            })
         }
     }
 
@@ -203,7 +223,7 @@ class Container extends React.Component<Props, ComponentState> {
         // Otherwise,
         // Force changes to isResolutionRequired when resolutionType changes
         // If NONE to other, enabled and true
-        // If oter to NONE, disabled and false
+        // If other to NONE, disabled and false
         if (this.props.entity == null) {
             if (this.state.entityResolverVal !== NONE_RESOLVER_KEY && prevState.entityResolverVal === NONE_RESOLVER_KEY) {
                 this.setState({
@@ -750,6 +770,38 @@ class Container extends React.Component<Props, ComponentState> {
         return (this.onGetNameErrorMessage(this.state.entityNameVal) !== '')
     }
 
+    @autobind
+    onClickEditCondition(condition: CLM.Condition) {
+        this.setState({
+            isConditionCreatorModalOpen: true,
+            selectedCondition: condition,
+        })
+    }
+
+    @autobind
+    async onClickCreateConditionCreator(condition: CLM.Condition) {
+        // Should always be true, but need to check
+        if (this.state.selectedCondition) {
+            const actionsUsingCondition = getUpdateActionsUsingCondition(this.props.actions, this.state.selectedCondition, condition)
+            for (const action of actionsUsingCondition) {
+                await (this.props.editActionThunkAsync(this.props.app.appId, action) as any) as Promise<CLM.ActionBase>
+            }
+        }
+
+        this.setState({
+            isConditionCreatorModalOpen: false,
+            selectedCondition: undefined,
+        })
+    }
+
+    @autobind
+    onClickCancelConditionCreator() {
+        this.setState({
+            isConditionCreatorModalOpen: false,
+            selectedCondition: undefined,
+        })
+    }
+
     render() {
         const { intl } = this.props
         // const isEntityInUse = this.state.isEditing && this.isInUse()
@@ -801,6 +853,7 @@ class Container extends React.Component<Props, ComponentState> {
             isTypeDisabled={isEditing || this.props.entityTypeFilter != null}
             onChangeType={this.onChangeType}
 
+            entity={this.props.entity ? this.props.entity : undefined}
             name={name}
             isNameDisabled={this.state.isPrebuilt}
             onGetNameErrorMessage={this.onGetNameErrorMessage}
@@ -848,6 +901,13 @@ class Container extends React.Component<Props, ComponentState> {
             isResolutionRequired={this.state.isResolutionRequired}
             onChangeResolverResolutionRequired={this.onChangeResolverResolutionRequired}
 
+            isConditionCreatorModalOpen={this.state.isConditionCreatorModalOpen}
+            conditions={this.state.conditions}
+            selectedCondition={this.state.selectedCondition}
+            onClickEditCondition={this.onClickEditCondition}
+            onClickCancelConditionCreator={this.onClickCancelConditionCreator}
+            onClickCreateConditionCreator={this.onClickCreateConditionCreator}
+
             enumValues={enumValues}
             onChangeEnum={this.onChangeEnum}
             onGetEnumErrorMessage={this.onGetEnumErrorMessage}
@@ -873,6 +933,7 @@ const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         createEntityThunkAsync: actions.entity.createEntityThunkAsync,
         editEntityThunkAsync: actions.entity.editEntityThunkAsync,
+        editActionThunkAsync: actions.action.editActionThunkAsync,
         fetchEntityDeleteValidationThunkAsync: actions.entity.fetchEntityDeleteValidationThunkAsync,
         fetchEntityEditValidationThunkAsync: actions.entity.fetchEntityEditValidationThunkAsync
     }, dispatch);
