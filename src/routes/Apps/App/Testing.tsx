@@ -77,7 +77,7 @@ class Testing extends React.Component<Props, ComponentState> {
         const testSet = Test.TestSet.Create(this.state.testSet)
         testSet.compareAll()
         testSet.initRating()
-        this.setState({testSet: testSet})
+        this.setState({ testSet: testSet })
     }
 
     newTestSet(): Test.TestSet {
@@ -89,24 +89,25 @@ class Testing extends React.Component<Props, ComponentState> {
                     lgName: (a.clientData && a.clientData.lgName) ? a.clientData.lgName : "",
                     actionId: a.actionId,
                     text: "",
-                    suggestions: []}
-                })
+                    suggestions: []
+                }
+            })
 
-            return Test.TestSet.Create({appId: this.props.app.appId, lgItems})
+        return Test.TestSet.Create({ appId: this.props.app.appId, lgItems })
     }
-    
+
     @autobind
     async onLoadTranscriptFiles(transcriptFiles: any): Promise<void> {
         if (transcriptFiles.length > 0) {
 
             try {
-                const testSet = this.state.testSet 
+                const testSet = this.state.testSet
                     ? Test.TestSet.Create(this.state.testSet)
                     : this.newTestSet()
-                
+
                 await testSet.addTranscriptFiles(transcriptFiles)
 
-                await Util.setStateAsync(this, {testSet})
+                await Util.setStateAsync(this, { testSet })
 
                 // Recompute comparisons and rankings
                 await this.onTranscriptsChanged()
@@ -123,13 +124,13 @@ class Testing extends React.Component<Props, ComponentState> {
         if (lgFiles.length > 0) {
 
             try {
-                const testSet = this.state.testSet 
+                const testSet = this.state.testSet
                     ? Test.TestSet.Create(this.state.testSet)
                     : this.newTestSet()
-                
+
                 await testSet.addLGFiles(lgFiles)
 
-                await Util.setStateAsync(this, {testSet})
+                await Util.setStateAsync(this, { testSet })
 
                 // Recompute comparisons and rankings
                 await this.onTranscriptsChanged()
@@ -145,7 +146,7 @@ class Testing extends React.Component<Props, ComponentState> {
     onChangeName(event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, text: string) {
         const testSet = Test.TestSet.Create(this.state.testSet)
         testSet.fileName = text
-        this.setState({testSet: testSet})
+        this.setState({ testSet: testSet })
     }
 
     @autobind
@@ -163,7 +164,7 @@ class Testing extends React.Component<Props, ComponentState> {
 
         const testSet = Test.TestSet.Create(this.state.testSet)
         testSet.compareAll()
-        this.setState({testSet: testSet})
+        this.setState({ testSet: testSet })
     }
 
     async onValidateTranscript(testItem: Test.TestItem, testId: string): Promise<void> {
@@ -177,7 +178,7 @@ class Testing extends React.Component<Props, ComponentState> {
         const conversationId = testItem.conversationId
 
         const transcriptValidationTurns: CLM.TranscriptValidationTurn[] = []
-        let transcriptValidationTurn: CLM.TranscriptValidationTurn = { inputText: "", apiResults: []}
+        let transcriptValidationTurn: CLM.TranscriptValidationTurn = { inputText: "", apiResults: [] }
         let invalidTranscript = false
         let apiResults: CLM.FilledEntity[] = []
 
@@ -192,7 +193,7 @@ class Testing extends React.Component<Props, ComponentState> {
                     if (transcriptValidationTurn.inputText !== "") {
                         transcriptValidationTurns.push(transcriptValidationTurn)
                     }
-                    transcriptValidationTurn = { inputText: activity.text, apiResults: []}
+                    transcriptValidationTurn = { inputText: activity.text, apiResults: [] }
                 }
                 else if (activity.from.role === "bot") {
                     if (transcriptValidationTurn) {
@@ -222,10 +223,10 @@ class Testing extends React.Component<Props, ComponentState> {
 
         let validationResult: Test.TestItem
         if (invalidTranscript) {
-            validationResult = { 
+            validationResult = {
                 sourceName,
                 conversationId,
-                logDialogId: null, 
+                logDialogId: null,
                 invalidTranscript: true
             }
         }
@@ -237,9 +238,9 @@ class Testing extends React.Component<Props, ComponentState> {
             if (logDialogId && this.state.doneCount !== -1) {
 
                 resultTranscript = await OBIUtils.getLogDialogActivities(
-                    this.props.app.appId, 
+                    this.props.app.appId,
                     logDialogId,
-                    this.props.user, 
+                    this.props.user,
                     this.props.actions,
                     this.props.entities,
                     conversationId,
@@ -252,10 +253,10 @@ class Testing extends React.Component<Props, ComponentState> {
             const transcript = Util.deepCopy(resultTranscript) || []
             OBIUtils.toLG(transcript, this.state.testSet.lgItems, this.props.entities, this.props.actions)
 
-            validationResult = { 
+            validationResult = {
                 sourceName,
                 conversationId,
-                logDialogId, 
+                logDialogId,
                 transcript
             }
         }
@@ -265,7 +266,7 @@ class Testing extends React.Component<Props, ComponentState> {
             this.setState(prevState => {
                 const testSet = Test.TestSet.Create(prevState.testSet)
                 testSet.addTestItem(validationResult)
-                return { 
+                return {
                     testSet: testSet,
                     testSlots: [...prevState.testSlots, testId],
                     doneCount: prevState.doneCount + 1
@@ -300,7 +301,7 @@ class Testing extends React.Component<Props, ComponentState> {
             for (let i = 0; i < NUM_PARALLEL_TESTS; i = i + 1) {
                 testSlots.push(`ValidationTest ${i}`)
             }
-            await Util.setStateAsync(this, {testSlots})
+            await Util.setStateAsync(this, { testSlots })
 
             setTimeout(this.testNextTranscript, 500)
         }
@@ -311,7 +312,7 @@ class Testing extends React.Component<Props, ComponentState> {
 
         // Check if I'm done
         if (this.state.doneCount === -1) {
-            this.setState({ 
+            this.setState({
                 testItems: []
             })
             this.onTranscriptsChanged()
@@ -346,9 +347,9 @@ class Testing extends React.Component<Props, ComponentState> {
     onView(compareType: Test.ComparisonResultType, comparePivot?: string, compareSource?: string): void {
 
         if (this.state.testSet) {
-            const viewConversationIds = compareSource && comparePivot 
-            ? this.state.testSet.getComparisonConversationIds(compareSource, comparePivot, compareType)
-            : this.state.testSet.getAllConversationIds()
+            const viewConversationIds = compareSource && comparePivot
+                ? this.state.testSet.getComparisonConversationIds(compareSource, comparePivot, compareType)
+                : this.state.testSet.getAllConversationIds()
 
             this.onViewConversationIds(viewConversationIds, comparePivot)
         }
@@ -372,14 +373,14 @@ class Testing extends React.Component<Props, ComponentState> {
         // TODO: consider only clearing when .transcripts have changed
         // and allowing user to continue partially rated set of .transcripts
         testSet.initRating()
-        this.setState({testSet: testSet, isRateDialogsOpen: true})
+        this.setState({ testSet: testSet, isRateDialogsOpen: true })
     }
 
     @autobind
     async onRate(ratingPair: Test.RatingPair) {
         const testSet = Test.TestSet.Create(this.state.testSet)
         testSet.addRatingResult(ratingPair)
-        await Util.setStateAsync(this, {testSet})
+        await Util.setStateAsync(this, { testSet })
     }
 
     @autobind
@@ -395,7 +396,7 @@ class Testing extends React.Component<Props, ComponentState> {
         if (this.state.testSet) {
             const testSet = Test.TestSet.Create(this.state.testSet)
             testSet.calcRankings()
-            await Util.setStateAsync(this, {testSet})
+            await Util.setStateAsync(this, { testSet })
         }
     }
 
@@ -417,7 +418,7 @@ class Testing extends React.Component<Props, ComponentState> {
 
     @autobind
     onClear() {
-        this.setState({isConfirmClearModalOpen: true})
+        this.setState({ isConfirmClearModalOpen: true })
     }
 
     @autobind
@@ -427,7 +428,7 @@ class Testing extends React.Component<Props, ComponentState> {
         // Clear filename so user can reload same file
         let fileInput = (this.loadSetFileInput as HTMLInputElement)
         fileInput.value = ""
-        this.setState({testSet: testSet, isConfirmClearModalOpen: false})
+        this.setState({ testSet: testSet, isConfirmClearModalOpen: false })
     }
 
     @autobind
@@ -449,7 +450,7 @@ class Testing extends React.Component<Props, ComponentState> {
             const testSet = Test.TestSet.Create(this.state.testSet)
             // Use app name, removing unsafe characters
             testSet.fileName = this.props.app.appName.replace(/[^a-zA-Z0-9-_\.]/g, '')
-            await Util.setStateAsync(this, {testSet})
+            await Util.setStateAsync(this, { testSet })
 
         }
 
@@ -476,7 +477,7 @@ class Testing extends React.Component<Props, ComponentState> {
                 testSet.compareAll()
                 testSet.initRating()
             }
-            await Util.setStateAsync(this, {testSet})
+            await Util.setStateAsync(this, { testSet })
         }
         catch (e) {
             const error = e as Error
@@ -510,7 +511,7 @@ class Testing extends React.Component<Props, ComponentState> {
 
     render() {
 
-        const saveDisabled = !this.state.testSet 
+        const saveDisabled = !this.state.testSet
             || this.state.testSet.items.length === 0
             || (this.state.testSet.fileName !== undefined && this.onGetNameErrorMessage(this.state.testSet.fileName) !== '')
 
@@ -541,7 +542,7 @@ class Testing extends React.Component<Props, ComponentState> {
                         ref={ele => (this.loadSetFileInput = ele)}
                         multiple={false}
                     />
-                    <div className="cl-modal-buttons_secondary"/>
+                    <div className="cl-modal-buttons_secondary" />
                     <div className="cl-modal-buttons_primary">
                         <OF.DefaultButton
                             disabled={saveDisabled}
@@ -566,8 +567,8 @@ class Testing extends React.Component<Props, ComponentState> {
                         />
                     </div>
                 </div>
-            <div className="cl-testing-body">
-                    <OF.Pivot 
+                <div className="cl-testing-body">
+                    <OF.Pivot
                         linkSize={OF.PivotLinkSize.large}
                     >
                         <OF.PivotItem
@@ -614,7 +615,7 @@ class Testing extends React.Component<Props, ComponentState> {
                     total={this.state.testItems.length}
                     onClose={this.onCancelTest}
                 />
-                {this.state.viewConversationIds && this.state.testSet && 
+                {this.state.viewConversationIds && this.state.testSet &&
                     <CompareDialogsModal
                         app={this.props.app}
                         testSet={this.state.testSet}
@@ -631,7 +632,7 @@ class Testing extends React.Component<Props, ComponentState> {
                         onClose={this.onCloseRate}
                     />
                 }
-                {this.state.isTestPickerOpen && this.state.testSet && 
+                {this.state.isTestPickerOpen && this.state.testSet &&
                     <TranscriptTestPicker
                         sourceNames={this.state.testSet.sourceNames}
                         onAbandon={this.onPickTestAbandon}
