@@ -196,17 +196,13 @@ export type FetchAction = {
     allTrainDialogs: CLM.TrainDialog[],
 } | {
     type: AT.FETCH_ACTIVITIES_ASYNC,
-    appId: string,
-    userName: string,
-    userId: string,
-    trainDialog: CLM.TrainDialog
+    noSpinnerDisplay: boolean
 } | {
     type: AT.FETCH_ACTIVITIES_FULFILLED,
     teachWithActivities: CLM.TeachWithActivities,
 } | {
     type: AT.FETCH_LOG_DIALOG_ASYNC,
-    appId: string,
-    logDialogId: string
+    noSpinnerDisplay: boolean
 } | {
     type: AT.FETCH_LOG_DIALOG_FULFILLED,
     logDialog: CLM.LogDialog,
