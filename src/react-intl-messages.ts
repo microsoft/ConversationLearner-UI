@@ -485,6 +485,7 @@ export enum FM {
     TESTING_SUBTITLE = 'Testing.subtitle',
     TESTING_FILESAVE = 'Testing.FileSave',
     TESTING_CONFIRM_CLEAR_TITLE = 'Testiing.confirmclear.title',
+    TESTING_WARNING = 'Test Warnings',
 
     // TextVariation
     TEXTVARIATION_PLACEHOLDER = 'TextVariationCreator.placeholder',
@@ -1048,6 +1049,7 @@ export default {
         [FM.TRAINDIALOGS_LISTVIEW_BUTTON]: 'List View',
         [FM.TRAINDIALOGS_TREEVIEW_BUTTON]: 'Tree View',
         [FM.TRAINDIALOGS_IMPORT_WARNING]: 'Import Warnings',
+
         // TreeView
         [FM.TREEVIEW_TOGGLE_FULLSCREEN]: 'Toggle Fullscreen',
 
@@ -1269,6 +1271,7 @@ export default {
         [FM.TESTING_SUBTITLE]: `Compare and Rate .transcript files`,
         [FM.TESTING_FILESAVE]: 'Name for Test Results',
         [FM.TESTING_CONFIRM_CLEAR_TITLE]: 'Are you sure you want clear this test?',
+        [FM.TESTING_WARNING]: 'Test Warnings',
 
         // TextVariationCreator
         [FM.TEXTVARIATION_PLACEHOLDER]: 'Add alternative input...',

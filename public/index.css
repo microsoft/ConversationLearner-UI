@@ -1015,3 +1015,8 @@ i[data-icon-name="Edit"]:hover {
 .cl-hidden {
   visibility: hidden
 }
+
+.cl-warning-list {
+  height: 200px;
+  overflow-y: auto;
+}
