@@ -68,75 +68,97 @@ export function VerifyIncidentTriangleFoundInTrainDialogsGrid(firstInput, lastIn
   })
 }
 
-export class tdGrid {
-  constructor() {
-  }
-
-  static ExpectGridChange(expectedRowCount) {
-    tdGrid.expectedRowCount = expectedRowCount
-    tdGrid.isStable = false
-    tdGrid.renderingShouldBeCompleteTime = new Date().getTime() + 1000
-    setTimeout(() => MonitorGrid, 50) 
-  }
-
-  static MonitorGrid() {
-    const funcName = 'tdGrid.MonitorGrid'
-    if (modelPage.IsOverlaid()) {
-      helpers.ConLog(funcName, 'Overlay found thus Train Dialog Grid is not stable yet')
-      tdGrid.renderingShouldBeCompleteTime = new Date().getTime() + 1000
-      setTimeout(() => MonitorGrid, 50)
-      return
-    }
-    
-    if (new Date().getTime() < renderingShouldBeCompleteTime) {
-      helpers.ConLog(funcName, 'No Overlay this time, but we are still watching to make sure no overlay shows up for at least 1 second')
-      setTimeout(() => MonitorGrid, 50)
-      return
-    }
-
-    const elements = Cypress.$('[data-testid="train-dialogs-turns"]')
-    if (elements.length != tdGrid.expectedRowCount) { 
-      helpers.ConLog(funcName, `Expected Row Count: ${tdGrid.expectedRowCount} - Actual Row Count: ${elements.length}`)
-      setTimeout(() => MonitorGrid, 50)
-      return
-    }
-
-    helpers.ConLog(funcName, `Found the expected row count: ${elements.length}`)
-    tdGrid.isStable = true
-  }
-
+export class TdGrid {
+  // 1) Start here. This is intended to be used from a cy.something().should(()=>{tdGridObj = tdGrid.GetTdGrid()})
+  // .then(() =>{use the returned object to call FindGridRow})
+  //
+  // This was designed to be retried. It will throw an error until it we can validate that the Train Dialog Grid is stable
+  // and then it will return a tdGrid object. (refer to existing code for usage examples)
   static GetTdGrid(expectedRowCount) {
-    if (expectedRowCount != tdGrid.expectedRowCount) {
-      // TODO: come up with a better more understandable message
-      throw new Error(`tdGrid.GetTdGrid is not being used correctly. It was called with Expected Row Count: ${expectedRowCount}, but was tdGid.ExpectGridChange was called with Expected Row Count: ${tdGrid.expectedRowCount}`)
-    }
-    
-    if (tdGrid.isStable) {
-      return new tdGrid()
+    try {
+      if (!TdGrid.monitorIsActivated) {
+        helpers.ConLog(`GetTdGrid(${expectedRowCount})`, 'Start')
+        TdGrid.expectedRowCount = expectedRowCount
+        TdGrid.isStable = false
+        TdGrid.renderingShouldBeCompleteTime = new Date().getTime()
+        TdGrid.monitorIsActivated = true
+        TdGrid.MonitorGrid()
+      } else if (expectedRowCount != TdGrid.expectedRowCount) {
+        throw new Exception(`The monitor is active, but the expected row count (${TdGrid.expectedRowCount}) it is looking for is different than this request ${expectedRowCount}`)
+      }
+      
+      if (TdGrid.isStable) {
+        return new TdGrid()
+      }
+    } 
+    catch (error) {
+      helpers.ConLog(`GetTdGrid(${expectedRowCount})`, `Caught Errors: ${error.message}`)
     }
     
     throw new Error(`Train Dialog Grid is not stable yet.`)
   }
 
-  // Returns the index of the row that was found or undefined if not found
+  // 2) this should be called from an object returned from tdGrid.GetTdGrid
+  // Returns the index of the row that was found or -1 if not found
   FindGridRow(firstInput, lastInput, lastResponse){
-    this.firstInputs = trainDialogsGrid.GetFirstInputs()
-    this.lastInputs = trainDialogsGrid.GetLastInputs()
-    this.lastResponses = trainDialogsGrid.GetLastResponses()
+    helpers.ConLog(`tdGrid.FindGridRow("${firstInput}", "${lastInput}", "${lastResponse}")`, this.feedback)
 
     if (this.expectedRowCount != this.firstInputs.length || this.expectedRowCount != this.lastInputs.length || this.expectedRowCount != this.lastResponses.length) {
-      throw new Error(`Somethings wrong in this.FindGridRow - Expected Row Count: ${tdGrid.expectedRowCount} - other counts: ${this.firstInputs.length}, ${this.lastInputs.length}, ${this.lastResponses.length}`)
+      throw new Error(`Somethings wrong in tdGrid.FindGridRow - ${this.feedback}`)
     }
 
-    for (let i = 0; i < firstInputs.length; i++) {
+    for (let i = 0; i < this.firstInputs.length; i++) {
       if (this.firstInputs[i] == firstInput && this.lastInputs[i] == lastInput && this.lastResponses[i] == lastResponse) {
+        helpers.ConLog('tdGrid.FindGridRow', `Found on row ${i}`)
         return i
       }
     }
-    return undefined
+    
+    helpers.ConLog('tdGrid.FindGridRow', 'Not Found')
+    return -1
+  }
+
+  // You should not be calling this directly unless you really know what you are doing.
+  constructor() {
+    this.expectedRowCount = TdGrid.expectedRowCount
+    this.firstInputs = GetFirstInputs()
+    this.lastInputs = GetLastInputs()
+    this.lastResponses = GetLastResponses()
+    this.feedback = `Expected Row Count: ${TdGrid.expectedRowCount} - Current Row Counts: ${this.firstInputs.length}, ${this.lastInputs.length}, ${this.lastResponses.length}`
+    helpers.ConLog('tdGrid.constructor()', this.feedback)
+  }
+
+  // You should not be calling this directly unless you really know what you are doing.
+  // This monitors the grid looking for it to stabilize.
+  static MonitorGrid() {
+    const funcName = 'tdGrid.MonitorGrid'
+    if (modelPage.IsOverlaid()) {
+      helpers.ConLog(funcName, 'Overlay found thus Train Dialog Grid is not stable yet')
+      TdGrid.renderingShouldBeCompleteTime = new Date().getTime() + 1000
+      setTimeout(() => TdGrid.MonitorGrid, 50)
+      return
+    }
+    
+    if (new Date().getTime() < TdGrid.renderingShouldBeCompleteTime) {
+      helpers.ConLog(funcName, 'No Overlay this time, but we are still watching to make sure no overlay shows up for at least 1 second')
+      setTimeout(() => TdGrid.MonitorGrid, 50)
+      return
+    }
+
+    const elements = Cypress.$('[data-testid="train-dialogs-turns"]')
+    if (elements.length != TdGrid.expectedRowCount) { 
+      helpers.ConLog(funcName, `Expected Row Count: ${TdGrid.expectedRowCount} - Actual Row Count: ${elements.length}`)
+      setTimeout(() => TdGrid.MonitorGrid, 50)
+      return
+    }
+
+    helpers.ConLog(funcName, `Found the expected row count: ${elements.length}`)
+    TdGrid.isStable = true
+    TdGrid.monitorIsActivated = false
   }
 }
 
-tdGrid.expectedRowCount = undefined
-tdGrid.isStable = false
-tdGrid.renderingShouldBeCompleteTime = undefined
+TdGrid.expectedRowCount = undefined
+TdGrid.isStable = false
+TdGrid.monitorIsActivated = false
+TdGrid.renderingShouldBeCompleteTime = undefined

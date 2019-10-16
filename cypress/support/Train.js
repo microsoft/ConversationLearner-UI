@@ -986,22 +986,17 @@ export function VerifyCloseIsTheOnlyEnabledButton() {
 
 export function VerifyListOfTrainDialogs(expectedTrainDialogs) {
   const expectedRowCount = expectedTrainDialogs.length
-  const funcName = `VerifyListOfTrainDialogs(expectedRowCount: ${expectedRowCount})`
+  helpers.ConLog(`VerifyListOfTrainDialogs(expectedRowCount: ${expectedRowCount})`, 'Start')
   cy.log('Verify List of Train Dialogs', expectedRowCount)
 
+  let tdGrid
   cy.wrap(1).should(() => {
-    return trainDialogsGrid.GetTdGrid(expectedRowCount)
-  }).then(tdGrid => {
+    tdGrid = trainDialogsGrid.TdGrid.GetTdGrid(expectedRowCount)
+  }).then(() => {
     let errors = false
     expectedTrainDialogs.forEach(trainDialog => {
-      helpers.ConLog(funcName, `Find - "${trainDialog.firstInput}", "${trainDialog.lastInput}", "${trainDialog.lastResponse}"`)
       let iRow = tdGrid.FindGridRow(trainDialog.firstInput, trainDialog.lastInput, trainDialog.lastResponse)
-      if (!iRow) {
-        helpers.ConLog(funcName, 'ERROR - NOT Found')
-        errors = true
-      }
-      
-      helpers.ConLog(funcName, `Found on row ${iRow}`)
+      if (iRow < 0) { errors = true }
     })
   
     if (errors) {
