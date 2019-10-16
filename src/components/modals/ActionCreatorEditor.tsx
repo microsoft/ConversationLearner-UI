@@ -34,7 +34,7 @@ import { FM } from '../../react-intl-messages'
 import './ActionCreatorEditor.css'
 import { autobind } from 'core-decorators';
 import { TagItemSuggestion } from 'office-ui-fabric-react'
-import { IConditionalTag, getEnumConditionName, convertConditionToConditionalTag, isConditionEqual } from 'src/Utils/actionCondition'
+import { IConditionalTag, getEnumConditionName, convertConditionToConditionalTag, isConditionEqual, getUniqueConditions } from 'src/Utils/actionCondition'
 
 const TEXT_SLOT = '#TEXT_SLOT#'
 
@@ -158,26 +158,6 @@ const conditionalEntityTags = (entities: CLM.EntityBase[], actions: CLM.ActionBa
     }, [])
 
     return uniqueConditionTags
-}
-
-
-const getUniqueConditions = (actions: CLM.ActionBase[]): CLM.Condition[] => {
-    const allConditions = actions
-        .map(a => [...a.requiredConditions, ...a.negativeConditions])
-        .reduce((a, b) => [...a, ...b], [])
-
-    const uniqueConditions = allConditions
-        .reduce<CLM.Condition[]>((conditions, condition) => {
-            const matchingCondition = conditions.find(c => isConditionEqual(c, condition))
-            // If no identical condition was found, condition is unique, add it to list
-            if (!matchingCondition) {
-                conditions.push(condition)
-            }
-
-            return conditions
-        }, [])
-
-    return uniqueConditions
 }
 
 // Entities that can be picked as expected entity

@@ -27,7 +27,11 @@ const entityIsAllowedInCondition = (entity: CLM.EntityBase): boolean => {
     return false
 }
 
-const convertEntityToDropdownOption = (entity: CLM.EntityBase): OF.IDropdownOption => {
+interface EntityOption extends OF.IDropdownOption {
+    data: CLM.EntityBase
+}
+
+const convertEntityToDropdownOption = (entity: CLM.EntityBase): EntityOption => {
     let secondaryInfo = entity.entityType === CLM.EntityType.ENUM
         ? `enum`
         : entity.isMultivalue
@@ -41,7 +45,11 @@ const convertEntityToDropdownOption = (entity: CLM.EntityBase): OF.IDropdownOpti
     }
 }
 
-const convertConditionTypesToDropdownOptions = (conditionTypes: object): OF.IDropdownOption[] => {
+interface OperatorOption extends OF.IDropdownOption {
+    data: CLM.ConditionType
+}
+
+const convertConditionTypesToDropdownOptions = (conditionTypes: object): OperatorOption[] => {
     return Object.keys(conditionTypes)
         .map((conditionType: string) => {
             let conditionText = `unknown`
@@ -51,17 +59,22 @@ const convertConditionTypesToDropdownOptions = (conditionTypes: object): OF.IDro
 
             return {
                 key: conditionType,
-                text: conditionText || `unknown`,
+                text: conditionText,
                 data: conditionTypes[conditionType],
             }
         })
 }
 
 const operatorOptions = convertConditionTypesToDropdownOptions(CLM.ConditionType)
+// We know EQUAL will be found since it was created from enum type in line above
 const equalOperatorOption = operatorOptions.find(o => o.data == CLM.ConditionType.EQUAL)!
 
+interface EnumOption extends OF.IDropdownOption {
+    data: CLM.EnumValue
+}
+
 // Enum here refers to Enum values on Entities
-const convertEnumValueToDropdownOption = (enumValue: CLM.EnumValue): OF.IDropdownOption => {
+const convertEnumValueToDropdownOption = (enumValue: CLM.EnumValue): EnumOption => {
     // TODO: Fix types to avoid this. EnumValues on Entities should be guaranteed to exist.
     // Only don't exist during temporary creation
     if (!enumValue.enumValueId) {
@@ -74,9 +87,6 @@ const convertEnumValueToDropdownOption = (enumValue: CLM.EnumValue): OF.IDropdow
         data: enumValue,
     }
 }
-
-
-
 
 type Props = InjectedIntlProps
     & {
@@ -92,6 +102,7 @@ const Component: React.FC<Props> = (props) => {
     const entityOptions = props.entities
         .filter(entityIsAllowedInCondition)
         .map(e => convertEntityToDropdownOption(e))
+        .sort((a, b) => a.text.localeCompare(b.text))
 
     const [selectedEntityOption, setSelectedEntityOption] = React.useState(entityOptions[0])
     React.useEffect(() => {
@@ -100,7 +111,7 @@ const Component: React.FC<Props> = (props) => {
         }
     }, [props.entities])
 
-    const onChangeEntity = (event: React.FormEvent<HTMLDivElement>, option?: OF.IDropdownOption | undefined, index?: number | undefined) => {
+    const onChangeEntity = (event: React.FormEvent<HTMLDivElement>, option?: EntityOption | undefined, index?: number | undefined) => {
         if (!option) {
             return
         }
@@ -109,8 +120,8 @@ const Component: React.FC<Props> = (props) => {
     }
 
     // Operator Dropdown
-    const [selectedOperatorOption, setSelectedOperatorOption] = React.useState<OF.IDropdownOption>(operatorOptions[0])
-    const onChangeOperator = (event: React.FormEvent<HTMLDivElement>, option?: OF.IDropdownOption | undefined, index?: number | undefined) => {
+    const [selectedOperatorOption, setSelectedOperatorOption] = React.useState(equalOperatorOption)
+    const onChangeOperator = (event: React.FormEvent<HTMLDivElement>, option?: OperatorOption) => {
         if (!option) {
             return
         }
@@ -121,13 +132,15 @@ const Component: React.FC<Props> = (props) => {
     // Value
     const [showNumberValue, setShowNumberValue] = React.useState(true)
     const [numberValue, setNumberValue] = React.useState(0)
-    const [enumValueOptions, setEnumValueOptions] = React.useState<OF.IDropdownOption[]>([])
+    const [enumValueOptions, setEnumValueOptions] = React.useState<EnumOption[]>([])
     React.useLayoutEffect(() => {
-        setSelectedEnumValueOption(enumValueOptions[0])
+        if (enumValueOptions.length > 0) {
+            setSelectedEnumValueOption(enumValueOptions[0])
+        }
     }, [enumValueOptions])
 
-    const [selectedEnumValueOption, setSelectedEnumValueOption] = React.useState<OF.IDropdownOption>()
-    const onChangeEnumValueOption = (event: React.FormEvent<HTMLDivElement>, option?: OF.IDropdownOption | undefined, index?: number | undefined) => {
+    const [selectedEnumValueOption, setSelectedEnumValueOption] = React.useState<EnumOption>()
+    const onChangeEnumValueOption = (event: React.FormEvent<HTMLDivElement>, option?: EnumOption) => {
         if (!option) {
             return
         }
@@ -183,7 +196,7 @@ const Component: React.FC<Props> = (props) => {
         }
 
         const condition: CLM.Condition = {
-            entityId: (selectedEntityOption.data as CLM.EntityBase).entityId,
+            entityId: selectedEntityOption.data.entityId,
             condition: selectedOperatorOption.data
         }
 
@@ -192,7 +205,7 @@ const Component: React.FC<Props> = (props) => {
         }
         else if (selectedEnumValueOption) {
             // TODO: Fix enum types
-            condition.valueId = (selectedEnumValueOption.data as CLM.EnumValue).enumValueId!
+            condition.valueId = selectedEnumValueOption.data.enumValueId!
         }
 
         return condition
@@ -216,7 +229,7 @@ const Component: React.FC<Props> = (props) => {
         props.onClickCreate(condition)
     }
 
-    const isOperatorDisabled = selectedEntityOption && (selectedEntityOption.data as CLM.EntityBase).entityType === CLM.EntityType.ENUM
+    const isOperatorDisabled = selectedEntityOption && selectedEntityOption.data.entityType === CLM.EntityType.ENUM
     const conditionsUsingEntity = props.conditions.filter(c => c.entityId === selectedEntityOption.key)
     const currentCondition = createConditionFromState()
 

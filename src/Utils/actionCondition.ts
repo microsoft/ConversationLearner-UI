@@ -40,11 +40,11 @@ export const convertConditionToConditionalTag = (condition: CLM.Condition, entit
 
         const enumValueId = condition.valueId
         if (!enumValueId) {
-            throw new Error(`Condition refers to enum entity, but condition did not have enum value id.`)
+            throw new Error(`Condition refers to enum entity: ${entity.entityName}, but condition did not have enum value id.`)
         }
         const enumValue = entity.enumValues.find(e => e.enumValueId === enumValueId)
         if (!enumValue) {
-            throw new Error(`Condition refers to non-existent EnumValue: ${enumValueId}`)
+            throw new Error(`Condition refers to non-existent EnumValue: ${enumValueId} on enum entity: ${entity.entityName}`)
         }
 
         const name = getEnumConditionName(entity, enumValue)
@@ -120,4 +120,23 @@ export const isEnumConditionTrue = (condition: CLM.Condition, memory: CLM.Memory
 
     return condition.valueId !== undefined
         && condition.valueId === enumValueId 
+}
+
+export const getUniqueConditions = (actions: CLM.ActionBase[]): CLM.Condition[] => {
+    const allConditions = actions
+        .map(a => [...a.requiredConditions, ...a.negativeConditions])
+        .reduce((a, b) => [...a, ...b], [])
+
+    const uniqueConditions = allConditions
+        .reduce<CLM.Condition[]>((conditions, condition) => {
+            const matchingCondition = conditions.find(c => isConditionEqual(c, condition))
+            // If no identical condition was found, condition is unique, add it to list
+            if (!matchingCondition) {
+                conditions.push(condition)
+            }
+
+            return conditions
+        }, [])
+
+    return uniqueConditions
 }
