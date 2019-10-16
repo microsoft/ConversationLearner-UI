@@ -7,8 +7,3 @@
     grid-template-columns: auto max-content;
     grid-gap: 1em;
 }
-
-.cl-traindialogs-import-warning {
-    height: 200px;
-    overflow-y: auto;
-}
