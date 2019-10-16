@@ -95,11 +95,10 @@ export const deleteLogDialogsThunkAsync = (app: CLM.AppBase, logDialogIds: strin
 // ----------------------------------------
 // FetchLogDialog
 // ----------------------------------------
-const fetchLogDialogAsync = (appId: string, logDialogId: string): ActionObject => {
+const fetchLogDialogAsync = (noSpinner: boolean): ActionObject => {
     return {
         type: AT.FETCH_LOG_DIALOG_ASYNC,
-        appId,
-        logDialogId
+        noSpinner
     }
 }
 
@@ -117,10 +116,10 @@ const fetchLogDialogNotFound = (): ActionObject => {
     }
 }
 
-export const fetchLogDialogThunkAsync = (appId: string, logDialogId: string, replaceLocal: boolean, nullOnNotFound: boolean = false) => {
+export const fetchLogDialogThunkAsync = (appId: string, logDialogId: string, replaceLocal: boolean, nullOnNotFound: boolean = false, noSpinner: boolean = false) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.FETCH_LOG_DIALOG_ASYNC)
-        dispatch(fetchLogDialogAsync(appId, logDialogId))
+        dispatch(fetchLogDialogAsync(noSpinner))
 
         try {
             const logDialog = await clClient.logDialog(appId, logDialogId)

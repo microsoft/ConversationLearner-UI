@@ -45,12 +45,12 @@ export async function getLogDialogActivities(
     entities: CLM.EntityBase[],
     conversationId: string | undefined,
     channelId: string | undefined,
-    fetchLogDialogThunkAsync: (appId: string, logDialogId: string, replaceLocal: boolean, nullOnNotFound: boolean) => Promise<CLM.LogDialog>,
+    fetchLogDialogThunkAsync: (appId: string, logDialogId: string, replaceLocal: boolean, nullOnNotFound: boolean, noSpinner: boolean) => Promise<CLM.LogDialog>,
     fetchActivitiesAsync: (appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string, useMarkdown: boolean) => Promise<CLM.TeachWithActivities>
     ): Promise<Util.RecursivePartial<BB.Activity>[]> {
 
     // Fetch the LogDialog
-    const logDialog = await fetchLogDialogThunkAsync(appId, logDialogId, true, true)
+    const logDialog = await fetchLogDialogThunkAsync(appId, logDialogId, true, true, true)
     if (!logDialog) {
         return []
     }

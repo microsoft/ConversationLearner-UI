@@ -205,8 +205,7 @@ export type FetchAction = {
     teachWithActivities: CLM.TeachWithActivities,
 } | {
     type: AT.FETCH_LOG_DIALOG_ASYNC,
-    appId: string,
-    logDialogId: string
+    noSpinner: boolean
 } | {
     type: AT.FETCH_LOG_DIALOG_FULFILLED,
     logDialog: CLM.LogDialog,

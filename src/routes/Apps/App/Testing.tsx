@@ -30,10 +30,13 @@ import { injectIntl, InjectedIntlProps } from 'react-intl'
 import './Testing.css'
 
 const SAVE_SUFFIX = ".cltr"
+const NUM_PARALLEL_TESTS = 30
 
 interface ComponentState {
-    testIndex: number
     testItems: Test.TestItem[]
+    testSlots: string[]
+    doneCount: number
+    completedTestIds: string[]
     testSet: Test.TestSet | undefined
     viewConversationIds: string[] | undefined
     viewConversationPivot: string | undefined
@@ -51,8 +54,10 @@ class Testing extends React.Component<Props, ComponentState> {
     constructor(props: Props) {
         super(props)
         this.state = {
-            testIndex: 0,
             testItems: [],
+            testSlots: [],
+            doneCount: -1,
+            completedTestIds: [],
             testSet: undefined,
             viewConversationIds: undefined,
             viewConversationPivot: undefined,
@@ -146,7 +151,7 @@ class Testing extends React.Component<Props, ComponentState> {
     @autobind
     onCancelTest(): void {
         this.setState({
-            testItems: []
+            doneCount: -1
         })
     }
 
@@ -161,46 +166,14 @@ class Testing extends React.Component<Props, ComponentState> {
         this.setState({testSet: testSet})
     }
 
-    @autobind
-    async testNextTranscript() {
+    async onValidateTranscript(testItem: Test.TestItem, testId: string): Promise<void> {
 
-        if (!this.state.testItems || this.state.testItems.length === 0) {
-            return
+        if (!this.state.testSet) {
+            throw new Error("Missing Test Set")
         }
-
-        // Check if I'm done importing files
-        if (this.state.testIndex === this.state.testItems.length) {
-            this.setState({ 
-                testItems: []
-            })
-            await this.onTranscriptsChanged()
-            this.onSaveSet()
-            return
-        }
-
-        // Get the next test item
-        const testItem = this.state.testItems[this.state.testIndex]
-        this.setState({ testIndex: this.state.testIndex + 1 })
-
-        try {
-            await this.onValidateTranscript(testItem)
-        }
-        catch (e) {
-            const error = e as Error
-            this.props.setErrorDisplay(ErrorType.Error, `Source: ${testItem.sourceName} Conversation: ${testItem.conversationId}`, error.message, null)
-            this.setState({
-                testItems: []
-            })
-        }
-    }
-
-    async onValidateTranscript(testItem: Test.TestItem): Promise<void> {
-
         if (!testItem.transcript) {
             throw new Error("Missing transcript")
         }
-        // Copy validation set
-        const testSet = Test.TestSet.Create(this.state.testSet)
         const conversationId = testItem.conversationId
 
         const transcriptValidationTurns: CLM.TranscriptValidationTurn[] = []
@@ -257,10 +230,11 @@ class Testing extends React.Component<Props, ComponentState> {
             }
         }
         else {
-            const logDialogId = await ((this.props.fetchTranscriptValidationThunkAsync(this.props.app.appId, this.props.editingPackageId, this.props.user.id, transcriptValidationTurns) as any) as Promise<string | null>)
-
+            const logDialogId = await ((this.props.fetchTranscriptValidationThunkAsync(this.props.app.appId, this.props.editingPackageId, testId, transcriptValidationTurns) as any) as Promise<string | null>)
             let resultTranscript: BB.Activity[] | undefined
-            if (logDialogId) {
+
+            // If log was retrieved and I'm not done
+            if (logDialogId && this.state.doneCount !== -1) {
 
                 resultTranscript = await OBIUtils.getLogDialogActivities(
                     this.props.app.appId, 
@@ -276,7 +250,7 @@ class Testing extends React.Component<Props, ComponentState> {
 
             // Substitute back in any LG refs
             const transcript = Util.deepCopy(resultTranscript) || []
-            OBIUtils.toLG(transcript, testSet.lgItems, this.props.entities, this.props.actions)
+            OBIUtils.toLG(transcript, this.state.testSet.lgItems, this.props.entities, this.props.actions)
 
             validationResult = { 
                 sourceName,
@@ -287,11 +261,17 @@ class Testing extends React.Component<Props, ComponentState> {
         }
 
         // Need to check that dialog as still open as user may canceled the test
-        if (this.state.testSet) {
-            testSet.addTestItem(validationResult)
-            await Util.setStateAsync(this, { testSet: testSet })
+        if (this.state.testSet && this.state.doneCount !== -1) {
+            this.setState(prevState => {
+                const testSet = Test.TestSet.Create(prevState.testSet)
+                testSet.addTestItem(validationResult)
+                return { 
+                    testSet: testSet,
+                    testSlots: [...prevState.testSlots, testId],
+                    doneCount: prevState.doneCount + 1
+                }
+            })
         }
-        await this.testNextTranscript()
     }
 
     @autobind
@@ -315,8 +295,50 @@ class Testing extends React.Component<Props, ComponentState> {
     async startTest(sourceName: string): Promise<void> {
         if (this.state.testSet) {
             const testItems = this.state.testSet.getTestItems(sourceName)
-            await Util.setStateAsync(this, { testItems, testIndex: 0 })
-            await this.testNextTranscript()
+            await Util.setStateAsync(this, { testItems, completedTestIds: [], doneCount: 0 })
+            const testSlots: string[] = []
+            for (let i = 0; i < NUM_PARALLEL_TESTS; i = i + 1) {
+                testSlots.push(`ValidationTest ${i}`)
+            }
+            await Util.setStateAsync(this, {testSlots})
+
+            setTimeout(this.testNextTranscript, 500)
+        }
+    }
+
+    @autobind
+    async testNextTranscript() {
+
+        // Check if I'm done
+        if (this.state.doneCount === -1) {
+            this.setState({ 
+                testItems: []
+            })
+            this.onTranscriptsChanged()
+            this.onSaveSet()
+        }
+        else {
+            // Call myself a again after delay
+            setTimeout(this.testNextTranscript, 1000)
+
+            // Find an untested item
+            const untestedItems = this.state.testItems.filter(ti =>
+                !this.state.completedTestIds.includes(ti.conversationId))
+
+            // If there are still untested items and a slot is available
+            if (untestedItems.length !== 0 && this.state.testSlots.length > 0) {
+
+                // Get the next slot and test tiem
+                const testSlot = this.state.testSlots[0]
+                const testItem = untestedItems[0]
+                this.setState(prevState => {
+                    return {
+                        completedTestIds: [...prevState.completedTestIds, testItem.conversationId],
+                        testSlots: prevState.testSlots.filter(ts => ts !== testSlot)
+                    }
+                })
+                await this.onValidateTranscript(testItem, testSlot)
+            }
         }
     }
 
@@ -481,6 +503,11 @@ class Testing extends React.Component<Props, ComponentState> {
         return ''
     }
 
+    // Progress count is less jumpy when smoothed between in progress and completed
+    displayCount(): number {
+        return Math.round((this.state.doneCount + this.state.completedTestIds.length) * 0.5)
+    }
+
     render() {
 
         const saveDisabled = !this.state.testSet 
@@ -583,7 +610,7 @@ class Testing extends React.Component<Props, ComponentState> {
                 <TestWaitModal
                     open={this.state.testItems.length > 0}
                     title={"Testing"}
-                    index={this.state.testIndex}
+                    index={this.displayCount()}
                     total={this.state.testItems.length}
                     onClose={this.onCancelTest}
                 />
