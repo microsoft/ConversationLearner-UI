@@ -561,42 +561,39 @@ export function CreateNewTrainDialog() {
   trainDialogsGrid.ClickNewTrainDialogButton()
 }
 
-export function EditTraining(firstInput, lastInput, lastResponse) {
+export function EditTraining(firstInput, lastInput, lastResponse, expectedRowCount = -1) {
   const funcName = `EditTraining(${firstInput}, ${lastInput}, ${lastResponse})`
-  let trainDialogIndex
-  cy.WaitForStableDOM().then(() => {
-    const turns = trainDialogsGrid.GetTurns()
-    const firstInputs = trainDialogsGrid.GetFirstInputs()
-    const lastInputs = trainDialogsGrid.GetLastInputs()
-    const lastResponses = trainDialogsGrid.GetLastResponses()
-    const lastModifiedDates = trainDialogsGrid.GetLastModifiedDates()
-    const createdDates = trainDialogsGrid.GetCreatedDates()
+  let iRow
+  
+  let tdGrid
+  cy.wrap(1).should(() => {
+    tdGrid = trainDialogsGrid.TdGrid.GetTdGrid(expectedRowCount)
+  }).then(() => {
+    iRow = tdGrid.FindGridRow(firstInput, lastInput, lastResponse)
+    if (iRow >= 0) { 
+      const turns = trainDialogsGrid.GetTurns()
+      const lastModifiedDates = trainDialogsGrid.GetLastModifiedDates()
+      const createdDates = trainDialogsGrid.GetCreatedDates()
 
-    helpers.ConLog(funcName, `${turns.length}, ${lastInputs[0]}, ${lastInputs[1]}, ${lastInputs[2]}`)
-
-    for (let i = 0; i < firstInputs.length; i++) {
-      if (firstInputs[i] == firstInput && lastInputs[i] == lastInput && lastResponses[i] == lastResponse) {
-        currentTrainingSummary = {
-          FirstInput: firstInputs[i],
-          LastInput: lastInputs[i],
-          LastResponse: lastResponses[i],
-          Turns: turns[i],
-          // FUDGING on the time - subtract 25 seconds because the time is set by the server
-          // which is not exactly the same as our test machine.
-          MomentTrainingStarted: Cypress.moment().subtract(25, 'seconds'),
-          MomentTrainingEnded: undefined,
-          LastModifiedDate: lastModifiedDates[i],
-          CreatedDate: createdDates[i],
-          TrainGridRowCount: (turns ? turns.length : 0)
-        }
-        originalTrainingSummary = Object.create(currentTrainingSummary)
-        isBranched = false
-
-        helpers.ConLog(funcName, `ClickTraining for Train Dialog Row #${i} - ${turns[i]}, ${firstInputs[i]}, ${lastInputs[i]}, ${lastResponses[i]}`)
-        trainDialogsGrid.ClickTraining(i)
-        trainDialogIndex = i
-        return
+      currentTrainingSummary = {
+        FirstInput: tdGrid.firstInputs[iRow],
+        LastInput: tdGrid.lastInputs[iRow],
+        LastResponse: tdGrid.lastResponses[iRow],
+        Turns: turns[iRow],
+        // FUDGING on the time - subtract 25 seconds because the time is set by the server
+        // which is not exactly the same as our test machine.
+        MomentTrainingStarted: Cypress.moment().subtract(25, 'seconds'),
+        MomentTrainingEnded: undefined,
+        LastModifiedDate: lastModifiedDates[iRow],
+        CreatedDate: createdDates[iRow],
+        TrainGridRowCount: turns.length // It used to be this but I can't figure out why ---> (turns ? turns.length : 0)
       }
+      originalTrainingSummary = Object.create(currentTrainingSummary)
+      isBranched = false
+
+      helpers.ConLog(funcName, `ClickTraining for Train Dialog Row #${iRow} - ${turns[iRow]}, ${firstInput}, ${lastInput}, ${lastResponse}`)
+      trainDialogsGrid.ClickTraining(iRow)
+      return
     }
     throw new Error(`Can't Find Training to Edit. The grid should, but does not, contain a row with this data in it: FirstInput: ${firstInput} -- LastInput: ${lastInput} -- LastResponse: ${lastResponse}`)
   })
@@ -608,27 +605,27 @@ export function EditTraining(firstInput, lastInput, lastResponse) {
     const funcName2 = funcName + ' - VALIDATION PHASE'
     let retryCount = 0
 
-    helpers.ConLog(funcName2, `Row #${trainDialogIndex}`)
+    helpers.ConLog(funcName2, `Row #${iRow}`)
 
     cy.wrap(1, {timeout: 8000}).should(() => {
       const allChatMessageElements = GetAllChatMessageElements()
       if (allChatMessageElements.length > 0) {
-        helpers.ConLog(funcName2, `The expected Train Dialog from row #${trainDialogIndex} has loaded`)
+        helpers.ConLog(funcName2, `The expected Train Dialog from row #${iRow} has loaded`)
         return
       }
       
       helpers.ConLog(funcName2, `We are still waiting for the Train Dialog to load`)
       retryCount++
       if (retryCount % 5 == 0) {
-        helpers.ConLog(funcName2, `Going to click on Train Dialog Row #${trainDialogIndex} again.`)
+        helpers.ConLog(funcName2, `Going to click on Train Dialog Row #${iRow} again.`)
         
         // The problem with calling ClickTraining is that it causes the cy.wrap timeout to be canceled.
         // CANNOT USE THIS - trainDialogsGrid.ClickTraining(trainDialogIndex)
-        Cypress.$('[data-testid="train-dialogs-description"]')[trainDialogIndex].click({force: true})
+        Cypress.$('[data-testid="train-dialogs-description"]')[iRow].click({force: true})
 
-        throw new Error(`Retry - We just finished clicking on Train Dialog Row #${trainDialogIndex} again.`)
+        throw new Error(`Retry - We just finished clicking on Train Dialog Row #${iRow} again.`)
       }
-      throw new Error('Retry - We have not yet achieved our goal')
+      throw new Error('Retry - The Train Dialog has not yet loaded')
     })
   })
 }

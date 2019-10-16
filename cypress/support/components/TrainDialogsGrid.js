@@ -28,6 +28,9 @@ export function EntityDropDownFilter() { cy.Get('[data-testid="dropdown-filter-b
 export function ActionDropDownFilter() { cy.Get('[data-testid="dropdown-filter-by-action"]') }
 export function ClickTraining(row) { cy.Get('[data-testid="train-dialogs-description"]').then(elements => { cy.wrap(elements[row]).Click({force: true}) }) }
 
+// TODO: Rework this as well
+// TODO: Rework this as well
+// TODO: Rework this as well
 export function WaitForGridReadyThen(expectedRowCount, functionToRunAfterGridIsReady) {
   cy.Get('[data-testid="train-dialogs-turns"]', { timeout: 10000 })
     .should(elements => { expect(elements).to.have.length(expectedRowCount) })
@@ -84,7 +87,7 @@ export class TdGrid {
   FindGridRow(firstInput, lastInput, lastResponse){
     helpers.ConLog(`tdGrid.FindGridRow("${firstInput}", "${lastInput}", "${lastResponse}")`, this.feedback)
 
-    if (this.expectedRowCount != this.firstInputs.length || this.expectedRowCount != this.lastInputs.length || this.expectedRowCount != this.lastResponses.length) {
+    if (this.expectedRowCount >= 0 && (this.expectedRowCount != this.firstInputs.length || this.expectedRowCount != this.lastInputs.length || this.expectedRowCount != this.lastResponses.length)) {
       throw new Error(`Somethings wrong in tdGrid.FindGridRow - ${this.feedback}`)
     }
 
@@ -127,7 +130,7 @@ export class TdGrid {
     }
 
     const elements = Cypress.$('[data-testid="train-dialogs-turns"]')
-    if (elements.length != TdGrid.expectedRowCount) { 
+    if (this.expectedRowCount >= 0 && elements.length != TdGrid.expectedRowCount) { 
       helpers.ConLog(funcName, `Expected Row Count: ${TdGrid.expectedRowCount} - Actual Row Count: ${elements.length}`)
       setTimeout(() => TdGrid.MonitorGrid, 50)
       return
