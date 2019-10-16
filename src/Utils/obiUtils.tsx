@@ -45,8 +45,8 @@ export async function getLogDialogActivities(
     entities: CLM.EntityBase[],
     conversationId: string | undefined,
     channelId: string | undefined,
-    fetchLogDialogThunkAsync: (appId: string, logDialogId: string, replaceLocal: boolean, nullOnNotFound: boolean, noSpinner: boolean) => Promise<CLM.LogDialog>,
-    fetchActivitiesThunkAsync: (appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string, useMarkdown: boolean, noSpinner: boolean) => Promise<CLM.TeachWithActivities>
+    fetchLogDialogThunkAsync: (appId: string, logDialogId: string, replaceLocal: boolean, nullOnNotFound: boolean, noSpinnerDisplay: boolean) => Promise<CLM.LogDialog>,
+    fetchActivitiesThunkAsync: (appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string, useMarkdown: boolean, noSpinnerDisplay: boolean) => Promise<CLM.TeachWithActivities>
     ): Promise<Util.RecursivePartial<BB.Activity>[]> {
 
     // Fetch the LogDialog

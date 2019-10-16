@@ -118,7 +118,7 @@ const displayReducer: Reducer<DisplayState> = produce((state: DisplayState, acti
             return
         case AT.FETCH_ACTIVITIES_ASYNC:
         case AT.FETCH_LOG_DIALOG_ASYNC:
-            if (!action.noSpinner) {
+            if (!action.noSpinnerDisplay) {
                 state.displaySpinner.push(spinnerName(action.type))
             }
             return

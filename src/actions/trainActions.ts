@@ -601,10 +601,10 @@ export const deleteTrainDialogThunkAsync = (app: CLM.AppBase, trainDialogId: str
 // ----------------------------------------
 // Activities
 // ----------------------------------------
-const fetchActivitiesAsync = (noSpinner: boolean): ActionObject => {
+const fetchActivitiesAsync = (noSpinnerDisplay: boolean): ActionObject => {
     return {
         type: AT.FETCH_ACTIVITIES_ASYNC,
-        noSpinner
+        noSpinnerDisplay
     }
 }
 
@@ -616,10 +616,19 @@ const fetchActivitiesFulfilled = (teachWithActivities: CLM.TeachWithActivities):
     }
 }
 
-export const fetchActivitiesThunkAsync = (appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string, useMarkdown: boolean = true, noSpinner: boolean = false) => {
+/**
+ * Return list of rendered Activities for the given TrainDialog
+ * @param appId Current application
+ * @param trainDialog Train dialog for which Activities will be returned
+ * @param userName Name of the active user
+ * @param userId Id of the active user
+ * @param useMarkdown If true will add markdown to highlight entites in user utterance
+ * @param noSpinnerDisplay If true will not display a spinner when awaiting
+ */
+export const fetchActivitiesThunkAsync = (appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string, useMarkdown: boolean = true, noSpinnerDisplay: boolean = false) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.FETCH_ACTIVITIES_ASYNC)
-        dispatch(fetchActivitiesAsync(noSpinner))
+        dispatch(fetchActivitiesAsync(noSpinnerDisplay))
 
         try {
             const teachWithActivities = await clClient.history(appId, trainDialog, userName, userId, useMarkdown)
