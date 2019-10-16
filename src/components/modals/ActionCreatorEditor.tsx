@@ -1787,7 +1787,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                         data-testid="action-required-entities"
                                         nonRemovableTags={this.state.requiredEntityTagsFromPayload}
                                         nonRemoveableStrikethrough={false}
-                                        label="Required Entities or Conditions"
+                                        label="Required Conditions"
                                         onResolveSuggestions={this.onResolveRequiredEntityOrConditionTags}
                                         onRenderItem={this.onRenderRequiredEntityOrConditionTag}
                                         onRenderSuggestionsItem={this.onRenderEntityOrConditionSuggestion}
@@ -1795,8 +1795,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                         onChange={this.onChangeRequiredEntityOrConditionTags}
                                         pickerSuggestionsProps={
                                             {
-                                                suggestionsHeaderText: 'Entities or Conditions',
-                                                noResultsFoundText: 'No Entities or Conditions Found'
+                                                suggestionsHeaderText: 'Conditions',
+                                                noResultsFoundText: 'No Conditions Found'
                                             }
                                         }
                                         selectedItems={this.state.requiredEntityOrConditionTags}
@@ -1808,7 +1808,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                 <div className="cl-action-creator--disqualifying-entities">
                                     <TC.TagPicker
                                         data-testid="action-disqualifying-entities"
-                                        label="Disqualifying Entities or Conditions"
+                                        label="Disqualifying Conditions"
                                         onResolveSuggestions={this.onResolveNegativeEntityTags}
                                         onRenderItem={this.onRenderNegativeEntityTag}
                                         onRenderSuggestionsItem={this.onRenderEntityOrConditionSuggestion}
@@ -1816,8 +1816,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                         onChange={this.onChangeNegativeEntityOrConditionTags}
                                         pickerSuggestionsProps={
                                             {
-                                                suggestionsHeaderText: 'Entities or Conditions',
-                                                noResultsFoundText: 'No Entities or Conditions Found'
+                                                suggestionsHeaderText: 'Conditions',
+                                                noResultsFoundText: 'No Conditions Found'
                                             }
                                         }
                                         selectedItems={this.state.negativeEntityOrConditionTags}
