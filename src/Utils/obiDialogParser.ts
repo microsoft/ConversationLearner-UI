@@ -136,6 +136,7 @@ export class ObiDialogParser {
     private async collectDialogNodes(obiDialog: OBITypes.OBIDialog, conditionalEntities: { [key: string]: Set<string> }):
         Promise<ObiDialogNode> {
         let node: ObiDialogNode = new ObiDialogNode(obiDialog)
+        // TODO(thpar) : add steps for capturing API input and output.
         if (obiDialog.rules) {
             await this.collectDialogRuleChildren(node, obiDialog.rules, conditionalEntities)
         }
