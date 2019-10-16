@@ -787,8 +787,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
     haveTrainDialogsToImport(): boolean {
         return (this.state.transcriptImport !== undefined
-        && this.state.transcriptImport.trainDialogs !== undefined
-        && this.state.transcriptImport.trainDialogs.length > 0)
+            && this.state.transcriptImport.trainDialogs !== undefined
+            && this.state.transcriptImport.trainDialogs.length > 0)
     }
 
     @autobind
@@ -1142,16 +1142,16 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         }
     }
 
-    @autobind   
+    @autobind
     async onCloseImportWarning(cancel: boolean): Promise<void> {
         // Delete app if user chooses to cancel or there are no imported train dialogs
         if (cancel || this.state.transcriptImport && this.state.transcriptImport.trainDialogs.length === 0) {
-            this.setState({transcriptImport: undefined})
+            this.setState({ transcriptImport: undefined })
             this.props.onDeleteApp(this.props.app.appId)
         }
         // Otherwise start the import
         else if (this.state.transcriptImport) {
-            await Util.setStateAsync(this, {transcriptImport: {...this.state.transcriptImport, warnings: []}})
+            await Util.setStateAsync(this, { transcriptImport: { ...this.state.transcriptImport, warnings: [] } })
             await this.onImportNextTrainDialog()
         }
     }
@@ -1174,7 +1174,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
     @autobind
     async onSubmitImportTranscripts(transcriptFiles: File[], lgFiles: File[], autoCreate: boolean, autoMerge: boolean, autoActionCreate: boolean): Promise<void> {
-        
+
         await Util.setStateAsync(this, {
             isTranscriptImportOpen: false,
 
@@ -1205,7 +1205,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 lgItems: undefined,
                 warnings: []
             }
-            
+
             await Util.setStateAsync(this, {
                 isTranscriptImportOpen: false,
                 transcriptImport
@@ -1232,7 +1232,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         if (this.state.transcriptImport) {
             // Increment index
             const importIndex = this.state.transcriptImport.index === undefined ? 0 : this.state.transcriptImport.index + 1
-            await Util.setStateAsync(this, { transcriptImport: {...this.state.transcriptImport, index: importIndex }})
+            await Util.setStateAsync(this, { transcriptImport: { ...this.state.transcriptImport, index: importIndex } })
 
             const importData = this.state.transcriptImport
 
@@ -1555,7 +1555,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     />
                     {Util.isFeatureEnabled(this.props.settings.features, FeatureStrings.CCI) &&
                         <OF.DefaultButton
-                            iconProps={{iconName: "CloudUpload"}}
+                            iconProps={{ iconName: "CloudUpload" }}
                             disabled={isEditingDisabled}
                             onClick={this.onClickImportTranscripts}
                             ariaDescription={Util.formatMessageId(intl, FM.BUTTON_IMPORT)}
@@ -1792,11 +1792,11 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         onCancel={() => this.onCloseImportWarning(true)}
                         onOk={() => this.onCloseImportWarning(false)}
                         title={Util.formatMessageId(intl, FM.TRAINDIALOGS_IMPORT_WARNING)}
-                        message={() => 
-                            <OF.List 
-                                className="cl-traindialogs-import-warning"
-                                items={this.state.transcriptImport ? this.state.transcriptImport.warnings : []} 
-                                onRenderCell={(item: string, index: number) => { return item}}
+                        message={() =>
+                            <OF.List
+                                className="cl-warning-list"
+                                items={this.state.transcriptImport ? this.state.transcriptImport.warnings : []}
+                                onRenderCell={(item: string, index: number) => { return item }}
                             />
                         }
                     />

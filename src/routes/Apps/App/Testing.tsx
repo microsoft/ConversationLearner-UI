@@ -16,7 +16,7 @@ import TranscriptList from '../../../components/modals/TranscriptList'
 import FormattedMessageId from '../../../components/FormattedMessageId'
 import CompareDialogsModal from '../../../components/modals/CompareDialogsModal'
 import RateDialogsModal from '../../../components/modals/RateDialogsModal'
-import TestWaitModal from '../../../components/modals/ProgressModal'
+import ProgressModal from '../../../components/modals/ProgressModal'
 import TranscriptTestPicker from '../../../components/modals/TranscriptTestPicker'
 import ConfirmCancelModal from '../../../components/modals/ConfirmCancelModal'
 import { autobind } from 'core-decorators'
@@ -37,6 +37,9 @@ interface ComponentState {
     testSlots: string[]
     doneCount: number
     completedTestIds: string[]
+    warnings: string[]
+    startTime: number
+    remainingTime: number
     testSet: Test.TestSet | undefined
     viewConversationIds: string[] | undefined
     viewConversationPivot: string | undefined
@@ -58,6 +61,9 @@ class Testing extends React.Component<Props, ComponentState> {
             testSlots: [],
             doneCount: -1,
             completedTestIds: [],
+            warnings: [],
+            startTime: 0,
+            remainingTime: 0,
             testSet: undefined,
             viewConversationIds: undefined,
             viewConversationPivot: undefined,
@@ -105,6 +111,7 @@ class Testing extends React.Component<Props, ComponentState> {
                     ? Test.TestSet.Create(this.state.testSet)
                     : this.newTestSet()
 
+                this.props.spinnerAdd()
                 await testSet.addTranscriptFiles(transcriptFiles)
 
                 await Util.setStateAsync(this, { testSet })
@@ -115,6 +122,9 @@ class Testing extends React.Component<Props, ComponentState> {
             catch (e) {
                 const error = e as Error
                 this.props.setErrorDisplay(ErrorType.Error, `invalid .transcript file`, error.message, null)
+            }
+            finally {
+                this.props.spinnerRemove()
             }
         }
     }
@@ -169,107 +179,121 @@ class Testing extends React.Component<Props, ComponentState> {
 
     async onValidateTranscript(testItem: Test.TestItem, testId: string): Promise<void> {
 
-        if (!this.state.testSet) {
-            throw new Error("Missing Test Set")
-        }
-        if (!testItem.transcript) {
-            throw new Error("Missing transcript")
-        }
-        const conversationId = testItem.conversationId
+        try {
+            if (!this.state.testSet) {
+                throw new Error("Missing Test Set")
+            }
+            if (!testItem.transcript) {
+                throw new Error("Missing transcript")
+            }
+            const conversationId = testItem.conversationId
 
-        const transcriptValidationTurns: CLM.TranscriptValidationTurn[] = []
-        let transcriptValidationTurn: CLM.TranscriptValidationTurn = { inputText: "", apiResults: [] }
-        let invalidTranscript = false
-        let apiResults: CLM.FilledEntity[] = []
+            const transcriptValidationTurns: CLM.TranscriptValidationTurn[] = []
+            let transcriptValidationTurn: CLM.TranscriptValidationTurn = { inputText: "", apiResults: [] }
+            let invalidTranscript = false
+            let apiResults: CLM.FilledEntity[] = []
 
-        for (let activity of testItem.transcript) {
-            // TODO: Handle conversation updates
-            if (!activity.type || activity.type === "message") {
-                if (activity.text === "END_SESSION") {
-                    break
-                }
-                if (activity.from.role === "user") {
-                    // If already have user input push it
-                    if (transcriptValidationTurn.inputText !== "") {
-                        transcriptValidationTurns.push(transcriptValidationTurn)
-                    }
-                    transcriptValidationTurn = { inputText: activity.text, apiResults: [] }
-                }
-                else if (activity.from.role === "bot") {
-                    if (transcriptValidationTurn) {
-                        // If API call include API results
-                        if (activity.channelData && activity.channelData.type === "ActionCall") {
-                            const actionCall = activity.channelData as OBIUtils.TranscriptActionCall
-                            apiResults = await OBIUtils.importActionOutput(actionCall.actionOutput, this.props.entities, this.props.app)
-                            transcriptValidationTurn.apiResults.push(apiResults)
-                        }
-                        else {
-                            transcriptValidationTurn.apiResults.push([])
-                        }
-                    }
-                    else {
-                        invalidTranscript = true
+            for (let activity of testItem.transcript) {
+                // TODO: Handle conversation updates
+                if (!activity.type || activity.type === "message") {
+                    if (activity.text === "END_SESSION") {
                         break
                     }
+                    if (activity.from.role === "user") {
+                        // If already have user input push it
+                        if (transcriptValidationTurn.inputText !== "") {
+                            transcriptValidationTurns.push(transcriptValidationTurn)
+                        }
+                        transcriptValidationTurn = { inputText: activity.text, apiResults: [] }
+                    }
+                    else if (activity.from.role === "bot") {
+                        if (transcriptValidationTurn) {
+                            // If API call include API results
+                            if (activity.channelData && activity.channelData.type === "ActionCall") {
+                                const actionCall = activity.channelData as OBIUtils.TranscriptActionCall
+                                apiResults = await OBIUtils.importActionOutput(actionCall.actionOutput, this.props.entities, this.props.app)
+                                transcriptValidationTurn.apiResults.push(apiResults)
+                            }
+                            else {
+                                transcriptValidationTurn.apiResults.push([])
+                            }
+                        }
+                        else {
+                            invalidTranscript = true
+                            break
+                        }
+                    }
                 }
             }
-        }
-        // Add last turn
-        if (transcriptValidationTurn) {
-            transcriptValidationTurns.push(transcriptValidationTurn)
-        }
-
-        const sourceName = `${this.props.app.appName} (${testItem.sourceName})`
-
-        let validationResult: Test.TestItem
-        if (invalidTranscript) {
-            validationResult = {
-                sourceName,
-                conversationId,
-                logDialogId: null,
-                invalidTranscript: true
+            // Add last turn
+            if (transcriptValidationTurn) {
+                transcriptValidationTurns.push(transcriptValidationTurn)
             }
-        }
-        else {
-            const logDialogId = await ((this.props.fetchTranscriptValidationThunkAsync(this.props.app.appId, this.props.editingPackageId, testId, transcriptValidationTurns) as any) as Promise<string | null>)
-            let resultTranscript: BB.Activity[] | undefined
 
-            // If log was retrieved and I'm not done
-            if (logDialogId && this.state.doneCount !== -1) {
+            const sourceName = `${this.props.app.appName} (${testItem.sourceName})`
 
-                resultTranscript = await OBIUtils.getLogDialogActivities(
-                    this.props.app.appId,
-                    logDialogId,
-                    this.props.user,
-                    this.props.actions,
-                    this.props.entities,
-                    conversationId,
+            let validationResult: Test.TestItem
+            if (invalidTranscript) {
+                validationResult = {
                     sourceName,
-                    this.props.fetchLogDialogThunkAsync as any,
-                    this.props.fetchActivitiesThunkAsync as any) as BB.Activity[]
+                    conversationId,
+                    logDialogId: null,
+                    invalidTranscript: true
+                }
+            }
+            else {
+                const logDialogId = await ((this.props.fetchTranscriptValidationThunkAsync(this.props.app.appId, this.props.editingPackageId, testId, transcriptValidationTurns) as any) as Promise<string | null>)
+                let resultTranscript: BB.Activity[] | undefined
+
+                // If log was retr}ieved and I'm not done
+                if (logDialogId && this.state.doneCount !== -1) {
+
+                    resultTranscript = await OBIUtils.getLogDialogActivities(
+                        this.props.app.appId,
+                        logDialogId,
+                        this.props.user,
+                        this.props.actions,
+                        this.props.entities,
+                        conversationId,
+                        sourceName,
+                        this.props.fetchLogDialogThunkAsync as any,
+                        this.props.fetchActivitiesThunkAsync as any) as BB.Activity[]
+                }
+
+                // Substitute back in any LG refs
+                const transcript = Util.deepCopy(resultTranscript) || []
+                OBIUtils.toLG(transcript, this.state.testSet.lgItems, this.props.entities, this.props.actions)
+
+                validationResult = {
+                    sourceName,
+                    conversationId,
+                    logDialogId,
+                    transcript
+                }
             }
 
-            // Substitute back in any LG refs
-            const transcript = Util.deepCopy(resultTranscript) || []
-            OBIUtils.toLG(transcript, this.state.testSet.lgItems, this.props.entities, this.props.actions)
-
-            validationResult = {
-                sourceName,
-                conversationId,
-                logDialogId,
-                transcript
+            // Need to check that dialog as still open as user may canceled the test
+            if (this.state.testSet && this.state.doneCount !== -1) {
+                this.setState(prevState => {
+                    const testSet = Test.TestSet.Create(prevState.testSet)
+                    testSet.addTestItem(validationResult)
+                    return {
+                        testSet: testSet,
+                        testSlots: [...prevState.testSlots, testId],
+                        doneCount: prevState.doneCount + 1
+                    }
+                })
             }
         }
-
-        // Need to check that dialog as still open as user may canceled the test
-        if (this.state.testSet && this.state.doneCount !== -1) {
+        catch (e) {
+            const error = e as Error
+            const message = `${testItem.conversationId}: ${error.message}`
+            // Free the slot, so I can keep testing the rest
             this.setState(prevState => {
-                const testSet = Test.TestSet.Create(prevState.testSet)
-                testSet.addTestItem(validationResult)
                 return {
-                    testSet: testSet,
                     testSlots: [...prevState.testSlots, testId],
-                    doneCount: prevState.doneCount + 1
+                    doneCount: prevState.doneCount + 1,
+                    warnings: [...prevState.warnings, message]
                 }
             })
         }
@@ -296,7 +320,14 @@ class Testing extends React.Component<Props, ComponentState> {
     async startTest(sourceName: string): Promise<void> {
         if (this.state.testSet) {
             const testItems = this.state.testSet.getTestItems(sourceName)
-            await Util.setStateAsync(this, { testItems, completedTestIds: [], doneCount: 0 })
+            await Util.setStateAsync(this, {
+                testItems,
+                completedTestIds: [],
+                warnings: [],
+                doneCount: 0,
+                startTime: new Date().getTime(),
+                remainingTime: 0
+            })
             const testSlots: string[] = []
             for (let i = 0; i < NUM_PARALLEL_TESTS; i = i + 1) {
                 testSlots.push(`ValidationTest ${i}`)
@@ -311,8 +342,9 @@ class Testing extends React.Component<Props, ComponentState> {
     async testNextTranscript() {
 
         // Check if I'm done
-        if (this.state.doneCount === -1) {
+        if (this.state.doneCount === -1 || this.state.doneCount === this.state.testItems.length) {
             this.setState({
+                doneCount: -1,
                 testItems: []
             })
             this.onTranscriptsChanged()
@@ -321,6 +353,16 @@ class Testing extends React.Component<Props, ComponentState> {
         else {
             // Call myself a again after delay
             setTimeout(this.testNextTranscript, 1000)
+
+            // Update time esimate after 1 completed item
+            if (this.state.doneCount > 1) {
+                const curTime = new Date().getTime()
+                const ellapsedTime = curTime - this.state.startTime
+                const timePerItem = ellapsedTime / this.state.doneCount
+                const remainingCount = this.state.testItems.length - this.state.doneCount
+                const remainingTime = timePerItem * remainingCount
+                this.setState({ remainingTime })
+            }
 
             // Find an untested item
             const untestedItems = this.state.testItems.filter(ti =>
@@ -504,6 +546,11 @@ class Testing extends React.Component<Props, ComponentState> {
         return ''
     }
 
+    @autobind
+    async onCloseTestWarning(): Promise<void> {
+        this.setState({ warnings: [] })
+    }
+
     // Progress count is less jumpy when smoothed between in progress and completed
     displayCount(): number {
         return Math.round((this.state.doneCount + this.state.completedTestIds.length) * 0.5)
@@ -608,12 +655,14 @@ class Testing extends React.Component<Props, ComponentState> {
                     onConfirm={this.onConfirmClear}
                     title={Util.formatMessageId(this.props.intl, FM.TESTING_CONFIRM_CLEAR_TITLE)}
                 />
-                <TestWaitModal
+                <ProgressModal
                     open={this.state.testItems.length > 0}
-                    title={"Testing"}
+                    title="Testing"
                     index={this.displayCount()}
                     total={this.state.testItems.length}
+                    warningCount={this.state.warnings.length}
                     onClose={this.onCancelTest}
+                    remainingTime={this.state.remainingTime}
                 />
                 {this.state.viewConversationIds && this.state.testSet &&
                     <CompareDialogsModal
@@ -639,6 +688,20 @@ class Testing extends React.Component<Props, ComponentState> {
                         onSubmit={this.onPickTestSubmit}
                     />
                 }
+                {this.state.doneCount === -1 && this.state.warnings && this.state.warnings.length > 0 &&
+                    <ConfirmCancelModal
+                        open={true}
+                        onOk={() => this.onCloseTestWarning()}
+                        title={Util.formatMessageId(this.props.intl, FM.TESTING_WARNING)}
+                        message={() =>
+                            <OF.List
+                                className="cl-warning-list"
+                                items={this.state.warnings}
+                                onRenderCell={(item: string, index: number) => { return item }}
+                            />
+                        }
+                    />
+                }
             </div>
         )
     }
@@ -659,7 +722,9 @@ const mapDispatchToProps = (dispatch: any) => {
         fetchActivitiesThunkAsync: actions.train.fetchActivitiesThunkAsync,
         fetchLogDialogThunkAsync: actions.log.fetchLogDialogThunkAsync,
         fetchTranscriptValidationThunkAsync: actions.app.fetchTranscriptValidationThunkAsync,
-        setErrorDisplay: actions.display.setErrorDisplay
+        setErrorDisplay: actions.display.setErrorDisplay,
+        spinnerAdd: actions.display.spinnerAdd,
+        spinnerRemove: actions.display.spinnerRemove
     }, dispatch);
 }
 
