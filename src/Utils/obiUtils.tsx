@@ -46,7 +46,7 @@ export async function getLogDialogActivities(
     conversationId: string | undefined,
     channelId: string | undefined,
     fetchLogDialogThunkAsync: (appId: string, logDialogId: string, replaceLocal: boolean, nullOnNotFound: boolean, noSpinner: boolean) => Promise<CLM.LogDialog>,
-    fetchActivitiesAsync: (appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string, useMarkdown: boolean, noSpinner: boolean) => Promise<CLM.TeachWithActivities>
+    fetchActivitiesThunkAsync: (appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string, useMarkdown: boolean, noSpinner: boolean) => Promise<CLM.TeachWithActivities>
     ): Promise<Util.RecursivePartial<BB.Activity>[]> {
 
     // Fetch the LogDialog
@@ -59,7 +59,7 @@ export async function getLogDialogActivities(
     const trainDialog = CLM.ModelUtils.ToTrainDialog(logDialog, actions, entities)
 
     // Return activities
-    const teachWithActivities = await fetchActivitiesAsync(appId, trainDialog, user.name, user.id, false, true)
+    const teachWithActivities = await fetchActivitiesThunkAsync(appId, trainDialog, user.name, user.id, false, true)
     const activites = teachWithActivities.activities
     if (conversationId || channelId) {
         addActivityReferences(activites, conversationId, channelId)
