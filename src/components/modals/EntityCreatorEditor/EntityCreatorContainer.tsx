@@ -18,7 +18,7 @@ import { withRouter } from 'react-router-dom'
 import { RouteComponentProps } from 'react-router'
 import Component, { IEnumValueForDisplay } from './EntityCreatorComponent'
 import { autobind } from 'core-decorators'
-import { getUniqueConditions, getUpdateActionsUsingCondition } from 'src/Utils/actionCondition'
+import { getUniqueConditions, getUpdatedActionsUsingCondition } from 'src/Utils/actionCondition'
 
 const entityNameMaxLength = 30
 const enumMaxLength = 10
@@ -782,7 +782,7 @@ class Container extends React.Component<Props, ComponentState> {
     async onClickCreateConditionCreator(condition: CLM.Condition) {
         // Should always be true, but need to check
         if (this.state.selectedCondition) {
-            const actionsUsingCondition = getUpdateActionsUsingCondition(this.props.actions, this.state.selectedCondition, condition)
+            const actionsUsingCondition = getUpdatedActionsUsingCondition(this.props.actions, this.state.selectedCondition, condition)
             for (const action of actionsUsingCondition) {
                 await (this.props.editActionThunkAsync(this.props.app.appId, action) as any) as Promise<CLM.ActionBase>
             }

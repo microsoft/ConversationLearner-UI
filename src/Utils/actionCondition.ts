@@ -149,7 +149,7 @@ export const getUniqueConditions = (actions: CLM.ActionBase[]): CLM.Condition[] 
  * @param existingCondition Existing Condition
  * @param newCondition New Condition
  */
-export const getUpdateActionsUsingCondition = (actions: CLM.ActionBase[], existingCondition: CLM.Condition, newCondition: CLM.Condition): CLM.ActionBase[] => {
+export const getUpdatedActionsUsingCondition = (actions: CLM.ActionBase[], existingCondition: CLM.Condition, newCondition: CLM.Condition): CLM.ActionBase[] => {
     return actions.reduce<CLM.ActionBase[]>((actionsUsingCondition, action) => {
         let isActionUsingCondition = false
         const requiredConditionIndex = action.requiredConditions.findIndex(c => isConditionEqual(c, existingCondition))
