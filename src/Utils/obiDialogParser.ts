@@ -7,6 +7,7 @@ import * as DialogEditing from './dialogEditing'
 import * as OBIUtils from './obiUtils'
 import * as Util from './util'
 import * as OBITypes from '../types/obiTypes'
+import * as lodash from 'lodash'
 import * as stripJsonComments from 'strip-json-comments'
 
 enum OBIStepType {
@@ -51,19 +52,22 @@ export class ObiDialogParser {
     private warnings: string[]
     private createActionThunkAsync: (appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null>
     private createEntityThunkAsync: (appId: string, entity: CLM.EntityBase) => Promise<CLM.EntityBase | null>
+    private editEntityThunkAsync: (appId: string, entity: CLM.EntityBase, prevEntity: CLM.EntityBase) => Promise<CLM.EntityBase>
 
     constructor(
         app: CLM.AppBase,
         actions: CLM.ActionBase[],
         entities: CLM.EntityBase[],
         createActionThunkAsync: (appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null>,
-        createEntityThunkAsync: (appId: string, entity: CLM.EntityBase) => Promise<CLM.EntityBase | null>
+        createEntityThunkAsync: (appId: string, entity: CLM.EntityBase) => Promise<CLM.EntityBase | null>,
+        editEntityThunkAsync: (appId: string, entity: CLM.EntityBase, prevEntity: CLM.EntityBase) => Promise<CLM.EntityBase>
     ) {
         this.app = app
         this.actions = [...actions]
         this.entities = [...entities]
         this.createActionThunkAsync = createActionThunkAsync
         this.createEntityThunkAsync = createEntityThunkAsync
+        this.editEntityThunkAsync = editEntityThunkAsync
     }
 
     async parse(files: File[]): Promise<ObiDialogParserResult> {
@@ -81,7 +85,7 @@ export class ObiDialogParser {
         } else {
             let conditionalEntities: { [key: string]: Set<string> } = {}
             const rootNode = await this.collectDialogNodes(mainDialog, conditionalEntities)
-            // TODO(thpar) : Create the conditional entities.
+            await this.createOrUpdateConditionalEntities(conditionalEntities)
             trainDialogs = await this.getTrainDialogs(rootNode)
         }
         return {
@@ -332,6 +336,7 @@ export class ObiDialogParser {
                     break
                 }
                 case OBIStepType.SWITCH_CONDITION: {
+                    // TODO(thpar) : Update to set entity memory for each branch of the case, and add conditions on the cases.
                     let childSteps: CLM.TrainScorerStep[] = []
                     if (step.cases) {
                         for (const branch of step.cases) {
@@ -345,14 +350,16 @@ export class ObiDialogParser {
                         childSteps = [...childSteps, ...await this.getScorerStepsFromOBIDialogSteps(step.default)]
                     }
                     // We currently require SwitchCondition steps to contain only StartDialog nodes, which are handled
-                    // via generation of the dialog tree.
-                    // To handle action-bearing steps, we would need to modify this function to return a branching structure.
+                    // via generation of the dialog tree; they should not contain action steps.
+                    // To handle action steps, we would need to modify this function to return a branching structure.
                     // Eg, if a dialog had [step0, swtich:{step1, step2}, step3], then we'd need to return 2 different sets
                     // of scorer steps : [step0, step1, step3] and [step0, step2, step3].
+                    // Returning multiple sets of scorer steps would have many other repercussions on TrainDialog construction,
+                    // such as assigning scorer steps from subsequent nodes without an extractor step.
                     if (childSteps.length > 0) {
                         throw new Error("SwitchConditions containing action steps are not currently supported")
                     }
-                    // We also do not currently allow action-bearing steps to follow a SwtichCondition.
+                    // We also do not currently allow action-bearing steps to follow a SwtichCondition step.
                     // This is because actions in the current node are visited before traversing to children in the dialog tree.
                     // Eg, if a dialog had [step0, switch:{StartDialog(a)}, step1], then the current logic would generate
                     // the incorrect output scorer steps [step0, step1, <scorer steps from dialog a>]; users would probably
@@ -369,7 +376,7 @@ export class ObiDialogParser {
                     return scorerSteps
                 }
                 case OBIStepType.BEGIN_DIALOG: {
-                    // Nothing to do here, the child dialogs were already expanded.
+                    // Nothing to do here, the child dialogs were already expanded when we built the dialog tree.
                     break
                 }
                 case OBIStepType.END_DIALOG:
@@ -384,8 +391,94 @@ export class ObiDialogParser {
         return scorerSteps
     }
 
-    private async getScorerStepFromActivity(prompt: string): Promise<CLM.TrainScorerStep> {
+    /**
+     * Creates enum entities and values for elements used in SwitchCondition comparisons, if they do not already exist.
+     * Noop for values that have already been created.
+     * 
+     * @param conditionalEntities dictionary key is the name of the value used in comparison (entity name);
+     *     dictionary values are the distinct string values used across all comparisons of that entity.
+     */
+    private async createOrUpdateConditionalEntities(conditionalEntities: { [key: string]: Set<string> }) {
+        for (const entityName of Object.keys(conditionalEntities)) {
+            // If SwitchCondition statements across multiple dialogs refer to the same value/entity, then the
+            // entity will have been already created.
+            let foundEntity = this.entities.find(e => e.entityName === entityName)
+            if (foundEntity) {
+                const updatedEntity = await this.ensureEntityEnumValuesExist(foundEntity, conditionalEntities[entityName])
+                if (updatedEntity) {
+                    // TODO - update in this.entities...
+                }
+            } else {
+                const newEntity = await this.createEnumEntity(entityName, conditionalEntities[entityName])
+                this.entities.push(newEntity)
+            }
+        }
+    }
 
+    /**
+     * Creates a new enum entity with `values`.  Returns the new enum entity if successful.
+     */
+    private async createEnumEntity(entityName: string, values: Set<string>): Promise<CLM.EntityBase> {
+        let enumValues: CLM.EnumValue[] = []
+        for (const value of values) {
+            enumValues.push({ enumValue: value })
+        }
+        const newEntity: CLM.EntityBase = {
+            entityId: undefined!,
+            entityName,
+            resolverType: "none",
+            createdDateTime: new Date().toJSON(),
+            lastModifiedDateTime: new Date().toJSON(),
+            isResolutionRequired: false,
+            isMultivalue: false,
+            isNegatible: false,
+            negativeId: null,
+            positiveId: null,
+            entityType: CLM.EntityType.ENUM,
+            enumValues,
+            version: null,
+            packageCreationId: null,
+            packageDeletionId: null,
+            doNotMemorize: false
+        }
+        const entityId = await ((this.createEntityThunkAsync(this.app.appId, newEntity) as any) as Promise<string>)
+        if (!entityId) {
+            throw new Error(`Failed to create entity ${entityName}`)
+        }
+        newEntity.entityId = entityId
+        return newEntity
+    }
+
+    /**
+     * Adds enum values from `values` to `entity` if any are missing.  Does not remove values from `entity`.
+     * Returns the updated entity if successful, or `null` if no changes were made.
+     */
+    private async ensureEntityEnumValuesExist(entity: CLM.EntityBase, values: Set<string>): Promise<CLM.EntityBase | null> {
+        if (entity.entityType !== CLM.EntityType.ENUM) {
+            throw new Error(`Entity ${entity.entityName} is not an enum entity`)
+        }
+        if (!entity.enumValues) {
+            throw new Error(`Entity ${entity.entityName} is an enum but has no values`)
+        }
+        const enumValues: Set<string> = new Set(entity.enumValues.map(val => (val.enumValue)))
+        if (lodash.isEqual(enumValues, values)) {
+            // No change, nothing to do.
+            return null
+        }
+        const newValues: Set<string> = new Set()
+        for (const value of values) {
+            if (!enumValues.has(value)) {
+                newValues.add(value)
+            }
+        }
+        let updatedEntity: CLM.EntityBase = Util.deepCopy(entity)
+        for (const val of newValues) {
+            updatedEntity.enumValues!.push({enumValue: val})
+        }
+        return this.editEntityThunkAsync(this.app.appId, updatedEntity, entity)
+    }
+
+    private async getScorerStepFromActivity(prompt: string): Promise<CLM.TrainScorerStep> {
         let scoreInput: CLM.ScoreInput = {
             filledEntities: [],
             context: {},
@@ -413,6 +506,11 @@ export class ObiDialogParser {
             throw new Error('HTTP requests require url')
         }
         // TODO(thpar) : revisit logic for this.
+        // Note that we cannot do this 100% correctly in the current implementation, since actions (scorer steps)
+        // from a given dialog tree node $Y may be added to rounds from the previous dialog tree node $X if $Y does
+        // not have an extractor step, but we are calling this method during the handling of $X.
+        // To handle this 100% correctly, we'd need to do a multi-pass traversal of the dialog tree or build up a
+        // second tree-like representation of extractor and scorer steps.
         const isTerminal = (!nextStep || nextStep.$type === OBIStepType.TEXT_INPUT ||
             nextStep.$type === OBIStepType.END_TURN)
         const hashText = JSON.stringify(step)
