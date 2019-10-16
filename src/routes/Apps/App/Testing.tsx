@@ -16,7 +16,7 @@ import TranscriptList from '../../../components/modals/TranscriptList'
 import FormattedMessageId from '../../../components/FormattedMessageId'
 import CompareDialogsModal from '../../../components/modals/CompareDialogsModal'
 import RateDialogsModal from '../../../components/modals/RateDialogsModal'
-import TestWaitModal from '../../../components/modals/ProgressModal'
+import ProgressModal from '../../../components/modals/ProgressModal'
 import TranscriptTestPicker from '../../../components/modals/TranscriptTestPicker'
 import ConfirmCancelModal from '../../../components/modals/ConfirmCancelModal'
 import { autobind } from 'core-decorators'
@@ -38,6 +38,8 @@ interface ComponentState {
     doneCount: number
     completedTestIds: string[]
     warnings: string[]
+    startTime: number
+    remainingTime: number
     testSet: Test.TestSet | undefined
     viewConversationIds: string[] | undefined
     viewConversationPivot: string | undefined
@@ -60,6 +62,8 @@ class Testing extends React.Component<Props, ComponentState> {
             doneCount: -1,
             completedTestIds: [],
             warnings: [],
+            startTime: 0,
+            remainingTime: 0,
             testSet: undefined,
             viewConversationIds: undefined,
             viewConversationPivot: undefined,
@@ -107,6 +111,7 @@ class Testing extends React.Component<Props, ComponentState> {
                     ? Test.TestSet.Create(this.state.testSet)
                     : this.newTestSet()
 
+                this.props.spinnerAdd()
                 await testSet.addTranscriptFiles(transcriptFiles)
 
                 await Util.setStateAsync(this, { testSet })
@@ -117,6 +122,9 @@ class Testing extends React.Component<Props, ComponentState> {
             catch (e) {
                 const error = e as Error
                 this.props.setErrorDisplay(ErrorType.Error, `invalid .transcript file`, error.message, null)
+            }
+            finally {
+                this.props.spinnerRemove()
             }
         }
     }
@@ -252,6 +260,9 @@ class Testing extends React.Component<Props, ComponentState> {
                         this.props.fetchActivitiesThunkAsync as any) as BB.Activity[]
                 }
 
+                if (Math.random() < 0.1) {
+                    throw new Error("ooops")
+                }
                 // Substitute back in any LG refs
                 const transcript = Util.deepCopy(resultTranscript) || []
                 OBIUtils.toLG(transcript, this.state.testSet.lgItems, this.props.entities, this.props.actions)
@@ -316,7 +327,9 @@ class Testing extends React.Component<Props, ComponentState> {
                 testItems,
                 completedTestIds: [],
                 warnings: [],
-                doneCount: 0
+                doneCount: 0,
+                startTime: new Date().getTime(),
+                remainingTime: 0
             })
             const testSlots: string[] = []
             for (let i = 0; i < NUM_PARALLEL_TESTS; i = i + 1) {
@@ -343,6 +356,16 @@ class Testing extends React.Component<Props, ComponentState> {
         else {
             // Call myself a again after delay
             setTimeout(this.testNextTranscript, 1000)
+
+            // Update time esimate after 1 completed item
+            if (this.state.doneCount > 1) {
+                const curTime = new Date().getTime()
+                const ellapsedTime = curTime - this.state.startTime
+                const timePerItem = ellapsedTime / this.state.doneCount
+                const remainingCount = this.state.testItems.length - this.state.doneCount
+                const remainingTime = timePerItem * remainingCount
+                this.setState({ remainingTime })
+            }
 
             // Find an untested item
             const untestedItems = this.state.testItems.filter(ti =>
@@ -635,12 +658,14 @@ class Testing extends React.Component<Props, ComponentState> {
                     onConfirm={this.onConfirmClear}
                     title={Util.formatMessageId(this.props.intl, FM.TESTING_CONFIRM_CLEAR_TITLE)}
                 />
-                <TestWaitModal
+                <ProgressModal
                     open={this.state.testItems.length > 0}
-                    title={"Testing"}
+                    title="Testing"
                     index={this.displayCount()}
                     total={this.state.testItems.length}
+                    warningCount={this.state.warnings.length}
                     onClose={this.onCancelTest}
+                    remainingTime={this.state.remainingTime}
                 />
                 {this.state.viewConversationIds && this.state.testSet &&
                     <CompareDialogsModal
@@ -700,7 +725,9 @@ const mapDispatchToProps = (dispatch: any) => {
         fetchActivitiesThunkAsync: actions.train.fetchActivitiesThunkAsync,
         fetchLogDialogThunkAsync: actions.log.fetchLogDialogThunkAsync,
         fetchTranscriptValidationThunkAsync: actions.app.fetchTranscriptValidationThunkAsync,
-        setErrorDisplay: actions.display.setErrorDisplay
+        setErrorDisplay: actions.display.setErrorDisplay,
+        spinnerAdd: actions.display.spinnerAdd,
+        spinnerRemove: actions.display.spinnerRemove
     }, dispatch);
 }
 
