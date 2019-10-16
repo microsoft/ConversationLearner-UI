@@ -1112,8 +1112,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             this.props.actions,
             this.props.entities,
             this.props.createActionThunkAsync as any,
-            this.props.createEntityThunkAsync as any,
-            this.props.editEntityThunkAsync as any)
+            this.props.createEntityThunkAsync as any)
         try {
             const obiParseResult = await obiDialogParser.parse(obiImportData.files)
 
@@ -1934,7 +1933,6 @@ const mapDispatchToProps = (dispatch: any) => {
         deleteTeachSessionThunkAsync: actions.teach.deleteTeachSessionThunkAsync,
         deleteMemoryThunkAsync: actions.teach.deleteMemoryThunkAsync,
         editActionThunkAsync: actions.action.editActionThunkAsync,
-        editEntityThunkAsync: actions.entity.editEntityThunkAsync,
         editTrainDialogThunkAsync: actions.train.editTrainDialogThunkAsync,
         extractFromTrainDialogThunkAsync: actions.train.extractFromTrainDialogThunkAsync,
         fetchActivitiesThunkAsync: actions.train.fetchActivitiesThunkAsync,

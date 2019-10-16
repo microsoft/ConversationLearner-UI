@@ -7,7 +7,6 @@ import * as DialogEditing from './dialogEditing'
 import * as OBIUtils from './obiUtils'
 import * as Util from './util'
 import * as OBITypes from '../types/obiTypes'
-import * as lodash from 'lodash'
 import * as stripJsonComments from 'strip-json-comments'
 
 enum OBIStepType {
@@ -52,22 +51,20 @@ export class ObiDialogParser {
     private warnings: string[]
     private createActionThunkAsync: (appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null>
     private createEntityThunkAsync: (appId: string, entity: CLM.EntityBase) => Promise<CLM.EntityBase | null>
-    private editEntityThunkAsync: (appId: string, entity: CLM.EntityBase, prevEntity: CLM.EntityBase) => Promise<CLM.EntityBase>
+    private readonly MAX_ENUM_VALUE_NAME_LENGTH = 10  // TODO(thpar) : move this to Models.
 
     constructor(
         app: CLM.AppBase,
         actions: CLM.ActionBase[],
         entities: CLM.EntityBase[],
         createActionThunkAsync: (appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null>,
-        createEntityThunkAsync: (appId: string, entity: CLM.EntityBase) => Promise<CLM.EntityBase | null>,
-        editEntityThunkAsync: (appId: string, entity: CLM.EntityBase, prevEntity: CLM.EntityBase) => Promise<CLM.EntityBase>
+        createEntityThunkAsync: (appId: string, entity: CLM.EntityBase) => Promise<CLM.EntityBase | null>
     ) {
         this.app = app
         this.actions = [...actions]
         this.entities = [...entities]
         this.createActionThunkAsync = createActionThunkAsync
         this.createEntityThunkAsync = createEntityThunkAsync
-        this.editEntityThunkAsync = editEntityThunkAsync
     }
 
     async parse(files: File[]): Promise<ObiDialogParserResult> {
@@ -400,28 +397,40 @@ export class ObiDialogParser {
      */
     private async createOrUpdateConditionalEntities(conditionalEntities: { [key: string]: Set<string> }) {
         for (const entityName of Object.keys(conditionalEntities)) {
-            // If SwitchCondition statements across multiple dialogs refer to the same value/entity, then the
-            // entity will have been already created.
             let foundEntity = this.entities.find(e => e.entityName === entityName)
             if (foundEntity) {
-                const updatedEntity = await this.ensureEntityEnumValuesExist(foundEntity, conditionalEntities[entityName])
-                if (updatedEntity) {
-                    // TODO - update in this.entities...
-                }
-            } else {
-                const newEntity = await this.createEnumEntity(entityName, conditionalEntities[entityName])
-                this.entities.push(newEntity)
+                // This shouldn't happen since we only call createOrUpdateConditionalEntities once...
+                throw new Error(`Unexpected: multiple definitions for ${entityName}`)
             }
+            const newEntity = await this.createEnumEntity(entityName, conditionalEntities[entityName])
+            this.entities.push(newEntity)
         }
     }
 
     /**
      * Creates a new enum entity with `values`.  Returns the new enum entity if successful.
+     * Note that entity values will be truncated to the max length allowed by the backend.
+     * Throws an error if multiple distinct condition names have the same truncated value.
      */
     private async createEnumEntity(entityName: string, values: Set<string>): Promise<CLM.EntityBase> {
         let enumValues: CLM.EnumValue[] = []
+        // We need to truncate the value names.  Record the before/after names so we can detect if there are
+        // any collisions.
+        let updatedValues: { [key: string]: Set<string> } = {}
         for (const value of values) {
-            enumValues.push({ enumValue: value })
+            const truncated = value.substr(0, this.MAX_ENUM_VALUE_NAME_LENGTH)
+            if (!updatedValues[truncated]) {
+                updatedValues[truncated] = new Set([value])
+            } else {
+                // Some value with this truncated string already exists, throw an error if it's a new value.
+                // That would mean that we have 2 distinct condition values that map to the truncated string.
+                const fullValues = updatedValues[truncated]
+                if (!fullValues.has(value)) {
+                    const existing = fullValues.values().next().value
+                    throw new Error(`Can't create enum, values ${value} and ${existing} map to the same truncated string`)
+                }
+            }
+            enumValues.push({ enumValue: truncated })
         }
         const newEntity: CLM.EntityBase = {
             entityId: undefined!,
@@ -447,35 +456,6 @@ export class ObiDialogParser {
         }
         newEntity.entityId = entityId
         return newEntity
-    }
-
-    /**
-     * Adds enum values from `values` to `entity` if any are missing.  Does not remove values from `entity`.
-     * Returns the updated entity if successful, or `null` if no changes were made.
-     */
-    private async ensureEntityEnumValuesExist(entity: CLM.EntityBase, values: Set<string>): Promise<CLM.EntityBase | null> {
-        if (entity.entityType !== CLM.EntityType.ENUM) {
-            throw new Error(`Entity ${entity.entityName} is not an enum entity`)
-        }
-        if (!entity.enumValues) {
-            throw new Error(`Entity ${entity.entityName} is an enum but has no values`)
-        }
-        const enumValues: Set<string> = new Set(entity.enumValues.map(val => (val.enumValue)))
-        if (lodash.isEqual(enumValues, values)) {
-            // No change, nothing to do.
-            return null
-        }
-        const newValues: Set<string> = new Set()
-        for (const value of values) {
-            if (!enumValues.has(value)) {
-                newValues.add(value)
-            }
-        }
-        let updatedEntity: CLM.EntityBase = Util.deepCopy(entity)
-        for (const val of newValues) {
-            updatedEntity.enumValues!.push({enumValue: val})
-        }
-        return this.editEntityThunkAsync(this.app.appId, updatedEntity, entity)
     }
 
     private async getScorerStepFromActivity(prompt: string): Promise<CLM.TrainScorerStep> {
