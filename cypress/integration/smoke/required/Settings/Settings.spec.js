@@ -159,7 +159,7 @@ describe("Settings - Settings", () => {
 // TODO: REMOVE THIS ONCE VERIFIED
 // TODO: REMOVE THIS ONCE VERIFIED
 // TODO: REMOVE THIS ONCE VERIFIED
-throw new Error('The test PASSED - this error is only to test that the regression tests will run even if a smoke test fails.')      
+throw new Error('The test PASSED - this error is only to test that the regression tests will run even if a smoke test fails...')      
     })
   })
 

@@ -70,7 +70,7 @@ export class TdGrid {
         helpers.ConLog(funcName, 'Activate the Monitor')
         TdGrid.expectedRowCount = expectedRowCount
         TdGrid.isStable = false
-        TdGrid.renderingShouldBeCompleteTime = new Date().getTime()
+        TdGrid.noMoreOverlaysExpectedTime = new Date().getTime()
         TdGrid.monitorIsActivated = true
         TdGrid.MonitorGrid()
       } else if (expectedRowCount != TdGrid.expectedRowCount) {
@@ -127,12 +127,12 @@ export class TdGrid {
     const funcName = 'TdGrid.MonitorGrid'
     if (modelPage.IsOverlaid()) {
       helpers.ConLog(funcName, 'Overlay found thus Train Dialog Grid is not stable yet')
-      TdGrid.renderingShouldBeCompleteTime = new Date().getTime() + 1000
+      TdGrid.noMoreOverlaysExpectedTime = new Date().getTime() + 1000
       setTimeout(TdGrid.MonitorGrid, 50)
       return
     }
     
-    if (new Date().getTime() < TdGrid.renderingShouldBeCompleteTime) {
+    if (new Date().getTime() < TdGrid.noMoreOverlaysExpectedTime) {
       helpers.ConLog(funcName, 'No Overlay this time, but we are still watching to make sure no other overlay shows up for at least 1 second')
       setTimeout(TdGrid.MonitorGrid, 50)
       return
@@ -157,7 +157,7 @@ export class TdGrid {
 TdGrid.expectedRowCount = undefined
 TdGrid.isStable = false
 TdGrid.monitorIsActivated = false
-TdGrid.renderingShouldBeCompleteTime = undefined
+TdGrid.noMoreOverlaysExpectedTime = undefined
 
 
 export function VerifyIncidentTriangleFoundInTrainDialogsGrid(expectedRowCount, firstInput, lastInput, lastResponse) {
