@@ -95,11 +95,10 @@ export const deleteLogDialogsThunkAsync = (app: CLM.AppBase, logDialogIds: strin
 // ----------------------------------------
 // FetchLogDialog
 // ----------------------------------------
-const fetchLogDialogAsync = (appId: string, logDialogId: string): ActionObject => {
+const fetchLogDialogAsync = (noSpinnerDisplay: boolean): ActionObject => {
     return {
         type: AT.FETCH_LOG_DIALOG_ASYNC,
-        appId,
-        logDialogId
+        noSpinnerDisplay
     }
 }
 
@@ -117,10 +116,18 @@ const fetchLogDialogNotFound = (): ActionObject => {
     }
 }
 
-export const fetchLogDialogThunkAsync = (appId: string, logDialogId: string, replaceLocal: boolean, nullOnNotFound: boolean = false) => {
+/**
+ * Fetch log dialog for the given logDialogId
+ * @param appId Current application Id
+ * @param logDialogId Id of log dialog to be fetched
+ * @param replaceLocal Should fetched version replace local copy
+ * @param nullOnNotFound Return null when not found (otherwise throw an error)
+ * @param noSpinnerDisplay When true will not display a spinner while awaiting
+ */
+export const fetchLogDialogThunkAsync = (appId: string, logDialogId: string, replaceLocal: boolean, nullOnNotFound: boolean = false, noSpinnerDisplay: boolean = false) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.FETCH_LOG_DIALOG_ASYNC)
-        dispatch(fetchLogDialogAsync(appId, logDialogId))
+        dispatch(fetchLogDialogAsync(noSpinnerDisplay))
 
         try {
             const logDialog = await clClient.logDialog(appId, logDialogId)
