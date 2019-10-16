@@ -11,6 +11,7 @@ import * as stripJsonComments from 'strip-json-comments'
 
 enum OBIStepType {
     BEGIN_DIALOG = "Microsoft.BeginDialog",
+    END_DIALOG = "Microsoft.EndDialog",
     END_TURN = "Microsoft.EndTurn",
     HTTP_REQUEST = "Microsoft.HttpRequest",
     SEND_ACTIVITY = "Microsoft.SendActivity",
@@ -214,14 +215,26 @@ export class ObiDialogParser {
 
     // Generates TrainDialog instances from the dialog tree.
     private async getTrainDialogs(node: ObiDialogNode): Promise<CLM.TrainDialog[]> {
-        return this.getTrainDialogsIter(node, [])
+        return this.getTrainDialogsIter(node, [], node.intent)
     }
 
     // Recursive helper.
-    private async getTrainDialogsIter(node: ObiDialogNode, currentRounds: CLM.TrainRound[]):
+    private async getTrainDialogsIter(
+        node: ObiDialogNode,
+        currentRounds: CLM.TrainRound[],
+        intent: string | undefined):
         Promise<CLM.TrainDialog[]> {
         if (!node) {
             return []
+        }
+        // Intent may be carried forward from a previous node if that node did not create a TrainRound.
+        let currentIntent = intent
+        if (currentIntent) {
+            if (node.intent && node.intent !== currentIntent) {
+                throw Error(`Node intent ${node.intent} conflicts with incoming intent ${currentIntent}`)
+            }
+        } else {
+            currentIntent = node.intent
         }
         let rounds = [...currentRounds]
         // Build up a training round from any applicable steps in this node.
@@ -229,13 +242,22 @@ export class ObiDialogParser {
         if (obiDialog.steps) {
             let trainRound = await this.getTrainRoundfromOBIDialogSteps(obiDialog.steps)
             if (trainRound) {
-                if (node.intent) {
+                if (currentIntent) {
                     const extractorStep: CLM.TrainExtractorStep = {
-                        textVariations: this.getTextVariations(node.intent)
+                        textVariations: this.getTextVariations(currentIntent)
                     }
                     trainRound.extractorStep = extractorStep
+                    currentIntent = undefined  // Used the intent in this round, so reset it.
+                    rounds.push(trainRound)
+                } else {
+                    // If we get here, then the current node has steps to execute *without* an intervening intent
+                    // (user utterance).  We therefore must append these scorer steps to the previous round.
+                    if (currentRounds.length === 0) {
+                        throw Error(`Attempting to append scorer steps to a non-existent round in node ${obiDialog.$id}`)
+                    }
+                    let round = currentRounds[currentRounds.length - 1]
+                    round.scorerSteps = [...round.scorerSteps, ...trainRound.scorerSteps]
                 }
-                rounds.push(trainRound)
             }
         }
         // This is a leaf node of the conversational tree; build a dialog containing the visited rounds.
@@ -247,7 +269,7 @@ export class ObiDialogParser {
         // This is not a leaf node; continue building up the dialog tree from the rounded visited so far.
         let dialogs: CLM.TrainDialog[] = []
         for (const child of node.children) {
-            dialogs = [...dialogs, ...(await this.getTrainDialogsIter(child, rounds))]
+            dialogs = [...dialogs, ...(await this.getTrainDialogsIter(child, rounds, currentIntent))]
         }
         return dialogs
     }
@@ -306,10 +328,12 @@ export class ObiDialogParser {
                     // Nothing to do here, the child dialogs were already expanded.
                     break
                 }
+                case OBIStepType.END_DIALOG:
+                case OBIStepType.END_TURN:
+                    // Noop.
+                    break
                 default: {
-                    if (step.$type !== OBIStepType.END_TURN) {
-                        this.warnings.push(`Unhandled OBI Type: ${step.$type}`)
-                    }
+                    this.warnings.push(`Unhandled OBI Type: ${step.$type}`)
                 }
             }
         }
