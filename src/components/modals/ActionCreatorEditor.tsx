@@ -1802,7 +1802,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                         }
                                         selectedItems={this.state.requiredConditionTags}
                                         tipType={ToolTip.TipType.ACTION_REQUIRED}
-                                        onDismiss={this.onDismissPicker}
+                                        // onDismiss={this.onDismissPicker}
                                     />
                                 </div>
 

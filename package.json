@@ -42,7 +42,7 @@
     "markdown-it": "^8.4.2",
     "moment": "^2.22.2",
     "node-zip": "^1.1.1",
-    "office-ui-fabric-react": "7.18.1",
+    "office-ui-fabric-react": "7.52.0",
     "query-string": "^6.8.1",
     "react": "16.8.6",
     "react-d3-tree": "^1.12.2",
