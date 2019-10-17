@@ -80,7 +80,7 @@ export class ObiDialogParser {
         if (!mainDialog) {
             this.warnings.push(`Missing entry point. Expecting a .dialog file called "Entry.main"`)
         } else {
-            let conditionalEntities: { [key: string]: Set<string> } = {}
+            const conditionalEntities: { [key: string]: Set<string> } = {}
             const rootNode = await this.collectDialogNodes(mainDialog, conditionalEntities)
             await this.createOrUpdateConditionalEntities(conditionalEntities)
             trainDialogs = await this.getTrainDialogs(rootNode)
@@ -189,8 +189,10 @@ export class ObiDialogParser {
     /**
      * Collects dialog nodes from dialog-redirecting elements in the dialog `steps` section.
      */
-    private async collectDialogStepChildren(node: ObiDialogNode, steps: (string | OBITypes.OBIDialog)[],
-        conditionalEntities: { [key: string]: Set<string> }) {
+    private async collectDialogStepChildren(
+        node: ObiDialogNode,
+        steps: (string | OBITypes.OBIDialog)[],
+        conditionalEntities: { [key: string]: Set<string> }): Promise<void> {
         for (const step of steps) {
             if (typeof step === "string") {
                 this.warnings.push(`Unexpected string step in ${node.dialog.$id}`)
@@ -304,7 +306,7 @@ export class ObiDialogParser {
 
     private async getScorerStepsFromOBIDialogSteps(steps: (string | OBITypes.OBIDialog)[]):
         Promise<CLM.TrainScorerStep[]> {
-        let scorerSteps: CLM.TrainScorerStep[] = []
+        const scorerSteps: CLM.TrainScorerStep[] = []
         for (const [i, step] of steps.entries()) {
             const nextStep = (i + 1 < steps.length) ? steps[i + 1] : undefined
             if (typeof step === "string" || typeof nextStep === "string") {
