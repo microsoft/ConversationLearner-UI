@@ -35,7 +35,7 @@ describe("Settings - Settings", () => {
       trainDialogs.forEach(trainDialog => {
         train.EditTraining(trainDialog.firstInput, trainDialog.lastInput, trainDialog.lastResponse)
         cy.WaitForStableDOM().then(() => {
-          trainDialog.description = train.GetDescription()
+          trainDialog.description = train.GetDescriptions()
           trainDialog.tags = train.GetAllTags()
           trainDialog.chatMessages = train.GetAllChatMessages()
   

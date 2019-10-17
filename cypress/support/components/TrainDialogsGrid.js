@@ -46,23 +46,25 @@ export function GetLastModifiedDates() { return helpers.StringArrayFromElementTe
 export function GetCreatedDates() { return helpers.StringArrayFromElementText('[data-testid="train-dialogs-created"]') }
 
 export function GetTags() { return helpers.StringArrayFromElementText('[data-testid="train-dialogs-tags"]') }
-export function GetDescription() { return helpers.StringArrayFromElementText('[data-testid="train-dialogs-description"]') }
+export function GetDescriptions() { return helpers.StringArrayFromElementText('[data-testid="train-dialogs-description"]') }
 
 export function VerifyErrorIconForTrainGridRow(rowIndex) { cy.Get(`div.ms-List-cell[data-list-index="${rowIndex}"]`).find('[data-testid="train-dialogs-validity-indicator"]') }
 
 export function VerifyDescriptionForRow(row, description) { cy.Get(`div[data-item-index=${row}][data-automationid="DetailsRow"]`).find('span[data-testid="train-dialogs-description"]').contains(description) }
 
 export class TdGrid {
-  // 1) Start here. This is intended to be used from a cy.something().should(()=>{tdGridObj = TdGrid.GetTdGrid()})
-  // .then(() =>{use the returned object to call FindGridRow})
+  // 1) Start here. RETURNS: an instance of TdGrid. Do not call the constructor.
+  // This is intended to be used from a cy.something().should(()=>{tdGridObj = TdGrid.GetTdGrid()})
+  // .then(() =>{use the returned object to call one of the FindGridRow* functions})
   //
-  // This was designed to be retried. It will throw an error until it we can validate that the Train Dialog Grid is stable
-  // and then it will return a tdGrid object. (refer to existing code for usage examples)
+  // This was designed to be retried. It will throw an error until we can validate that the Train Dialog Grid is stable
+  // and then it will return a TdGrid object. (refer to existing code for usage examples)
   //
   // Pass in -1 for the expectedRowCount if you do not know what to expect. Then if you look at the logs, you will 
   // know what to expect and can change it. It is best if you pass in a value that is >= 0 since it is one more signal
-  // that the UI is ready for the next step. This feature was included to allow existing tests to pass un-modified when
-  // this class was created. If any of test starts failing related to the grid fix them to include the actual row count.
+  // that the UI is ready for the next step. This feature was included to allow tests that already existed before this
+  // class was created to pass un-modified. If any of test starts failing related to timing of the grid rendering, then
+  // fix them to include the actual row count.
   static GetTdGrid(expectedRowCount) {
     const funcName = `TdGrid.GetTdGrid(${expectedRowCount})`
     try {
@@ -93,31 +95,98 @@ export class TdGrid {
 
   // 2) this should be called from an object returned from TdGrid.GetTdGrid
   // Returns the index of the row that was found or -1 if not found
-  FindGridRow(firstInput, lastInput, lastResponse){
-    helpers.ConLog(`TdGrid.FindGridRow("${firstInput}", "${lastInput}", "${lastResponse}")`, this.feedback)
+  FindGridRowByChatInputs(firstInput, lastInput, lastResponse){
+    const funcName = `TdGrid.FindGridRowByChatInputs("${firstInput}", "${lastInput}", "${lastResponse}")`
+    helpers.ConLog(funcName, this.feedback)
 
     if (this.expectedRowCount >= 0 && (this.expectedRowCount != this.firstInputs.length || this.expectedRowCount != this.lastInputs.length || this.expectedRowCount != this.lastResponses.length)) {
-      throw new Error(`Somethings wrong in TdGrid.FindGridRow - ${this.feedback}`)
+      throw new Error(`Somethings wrong in TdGrid.FindGridRowByChatInputs - ${this.feedback}`)
     }
 
     for (let i = 0; i < this.firstInputs.length; i++) {
       if (this.firstInputs[i] == firstInput && this.lastInputs[i] == lastInput && this.lastResponses[i] == lastResponse) {
-        helpers.ConLog('TdGrid.FindGridRow', `Found on row ${i}`)
+        helpers.ConLog(funcName, `Found on row ${i}`)
         return i
       }
     }
     
-    helpers.ConLog('TdGrid.FindGridRow', 'Not Found')
+    helpers.ConLog(funcName, 'Not Found')
     return -1
+  }
+
+  // 2) this should be called from an object returned from TdGrid.GetTdGrid
+  // Returns the index of the row that was found or -1 if not found
+  // You may provide both description and tags or just one of them.
+  FindGridRowByDescriptionAndOrTags(description, tags){
+    const funcName = `TdGrid.FindGridRowByDescriptionAndOrTags("${description}", "${tags}")`
+    helpers.ConLog(funcName, this.feedback)
+
+    if (this.expectedRowCount >= 0 && ((description && this.expectedRowCount != this.desciptions.length) || (tags && this.expectedRowCount != this.tags.length))) {
+      throw new Error(`Somethings wrong in TdGrid.FindGridRowByDescriptionAndOrTags - ${this.feedback}`)
+    }
+    
+    const length = description ? this.descriptions.length : (tags ? this.tags : undefined)
+    for (let i = 0; i < length; i++) {
+      if ((!description || this.descriptions[i] === description) && (!tags || this.tags[i] == tags)) {
+        helpers.ConLog(funcName, `Found on row ${i}`)
+        return i
+      }
+    }
+    
+    helpers.ConLog(funcName, 'Not Found')
+    return -1
+  }
+
+  get firstInputs() { 
+    if (!this._firstInputs) { 
+      this._firstInputs = GetFirstInputs()
+      this.feedback += ` - Length First Inputs: ${this._firstInputs.length}`
+    } 
+    return this._firstInputs
+  }
+
+  get lastInputs() { 
+    if (!this._lastInputs) { 
+      this._lastInputs = GetLastInputs()
+      this.feedback += ` - Length Last Inputs: ${this._lastInputs.length}`
+    } 
+    return this._lastInputs
+  }
+
+  get lastResponses() { 
+    if (!this._lastResponses) { 
+      this._lastResponses = GetLastResponses()
+      this.feedback += ` - Length Last Responses: ${this._lastResponses.length}`
+    } 
+    return this._lastResponses
+  }
+
+  get descriptions() { 
+    if (!this._descriptions) { 
+      this._descriptions = GetDescriptions()
+      this.feedback += ` - Length Descriptions: ${this._descriptions.length}`
+    } 
+    return this._descriptions
+  }
+
+  get tags() { 
+    if (!this._tags) { 
+      this._tags = GetTags()
+      this.feedback += ` - Length Tags: ${this._tags.length}`
+    }
+    return this._tags
   }
 
   // You should not be calling this directly unless you really know what you are doing.
   constructor() {
+    this._firstInputs = undefined
+    this._lastInputs = undefined
+    this._lastResponses = undefined
+    this._descriptions = undefined
+    this._tags = undefined
+
     this.expectedRowCount = TdGrid.expectedRowCount
-    this.firstInputs = GetFirstInputs()
-    this.lastInputs = GetLastInputs()
-    this.lastResponses = GetLastResponses()
-    this.feedback = `Expected Row Count: ${TdGrid.expectedRowCount} - Current Row Counts: ${this.firstInputs.length}, ${this.lastInputs.length}, ${this.lastResponses.length}`
+    this.feedback = `Expected Row Count: ${TdGrid.expectedRowCount}`
     helpers.ConLog('TdGrid.constructor()', this.feedback)
   }
 
@@ -168,7 +237,7 @@ export function VerifyIncidentTriangleFoundInTrainDialogsGrid(expectedRowCount, 
   cy.wrap(1).should(() => {
     tdGrid = TdGrid.GetTdGrid(expectedRowCount)
   }).then(() => {
-    let iRow = tdGrid.FindGridRow(firstInput, lastInput, lastResponse)
+    let iRow = tdGrid.FindGridRowByChatInputs(firstInput, lastInput, lastResponse)
     if (iRow >= 0) { 
       VerifyErrorIconForTrainGridRow(iRow)
       return

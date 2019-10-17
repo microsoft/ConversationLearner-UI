@@ -48,7 +48,7 @@ describe('New Entity Label on Existing Phrase 2 - Entity Labeling', () => {
     context(`${iTD} - Verify the change in an instances of the Phrase`, () => {
       it('Edit one of the trainings affected by conflict resolution and verify there is a warning', () => {
         modelPage.VerifyWarningTriangleForTrainDialogs()
-        train.EditTrainingByDescriptionAndTags(`Train Dialog ${iTD}`)
+        train.EditTrainingByDescriptionAndOrTags(`Train Dialog ${iTD}`)
         train.VerifyWarningMessage('Entity or Action changes require replay of the TrainDialog')
       })
 

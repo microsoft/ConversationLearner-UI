@@ -569,7 +569,7 @@ export function EditTraining(firstInput, lastInput, lastResponse, expectedRowCou
   cy.wrap(1).should(() => {
     tdGrid = trainDialogsGrid.TdGrid.GetTdGrid(expectedRowCount)
   }).then(() => {
-    iRow = tdGrid.FindGridRow(firstInput, lastInput, lastResponse)
+    iRow = tdGrid.FindGridRowByChatInputs(firstInput, lastInput, lastResponse)
     if (iRow >= 0) { 
       const turns = trainDialogsGrid.GetTurns()
       const lastModifiedDates = trainDialogsGrid.GetLastModifiedDates()
@@ -827,7 +827,7 @@ function VerifyTrainingSummaryIsInGrid(trainingSummary) {
   cy.wrap(1, {timeout: 60000}).should(() => {
     tdGrid = trainDialogsGrid.TdGrid.GetTdGrid(trainingSummary.TrainGridRowCount)
   }).then(() => {
-    let iRow = tdGrid.FindGridRow(trainingSummary.FirstInput, trainingSummary.LastInput, trainingSummary.LastResponse)
+    let iRow = tdGrid.FindGridRowByChatInputs(trainingSummary.FirstInput, trainingSummary.LastInput, trainingSummary.LastResponse)
     if (iRow >= 0) {
       const turns = trainDialogsGrid.GetTurns()
       const lastModifiedDates = trainDialogsGrid.GetLastModifiedDates()
@@ -936,22 +936,21 @@ export function AbandonDialog() {
   ClickConfirmAbandonDialogButton()
 }
 
-export function EditTrainingByDescriptionAndTags(desciption, tags) {
-  const funcName = `EditTrainingByDescriptionAndTags(${desciption}, ${tags})`
-  cy.Enqueue(() => {
-    const tagsFromGrid = trainDialogsGrid.GetTags()
-    const scenarios = trainDialogsGrid.GetDescription()
-
-    helpers.ConLog(funcName, `Row Count: ${scenarios.length}`)
-
-    for (let i = 0; i < scenarios.length; i++) {
-      if ((!desciption || scenarios[i] === desciption) && (!tags || tagsFromGrid[i] == tags)) {
-        helpers.ConLog(funcName, `ClickTraining for row: ${i}`)
-        trainDialogsGrid.ClickTraining(i)
-        return
-      }
+// You may provide both description and tags or just one of them.
+export function EditTrainingByDescriptionAndOrTags(description, tags, expectedRowCount = -1) {
+  const funcName = `EditTrainingByDescriptionAndOrTags(${description}, ${tags})`
+  
+  let tdGrid
+  cy.wrap(1).should(() => {
+    tdGrid = trainDialogsGrid.TdGrid.GetTdGrid(expectedRowCount)
+  }).then(() => {
+    let iRow = tdGrid.FindGridRowByDescriptionAndOrTags(description, tags)
+    if (iRow >= 0) { 
+      helpers.ConLog(funcName, `ClickTraining for row: ${iRow}`)
+      trainDialogsGrid.ClickTraining(iRow)
+      return
     }
-    throw new Error(`Can't Find Training to Edit. The grid should, but does not, contain a row with this data in it: scenario: '${desciption}' -- tags: ${tags}`)
+    throw new Error(`Can't Find Training to Edit. The grid should, but does not, contain a row with this data in it: scenario: '${description}' -- tags: ${tags}`)
   })
 }
 
@@ -972,7 +971,7 @@ export function VerifyListOfTrainDialogs(expectedTrainDialogs) {
   }).then(() => {
     let errors = false
     expectedTrainDialogs.forEach(trainDialog => {
-      let iRow = tdGrid.FindGridRow(trainDialog.firstInput, trainDialog.lastInput, trainDialog.lastResponse)
+      let iRow = tdGrid.FindGridRowByChatInputs(trainDialog.firstInput, trainDialog.lastInput, trainDialog.lastResponse)
       if (iRow < 0) { errors = true }
     })
   

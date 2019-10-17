@@ -127,7 +127,7 @@ describe('Consistent Entity Labeling', () => {
 
   context('Edit and Preserve Attempted Labels', () => {
     it('Edit the training', () => {
-      train.EditTrainingByDescriptionAndTags('Both Tag & Frog')
+      train.EditTrainingByDescriptionAndOrTags('Both Tag & Frog')
     })
 
     it('Remove both Entity labels', () => {
@@ -158,7 +158,7 @@ describe('Consistent Entity Labeling', () => {
     it('Close the Train Dialog', () => {
       train.ClickSaveCloseButton()
     })
-    
+
     it('', () => {
     })
     it('', () => {
