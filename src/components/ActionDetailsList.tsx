@@ -19,6 +19,7 @@ import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../react-intl-messages'
 import './ActionDetailsList.css'
 import { autobind } from 'core-decorators'
+import { getValueConditionName, getEnumConditionName } from '../Utils/actionCondition'
 
 interface ComponentState {
     columns: IRenderableColumn[]
@@ -229,10 +230,10 @@ function getActionPayloadRenderer(action: CLM.ActionBase, component: ActionDetai
     if (action.actionType === CLM.ActionTypes.TEXT) {
         const textAction = new CLM.TextAction(action)
         return (<ActionPayloadRenderers.TextPayloadRendererWithHighlights
-                textAction={textAction}
-                entities={component.props.entities}
-                showMissingEntities={false}
-            />)
+            textAction={textAction}
+            entities={component.props.entities}
+            showMissingEntities={false}
+        />)
     }
     else if (action.actionType === CLM.ActionTypes.API_LOCAL) {
         const apiAction = new CLM.ApiAction(action)
@@ -299,34 +300,37 @@ function renderConditions(entityIds: string[], conditions: CLM.Condition[], allE
         ])
     }
 
-    const elements: JSX.Element[] = []
-    entityIds.forEach(entityId => {
+    const elementsForEntityIds = entityIds.map(entityId => {
         const entity = allEntities.find(e => e.entityId === entityId)
-        if (!entity) {
-            elements.push(renderCondition(`Error - Missing Entity ID: ${entityId}`, isRequired))
-        }
-        else {
-            elements.push(renderCondition(entity.entityName, isRequired))
-        }
+        const name = !entity
+            ? `Error - Missing Entity ID: ${entityId}`
+            : entity.entityName
+
+        return renderCondition(name, isRequired)
     })
-    if (conditions) {
-        conditions.forEach(condition => {
+
+    const elementsFromConditions = conditions
+        .map(condition => {
             const entity = allEntities.find(e => e.entityId === condition.entityId)
+
+            let name: string
             if (!entity) {
-                elements.push(renderCondition(`Error - Missing Entity ID: ${condition.entityId}`, isRequired))
+                name = `Error - Missing Entity ID: ${condition.entityId}`
+            }
+            else if (condition.valueId) {
+                const enumValue = entity.enumValues ? entity.enumValues.find(eid => eid.enumValueId === condition.valueId) : undefined
+                name = !enumValue
+                    ? `Error - Missing Enum: ${condition.valueId}`
+                    : getEnumConditionName(entity, enumValue)
             }
             else {
-                const enumValue = entity.enumValues ? entity.enumValues.find(eid => eid.enumValueId === condition.valueId) : undefined
-                if (!enumValue) {
-                    elements.push(renderCondition(`Error - Missing Enum: ${condition.valueId}`, isRequired))
-                }
-                else {
-                    elements.push(renderCondition(`${entity.entityName} = ${enumValue.enumValue}`, isRequired))
-                }
+                name = getValueConditionName(entity, condition)
             }
+
+            return renderCondition(name, isRequired)
         })
-    }
-    return elements
+
+    return [...elementsForEntityIds, ...elementsFromConditions]
 }
 
 function getColumns(intl: InjectedIntl): IRenderableColumn[] {
@@ -456,6 +460,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             name: Util.formatMessageId(intl, FM.ACTIONDETAILSLIST_COLUMNS_ISTERMINAL),
             fieldName: 'isTerminal',
             minWidth: 50,
+            maxWidth: 50,
             isResizable: false,
             getSortValue: action => action.isTerminal ? 'a' : 'b',
             render: action => <OF.Icon iconName={action.isTerminal ? 'CheckMark' : 'Remove'} className="cl-icon" data-testid="action-details-wait" />
