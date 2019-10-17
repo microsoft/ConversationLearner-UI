@@ -52,6 +52,8 @@ export function VerifyErrorIconForTrainGridRow(rowIndex) { cy.Get(`div.ms-List-c
 
 export function VerifyDescriptionForRow(row, description) { cy.Get(`div[data-item-index=${row}][data-automationid="DetailsRow"]`).find('span[data-testid="train-dialogs-description"]').contains(description) }
 
+// The purpose of the TdGrid class is find a specific row in the Train Dialog Grid and to wait till the 
+// Train Dialog Grid is ready before attempting to perform the find operation.
 export class TdGrid {
   // 1) Start here. RETURNS: an instance of TdGrid. Do not call the constructor.
   // This is intended to be used from a cy.something().should(()=>{tdGridObj = TdGrid.GetTdGrid()})
