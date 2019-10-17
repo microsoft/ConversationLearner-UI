@@ -281,8 +281,8 @@ interface ComponentState {
     availableConditionalTags: OF.ITag[]
     expectedEntityTags: OF.ITag[]
     requiredEntityTagsFromPayload: OF.ITag[]
-    requiredEntityOrConditionTags: IConditionalTag[]
-    negativeEntityOrConditionTags: IConditionalTag[]
+    requiredConditionTags: IConditionalTag[]
+    negativeConditionTags: IConditionalTag[]
     slateValuesMap: SlateValueMap
     secondarySlateValuesMap: SlateValueMap
     isTerminal: boolean
@@ -323,8 +323,8 @@ const initialState: Readonly<ComponentState> = {
     availableConditionalTags: [],
     expectedEntityTags: [],
     requiredEntityTagsFromPayload: [],
-    requiredEntityOrConditionTags: [],
-    negativeEntityOrConditionTags: [],
+    requiredConditionTags: [],
+    negativeConditionTags: [],
     slateValuesMap: {
         [TEXT_SLOT]: Plain.deserialize('')
     },
@@ -409,7 +409,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 const action = this.props.action
 
                 const payloadOptions = prevProps.entities.map(convertEntityToOption)
-                const negativeEntityOrConditionTags = convertEntityIdsToTags(action.negativeEntities, this.props.entities, false)
+                const negativeConditionTags = convertEntityIdsToTags(action.negativeEntities, this.props.entities, false)
                 const expectedEntityTags = convertEntityIdsToTags((action.suggestedEntity ? [action.suggestedEntity] : []), this.props.entities)
                 let selectedApiOptionKey: string | undefined
                 let selectedCardOptionKey: string | undefined
@@ -493,17 +493,17 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                         return [...entities, ...newEntities.filter(ne => !entities.some(e => e.key === ne.key))]
                     }, [])
 
-                const requiredEntityOrConditionTags = convertEntityIdsToTags(action.requiredEntities, this.props.entities, false)
+                const requiredConditionTags = convertEntityIdsToTags(action.requiredEntities, this.props.entities, false)
                     .filter(t => !requiredEntityTagsFromPayload.some(tag => tag.key === t.key))
 
                 if (action.requiredConditions) {
                     const tags = action.requiredConditions.map(c => convertConditionToConditionalTag(c, prevProps.entities))
-                    requiredEntityOrConditionTags.push(...tags)
+                    requiredConditionTags.push(...tags)
                 }
 
                 if (action.negativeConditions) {
                     const tags = action.negativeConditions.map(c => convertConditionToConditionalTag(c, prevProps.entities))
-                    negativeEntityOrConditionTags.push(...tags)
+                    negativeConditionTags.push(...tags)
                 }
 
                 newState = {
@@ -516,9 +516,9 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     slateValuesMap,
                     secondarySlateValuesMap,
                     expectedEntityTags,
-                    negativeEntityOrConditionTags,
+                    negativeConditionTags,
                     requiredEntityTagsFromPayload,
-                    requiredEntityOrConditionTags,
+                    requiredConditionTags,
                     isTerminal: action.isTerminal,
                     reprompt: action.repromptActionId !== undefined,
                     isEntryNode: action.isEntryNode,
@@ -548,8 +548,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             || this.areSlateValuesChanged(this.state.secondarySlateValuesMap, initialEditState.secondarySlateValuesMap)
 
         const expectedEntitiesChanged = !initialEditState || !this.areTagsIdentical(this.state.expectedEntityTags, initialEditState.expectedEntityTags)
-        const requiredEntitiesChanged = !initialEditState || !this.areTagsIdentical(this.state.requiredEntityOrConditionTags, initialEditState.requiredEntityOrConditionTags)
-        const disqualifyingEntitiesChanged = !initialEditState || !this.areTagsIdentical(this.state.negativeEntityOrConditionTags, initialEditState.negativeEntityOrConditionTags)
+        const requiredEntitiesChanged = !initialEditState || !this.areTagsIdentical(this.state.requiredConditionTags, initialEditState.requiredConditionTags)
+        const disqualifyingEntitiesChanged = !initialEditState || !this.areTagsIdentical(this.state.negativeConditionTags, initialEditState.negativeConditionTags)
 
         const isTerminalChanged = initialEditState.isTerminal !== this.state.isTerminal
         const isRepromptChanged = initialEditState.reprompt !== this.state.reprompt
@@ -587,8 +587,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             // If a good card match exists switch to card view
             const bestCard = this.bestCardMatch(props.importedAction)
             if (bestCard) {
-                let index = actionTypeOptions.findIndex(ao => ao.key === CLM.ActionTypes.CARD)
-                await this.onChangeActionType(actionTypeOptions[index])
+                const actionTypeOption = actionTypeOptions.find(ao => ao.key === CLM.ActionTypes.CARD)
+                await this.onChangeActionType(actionTypeOption)
             }
         }
     }
@@ -937,10 +937,10 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 throw new Error(`When attempting to submit action, the selected action type: ${this.state.selectedActionTypeOptionKey} did not have matching type`)
         }
 
-        const requiredTags = this.state.requiredEntityOrConditionTags.filter(t => !t.condition)
-        const negativeTags = this.state.negativeEntityOrConditionTags.filter(t => !t.condition)
-        const requiredConditions = this.state.requiredEntityOrConditionTags.filter(t => t.condition).map(t => t.condition!)
-        const negativeConditions = this.state.negativeEntityOrConditionTags.filter(t => t.condition).map(t => t.condition!)
+        const requiredTags = this.state.requiredConditionTags.filter(t => !t.condition)
+        const negativeTags = this.state.negativeConditionTags.filter(t => !t.condition)
+        const requiredConditions = this.state.requiredConditionTags.filter(t => t.condition).map(t => t.condition!)
+        const negativeConditions = this.state.negativeConditionTags.filter(t => t.condition).map(t => t.condition!)
 
         // TODO: This should be new type such as ActionInput for creation only.
         const action = new CLM.ActionBase({
@@ -1065,26 +1065,26 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         const conditionalTag = convertConditionToConditionalTag(condition, this.props.entities)
 
         if (this.state.conditionCreatorType === "required") {
-            const isUnique = !this.state.requiredEntityOrConditionTags
+            const isUnique = !this.state.requiredConditionTags
                 .filter(ct => ct.condition)
                 // condition guaranteed to exist based on filter above
                 .some(ct => isConditionEqual(ct.condition!, condition))
 
             if (isUnique) {
                 this.setState(prevState => ({
-                    requiredEntityOrConditionTags: [...prevState.requiredEntityOrConditionTags, conditionalTag],
+                    requiredConditionTags: [...prevState.requiredConditionTags, conditionalTag],
                 }))
             }
         }
         else if (this.state.conditionCreatorType === "disqualified") {
-            const isUnique = !this.state.negativeEntityOrConditionTags
+            const isUnique = !this.state.negativeConditionTags
                 .filter(ct => ct.condition)
                 // condition guaranteed to exist based on filter above
                 .some(ct => isConditionEqual(ct.condition!, condition))
 
             if (isUnique) {
                 this.setState(prevState => ({
-                    negativeEntityOrConditionTags: [...prevState.negativeEntityOrConditionTags, conditionalTag],
+                    negativeConditionTags: [...prevState.negativeConditionTags, conditionalTag],
                 }))
             }
         }
@@ -1219,8 +1219,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             secondarySlateValuesMap: {},
             expectedEntityTags: [],
             requiredEntityTagsFromPayload: [],
-            requiredEntityTags: [],
-            negativeEntityTags: [],
+            requiredConditionTags: [],
+            negativeConditionTags: [],
         })
 
         // If have preset text, pick the best matching card
@@ -1252,7 +1252,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         return getSuggestedTags(
             filterText,
             this.state.availableExpectedEntityTags,
-            [...selectedTags, ...this.state.requiredEntityTagsFromPayload, ...this.state.requiredEntityOrConditionTags]
+            [...selectedTags, ...this.state.requiredEntityTagsFromPayload, ...this.state.requiredConditionTags]
         )
     }
 
@@ -1266,18 +1266,18 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         const newExpectedEntityTag = tags[0]
         this.setState(prevState => ({
             expectedEntityTags: tags,
-            negativeEntityOrConditionTags: (!newExpectedEntityTag || prevState.negativeEntityOrConditionTags.some(tag => tag.key === newExpectedEntityTag.key))
-                ? prevState.negativeEntityOrConditionTags
-                : [...prevState.negativeEntityOrConditionTags, newExpectedEntityTag]
+            negativeConditionTags: (!newExpectedEntityTag || prevState.negativeConditionTags.some(tag => tag.key === newExpectedEntityTag.key))
+                ? prevState.negativeConditionTags
+                : [...prevState.negativeConditionTags, newExpectedEntityTag]
         }))
     }
 
-    onResolveRequiredEntityOrConditionTags = (filterText: string, selectedTags: OF.ITag[]): OF.ITag[] => {
+    onResolveRequiredConditionTags = (filterText: string, selectedTags: OF.ITag[]): OF.ITag[] => {
         const suggestedTags = getSuggestedTags(
             filterText,
             this.state.availableConditionalTags,
-            [...selectedTags, ...this.state.requiredEntityTagsFromPayload, ...this.state.negativeEntityOrConditionTags, ...this.state.expectedEntityTags],
-            this.state.requiredEntityOrConditionTags
+            [...selectedTags, ...this.state.requiredEntityTagsFromPayload, ...this.state.negativeConditionTags, ...this.state.expectedEntityTags],
+            this.state.requiredConditionTags
         )
 
         return [
@@ -1286,7 +1286,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         ]
     }
 
-    onChangeRequiredEntityOrConditionTags = (tags: IConditionalTag[]) => {
+    onChangeRequiredConditionTags = (tags: IConditionalTag[]) => {
         const containsAddConditionPlaceholder = tags.some(t => t.key === addConditionPlaceholder.key)
         // Assume if list has this item the user clicked the suggestion and intends to add condition
         if (containsAddConditionPlaceholder) {
@@ -1298,11 +1298,11 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         }
 
         this.setState({
-            requiredEntityOrConditionTags: tags
+            requiredConditionTags: tags
         })
     }
 
-    onRenderRequiredEntityOrConditionTag = (props: ICLPickerItemProps<OF.ITag>): JSX.Element => {
+    onRenderRequiredConditionTag = (props: ICLPickerItemProps<OF.ITag>): JSX.Element => {
         const renderProps = { ...props }
         const locked = this.state.requiredEntityTagsFromPayload.some(t => t.key === props.key)
 
@@ -1315,17 +1315,17 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    onRenderEntityOrConditionSuggestion(tag: OF.ITag, itemProps: OF.ISuggestionItemProps<OF.ITag>): JSX.Element {
+    onRenderConditionSuggestion(tag: OF.ITag, itemProps: OF.ISuggestionItemProps<OF.ITag>): JSX.Element {
         return tag.key === addConditionPlaceholder.key
             ? addConditionPlaceholderButton
             : <TagItemSuggestion>{tag.name}</TagItemSuggestion>
     }
 
-    onResolveNegativeEntityTags = (filterText: string, selectedTags: OF.ITag[]): OF.ITag[] => {
+    onResolveNegativeConditionTags = (filterText: string, selectedTags: OF.ITag[]): OF.ITag[] => {
         const suggestedTags = getSuggestedTags(
             filterText,
             this.state.availableConditionalTags,
-            [...selectedTags, ...this.state.requiredEntityTagsFromPayload, ...this.state.requiredEntityOrConditionTags]
+            [...selectedTags, ...this.state.requiredEntityTagsFromPayload, ...this.state.requiredConditionTags]
         )
 
         return [
@@ -1334,7 +1334,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         ]
     }
 
-    onChangeNegativeEntityOrConditionTags = (tags: IConditionalTag[]) => {
+    onChangeNegativeConditionTags = (tags: IConditionalTag[]) => {
         const containsAddConditionPlaceholder = tags.some(t => t.key === addConditionPlaceholder.key)
         // Assume if list has this item the user clicked the suggestion and intends to add condition
         if (containsAddConditionPlaceholder) {
@@ -1346,11 +1346,11 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         }
 
         this.setState({
-            negativeEntityOrConditionTags: tags
+            negativeConditionTags: tags
         })
     }
 
-    onRenderNegativeEntityTag = (props: ICLPickerItemProps<OF.ITag>): JSX.Element => {
+    onRenderNegativeConditionTag = (props: ICLPickerItemProps<OF.ITag>): JSX.Element => {
         const renderProps = { ...props }
         const suggestedEntityKey = this.state.expectedEntityTags.length > 0 ? this.state.expectedEntityTags[0].key : null
 
@@ -1396,7 +1396,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             .sort((a, b) => a.name.localeCompare(b.name))
 
         // If we added entity to a payload which was already in the list of required entities remove it to avoid duplicates.
-        const requiredEntityTags = this.state.requiredEntityOrConditionTags.filter(tag => !requiredEntityTagsFromPayload.some(t => t.key === tag.key))
+        const requiredConditionTags = this.state.requiredConditionTags.filter(tag => !requiredEntityTagsFromPayload.some(t => t.key === tag.key))
 
         const isPayloadMissing = (this.state.selectedActionTypeOptionKey === CLM.ActionTypes.TEXT && value.document.text.length === 0)
 
@@ -1404,7 +1404,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             entityWarning: false,
             isPayloadMissing,
             requiredEntityTagsFromPayload,
-            requiredEntityOrConditionTags: requiredEntityTags
+            requiredConditionTags,
         }
 
         if (isSecondary) {
@@ -1432,6 +1432,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 return false
         }
     }
+
     saveDisabled(): boolean {
         // SET_ENTITY Actions are immutable
         if (this.props.action
@@ -1488,7 +1489,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 && (this.state.cardOptions.length === 0));
 
         // Available Mentions: All entities - expected entity - required entities from payload - disqualified entities
-        const unavailableTags = [...this.state.expectedEntityTags, ...this.state.negativeEntityOrConditionTags]
+        const unavailableTags = [...this.state.expectedEntityTags, ...this.state.negativeConditionTags]
         const optionsAvailableForPayload = this.props.entities
             .filter(e => !unavailableTags.some(t => t.key === e.entityId))
             // Remove negative entities (Those which have a positiveId)
@@ -1788,18 +1789,18 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                         nonRemovableTags={this.state.requiredEntityTagsFromPayload}
                                         nonRemoveableStrikethrough={false}
                                         label="Required Conditions"
-                                        onResolveSuggestions={this.onResolveRequiredEntityOrConditionTags}
-                                        onRenderItem={this.onRenderRequiredEntityOrConditionTag}
-                                        onRenderSuggestionsItem={this.onRenderEntityOrConditionSuggestion}
+                                        onResolveSuggestions={this.onResolveRequiredConditionTags}
+                                        onRenderItem={this.onRenderRequiredConditionTag}
+                                        onRenderSuggestionsItem={this.onRenderConditionSuggestion}
                                         getTextFromItem={item => item.name}
-                                        onChange={this.onChangeRequiredEntityOrConditionTags}
+                                        onChange={this.onChangeRequiredConditionTags}
                                         pickerSuggestionsProps={
                                             {
                                                 suggestionsHeaderText: 'Conditions',
                                                 noResultsFoundText: 'No Conditions Found'
                                             }
                                         }
-                                        selectedItems={this.state.requiredEntityOrConditionTags}
+                                        selectedItems={this.state.requiredConditionTags}
                                         tipType={ToolTip.TipType.ACTION_REQUIRED}
                                         onDismiss={this.onDismissPicker}
                                     />
@@ -1809,18 +1810,18 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                     <TC.TagPicker
                                         data-testid="action-disqualifying-entities"
                                         label="Disqualifying Conditions"
-                                        onResolveSuggestions={this.onResolveNegativeEntityTags}
-                                        onRenderItem={this.onRenderNegativeEntityTag}
-                                        onRenderSuggestionsItem={this.onRenderEntityOrConditionSuggestion}
+                                        onResolveSuggestions={this.onResolveNegativeConditionTags}
+                                        onRenderItem={this.onRenderNegativeConditionTag}
+                                        onRenderSuggestionsItem={this.onRenderConditionSuggestion}
                                         getTextFromItem={item => item.name}
-                                        onChange={this.onChangeNegativeEntityOrConditionTags}
+                                        onChange={this.onChangeNegativeConditionTags}
                                         pickerSuggestionsProps={
                                             {
                                                 suggestionsHeaderText: 'Conditions',
                                                 noResultsFoundText: 'No Conditions Found'
                                             }
                                         }
-                                        selectedItems={this.state.negativeEntityOrConditionTags}
+                                        selectedItems={this.state.negativeConditionTags}
                                         tipType={ToolTip.TipType.ACTION_NEGATIVE}
                                         onDismiss={this.onDismissPicker}
                                     />
