@@ -1099,7 +1099,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             // TODO: Find way to extract algorithm type
         }
 
-        await this.props.regenerateDispatchTrainDialogsAsync(this.props.app.appId, algorithmType, this.props.actions, this.props.trainDialogs)
+        this.props.regenerateDispatchTrainDialogsAsync(this.props.app.appId, algorithmType, this.props.actions, this.props.trainDialogs)
 
         this.setState({
             isRegenActive: false,
@@ -1107,8 +1107,12 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     }
 
     async importOBIFiles(obiImportData: OBIUtils.OBIImportData): Promise<void> {
-        const obiDialogParser = new OBIDialogParser.ObiDialogParser(this.props.app, this.props.actions, this.props.entities,
-            this.props.createActionThunkAsync as any, this.props.createEntityThunkAsync as any)
+        const obiDialogParser = new OBIDialogParser.ObiDialogParser(
+            this.props.app,
+            this.props.actions,
+            this.props.entities,
+            this.props.createActionThunkAsync as any,
+            this.props.createEntityThunkAsync as any)
         try {
             const obiParseResult = await obiDialogParser.parse(obiImportData.files)
 
