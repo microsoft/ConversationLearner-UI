@@ -15,6 +15,7 @@ enum OBIStepType {
     END_TURN = "Microsoft.EndTurn",
     HTTP_REQUEST = "Microsoft.HttpRequest",
     SEND_ACTIVITY = "Microsoft.SendActivity",
+    SWITCH_CONDITION = "Microsoft.SwitchCondition",
     TEXT_INPUT = "Microsoft.TextInput"
 }
 
@@ -50,6 +51,7 @@ export class ObiDialogParser {
     private warnings: string[]
     private createActionThunkAsync: (appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null>
     private createEntityThunkAsync: (appId: string, entity: CLM.EntityBase) => Promise<CLM.EntityBase | null>
+    private readonly MAX_ENUM_VALUE_NAME_LENGTH = 10  // TODO(thpar) : move this to Models.
 
     constructor(
         app: CLM.AppBase,
@@ -78,7 +80,9 @@ export class ObiDialogParser {
         if (!mainDialog) {
             this.warnings.push(`Missing entry point. Expecting a .dialog file called "Entry.main"`)
         } else {
-            const rootNode = await this.collectDialogNodes(mainDialog)
+            const conditionalEntities: { [key: string]: Set<string> } = {}
+            const rootNode = await this.collectDialogNodes(mainDialog, conditionalEntities)
+            await this.createOrUpdateConditionalEntities(conditionalEntities)
             trainDialogs = await this.getTrainDialogs(rootNode)
         }
         return {
@@ -129,19 +133,22 @@ export class ObiDialogParser {
      * in-memory representation of the tree.
      * Tree construction is slightly complicated since child nodes can be referenced in `rules` or `steps`.
      */
-    private async collectDialogNodes(obiDialog: OBITypes.OBIDialog): Promise<ObiDialogNode> {
+    private async collectDialogNodes(obiDialog: OBITypes.OBIDialog, conditionalEntities: { [key: string]: Set<string> }):
+        Promise<ObiDialogNode> {
         let node: ObiDialogNode = new ObiDialogNode(obiDialog)
+        // TODO(thpar) : add steps for capturing API input and output.
         if (obiDialog.rules) {
-            await this.collectDialogRuleChildren(node, obiDialog.rules)
+            await this.collectDialogRuleChildren(node, obiDialog.rules, conditionalEntities)
         }
         if (obiDialog.steps) {
-            await this.collectDialogStepChildren(node, obiDialog.steps)
+            await this.collectDialogStepChildren(node, obiDialog.steps, conditionalEntities)
         }
         return node
     }
 
     // Collects dialog tree nodes from `Microsoft.IntentRule` elements in the dialog `rules` section.
-    private async collectDialogRuleChildren(node: ObiDialogNode, rules: OBITypes.MicrosoftIRule[]) {
+    private async collectDialogRuleChildren(node: ObiDialogNode, rules: OBITypes.MicrosoftIRule[],
+        conditionalEntities: { [key: string]: Set<string> }) {
         for (const rule of rules) {
             if (rule.$type !== OBIRuleType.INTENT_RULE) {
                 this.warnings.push(`Unhandled OBI rule type: ${rule.$type} in ${node.dialog.$id}`)
@@ -169,7 +176,7 @@ export class ObiDialogParser {
                     throw new Error(`Dialog name ${step.dialog} undefined`)
                 }
                 // Add children to train dialog list, if applicable
-                const child = await this.collectDialogNodes(subDialog)
+                const child = await this.collectDialogNodes(subDialog, conditionalEntities)
                 if (child) {
                     // Add this node's intent string to all children.
                     child.intent = intent
@@ -182,14 +189,16 @@ export class ObiDialogParser {
     /**
      * Collects dialog nodes from dialog-redirecting elements in the dialog `steps` section.
      */
-    private async collectDialogStepChildren(node: ObiDialogNode, steps: (string | OBITypes.OBIDialog)[]) {
+    private async collectDialogStepChildren(
+        node: ObiDialogNode,
+        steps: (string | OBITypes.OBIDialog)[],
+        conditionalEntities: { [key: string]: Set<string> }): Promise<void> {
         for (const step of steps) {
             if (typeof step === "string") {
                 this.warnings.push(`Unexpected string step in ${node.dialog.$id}`)
                 continue
             }
             // Handle any steps that may contain an expansion of the dialog tree.
-            // TODO(thpar) : handle Microsoft.SwitchCondition.
             switch (step.$type) {
                 case OBIStepType.BEGIN_DIALOG:
                     if (!step.dialog || typeof step.dialog !== "string") {
@@ -200,10 +209,28 @@ export class ObiDialogParser {
                     if (!subDialog) {
                         throw new Error(`Dialog name ${step.dialog} undefined`)
                     }
-                    const childDialogs = await this.collectDialogNodes(subDialog)
+                    const childDialogs = await this.collectDialogNodes(subDialog, conditionalEntities)
                     if (childDialogs) {
                         // Add children to train dialog list
                         node.children.push(childDialogs)
+                    }
+                    break
+                case OBIStepType.SWITCH_CONDITION:
+                    if (!step.cases && !step.default) {
+                        throw new Error("SwitchCondition must have at least one case or default")
+                    }
+                    if (step.cases) {
+                        for (const branch of step.cases) {
+                            if (!branch.steps) {
+                                throw new Error("Each case in SwitchCondition must have at least one step")
+                            }
+                            // Collect the entities and values used in case expressions.
+                            OBIUtils.parseEntityConditionFromDialogCase(branch, conditionalEntities)
+                            await this.collectDialogStepChildren(node, branch.steps, conditionalEntities)
+                        }
+                    }
+                    if (step.default) {
+                        await this.collectDialogStepChildren(node, step.default, conditionalEntities)
                     }
                     break
                 default:
@@ -240,13 +267,16 @@ export class ObiDialogParser {
         // Build up a training round from any applicable steps in this node.
         const obiDialog = node.dialog
         if (obiDialog.steps) {
-            let trainRound = await this.getTrainRoundfromOBIDialogSteps(obiDialog.steps)
-            if (trainRound) {
+            let scorerSteps = await this.getScorerStepsFromOBIDialogSteps(obiDialog.steps)
+            if (scorerSteps.length > 0) {
                 if (currentIntent) {
                     const extractorStep: CLM.TrainExtractorStep = {
                         textVariations: this.getTextVariations(currentIntent)
                     }
-                    trainRound.extractorStep = extractorStep
+                    const trainRound: CLM.TrainRound = {
+                        extractorStep,
+                        scorerSteps
+                    }
                     currentIntent = undefined  // Used the intent in this round, so reset it.
                     rounds.push(trainRound)
                 } else {
@@ -256,7 +286,7 @@ export class ObiDialogParser {
                         throw Error(`Attempting to append scorer steps to a non-existent round in node ${obiDialog.$id}`)
                     }
                     let round = currentRounds[currentRounds.length - 1]
-                    round.scorerSteps = [...round.scorerSteps, ...trainRound.scorerSteps]
+                    round.scorerSteps = [...round.scorerSteps, ...scorerSteps]
                 }
             }
         }
@@ -274,9 +304,9 @@ export class ObiDialogParser {
         return dialogs
     }
 
-    private async getTrainRoundfromOBIDialogSteps(steps: (string | OBITypes.OBIDialog)[]):
-        Promise<CLM.TrainRound | undefined> {
-        let trainRound: CLM.TrainRound | undefined
+    private async getScorerStepsFromOBIDialogSteps(steps: (string | OBITypes.OBIDialog)[]):
+        Promise<CLM.TrainScorerStep[]> {
+        const scorerSteps: CLM.TrainScorerStep[] = []
         for (const [i, step] of steps.entries()) {
             const nextStep = (i + 1 < steps.length) ? steps[i + 1] : undefined
             if (typeof step === "string" || typeof nextStep === "string") {
@@ -285,47 +315,68 @@ export class ObiDialogParser {
             }
             switch (step.$type) {
                 case OBIStepType.SEND_ACTIVITY: {
-                    if (!trainRound) {
-                        trainRound = {
-                            extractorStep: { textVariations: [] },
-                            scorerSteps: []
-                        }
-                    }
                     if (!step.activity) {
-                        throw new Error("Expected activity to be set")
+                        throw new Error("Expected activity to be set in steps")
                     }
                     const scorerStep = await this.getScorerStepFromActivity(step.activity)
-                    trainRound.scorerSteps.push(scorerStep)
+                    scorerSteps.push(scorerStep)
                     break
                 }
                 case OBIStepType.TEXT_INPUT: {
-                    if (!trainRound) {
-                        trainRound = {
-                            extractorStep: { textVariations: [] },
-                            scorerSteps: []
-                        }
-                    }
                     if (!step.prompt) {
-                        throw new Error("Expected activity to be set")
+                        throw new Error("Expected activity to be set in steps")
                     }
                     const scorerStep = await this.getScorerStepFromActivity(step.prompt)
-                    trainRound.scorerSteps.push(scorerStep)
+                    scorerSteps.push(scorerStep)
                     break
                 }
                 case OBIStepType.HTTP_REQUEST: {
-                    if (!trainRound) {
-                        trainRound = {
-                            extractorStep: { textVariations: [] },
-                            scorerSteps: []
-                        }
-                    }
                     const scorerStep = await this.createActionFromHttpRequest(step, nextStep)
-                    trainRound.scorerSteps.push(scorerStep)
+                    scorerSteps.push(scorerStep)
                     break
                 }
-                // TODO(thpar) : handle Microsoft.SwitchCondition.
+                case OBIStepType.SWITCH_CONDITION: {
+                    // TODO(thpar) : Update to set entity memory for each branch of the case, and add conditions on the cases.
+                    let childSteps: CLM.TrainScorerStep[] = []
+                    if (step.cases) {
+                        for (const branch of step.cases) {
+                            if (!branch.steps) {
+                                throw new Error("Case branch must contain steps")
+                            }
+                            childSteps = [...childSteps, ...await this.getScorerStepsFromOBIDialogSteps(branch.steps)]
+                        }
+                    }
+                    if (step.default) {
+                        childSteps = [...childSteps, ...await this.getScorerStepsFromOBIDialogSteps(step.default)]
+                    }
+                    // We currently require SwitchCondition steps to contain only StartDialog nodes, which are handled
+                    // via generation of the dialog tree; they should not contain action steps.
+                    // To handle action steps, we would need to modify this function to return a branching structure.
+                    // Eg, if a dialog had [step0, swtich:{step1, step2}, step3], then we'd need to return 2 different sets
+                    // of scorer steps : [step0, step1, step3] and [step0, step2, step3].
+                    // Returning multiple sets of scorer steps would have many other repercussions on TrainDialog construction,
+                    // such as assigning scorer steps from subsequent nodes without an extractor step.
+                    if (childSteps.length > 0) {
+                        throw new Error("SwitchConditions containing action steps are not currently supported")
+                    }
+                    // We also do not currently allow action-bearing steps to follow a SwtichCondition step.
+                    // This is because actions in the current node are visited before traversing to children in the dialog tree.
+                    // Eg, if a dialog had [step0, switch:{StartDialog(a)}, step1], then the current logic would generate
+                    // the incorrect output scorer steps [step0, step1, <scorer steps from dialog a>]; users would probably
+                    // expect that <dialog a> would be visited prior to executing step1.
+                    if (nextStep) {
+                        const remainingSteps = steps.slice(i + 1)
+                        childSteps = await this.getScorerStepsFromOBIDialogSteps(remainingSteps)
+                        if (childSteps.length > 0) {
+                            throw new Error("SwitchCondition may not be followed by an action step in the same node")
+                        }
+                    }
+                    // Either we've validated that there are no more action-bearing steps, or the switch is the last
+                    // action in this node; either way, we can return now.
+                    return scorerSteps
+                }
                 case OBIStepType.BEGIN_DIALOG: {
-                    // Nothing to do here, the child dialogs were already expanded.
+                    // Nothing to do here, the child dialogs were already expanded when we built the dialog tree.
                     break
                 }
                 case OBIStepType.END_DIALOG:
@@ -337,11 +388,79 @@ export class ObiDialogParser {
                 }
             }
         }
-        return trainRound
+        return scorerSteps
+    }
+
+    /**
+     * Creates enum entities and values for elements used in SwitchCondition comparisons, if they do not already exist.
+     * 
+     * @param conditionalEntities dictionary key is the name of the value used in comparison (entity name);
+     *     dictionary values are the distinct string values used across all comparisons of that entity.
+     */
+    private async createOrUpdateConditionalEntities(conditionalEntities: { [key: string]: Set<string> }) {
+        for (const entityName of Object.keys(conditionalEntities)) {
+            let foundEntity = this.entities.find(e => e.entityName === entityName)
+            if (foundEntity) {
+                // This shouldn't happen since we only call createOrUpdateConditionalEntities once...
+                throw new Error(`Unexpected: multiple definitions for ${entityName}`)
+            }
+            const newEntity = await this.createEnumEntity(entityName, conditionalEntities[entityName])
+            this.entities.push(newEntity)
+        }
+    }
+
+    /**
+     * Creates a new enum entity with `values`.  Returns the new enum entity if successful.
+     * Note that entity values will be truncated to the max length allowed by the backend.
+     * Throws an error if multiple distinct condition names have the same truncated value.
+     */
+    private async createEnumEntity(entityName: string, values: Set<string>): Promise<CLM.EntityBase> {
+        let enumValues: CLM.EnumValue[] = []
+        // We need to truncate the value names.  Record the before/after names so we can detect if there are
+        // any collisions.
+        let updatedValues: { [key: string]: Set<string> } = {}
+        for (const value of values) {
+            const truncated = value.substr(0, this.MAX_ENUM_VALUE_NAME_LENGTH)
+            if (!updatedValues[truncated]) {
+                updatedValues[truncated] = new Set([value])
+            } else {
+                // Some value with this truncated string already exists, throw an error if it's a new value.
+                // That would mean that we have 2 distinct condition values that map to the truncated string.
+                const fullValues = updatedValues[truncated]
+                if (!fullValues.has(value)) {
+                    const existing = fullValues.values().next().value
+                    throw new Error(`Can't create enum, values ${value} and ${existing} map to the same truncated string`)
+                }
+            }
+            enumValues.push({ enumValue: truncated })
+        }
+        const newEntity: CLM.EntityBase = {
+            entityId: undefined!,
+            entityName,
+            resolverType: "none",
+            createdDateTime: new Date().toJSON(),
+            lastModifiedDateTime: new Date().toJSON(),
+            isResolutionRequired: false,
+            isMultivalue: false,
+            isNegatible: false,
+            negativeId: null,
+            positiveId: null,
+            entityType: CLM.EntityType.ENUM,
+            enumValues,
+            version: null,
+            packageCreationId: null,
+            packageDeletionId: null,
+            doNotMemorize: false
+        }
+        const entityId = await ((this.createEntityThunkAsync(this.app.appId, newEntity) as any) as Promise<string>)
+        if (!entityId) {
+            throw new Error(`Failed to create entity ${entityName}`)
+        }
+        newEntity.entityId = entityId
+        return newEntity
     }
 
     private async getScorerStepFromActivity(prompt: string): Promise<CLM.TrainScorerStep> {
-
         let scoreInput: CLM.ScoreInput = {
             filledEntities: [],
             context: {},
@@ -369,6 +488,11 @@ export class ObiDialogParser {
             throw new Error('HTTP requests require url')
         }
         // TODO(thpar) : revisit logic for this.
+        // Note that we cannot do this 100% correctly in the current implementation, since actions (scorer steps)
+        // from a given dialog tree node $Y may be added to rounds from the previous dialog tree node $X if $Y does
+        // not have an extractor step, but we are calling this method during the handling of $X.
+        // To handle this 100% correctly, we'd need to do a multi-pass traversal of the dialog tree or build up a
+        // second tree-like representation of extractor and scorer steps.
         const isTerminal = (!nextStep || nextStep.$type === OBIStepType.TEXT_INPUT ||
             nextStep.$type === OBIStepType.END_TURN)
         const hashText = JSON.stringify(step)
