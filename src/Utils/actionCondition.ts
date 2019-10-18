@@ -142,7 +142,7 @@ export const getUniqueConditions = (actions: CLM.ActionBase[]): CLM.Condition[] 
 }
 
 /**
- * Returns actions using the existing condition with modifications of replaces it with the new condition.
+ * Returns actions using the existing condition with modifications of existing condition replaced by new condition.
  * Could be split into a filter then map, but the work to find if action is using condition is close to work to replace.
  * 
  * @param actions List of actions
