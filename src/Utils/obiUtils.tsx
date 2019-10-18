@@ -48,7 +48,7 @@ export async function getLogDialogActivities(
     channelId: string | undefined,
     fetchLogDialogThunkAsync: (appId: string, logDialogId: string, replaceLocal: boolean, nullOnNotFound: boolean, noSpinnerDisplay: boolean) => Promise<CLM.LogDialog>,
     fetchActivitiesThunkAsync: (appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string, useMarkdown: boolean, noSpinnerDisplay: boolean) => Promise<CLM.TeachWithActivities>
-    ): Promise<Util.RecursivePartial<BB.Activity>[]> {
+): Promise<Util.RecursivePartial<BB.Activity>[]> {
 
     // Fetch the LogDialog
     const logDialog = await fetchLogDialogThunkAsync(appId, logDialogId, true, true, true)
@@ -407,7 +407,7 @@ export function parseEntityConditionFromDialogCase(branch: Case, entityCondition
         entityConditions[entity] = conditionValues
     }
     conditionValues.add(value)
-    return {entity, value}
+    return { entity, value }
 }
 
 // Return hash text for the given activity
@@ -525,6 +525,7 @@ export async function createImportedActions(
     createActionThunkAsync: (appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null>,
 ): Promise<void> {
 
+    // TODO(thpar) - need to set up the required conditions, if applicable
     const newActions: CLM.ActionBase[] = []
     for (const round of trainDialog.rounds) {
         for (let scoreIndex = 0; scoreIndex < round.scorerSteps.length; scoreIndex = scoreIndex + 1) {
@@ -538,7 +539,6 @@ export async function createImportedActions(
 
                 // Otherwise create a new one
                 if (!action) {
-
                     const isTerminal = round.scorerSteps.length === scoreIndex + 1
                     let importedAction: ImportedAction | undefined
                     if (lgItems) {
@@ -571,7 +571,7 @@ export async function createImportedActions(
                         }
                     }
 
-                    action = await createActionFromImport(appId, importedAction, templates, createActionThunkAsync)
+                    action = await createActionFromImport(appId, importedAction, templates, scorerStep, createActionThunkAsync)
                     newActions.push(action)
                 }
 
@@ -588,6 +588,7 @@ async function createActionFromImport(
     appId: string,
     importedAction: ImportedAction,
     templates: CLM.Template[],
+    scorerStep: CLM.TrainScorerStep,
     createActionThunkAsync: (appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null>,
 ): Promise<CLM.ActionBase> {
 
@@ -654,6 +655,9 @@ async function createActionFromImport(
             lgName: importedAction.lgName
         }
     })
+    if (scorerStep.requiredConditions) {
+        action.requiredConditions = scorerStep.requiredConditions
+    }
 
     const newAction = await createActionThunkAsync(appId, action)
     if (!newAction) {

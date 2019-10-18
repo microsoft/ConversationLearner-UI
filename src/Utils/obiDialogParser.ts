@@ -26,8 +26,12 @@ enum OBIRuleType {
 // A node in a dialog tree.
 class ObiDialogNode {
     readonly dialog: OBITypes.OBIDialog
+    // Incoming intent.  This is a proxy for a user utterance that will trigger this dialog node.
     intent?: string
     children: ObiDialogNode[]
+    // If traversal to this node is gated by a SwitchCondition expression, this will be set.
+    requiredEntity?: OBIUtils.ConditionEntityAndValue
+
     constructor(dialog: OBITypes.OBIDialog) {
         this.dialog = dialog
         this.children = []
@@ -187,11 +191,14 @@ export class ObiDialogParser {
 
     /**
      * Collects dialog nodes from dialog-redirecting elements in the dialog `steps` section.
+     * @param conditionalEntities collects entities and values used in `SwitchCondition` nodes.
+     * @param requiredEntity will be set if traversal to this branch was gated by a `SwitchCondition`.
      */
     private async collectDialogStepChildren(
         node: ObiDialogNode,
         steps: (string | OBITypes.OBIDialog)[],
-        conditionalEntities: { [key: string]: Set<string> }): Promise<void> {
+        conditionalEntities: { [key: string]: Set<string> },
+        requiredEntity?: OBIUtils.ConditionEntityAndValue): Promise<void> {
         for (const step of steps) {
             if (typeof step === "string") {
                 this.warnings.push(`Unexpected string step in ${node.dialog.$id}`)
@@ -208,10 +215,13 @@ export class ObiDialogParser {
                     if (!subDialog) {
                         throw new Error(`Dialog name ${step.dialog} undefined`)
                     }
-                    const childDialogs = await this.collectDialogNodes(subDialog, conditionalEntities)
-                    if (childDialogs) {
-                        // Add children to train dialog list
-                        node.children.push(childDialogs)
+                    const childDialog = await this.collectDialogNodes(subDialog, conditionalEntities)
+                    if (childDialog) {
+                        // If this taking branch was gated by a SwitchCondition, record it in the child nodes.
+                        if (requiredEntity) {
+                            childDialog.requiredEntity = requiredEntity
+                        }
+                        node.children.push(childDialog)
                     }
                     break
                 case OBIStepType.SWITCH_CONDITION:
@@ -224,8 +234,8 @@ export class ObiDialogParser {
                                 throw new Error("Each case in SwitchCondition must have at least one step")
                             }
                             // Collect the entities and values used in case expressions.
-                            OBIUtils.parseEntityConditionFromDialogCase(branch, conditionalEntities)
-                            await this.collectDialogStepChildren(node, branch.steps, conditionalEntities)
+                            const requiredEntityFromCase = OBIUtils.parseEntityConditionFromDialogCase(branch, conditionalEntities)
+                            await this.collectDialogStepChildren(node, branch.steps, conditionalEntities, requiredEntityFromCase)
                         }
                     }
                     if (step.default) {
@@ -244,11 +254,26 @@ export class ObiDialogParser {
         return this.getTrainDialogsIter(node, [], node.intent)
     }
 
-    // Recursive helper.
+    /**
+     * Recursive helper.
+     * 
+     * @param node the current node in the tree structure representing the dialog flow
+     * @param currentRounds `TrainRound`s built up so far from the traversal of the dialog tree.
+     *     These are folded into a `TrainDialog` once a leaf node of the dialog tree is reached.
+     * @param intent if set, represents the proxy utterance used to reach the current node.
+     *     If the current node generates one or more `TrainScorerStep` instances, this invocation
+     *     will generate a `TrainRound` using `intent` (or the LU text associated with it) in the
+     *     `TrainExtractorStep`.  If the current node does not generate a `TrainScorerStep`, the
+     *     `intent` will be propagated down the tree.
+     * @param requiredEntity will be set if entry to this node was gated by a `SwitchCondition`
+     *     step.  Similarly to `intent`, this value will be used to set a required entity if the
+     *     node generates a `TrainExtractorStep` and will otherwise be propagated down the tree.
+     */
     private async getTrainDialogsIter(
         node: ObiDialogNode,
         currentRounds: CLM.TrainRound[],
-        intent: string | undefined):
+        intent: string | undefined,
+        requiredEntity?: OBIUtils.ConditionEntityAndValue):
         Promise<CLM.TrainDialog[]> {
         if (!node) {
             return []
@@ -257,17 +282,55 @@ export class ObiDialogParser {
         let currentIntent = intent
         if (currentIntent) {
             if (node.intent && node.intent !== currentIntent) {
-                throw Error(`Node intent ${node.intent} conflicts with incoming intent ${currentIntent}`)
+                throw new Error(`Node intent ${node.intent} conflicts with incoming intent ${currentIntent}`)
             }
         } else {
             currentIntent = node.intent
         }
+        // Required entity may be carried forward from a previous node if that node did not create a TrainRound.
+        let currentRequiredEntity = requiredEntity
+        if (currentRequiredEntity) {
+            if (node.requiredEntity && node.requiredEntity !== currentRequiredEntity) {
+                const nodeRequiredEntityJson = JSON.stringify(node.requiredEntity)
+                const currRequiredEntityJson = JSON.stringify(currentRequiredEntity)
+                throw new Error(`Node required entity ${nodeRequiredEntityJson} conflict with incoming required entity ${currRequiredEntityJson}`)
+            }
+        } else {
+            currentRequiredEntity = node.requiredEntity
+        }
+
         let rounds = [...currentRounds]
         // Build up a training round from any applicable steps in this node.
         const obiDialog = node.dialog
         if (obiDialog.steps) {
             let scorerSteps = await this.getScorerStepsFromOBIDialogSteps(obiDialog.steps)
             if (scorerSteps.length > 0) {
+                if (currentRequiredEntity) {
+                    // Set the required entity as a condition on the first scorer step.
+                    const conditionEntity = this.entities.find(e => e.entityName === currentRequiredEntity!.entity)
+                    if (!conditionEntity) {
+                        throw new Error(`Couldn't find entity ${currentRequiredEntity.entity}`)  // Unexpected, shouldn't happen.
+                    }
+                    if (conditionEntity.entityType !== CLM.EntityType.ENUM || !conditionEntity.enumValues) {
+                        throw new Error(`Entity ${conditionEntity.entityName} is not a valid enum`)  // Unexpected, shouldn't happen.
+                    }
+                    const normalizedValueName = this.normalizeEnumValueName(currentRequiredEntity.value)
+                    const enumValueId = conditionEntity.enumValues.find(v => v.enumValue === normalizedValueName)
+                    if (!enumValueId) {
+                        throw new Error(`Couldn't find value ${normalizedValueName} on enum entity ${conditionEntity.entityName}`)  // Unexpected, shouldn't happen.
+                    }
+                    const requiredCondition: CLM.Condition = {
+                        entityId: conditionEntity.entityId,
+                        valueId: enumValueId.enumValueId,
+                        condition: CLM.ConditionType.EQUAL
+                    }
+                    if (!scorerSteps[0].requiredConditions) {
+                        scorerSteps[0].requiredConditions = []
+                    }
+                    scorerSteps[0].requiredConditions.push(requiredCondition)
+                    // Reset the required entity condition, since we've now used it.
+                    currentRequiredEntity = undefined
+                }
                 if (currentIntent) {
                     const extractorStep: CLM.TrainExtractorStep = {
                         textVariations: this.getTextVariations(currentIntent)
@@ -282,7 +345,7 @@ export class ObiDialogParser {
                     // If we get here, then the current node has steps to execute *without* an intervening intent
                     // (user utterance).  We therefore must append these scorer steps to the previous round.
                     if (currentRounds.length === 0) {
-                        throw Error(`Attempting to append scorer steps to a non-existent round in node ${obiDialog.$id}`)
+                        throw new Error(`Attempting to append scorer steps to a non-existent round in node ${obiDialog.$id}`)
                     }
                     let round = currentRounds[currentRounds.length - 1]
                     round.scorerSteps = [...round.scorerSteps, ...scorerSteps]
@@ -298,7 +361,7 @@ export class ObiDialogParser {
         // This is not a leaf node; continue building up the dialog tree from the rounded visited so far.
         let dialogs: CLM.TrainDialog[] = []
         for (const child of node.children) {
-            dialogs = [...dialogs, ...(await this.getTrainDialogsIter(child, rounds, currentIntent))]
+            dialogs = [...dialogs, ...(await this.getTrainDialogsIter(child, rounds, currentIntent, currentRequiredEntity))]
         }
         return dialogs
     }
@@ -403,8 +466,7 @@ export class ObiDialogParser {
                 // This shouldn't happen since we should only call createOrUpdateConditionalEntities once...
                 throw new Error(`Unexpected: multiple definitions for ${entityName}`)
             }
-            const newEntity = await this.createEnumEntity(entityName, conditionalEntities[entityName])
-            this.entities.push(newEntity)
+            await this.createEnumEntity(entityName, conditionalEntities[entityName])
         }
     }
 
@@ -415,23 +477,23 @@ export class ObiDialogParser {
      */
     private async createEnumEntity(entityName: string, values: Set<string>): Promise<CLM.EntityBase> {
         let enumValues: CLM.EnumValue[] = []
-        // We need to truncate the value names.  Record the before/after names so we can detect if there are
+        // We need to normalize the value names.  Record the before/after names so we can detect if there are
         // any collisions.
         let updatedValues: { [key: string]: Set<string> } = {}
         for (const value of values) {
-            const truncated = value.substr(0, CLM.MAX_ENUM_VALUE_NAME_LENGTH)
-            if (!updatedValues[truncated]) {
-                updatedValues[truncated] = new Set([value])
+            const normalized = this.normalizeEnumValueName(value)
+            if (!updatedValues[normalized]) {
+                updatedValues[normalized] = new Set([value])
             } else {
-                // Some value with this truncated string already exists, throw an error if it's a new value.
-                // That would mean that we have 2 distinct condition values that map to the truncated string.
-                const fullValues = updatedValues[truncated]
+                // Some value with this normalzed string already exists, throw an error if it's a new value.
+                // That would mean that we have 2 distinct condition values that map to the normalized string.
+                const fullValues = updatedValues[normalized]
                 if (!fullValues.has(value)) {
                     const existing = fullValues.values().next().value
-                    throw new Error(`Can't create enum, values ${value} and ${existing} map to the same truncated string`)
+                    throw new Error(`Can't create enum, values ${value} and ${existing} map to the same normalized string`)
                 }
             }
-            enumValues.push({ enumValue: truncated })
+            enumValues.push({ enumValue: normalized })
         }
         const newEntity: CLM.EntityBase = {
             entityId: undefined!,
@@ -456,6 +518,7 @@ export class ObiDialogParser {
             throw new Error(`Failed to create entity ${entityName}`)
         }
         newEntity.entityId = entityId
+        this.entities.push(newEntity)
         return newEntity
     }
 
@@ -553,6 +616,10 @@ export class ObiDialogParser {
             })
         })
         return textVariations
+    }
+
+    private normalizeEnumValueName(name: string): string {
+        return name.substr(0, CLM.MAX_ENUM_VALUE_NAME_LENGTH)
     }
 
     private makeEmptyTrainDialog(): CLM.TrainDialog {
