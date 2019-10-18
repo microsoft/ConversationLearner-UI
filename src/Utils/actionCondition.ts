@@ -4,6 +4,7 @@
  */
 import * as CLM from '@conversationlearner/models'
 import * as OF from 'office-ui-fabric-react'
+import produce from 'immer'
 
 export interface IConditionalTag extends OF.ITag {
     condition: CLM.Condition | null
@@ -140,3 +141,38 @@ export const getUniqueConditions = (actions: CLM.ActionBase[]): CLM.Condition[] 
 
     return uniqueConditions
 }
+
+/**
+ * Returns actions using the existing condition with modifications of existing condition replaced by new condition.
+ * Could be split into a filter then map, but the work to find if action is using condition is close to work to replace.
+ * 
+ * @param actions List of actions
+ * @param existingCondition Existing Condition
+ * @param newCondition New Condition
+ */
+export const getUpdatedActionsUsingCondition = (actions: CLM.ActionBase[], existingCondition: CLM.Condition, newCondition: CLM.Condition): CLM.ActionBase[] => {
+    return actions.reduce<CLM.ActionBase[]>((actionsUsingCondition, action) => {
+        let isActionUsingCondition = false
+
+        const actionWithConditionReplaced = produce(action, draftAction => {
+            const requiredConditionIndex = draftAction.requiredConditions.findIndex(c => isConditionEqual(c, existingCondition))
+            if (requiredConditionIndex >= 0) {
+                draftAction.requiredConditions.splice(requiredConditionIndex, 1, newCondition)
+                isActionUsingCondition = true
+            }
+    
+            const negativeConditionIndex = draftAction.negativeConditions.findIndex(c => isConditionEqual(c, existingCondition))
+            if (negativeConditionIndex >= 0) {
+                draftAction.negativeConditions.splice(negativeConditionIndex, 1, newCondition)
+                isActionUsingCondition = true
+            }
+        })
+
+        if (isActionUsingCondition) {
+            actionsUsingCondition.push(actionWithConditionReplaced)
+        }
+
+        return actionsUsingCondition
+    }, [])
+}
+
