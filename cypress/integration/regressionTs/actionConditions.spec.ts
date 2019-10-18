@@ -613,6 +613,9 @@ describe('Action Conditions', () => {
                         cy.get(s.extractionEditor.buttonSubmitChanges)
                             .click()
 
+                        cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+                            .should('not.exist')
+
                         cy.get(s.webChat.messageFromBotException)
                         cy.get(s.trainDialog.buttonAbandon)
                             .click()
