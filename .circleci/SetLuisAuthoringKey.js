@@ -12,11 +12,13 @@ let buildNumber = +process.env.CIRCLE_BUILD_NUM
 // We have 5 LUIS Authoring Keys that we rotate through.
 // We use the Circle CI Build Number to help us get an index to each in sequence.
 // A Build + 2 Test Runs is 3 Workflows, each having its own Build Number.
-// The Build part does NOT consume a LUIS Authoring Keys. Both test runs use the same key.
-// Thus we need to use one LUIS Authoring Key for every third Build Number.
+// The Build part does NOT consume a LUIS Authoring Keys, which affects our algorithm,
+// thus we need to use one LUIS Authoring Key for every other Build Number.
 //
 // While this is not perfect, it does work.
-let authoringKeyIndex = Math.floor((buildNumber % 10) / 3)
+
+//let authoringKeyIndex = Math.floor((buildNumber % 10) / 3)
+let authoringKeyIndex = Math.floor(buildNumber % 5)
 
 let luisAuthoringKey = authoringKeys[authoringKeyIndex]
 
