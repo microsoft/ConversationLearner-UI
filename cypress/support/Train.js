@@ -72,6 +72,46 @@ export function ClickEntityLabelUndoButton() { cy.Get(EntityLabelUndoButtonSelec
 export function VerifyDuplicateEntityLabelsWarning(expectedEntities) { cy.Get('[data-testid="entity-extractor-duplicate-entity-warning"]').contains(`Entities that are not multi-value (i.e. ${expectedEntities}) will only store the last labelled utterance`) }
 export function VerifyNoDuplicateEntityLabelsWarning() { cy.DoesNotContain('[data-testid="entity-extractor-duplicate-entity-warning"]') }
 
+export function VerifyMatchWarning(index = 0) { VerifyFoundInEntityDetectionPanel(index, '[data-testid="entity-extractor-match-warning"]:contains("Equivalent input must contain the same detected Entities as the original input text.")') }
+export function VerifyNoMatchWarning(index = 0) { VerifyNotFoundInEntityDetectionPanel(index, '[data-testid="entity-extractor-match-warning"]') }
+
+// TODO: The following set of functions need to be moved to another location and used by other functions as well
+// TODO: The following set of functions need to be moved to another location and used by other functions as well
+// TODO: The following set of functions need to be moved to another location and used by other functions as well
+function VerifyFoundInEntityDetectionPanel(index, selector) {
+  cy.wrap(1).should(() => {
+    if (FindInEntityDetectionPanel(index, selector).length == 0) {
+      throw new Error(`Expected Element not found in Entity Detection Panel at index ${index} - selector: '${selector}'`)
+    }
+  })
+}
+
+function VerifyNotFoundInEntityDetectionPanel(index, selector) {
+  cy.wrap(1).should(() => {
+    if (FindInEntityDetectionPanel(index, selector).length > 0) {
+      throw new Error(`Expected Element should NOT be found in Entity Detection Panel at index ${index} - selector: '${selector}'`)
+    }
+  })
+}
+
+function FindInEntityDetectionPanel(index, selector) {
+  let elements = GetEditorContainerForEntityDetectionPanel(index)
+  return Cypress.$(elements[0]).find(selector)
+}
+
+function GetEditorContainerForEntityDetectionPanel(index) {
+  let elements = Cypress.$('div.slate-editor')
+  if (index > elements.length - 1) {
+    throw new Error(`GetEditorContainerForEntityDetectionPanel - invalid index: ${index} - maximum index is: ${elements.length - 1} `)
+  }
+
+  elements = Cypress.$(elements[index]).parents('div.editor-container')
+  if (elements.length != 1) {
+    throw new Error(`Did not find the single expected "div.editor-container" element.`)
+  }
+  return elements
+}
+
 export function ClickNewEntityButton() { cy.Get('[data-testid="entity-extractor-create-button"]').Click() }
 
 export function ClickConfirmAbandonDialogButton() { return cy.Get('[data-testid="confirm-cancel-modal-accept"]').Click() }
@@ -166,13 +206,45 @@ export function AbandonBranchChanges() {
 }
 
 export function VerifyChatMessageCount(expectedCount) {
+  cy.WaitForStableDOM()
   cy.wrap(1, {timeout: 10000}).should(() => {
     let actualCount = GetAllChatMessageElements().length
-    if(actualCount != expectedCount) {
-      throw new Error(`Expecting the number of chat messages to be ${expectedCount} instead it is ${actualCount}`)
+    if (actualCount != expectedCount) {
+      throw new Error(`Expecting the number of chat messages to be ${expectedCount} instead it is ${actualCount}.`)
     }
   })
 }
+
+export function VerifyChatTurnHasError(index) {
+  cy.WaitForStableDOM()
+  cy.log(`VerifyChatTurnHasError(${index})`)
+  cy.wrap(1).should(() => {
+    const chatElements = Cypress.$('div[data-testid="web-chat-utterances"]')
+    if (index >= chatElements.length) {
+      throw new Error(`Expecting there to be at least ${index + 1} chat turns, instead there are only ${chatElements.length}.`)
+    }
+
+    if (!Cypress.$(chatElements[index]).attr('class').includes('wc-border-error')) {
+      throw new Error(`Expecting the chat turn at index ${index} to be marked with error coloring but it is not.`)
+    }
+  })
+}
+
+export function VerifyChatTurnHasNoError(index) {
+  cy.WaitForStableDOM()
+  cy.log(`VerifyChatTurnHasNoError(${index})`)
+  cy.wrap(1).should(() => {
+    const chatElements = Cypress.$('div[data-testid="web-chat-utterances"]')
+    if (index >= chatElements.length) {
+      throw new Error(`Expecting there to be at least ${index + 1} chat turns, instead there are only ${chatElements.length}.`)
+    }
+
+    if (Cypress.$(chatElements[index]).attr('class').includes('wc-border-error')) {
+      throw new Error(`Expecting the chat turn at index ${index} to NOT be marked with error coloring but it is marked.`)
+    }
+  })
+}
+
 
 // -----------------------------------------------------------------------------
 // Selects FROM ALL chat messages, from both Bot and User.
@@ -206,8 +278,9 @@ function SelectChatTurnInternal(message, index, matchPredicate) {
       const innerText = helpers.TextContentWithoutNewlines(elements[i])
       helpers.ConLog(funcName, `Chat turn - Text: '${innerText}' - Inner HTML '${elements[i].innerHTML}'`)
       if (matchPredicate(innerText, message)) {
-        if (index > 0) index--
-        else {
+        if (index > 0) {
+          index--
+        } else {
           helpers.ConLog(funcName, `FOUND!`)
           
           // It appears that this does not work all the time, seen it happen once so far.

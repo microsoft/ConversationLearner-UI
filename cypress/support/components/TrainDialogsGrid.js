@@ -55,18 +55,23 @@ export function VerifyDescriptionForRow(row, description) { cy.Get(`div[data-ite
 // The purpose of the TdGrid class is find a specific row in the Train Dialog Grid and to wait till the 
 // Train Dialog Grid is ready before attempting to perform the find operation.
 export class TdGrid {
-  // 1) Start here. RETURNS: an instance of TdGrid. Do not call the constructor.
+  // 1) Start here, do not call the constructor. This will construct an instance for you AFTER this class has determined
+  //    that the Train Dialog Grid is ready and done rendering.
+  //
+  // RETURNS: an instance of TdGrid. 
+  //
   // This is intended to be used from a cy.something().should(()=>{tdGridObj = TdGrid.GetTdGrid()})
   // .then(() =>{use the returned object to call one of the FindGridRow* functions})
   //
   // This was designed to be retried. It will throw an error until we can validate that the Train Dialog Grid is stable
   // and then it will return a TdGrid object. (refer to existing code for usage examples)
   //
-  // Pass in -1 for the expectedRowCount if you do not know what to expect. Then if you look at the logs, you will 
-  // know what to expect and can change it. It is best if you pass in a value that is >= 0 since it is one more signal
-  // that the UI is ready for the next step. This feature was included to allow tests that already existed before this
-  // class was created to pass un-modified. If any of test starts failing related to timing of the grid rendering, then
-  // fix them to include the actual row count.
+  // If you do not know what the "expectedRowCount" should be, pass in -1...but if you do that this will not wait for
+  // the row count to be right. Either the UI or the logs will tell you what this value should be, you can always
+  // change it later. It is best if you pass in a value that is >= 0 since it is one more signal that the UI is ready
+  // for the next step. This feature was included to allow tests that already existed before this class was created to
+  // pass un-modified. If any of test starts failing related to timing of the grid rendering, then fix them to include 
+  // the actual row count.
   static GetTdGrid(expectedRowCount) {
     const funcName = `TdGrid.GetTdGrid(${expectedRowCount})`
     try {
@@ -231,7 +236,7 @@ TdGrid.monitorIsActivated = false
 TdGrid.noMoreOverlaysExpectedTime = undefined
 
 
-export function VerifyIncidentTriangleFoundInTrainDialogsGrid(expectedRowCount, firstInput, lastInput, lastResponse) {
+export function VerifyIncidentTriangleFoundInTrainDialogsGrid(firstInput, lastInput, lastResponse, expectedRowCount = -1) {
   const funcName = `VerifyIncidentTriangleFoundInTrainDialogsGrid(${firstInput}, ${lastInput}, ${lastResponse})`
   helpers.ConLog(funcName, 'Start')
 

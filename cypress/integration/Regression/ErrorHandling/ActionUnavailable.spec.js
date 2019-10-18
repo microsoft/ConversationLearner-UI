@@ -27,38 +27,42 @@ describe('Action Unavailable - ErrorHandling', () => {
       train.CreateNewTrainDialog()
     })
 
-    it('Should add user turn "Joe" and label it as the "name" entity', () => {
+    it('Add user turn "Joe" and label it as the "name" entity', () => {
       train.TypeYourMessage('Joe')
       train.LabelTextAsEntity('Joe', 'name')
     })
 
-    it('Should Score Actions to train the Bot to respond with "Hello Joe"', () => {
+    it('Score Actions to train the Bot to respond with "Hello Joe"', () => {
       train.ClickScoreActionsButton()
       train.SelectTextAction('Hello Joe')
     })
 
-    it('Should introduce an error in the Bot response by removing the entity label from "Joe"', () => {
+    it('Introduce an error in the Bot response by removing the entity label from "Joe"', () => {
       train.SelectChatTurnExactMatch('Joe')
       train.RemoveEntityLabel('Joe', 'name')
       train.ClickSubmitChangesButton()
-      train.VerifyErrorMessage(common.trainDialogHasErrorsMessage)
     })
 
-    it('Should verify the specifics of the error', () => {
+    it('Verify the general message appears and the chat turn is marked with error colors', () => {
+      train.VerifyErrorMessage(common.trainDialogHasErrorsMessage)
+      train.VerifyChatTurnHasError(1)
+    })
+
+    it('Verify the specifics of the error on the turn', () => {
       train.SelectChatTurnStartsWith('Hello')
       train.VerifyErrorMessage('Action is unavailable')
       train.VerifyChatTurnIsAnExactMatch('Hello [$name]', 2, 1)
     })
 
-    it('Should save the training with errors', () => {
+    it('Save the training with errors', () => {
       train.ClickSaveCloseButton()
       modelPage.VerifyErrorTriangleForTrainDialogs()
-      trainDialogsGrid.VerifyIncidentTriangleFoundInTrainDialogsGrid(1, `Joe`, 'Joe', "Hello $name")
+      trainDialogsGrid.VerifyIncidentTriangleFoundInTrainDialogsGrid(`Joe`, 'Joe', "Hello $name", 1)
     })
   })
 
   context('Edit Dialog - Validate Errors and Fix Them', () => {
-    it('Should edit the training and verify it has errors', () => {
+    it('Edit the training and verify it has errors', () => {
       train.EditTraining(`Joe`, 'Joe', "Hello $name")
       train.VerifyErrorMessage(common.trainDialogHasErrorsMessage)
       train.SelectChatTurnStartsWith('Hello')
@@ -66,13 +70,14 @@ describe('Action Unavailable - ErrorHandling', () => {
       train.VerifyChatTurnIsAnExactMatch('Hello [$name]', 2, 1)
     })
 
-    it('Should fix the user turn that caused the error', () => {
+    it('Fix the user turn that caused the error', () => {
       train.SelectChatTurnExactMatch('Joe')
       train.LabelTextAsEntity('Joe', 'name')
       train.ClickSubmitChangesButton()
     })
 
-    it('Should verify that there are no more errors', () => {
+    it('Verify that there are no more errors', () => {
+      train.VerifyChatTurnHasNoError(1)
       train.VerifyNoErrorMessage()
       train.ClickSaveCloseButton()
       modelPage.VerifyNoErrorTriangleOnPage()

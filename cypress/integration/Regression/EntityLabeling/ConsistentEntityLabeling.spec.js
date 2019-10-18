@@ -6,6 +6,8 @@
 import * as models from '../../../support/Models'
 import * as modelPage from '../../../support/components/ModelPage'
 import * as train from '../../../support/Train'
+import * as trainDialogsGrid from '../../../support/components/TrainDialogsGrid'
+import * as common from '../../../support/Common'
 import * as helpers from '../../../support/Helpers'
 
 describe('Consistent Entity Labeling', () => {
@@ -144,13 +146,36 @@ describe('Consistent Entity Labeling', () => {
     it('Save the changes', () => {
       train.SaveAsIs()
     })
+
+    it('Error Triangle in the Train Dialog Grid should be showing for the effected Train Dialog', () => {
+      trainDialogsGrid.VerifyIncidentTriangleFoundInTrainDialogsGrid('This is Tag.', 'This is Tag.', 'Hi', 3)  
+    })
     
     it('Edit the Train Dialog that got changed', () => {
       train.EditTraining('This is Tag.', 'This is Tag.', 'Hi')
     })
 
-    it('Select the user turn and verify that the alternative text at index 1 is not labeled.', () => {
+    // Bug 2327: Typical Error indicators missing from Alternative Text error
+    // Once this bug is fixed comment out this block of code and uncomment the next block
+    it('Verify that Bug 2327 reproduced', () => {
+      train.VerifyNoErrorMessage()
+      train.VerifyChatTurnHasNoError(0)
+    })
+
+    // Bug 2327: Typical Error indicators missing from Alternative Text error
+    // This code should work once this bug is fixed...
+    // Uncomment this and comment out the above to detect a regression.
+    // it('Verify that the general error appears', () => {
+    //   train.VerifyErrorMessage(common.trainDialogHasErrorsMessage)
+    //   train.VerifyChatTurnHasError(0)
+    // })
+    
+    it('Select the user turn and verify there is an error message', () => {
       train.SelectChatTurnExactMatch('This is Tag.')
+      train.VerifyMatchWarning(1)
+    })
+
+    it('verify that the alternative text at index 1 is not labeled.', () => {
       train.VerifyTextIsNotLabeledAsEntity('Tag', 'multi', 1)
       train.VerifyTextIsNotLabeledAsEntity('Frog', 'multi', 1)
     })
@@ -161,6 +186,7 @@ describe('Consistent Entity Labeling', () => {
 
     it('', () => {
     })
+
     it('', () => {
     })
   })
