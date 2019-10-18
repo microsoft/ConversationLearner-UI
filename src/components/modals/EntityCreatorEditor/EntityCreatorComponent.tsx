@@ -18,7 +18,7 @@ import { InjectedIntlProps } from 'react-intl'
 // TODO: Eliminate circular reference
 import { NONE_RESOLVER_KEY } from './EntityCreatorContainer'
 import { getValueConditionName } from 'src/Utils/actionCondition'
-import ConditionCreatorModal from '../ConditionCreatorModal'
+import ConditionModal from '../ConditionModal'
 
 export interface IEnumValueForDisplay extends CLM.EnumValue {
     allowDelete: boolean
@@ -386,7 +386,7 @@ const Component: React.SFC<Props> = (props) => {
                 <FormattedMessageId id={FM.ENTITYCREATOREDITOR_DELETE_ENUM_ERROR_WARNING} />
             </div>}
         />
-        <ConditionCreatorModal
+        <ConditionModal
             condition={props.selectedCondition}
             entities={props.entity ? [props.entity] : []}
             conditions={props.conditions}

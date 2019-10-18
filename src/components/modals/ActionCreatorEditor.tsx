@@ -13,7 +13,7 @@ import * as ActionPayloadEditor from './ActionPayloadEditor'
 import Plain from 'slate-plain-serializer'
 import actions from '../../actions'
 import ActionDeleteModal from './ActionDeleteModal'
-import ConditionCreatorModal from './ConditionCreatorModal'
+import ConditionModal from './ConditionModal'
 import ConfirmCancelModal from './ConfirmCancelModal'
 import EntityCreatorEditor from './EntityCreatorEditor'
 import AdaptiveCardViewer from './AdaptiveCardViewer/AdaptiveCardViewer'
@@ -1963,7 +1963,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                         : []}
                     hideUndefined={false}
                 />
-                <ConditionCreatorModal
+                <ConditionModal
                     entities={this.props.entities}
                     conditions={uniqueConditions}
                     isOpen={this.state.isConditionCreatorModalOpen}

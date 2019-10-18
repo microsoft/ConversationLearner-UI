@@ -4,10 +4,10 @@ import * as Util from '../../Utils/util'
 import * as CLM from '@conversationlearner/models'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../react-intl-messages'
-import './ConditionCreatorModal.css'
 import { Position } from 'office-ui-fabric-react/lib/utilities/positioning'
 import { PreBuilts } from 'src/types'
 import { conditionDisplay, convertConditionToConditionalTag, isConditionEqual } from '../../Utils/actionCondition'
+import './ConditionModal.css'
 
 const entityIsAllowedInCondition = (entity: CLM.EntityBase): boolean => {
     if (entity.entityType == CLM.EntityType.ENUM) {
