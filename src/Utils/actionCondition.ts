@@ -4,6 +4,7 @@
  */
 import * as CLM from '@conversationlearner/models'
 import * as OF from 'office-ui-fabric-react'
+import produce from 'immer'
 
 export interface IConditionalTag extends OF.ITag {
     condition: CLM.Condition | null
@@ -152,20 +153,23 @@ export const getUniqueConditions = (actions: CLM.ActionBase[]): CLM.Condition[] 
 export const getUpdatedActionsUsingCondition = (actions: CLM.ActionBase[], existingCondition: CLM.Condition, newCondition: CLM.Condition): CLM.ActionBase[] => {
     return actions.reduce<CLM.ActionBase[]>((actionsUsingCondition, action) => {
         let isActionUsingCondition = false
-        const requiredConditionIndex = action.requiredConditions.findIndex(c => isConditionEqual(c, existingCondition))
-        if (requiredConditionIndex >= 0) {
-            action.requiredConditions.splice(requiredConditionIndex, 1, newCondition)
-            isActionUsingCondition = true
-        }
 
-        const negativeConditionIndex = action.negativeConditions.findIndex(c => isConditionEqual(c, existingCondition))
-        if (negativeConditionIndex >= 0) {
-            action.negativeConditions.splice(negativeConditionIndex, 1, newCondition)
-            isActionUsingCondition = true
-        }
+        const actionWithConditionReplaced = produce(action, draftAction => {
+            const requiredConditionIndex = draftAction.requiredConditions.findIndex(c => isConditionEqual(c, existingCondition))
+            if (requiredConditionIndex >= 0) {
+                draftAction.requiredConditions.splice(requiredConditionIndex, 1, newCondition)
+                isActionUsingCondition = true
+            }
+    
+            const negativeConditionIndex = draftAction.negativeConditions.findIndex(c => isConditionEqual(c, existingCondition))
+            if (negativeConditionIndex >= 0) {
+                draftAction.negativeConditions.splice(negativeConditionIndex, 1, newCondition)
+                isActionUsingCondition = true
+            }
+        })
 
         if (isActionUsingCondition) {
-            actionsUsingCondition.push(action)
+            actionsUsingCondition.push(actionWithConditionReplaced)
         }
 
         return actionsUsingCondition
