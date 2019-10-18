@@ -1766,7 +1766,6 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                     label="Expected Entity in User reply..."
                                     onResolveSuggestions={this.onResolveExpectedEntityTags}
                                     onRenderItem={this.onRenderExpectedTag}
-                                    getTextFromItem={item => item.name}
                                     onChange={this.onChangeExpectedEntityTags}
                                     pickerSuggestionsProps={
                                         {
@@ -1776,7 +1775,6 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                     }
                                     selectedItems={this.state.expectedEntityTags}
                                     tipType={ToolTip.TipType.ACTION_SUGGESTED}
-                                    onDismiss={this.onDismissPicker}
                                 />
                             </div>
                             )}
@@ -1792,7 +1790,6 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                         onResolveSuggestions={this.onResolveRequiredConditionTags}
                                         onRenderItem={this.onRenderRequiredConditionTag}
                                         onRenderSuggestionsItem={this.onRenderConditionSuggestion}
-                                        getTextFromItem={item => item.name}
                                         onChange={this.onChangeRequiredConditionTags}
                                         pickerSuggestionsProps={
                                             {
@@ -1802,7 +1799,6 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                         }
                                         selectedItems={this.state.requiredConditionTags}
                                         tipType={ToolTip.TipType.ACTION_REQUIRED}
-                                        onDismiss={this.onDismissPicker}
                                     />
                                 </div>
 
@@ -1813,7 +1809,6 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                         onResolveSuggestions={this.onResolveNegativeConditionTags}
                                         onRenderItem={this.onRenderNegativeConditionTag}
                                         onRenderSuggestionsItem={this.onRenderConditionSuggestion}
-                                        getTextFromItem={item => item.name}
                                         onChange={this.onChangeNegativeConditionTags}
                                         pickerSuggestionsProps={
                                             {
@@ -1823,7 +1818,6 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                         }
                                         selectedItems={this.state.negativeConditionTags}
                                         tipType={ToolTip.TipType.ACTION_NEGATIVE}
-                                        onDismiss={this.onDismissPicker}
                                     />
                                 </div>
                             </>}
