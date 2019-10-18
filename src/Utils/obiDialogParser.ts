@@ -81,7 +81,7 @@ export class ObiDialogParser {
         } else {
             const conditionalEntities: { [key: string]: Set<string> } = {}
             const rootNode = await this.collectDialogNodes(mainDialog, conditionalEntities)
-            await this.createOrUpdateConditionalEntities(conditionalEntities)
+            await this.createConditionalEntities(conditionalEntities)
             trainDialogs = await this.getTrainDialogs(rootNode)
         }
         return {
@@ -396,11 +396,11 @@ export class ObiDialogParser {
      * @param conditionalEntities dictionary key is the name of the value used in comparison (entity name);
      *     dictionary values are the distinct string values used across all comparisons of that entity.
      */
-    private async createOrUpdateConditionalEntities(conditionalEntities: { [key: string]: Set<string> }) {
+    private async createConditionalEntities(conditionalEntities: { [key: string]: Set<string> }) {
         for (const entityName of Object.keys(conditionalEntities)) {
             let foundEntity = this.entities.find(e => e.entityName === entityName)
             if (foundEntity) {
-                // This shouldn't happen since we only call createOrUpdateConditionalEntities once...
+                // This shouldn't happen since we should only call createOrUpdateConditionalEntities once...
                 throw new Error(`Unexpected: multiple definitions for ${entityName}`)
             }
             const newEntity = await this.createEnumEntity(entityName, conditionalEntities[entityName])

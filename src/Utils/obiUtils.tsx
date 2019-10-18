@@ -375,9 +375,15 @@ export function generateEntityMapForAction(action: CLM.ActionBase, filledEntityM
     return map
 }
 
+export interface ConditionEntityAndValue {
+    entity: string
+    value: string
+}
+
 // NOTA BENE : We currently assume that switch nodes will only be acting on values returned by
 // API calls, and that values will be compared using strict string equality.
-export function parseEntityConditionFromDialogCase(branch: Case, entityConditions: { [key: string]: Set<string> }) {
+export function parseEntityConditionFromDialogCase(branch: Case, entityConditions: { [key: string]: Set<string> }):
+    ConditionEntityAndValue {
     if (!branch.value) {
         throw new Error("SwitchCondition cases must have value")
     }
@@ -401,6 +407,7 @@ export function parseEntityConditionFromDialogCase(branch: Case, entityCondition
         entityConditions[entity] = conditionValues
     }
     conditionValues.add(value)
+    return {entity, value}
 }
 
 // Return hash text for the given activity
