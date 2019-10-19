@@ -89,7 +89,8 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
                     ? true
                     : entity.entityType !== CLM.EntityType.ENUM
             }
-            case CLM.ActionTypes.DISPATCH: {
+            case CLM.ActionTypes.DISPATCH:
+            case CLM.ActionTypes.CHANGE_MODEL: {
                 // TODO: Could validate access to model, but don't have access to it within this model
                 return false
             }
@@ -272,6 +273,11 @@ function getActionPayloadRenderer(action: CLM.ActionBase, component: ActionDetai
         // Need to be able to load model by id to get name but need asynchronous functions etc
         const dispatchAction = new CLM.DispatchAction(action)
         return <span data-testid="actions-list-dispatch" className={OF.FontClassNames.mediumPlus}>Dispatch to model: {dispatchAction.modelName}</span>
+    }
+    else if (action.actionType === CLM.ActionTypes.CHANGE_MODEL) {
+        // TODO: Change to ModelAction?
+        const changeModelAction = new CLM.DispatchAction(action)
+        return <span data-testid="actions-list-change-model" className={OF.FontClassNames.mediumPlus}>Change to model: {changeModelAction.modelName}</span>
     }
 
     return <span className={OF.FontClassNames.mediumPlus}>Unknown Action Type</span>

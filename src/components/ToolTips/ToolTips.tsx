@@ -19,6 +19,7 @@ export enum TipType {
     ACTION_API3 = 'actionAPI3',
     ACTION_ARGUMENTS = 'actionArguments',
     ACTION_CARD = 'actionCard',
+    ACTION_CHANGE_MODEL = 'actionChangeModel',
     ACTION_DELETE_INUSE = 'actionDeleteInUse',
     ACTION_END_SESSION = 'actionEndSession',
     ACTION_ENTITIES = 'actionEntities',
@@ -208,6 +209,12 @@ export function getTip(tipType: string) {
             return render(FM.TOOLTIP_ACTION_ARGUMENTS_TITLE, [FM.TOOLTIP_ACTION_ARGUMENTS])
         case TipType.ACTION_CARD:
             return render(FM.TOOLTIP_ACTION_CARD_TITLE, [FM.TOOLTIP_ACTION_CARD])
+        case TipType.ACTION_CHANGE_MODEL:
+            return (
+                <div>
+                    Change Model
+                </div>
+            )
         case TipType.ACTION_END_SESSION:
             return render(FM.TOOLTIP_ACTION_END_SESSION_TITLE, [FM.TOOLTIP_ACTION_END_SESSION])
         case TipType.ACTION_SET_ENTITY:

@@ -245,6 +245,17 @@ const actionTypeOptions = (Object.values(CLM.ActionTypes) as string[])
         }
     })
 
+interface ModelOption extends OF.IDropdownOption {
+    data: CLM.AppBase
+}
+
+const convertModelToDropdownOption = (model: CLM.AppBase): ModelOption =>
+    ({
+        key: model.appId,
+        text: model.appName,
+        data: model,
+    })
+
 type SlateValueMap = { [slot: string]: ActionPayloadEditor.SlateValue }
 
 
@@ -255,12 +266,14 @@ interface ComponentState {
     apiOptions: OF.IDropdownOption[]
     renderOptions: OF.IDropdownOption[]
     cardOptions: OF.IDropdownOption[]
+    modelOptions: ModelOption[]
     conditionCreatorType: "required" | "disqualified"
     selectedEntityOptionKey: string | undefined
     selectedEnumValueOptionKey: string | undefined
     selectedApiOptionKey: string | number | undefined
     selectedRenderOptionKey: string | number | undefined
     selectedCardOptionKey: string | number | undefined
+    selectedModelOptionKey: string | number | undefined
     hasPendingChanges: boolean
     initialEditState: ComponentState | null
     isEditing: boolean
@@ -297,12 +310,14 @@ const initialState: Readonly<ComponentState> = {
     apiOptions: [],
     renderOptions: [],
     cardOptions: [],
+    modelOptions: [],
     conditionCreatorType: "required",
     selectedEntityOptionKey: undefined,
     selectedEnumValueOptionKey: undefined,
     selectedApiOptionKey: undefined,
     selectedRenderOptionKey: undefined,
     selectedCardOptionKey: undefined,
+    selectedModelOptionKey: undefined,
     hasPendingChanges: false,
     initialEditState: null,
     isEditing: false,
@@ -347,6 +362,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         const { actions, entities, botInfo } = this.props
         const apiOptions = botInfo.callbacks.map<OF.IDropdownOption>(convertCallbackToOption)
         const cardOptions = botInfo.templates.map<OF.IDropdownOption>(convertTemplateToOption)
+        const modelOptions = this.props.models.map(convertModelToDropdownOption)
         const entityOptions = entities
             .filter(e => e.entityType === CLM.EntityType.ENUM)
             .map(e => convertEntityToDropdownOption(e))
@@ -356,6 +372,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             entityOptions,
             apiOptions,
             cardOptions,
+            modelOptions,
             availableExpectedEntityTags: availableExpectedEntityTags(entities),
             availableConditionalTags: conditionalEntityTags(entities, actions).sort((a, b) => a.name.localeCompare(b.name)),
             isEditing: !!this.props.action
@@ -556,6 +573,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         const isEntryNodeChanged = initialEditState.isEntryNode !== this.state.isEntryNode
         const isSelectedApiChanged = initialEditState.selectedApiOptionKey !== this.state.selectedApiOptionKey
         const isSelectedCardChanged = initialEditState.selectedCardOptionKey !== this.state.selectedCardOptionKey
+        const isSelectedModelChanged = initialEditState.selectedModelOptionKey !== this.state.selectedCardOptionKey
 
         const hasPendingChanges = isAnyPayloadChanged
             || isSelectedApiChanged
@@ -566,6 +584,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             || isTerminalChanged
             || isRepromptChanged
             || isEntryNodeChanged
+            || isSelectedModelChanged
 
         if (prevState.hasPendingChanges !== hasPendingChanges) {
             this.setState({
@@ -681,6 +700,17 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         this.setState(prevState => ({
             isEntryNode: !prevState.isEntryNode
         }))
+    }
+
+    @autobind
+    onChangeModelType(event: React.FormEvent<HTMLDivElement>, option?: OF.IDropdownOption | undefined) {
+        if (!option) {
+            return
+        }
+
+        this.setState({
+            selectedModelOptionKey: option.key,
+        })
     }
 
     onChangeEntityOption = (event: React.FormEvent<HTMLDivElement>, entityOption: OF.IDropdownOption) => {
@@ -933,6 +963,21 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 }
                 payload = JSON.stringify(setEntityPayload)
                 break;
+            case CLM.ActionTypes.CHANGE_MODEL: {
+                const model = this.props.models.find(m => m.appId === this.state.selectedModelOptionKey)
+                if (!model) {
+                    throw new Error(`Could not construct payload for ${CLM.ActionTypes.CHANGE_MODEL}. Model id ${this.state.selectedModelOptionKey} did not match any available models.`)
+                }
+
+                // TODO: Rename to ModelPayload?
+                const dispatchPayload: CLM.DispatchPayload = {
+                    modelId: model.appId,
+                    modelName: model.appName,
+                }
+
+                payload = JSON.stringify(dispatchPayload)
+                break;
+            }
             default:
                 throw new Error(`When attempting to submit action, the selected action type: ${this.state.selectedActionTypeOptionKey} did not have matching type`)
         }
@@ -1428,6 +1473,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             case CLM.ActionTypes.SET_ENTITY:
                 return this.state.selectedEntityOptionKey === undefined
                     || this.state.selectedEnumValueOptionKey === undefined
+            case CLM.ActionTypes.CHANGE_MODEL:
+                return this.state.selectedModelOptionKey === undefined
             default:
                 return false
         }
@@ -1760,6 +1807,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                             && this.state.selectedActionTypeOptionKey !== CLM.ActionTypes.END_SESSION
                             && this.state.selectedActionTypeOptionKey !== CLM.ActionTypes.SET_ENTITY
                             && this.state.selectedActionTypeOptionKey !== CLM.ActionTypes.DISPATCH
+                            && this.state.selectedActionTypeOptionKey !== CLM.ActionTypes.CHANGE_MODEL
                             && (<div className="cl-action-creator--expected-entity">
                                 <TC.TagPicker
                                     data-testid="action-expected-entity"
@@ -1780,6 +1828,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                             )}
 
                         {this.state.selectedActionTypeOptionKey !== CLM.ActionTypes.DISPATCH
+                            && this.state.selectedActionTypeOptionKey !== CLM.ActionTypes.CHANGE_MODEL
                             && <>
                                 <div className="cl-action-creator--required-entities">
                                     <CLTagPicker
@@ -1821,42 +1870,57 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                     />
                                 </div>
                             </>}
-                        <TC.Checkbox
-                            data-testid="action-creator-wait-checkbox"
-                            label={Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_CHECKBOX_TERMINAL_LABEL)}
-                            checked={this.state.isTerminal}
-                            onChange={this.onChangeWaitCheckbox}
-                            style={{ marginTop: '1em', display: 'inline-block' }}
-                            disabled={this.state.reprompt || [CLM.ActionTypes.END_SESSION, CLM.ActionTypes.SET_ENTITY, CLM.ActionTypes.DISPATCH].includes(this.state.selectedActionTypeOptionKey as CLM.ActionTypes)}
-                            tipType={ToolTip.TipType.ACTION_WAIT}
-                        />
-                        <TC.Checkbox
-                            data-testid="action-creator-reprompt-checkbox"
-                            label={Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_CHECKBOX_REPROMPT_LABEL)}
-                            checked={this.state.reprompt}
-                            onChange={this.onChangeRepromptCheckbox}
-                            style={{ marginTop: '4em', display: 'inline-block' }}
-                            disabled={!this.state.isTerminal || [CLM.ActionTypes.END_SESSION, CLM.ActionTypes.SET_ENTITY, CLM.ActionTypes.DISPATCH].includes(this.state.selectedActionTypeOptionKey as CLM.ActionTypes)}
-                            tipType={ToolTip.TipType.ACTION_REPROMPT}
-                        />
-                        {Util.isFeatureEnabled(this.props.settings.features, FeatureStrings.CCI) &&
-                            <TC.Checkbox
-                                data-testid="action-creator-entry-node-checkbox"
-                                label={Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_CHECKBOX_ENTRY_NODE_LABEL)}
-                                checked={this.state.isEntryNode}
-                                onChange={this.onChangeIsEntryNodeCheckbox}
-                                style={{ marginTop: '1em', display: 'inline-block' }}
-                                disabled={[CLM.ActionTypes.END_SESSION, CLM.ActionTypes.SET_ENTITY, CLM.ActionTypes.DISPATCH].includes(this.state.selectedActionTypeOptionKey as CLM.ActionTypes)}
-                                tipType={ToolTip.TipType.ACTION_IS_ENTRY_NODE}
-                            />
+
+                        {this.state.selectedActionTypeOptionKey === CLM.ActionTypes.CHANGE_MODEL
+                            && <TC.Dropdown
+                                data-testid="action-creator-dropdown-model-name"
+                                label="Model"
+                                options={this.state.modelOptions}
+                                onChange={this.onChangeModelType}
+                                selectedKey={this.state.selectedModelOptionKey}
+                                tipType={ToolTip.TipType.ACTION_CHANGE_MODEL}
+                            />}
+
+                        {this.state.selectedActionTypeOptionKey !== CLM.ActionTypes.CHANGE_MODEL
+                            && <>
+                                <TC.Checkbox
+                                    data-testid="action-creator-wait-checkbox"
+                                    label={Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_CHECKBOX_TERMINAL_LABEL)}
+                                    checked={this.state.isTerminal}
+                                    onChange={this.onChangeWaitCheckbox}
+                                    style={{ marginTop: '1em', display: 'inline-block' }}
+                                    disabled={this.state.reprompt || [CLM.ActionTypes.END_SESSION, CLM.ActionTypes.SET_ENTITY, CLM.ActionTypes.DISPATCH].includes(this.state.selectedActionTypeOptionKey as CLM.ActionTypes)}
+                                    tipType={ToolTip.TipType.ACTION_WAIT}
+                                />
+                                <TC.Checkbox
+                                    data-testid="action-creator-reprompt-checkbox"
+                                    label={Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_CHECKBOX_REPROMPT_LABEL)}
+                                    checked={this.state.reprompt}
+                                    onChange={this.onChangeRepromptCheckbox}
+                                    style={{ marginTop: '4em', display: 'inline-block' }}
+                                    disabled={!this.state.isTerminal || [CLM.ActionTypes.END_SESSION, CLM.ActionTypes.SET_ENTITY, CLM.ActionTypes.DISPATCH].includes(this.state.selectedActionTypeOptionKey as CLM.ActionTypes)}
+                                    tipType={ToolTip.TipType.ACTION_REPROMPT}
+                                />
+                                {Util.isFeatureEnabled(this.props.settings.features, FeatureStrings.CCI) &&
+                                    <TC.Checkbox
+                                        data-testid="action-creator-entry-node-checkbox"
+                                        label={Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_CHECKBOX_ENTRY_NODE_LABEL)}
+                                        checked={this.state.isEntryNode}
+                                        onChange={this.onChangeIsEntryNodeCheckbox}
+                                        style={{ marginTop: '1em', display: 'inline-block' }}
+                                        disabled={[CLM.ActionTypes.END_SESSION, CLM.ActionTypes.SET_ENTITY, CLM.ActionTypes.DISPATCH].includes(this.state.selectedActionTypeOptionKey as CLM.ActionTypes)}
+                                        tipType={ToolTip.TipType.ACTION_IS_ENTRY_NODE}
+                                    />
+                                }
+                                <div
+                                    data-testid="action-warning-nowait-expected"
+                                    className="cl-error-message-label"
+                                    style={{ display: !this.state.isTerminal && this.state.expectedEntityTags.length ? "block" : "none", gridGap: "0" }}
+                                >
+                                    {Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_WARNING_NON_WAIT_HAS_EXPECTED_ENTITY)}
+                                </div>
+                            </>
                         }
-                        <div
-                            data-testid="action-warning-nowait-expected"
-                            className="cl-error-message-label"
-                            style={{ display: !this.state.isTerminal && this.state.expectedEntityTags.length ? "block" : "none", gridGap: "0" }}
-                        >
-                            {Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_WARNING_NONEMPTYFIELD)}
-                        </div>
                     </div>
                 </div>
 
@@ -1987,6 +2051,7 @@ const mapStateToProps = (state: State, ownProps: any) => {
     }
 
     return {
+        models: state.apps.all,
         entities: state.entities,
         actions: state.actions,
         trainDialogs: state.trainDialogs,
