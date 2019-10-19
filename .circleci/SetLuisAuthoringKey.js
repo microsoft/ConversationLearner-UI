@@ -16,7 +16,9 @@ let buildNumber = +process.env.CIRCLE_BUILD_NUM
 // thus we need to use one LUIS Authoring Key for every other Build Number.
 //
 // While this is not perfect, it does work.
-let authoringKeyIndex = Math.floor((buildNumber % 10) / 3)
+
+//let authoringKeyIndex = Math.floor((buildNumber % 10) / 3)
+let authoringKeyIndex = Math.floor(buildNumber % 5)
 
 let luisAuthoringKey = authoringKeys[authoringKeyIndex]
 

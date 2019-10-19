@@ -112,6 +112,16 @@ function GetEditorContainerForEntityDetectionPanel(index) {
   return elements
 }
 
+// TODO - Continue working from here...need to test this and see if it works for alternative text utterances.n
+export function XLabelTextAsEntity(text, entity, index = 0, itMustNotBeLabeledYet = true) {
+  let editorContainerElements
+  cy.WaitForStableDOM().then(() => {
+    editorContainerElements = GetEditorContainerForEntityDetectionPanel(index)
+    cy.wrap(editorContainerElements).trigger('Test_SelectWord', { detail: text })
+    cy.Get('[data-testid="fuse-match-option"]').contains(entity).Click()
+  })
+}
+
 export function ClickNewEntityButton() { cy.Get('[data-testid="entity-extractor-create-button"]').Click() }
 
 export function ClickConfirmAbandonDialogButton() { return cy.Get('[data-testid="confirm-cancel-modal-accept"]').Click() }

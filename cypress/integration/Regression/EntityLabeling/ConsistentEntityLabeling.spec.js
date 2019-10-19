@@ -175,6 +175,13 @@ describe('Consistent Entity Labeling', () => {
       train.VerifyMatchWarning(1)
     })
 
+    it('Re-lable the entities to set things right in this Train Dialog', () => {
+      train.XLabelTextAsEntity()
+    })
+
+    it('', () => {
+    })
+
     it('verify that the alternative text at index 1 is not labeled.', () => {
       train.VerifyTextIsNotLabeledAsEntity('Tag', 'multi', 1)
       train.VerifyTextIsNotLabeledAsEntity('Frog', 'multi', 1)
