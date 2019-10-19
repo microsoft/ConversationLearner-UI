@@ -146,4 +146,4 @@ workflows:
             - build
       - test-regression:
           requires:
-            - test-smoke
+            - build

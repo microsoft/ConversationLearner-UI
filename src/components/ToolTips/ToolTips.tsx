@@ -569,7 +569,7 @@ export function getTip(tipType: string) {
                         width="50%"
                         alt="Entity Labeling"
                     />
-                    <p>When running dialogs through your bot the entities always have number resolution. This can mislead you into thinking it will work in all cases. However, the entity extraction can learn to label based on word sequence and such as words preceeding 'fruit' or 'vegetable' should be labeled regardless if the label can be resolvable to a number. This can result in phrases from users like 'many' or 'a lot' which are appropriate before 'fruits' or 'vegetables' to be labeled even they cannot be resolved into a number. You can use this "Resolution Required" option to disallow this case and remove these labels without resolution.</p>
+                    <p>When running dialogs through your bot the entities always have number resolution. This can mislead you into thinking it will work in all cases. However, the entity extraction can learn to label based on word sequence and such as words preceeding 'fruit' or 'vegetable' should be labeled regardless if the label can be resolvable to a number. This can result in phrases from users like 'many' or 'a lot' which are appropriate before 'fruits' or 'vegetables' to be labeled even though they cannot be resolved into a number. You can use this "Resolution Required" option to disallow this case and remove these labels without resolution.</p>
                     <img
                         className="cl-panelimage"
                         src="https://blisstorage.blob.core.windows.net/uiimages/TooTip_ENTITY_RESOLVER_RESOLUTION_REQUIRED_02.png"

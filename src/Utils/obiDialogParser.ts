@@ -51,7 +51,6 @@ export class ObiDialogParser {
     private warnings: string[]
     private createActionThunkAsync: (appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null>
     private createEntityThunkAsync: (appId: string, entity: CLM.EntityBase) => Promise<CLM.EntityBase | null>
-    private readonly MAX_ENUM_VALUE_NAME_LENGTH = 10  // TODO(thpar) : move this to Models.
 
     constructor(
         app: CLM.AppBase,
@@ -420,7 +419,7 @@ export class ObiDialogParser {
         // any collisions.
         let updatedValues: { [key: string]: Set<string> } = {}
         for (const value of values) {
-            const truncated = value.substr(0, this.MAX_ENUM_VALUE_NAME_LENGTH)
+            const truncated = value.substr(0, CLM.MAX_ENUM_VALUE_NAME_LENGTH)
             if (!updatedValues[truncated]) {
                 updatedValues[truncated] = new Set([value])
             } else {

@@ -4,10 +4,10 @@ import * as Util from '../../Utils/util'
 import * as CLM from '@conversationlearner/models'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../react-intl-messages'
-import './ConditionCreatorModal.css'
 import { Position } from 'office-ui-fabric-react/lib/utilities/positioning'
 import { PreBuilts } from 'src/types'
 import { conditionDisplay, convertConditionToConditionalTag, isConditionEqual } from '../../Utils/actionCondition'
+import './ConditionModal.css'
 
 const entityIsAllowedInCondition = (entity: CLM.EntityBase): boolean => {
     if (entity.entityType == CLM.EntityType.ENUM) {
@@ -90,6 +90,7 @@ const convertEnumValueToDropdownOption = (enumValue: CLM.EnumValue): EnumOption 
 
 type Props = InjectedIntlProps
     & {
+        condition?: CLM.Condition,
         entities: CLM.EntityBase[],
         isOpen: boolean,
         conditions: CLM.Condition[],
@@ -180,6 +181,37 @@ const Component: React.FC<Props> = (props) => {
         setIsCreateDisabled(!isValid)
     }, [selectedEntityOption, selectedOperatorOption, numberValue, selectedEnumValueOption])
 
+    // If condition is present we must be editing
+    // Set all options to those on condition
+    const condition = props.condition
+    React.useEffect(() => {
+        if (!condition) {
+            return
+        }
+
+        const matchingEntityOption = entityOptions.find(eo => eo.data.entityId === condition.entityId)
+        if (matchingEntityOption) {
+            setSelectedEntityOption(matchingEntityOption)
+        }
+
+        // TODO: Fix weird naming, why do conditions objects have condition property?! same with enum value objects
+        const matchOperatorOption = operatorOptions.find(o => o.data === condition.condition)
+        if (matchOperatorOption) {
+            setSelectedOperatorOption(matchOperatorOption)
+        }
+
+        if (condition.valueId) {
+            const matchingEnumOption = enumValueOptions.find(o => o.data.enumValueId === condition.valueId)
+            if (matchingEnumOption) {
+                setSelectedEnumValueOption(matchingEnumOption)
+            }
+        }
+
+        if (condition.value) {
+            setNumberValue(condition.value)
+        }
+    }, [props.condition])
+
     // If modal has opened (from false to true)
     React.useLayoutEffect(() => {
         if (props.isOpen) {
@@ -236,16 +268,19 @@ const Component: React.FC<Props> = (props) => {
     return <OF.Modal
         isOpen={props.isOpen}
         containerClassName="cl-modal cl-modal--medium"
-        data-testid="condition-creator-modal-title"
     >
-        <div className="cl-modal_header" data-testid="condition-creator-title">
-            <span className={OF.FontClassNames.xxLarge}>Create a Condition</span>
+        <div className="cl-modal_header" data-testid="condition-creator-modal-title">
+            <span className={OF.FontClassNames.xxLarge}>
+                {props.condition
+                    ? 'Edit Condition'
+                    : 'Create a Condition'}
+            </span>
         </div>
 
         <div className="cl-modal_body">
             <div>
                 {entityOptions.length === 0
-                    ? <p className="cl-text--warning"><OF.Icon iconName='Warning' /> You may only create conditions on enum entities or those with resolver type number which is required. Your model does not have either type available. Please create either of these types of entities to create a condition.</p>
+                    ? <p data-testid="condition-creator-modal-warning" className="cl-text--warning"><OF.Icon iconName='Warning' /> You may only create conditions on enum entities or those with resolver type number which is required. Your model does not have either type available. Please create either of these types of entities to create a condition.</p>
                     : <>
                         <h2 style={{ fontWeight: OF.FontWeights.semibold as number }} className={OF.FontClassNames.large}>Current Condition:</h2>
                         <div className="cl-condition-creator__expression">
@@ -253,6 +288,7 @@ const Component: React.FC<Props> = (props) => {
                                 label="Entity"
                                 data-testid="condition-creator-modal-dropdown-entity"
                                 selectedKey={selectedEntityOption && selectedEntityOption.key}
+                                disabled={props.condition !== undefined}
                                 options={entityOptions}
                                 onChange={onChangeEntity}
                             />
@@ -292,7 +328,7 @@ const Component: React.FC<Props> = (props) => {
                         </div>
 
                         <h2 style={{ fontWeight: OF.FontWeights.semibold as number }} className={OF.FontClassNames.large}>Existing Conditions:</h2>
-                        <div className="cl-condition-creator__existing-conditions">
+                        <div className="cl-condition-creator__existing-conditions" data-testid="condition-creator-existing-conditions">
                             {conditionsUsingEntity.map(condition => {
                                 const conditionalTag = convertConditionToConditionalTag(condition, props.entities)
                                 const isActive = currentCondition
@@ -336,8 +372,12 @@ const Component: React.FC<Props> = (props) => {
                     data-testid="condition-creator-button-create"
                     disabled={isCreateDisabled}
                     onClick={onClickCreate}
-                    ariaDescription={Util.formatMessageId(props.intl, FM.BUTTON_CREATE)}
-                    text={Util.formatMessageId(props.intl, FM.BUTTON_CREATE)}
+                    ariaDescription={props.condition
+                        ? Util.formatMessageId(props.intl, FM.BUTTON_SAVE_EDIT)
+                        : Util.formatMessageId(props.intl, FM.BUTTON_CREATE)}
+                    text={props.condition
+                        ? Util.formatMessageId(props.intl, FM.BUTTON_SAVE_EDIT)
+                        : Util.formatMessageId(props.intl, FM.BUTTON_CREATE)}
                     iconProps={{ iconName: 'Accept' }}
                 />
 
