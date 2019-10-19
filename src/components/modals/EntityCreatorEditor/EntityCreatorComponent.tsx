@@ -185,19 +185,21 @@ const EditComponent: React.FC<Props> = (props) => {
             })
         }
 
-        <div>
-            <OF.Label>Options</OF.Label>
-            {props.entityTypeKey == CLM.EntityType.LUIS &&
-                <TC.Checkbox
-                    data-testid="entity-creator-resolution-required"
-                    label={Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_FIELDS_RESOLVER_RESOLUTION_REQUIRED_LABEL)}
-                    checked={props.isResolutionRequired}
-                    onChange={props.onChangeResolverResolutionRequired}
-                    disabled={props.selectedResolverKey === NONE_RESOLVER_KEY || props.isEditing}
-                    tipType={ToolTip.TipType.ENTITY_RESOLVER_RESOLUTION_REQUIRED}
-                />
-            }
-        </div>
+        {(props.entityTypeKey === CLM.EntityType.LUIS
+            || props.entityTypeKey !== CLM.EntityType.ENUM)
+            && <div>
+                <OF.Label>Options</OF.Label>
+                {props.entityTypeKey === CLM.EntityType.LUIS &&
+                    <TC.Checkbox
+                        data-testid="entity-creator-resolution-required"
+                        label={Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_FIELDS_RESOLVER_RESOLUTION_REQUIRED_LABEL)}
+                        checked={props.isResolutionRequired}
+                        onChange={props.onChangeResolverResolutionRequired}
+                        disabled={props.selectedResolverKey === NONE_RESOLVER_KEY || props.isEditing}
+                        tipType={ToolTip.TipType.ENTITY_RESOLVER_RESOLUTION_REQUIRED}
+                    />
+                }
+            </div>}
 
         {props.entityTypeKey !== CLM.EntityType.ENUM &&
             <TC.Checkbox
@@ -218,7 +220,6 @@ const EditComponent: React.FC<Props> = (props) => {
                 tipType={ToolTip.TipType.ENTITY_NEGATABLE}
             />
         }
-    </div>
 
         {props.conditions.length > 0
             && <>
@@ -244,6 +245,7 @@ const EditComponent: React.FC<Props> = (props) => {
                     })}
                 </div>
             </>}
+    </div>
 }
 
 const Component: React.SFC<Props> = (props) => {
