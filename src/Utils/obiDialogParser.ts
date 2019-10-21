@@ -307,23 +307,7 @@ export class ObiDialogParser {
             if (scorerSteps.length > 0) {
                 if (currentRequiredEntity) {
                     // Set the required entity as a condition on the first scorer step.
-                    const conditionEntity = this.entities.find(e => e.entityName === currentRequiredEntity!.entity)
-                    if (!conditionEntity) {
-                        throw new Error(`Couldn't find entity ${currentRequiredEntity.entity}`)  // Unexpected, shouldn't happen.
-                    }
-                    if (conditionEntity.entityType !== CLM.EntityType.ENUM || !conditionEntity.enumValues) {
-                        throw new Error(`Entity ${conditionEntity.entityName} is not a valid enum`)  // Unexpected, shouldn't happen.
-                    }
-                    const normalizedValueName = this.normalizeEnumValueName(currentRequiredEntity.value)
-                    const enumValueId = conditionEntity.enumValues.find(v => v.enumValue === normalizedValueName)
-                    if (!enumValueId) {
-                        throw new Error(`Couldn't find value ${normalizedValueName} on enum entity ${conditionEntity.entityName}`)  // Unexpected, shouldn't happen.
-                    }
-                    const requiredCondition: CLM.Condition = {
-                        entityId: conditionEntity.entityId,
-                        valueId: enumValueId.enumValueId,
-                        condition: CLM.ConditionType.EQUAL
-                    }
+                    const requiredCondition: CLM.Condition = this.getConditionFromRequiredEntity(currentRequiredEntity)
                     if (!scorerSteps[0].requiredConditions) {
                         scorerSteps[0].requiredConditions = []
                     }
@@ -520,6 +504,29 @@ export class ObiDialogParser {
         newEntity.entityId = entityId
         this.entities.push(newEntity)
         return newEntity
+    }
+
+    /**
+     * Returns a `Condition` referencing an enum entity and enum value id, which is built from the entity and value name.
+     */
+    private getConditionFromRequiredEntity(requiredEntity: OBIUtils.ConditionEntityAndValue): CLM.Condition {
+        const conditionEntity = this.entities.find(e => e.entityName === requiredEntity.entity)
+        if (!conditionEntity) {
+            throw new Error(`Couldn't find entity ${requiredEntity.entity}`)  // Unexpected, shouldn't happen.
+        }
+        if (conditionEntity.entityType !== CLM.EntityType.ENUM || !conditionEntity.enumValues) {
+            throw new Error(`Entity ${conditionEntity.entityName} is not a valid enum`)  // Unexpected, shouldn't happen.
+        }
+        const normalizedValueName = this.normalizeEnumValueName(requiredEntity.value)
+        const enumValueId = conditionEntity.enumValues.find(v => v.enumValue === normalizedValueName)
+        if (!enumValueId) {
+            throw new Error(`Couldn't find value ${normalizedValueName} on enum entity ${conditionEntity.entityName}`)  // Unexpected, shouldn't happen.
+        }
+        return {
+            entityId: conditionEntity.entityId,
+            valueId: enumValueId.enumValueId,
+            condition: CLM.ConditionType.EQUAL
+        }
     }
 
     private async getScorerStepFromActivity(prompt: string): Promise<CLM.TrainScorerStep> {
