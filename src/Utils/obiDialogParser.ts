@@ -625,6 +625,7 @@ export class ObiDialogParser {
         return textVariations
     }
 
+    // Returns a version of `name` that is compatible with the backend.
     private normalizeEnumValueName(name: string): string {
         return name.substr(0, CLM.MAX_ENUM_VALUE_NAME_LENGTH)
     }

@@ -525,7 +525,6 @@ export async function createImportedActions(
     createActionThunkAsync: (appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null>,
 ): Promise<void> {
 
-    // TODO(thpar) - need to set up the required conditions, if applicable
     const newActions: CLM.ActionBase[] = []
     for (const round of trainDialog.rounds) {
         for (let scoreIndex = 0; scoreIndex < round.scorerSteps.length; scoreIndex = scoreIndex + 1) {
