@@ -13,6 +13,7 @@ import * as BB from 'botbuilder'
 import FormattedMessageId from '../../../components/FormattedMessageId'
 import actions from '../../../actions'
 import produce from 'immer'
+import TreeView from '../../../components/modals/TreeView/TreeView'
 import { withRouter } from 'react-router-dom'
 import { RouteComponentProps } from 'react-router'
 import { returntypeof } from 'react-redux-typescript'
@@ -28,9 +29,10 @@ import { TeachSessionState } from '../../../types/StateTypes'
 import { EntityLabelConflictError } from '../../../types/errors'
 import { autobind } from 'core-decorators'
 import { PartialTrainDialog } from '../../../types/models'
+import { LogRanker, LogScore } from '../../../Utils/LogRanker'
 
 interface IRenderableColumn extends OF.IColumn {
-    render: (x: CLM.LogDialog, component: LogDialogs) => React.ReactNode
+    render: (logDialog: CLM.LogDialog, component: LogDialogs) => React.ReactNode
     getSortValue: (logDialog: CLM.LogDialog, component: LogDialogs) => string
 }
 
@@ -91,6 +93,35 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             }
         },
         {
+            key: `score`,
+            name: "SCORE",//LARSUtil.formatMessageId(intl, FM.LOGDIALOGS_USERINPUT),
+            fieldName: `score`,
+            minWidth: 100,
+            maxWidth: 100,
+            isResizable: true,
+            render: (logDialog, component) => {
+                return <>
+                    
+                    <span>
+                        <OF.TooltipHost
+                            tooltipProps={{
+                                onRenderContent: () =>
+                                    <span>
+                                        {<pre>{component.getLogScoreDetails(logDialog.logDialogId)}</pre>}
+                                    </span>
+                            }}
+                            calloutProps={{ gapSpace: 0 }}
+                        >
+                            {component.getLogScore(logDialog.logDialogId).toFixed(2)}
+                        </OF.TooltipHost>
+                    </span>
+                </>
+            },
+            getSortValue: (logDialog, component) => {
+                return component.getLogScore(logDialog.logDialogId).toFixed(2)
+            }
+        },
+        {
             key: 'turns',
             name: Util.formatMessageId(intl, FM.LOGDIALOGS_TURNS),
             fieldName: 'dialog',
@@ -143,6 +174,8 @@ interface ComponentState {
     validationErrors: CLM.ReplayError[]
     // Hack to keep screen from flashing when transition to Edit Page
     lastTeachSession: TeachSessionState | null
+    logScores: LogScore[] | undefined
+    treeDialogs: CLM.TrainDialog[] | undefined
 
 }
 const defaultAcceptConflictResolutionFn = async () => { throw new Error(`acceptConflictResolutionFn called without being assigned.`) }
@@ -217,7 +250,9 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             activityHistory: [],
             lastAction: null,
             validationErrors: [],
-            lastTeachSession: null
+            lastTeachSession: null,
+            logScores: undefined,
+            treeDialogs: undefined
         }
     }
 
@@ -388,6 +423,51 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         const { history } = this.props
         let url = `${this.props.match.url}?id=${logDialog.logDialogId}`
         history.push(url, { app: this.props.app })
+    }
+
+    @autobind
+    onClickAnalyze() {
+        const logRanker = new LogRanker(this.props.logDialogs, this.props.trainDialogs, this.props.entities)
+        const logScores = logRanker.analyze()
+        
+        // Sort by the analyzed scores
+        const sortColumn = this.state.columns.find(c => c.fieldName === "score")
+        if (!sortColumn) {
+            throw new Error("Undefined Column")
+        }
+        const columns = this.state.columns.map(column => {
+            column.isSorted = false
+            column.isSortedDescending = false
+            if (column === sortColumn) {
+                column.isSorted = true
+                column.isSortedDescending = false
+            }
+            return column
+        })
+
+        this.setState({ logScores, columns, sortColumn })
+
+        
+    }
+
+    @autobind
+    onClickTreeView() {
+        if (!this.state.logScores) {
+            return
+        }
+        /*LARS
+                // Convert log ranks to train dialogs
+                let treeDialogs = (this.state.logScores
+                    .map(lr => lr.logDialogIds[0])
+                    .map(id => {
+                        const logDialog = this.props.logDialogs.find(ld => ld.logDialogId === id)
+                        return logDialog || null
+                    })
+                    .filter(i => i) as CLM.LogDialog[])
+                    .map(ld => CLM.ModelUtils.ToTrainDialog(ld))
+        
+                this.setState({ treeDialogs: [...treeDialogs, ...this.props.trainDialogs] })
+                */
     }
 
     async onClickSync() {
@@ -651,42 +731,6 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         }
         catch (error) {
             console.warn(`Error when attempting to update activityHistory: `, error)
-        }
-    }
-
-    async onClickTrainDialogItem(trainDialog: CLM.TrainDialog) {
-        const trainDialogWithDefinitions: CLM.TrainDialog = {
-            ...trainDialog,
-            createdDateTime: new Date().toJSON(),
-            lastModifiedDateTime: new Date().toJSON(),
-            trainDialogId: undefined!,
-            sourceLogDialogId: trainDialog.sourceLogDialogId,
-            version: undefined!,
-            packageCreationId: undefined!,
-            packageDeletionId: undefined!,
-            rounds: trainDialog.rounds,
-            initialFilledEntities: trainDialog.initialFilledEntities,
-            definitions: {
-                actions: this.props.actions,
-                entities: this.props.entities,
-                trainDialogs: []
-            }
-        };
-
-        try {
-            const teachWithActivities = await ((this.props.fetchActivitiesThunkAsync(this.props.app.appId, trainDialogWithDefinitions, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithActivities>)
-            this.setState({
-                activityHistory: teachWithActivities.activities,
-                lastAction: teachWithActivities.lastAction,
-                currentTrainDialog: trainDialog,
-                isEditDialogModalOpen: true,
-                selectedActivityIndex: null,
-                editType: EditDialogType.LOG_ORIGINAL
-            })
-        }
-        catch (e) {
-            const error = e as Error
-            console.warn(`Error when attempting to create activityHistory: `, error)
         }
     }
 
@@ -1026,7 +1070,22 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                         text="Refresh"
                         iconProps={{ iconName: 'Sync' }}
                     />
-
+                    <OF.DefaultButton
+                        data-testid="logdialogs-button-refresh"
+                        onClick={this.onClickAnalyze}
+                        ariaDescription="Refresh"
+                        text="Analyze"//LARS intl
+                        iconProps={{ iconName: 'Sync' }}
+                    />
+                    {this.state.logScores &&
+                        <OF.DefaultButton
+                            data-testid="logdialogs-button-refresh"
+                            onClick={this.onClickTreeView}
+                            ariaDescription="Refresh"
+                            text="Tree View"//LARS intl
+                            iconProps={{ iconName: 'Sync' }}
+                        />
+                    }
                     <OF.DefaultButton
                         data-testid="logdialogs-button-deleteall"
                         className="cl-button-delete"
@@ -1038,59 +1097,57 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     />
                 </div>
 
-                    <div className={`cl-page-placeholder ${isPlaceholderVisible ? '' : 'cl-page-placeholder--none'}`}>
-                        <div className="cl-page-placeholder__content">
-                            <div className={`cl-page-placeholder__description ${OF.FontClassNames.xxLarge}`}>Create a Log Dialog</div>
-                            <OF.PrimaryButton
-                                iconProps={{
-                                    iconName: "Add"
-                                }}
-                                disabled={isEditingDisabled}
-                                onClick={this.onClickNewChatSession}
-                                ariaDescription={Util.formatMessageId(this.props.intl, FM.LOGDIALOGS_CREATEBUTTONARIALDESCRIPTION)}
-                                text={Util.formatMessageId(this.props.intl, FM.LOGDIALOGS_CREATEBUTTONTITLE)}
-                            />
-                        </div>
-                    </div>
-                    <>
-                        <div className={isPlaceholderVisible ? 'cl-hidden' : ''}>
-                            <OF.Label htmlFor="logdialogs-input-search" className={OF.FontClassNames.medium}>
-                                Search:
-                            </OF.Label>
-                            <OF.SearchBox
-                                id="logdialogs-input-search"
-                                data-testid="logdialogs-search-box"
-                                className={OF.FontClassNames.mediumPlus}
-                                onChange={this.onChangeSearchString}
-                                onSearch={this.onSearch}
-                            />
-                        </div>
-                        <OF.DetailsList
-                            data-testid="logdialogs-details-list"
-                            key={this.state.dialogKey}
-                            className={`${OF.FontClassNames.mediumPlus} ${isPlaceholderVisible ? 'cl-hidden' : ''}`}
-                            items={computedLogDialogs}
-                            selection={this.selection}
-                            getKey={getDialogKey}
-                            setKey="selectionKey"
-                            columns={this.state.columns}
-                            checkboxVisibility={OF.CheckboxVisibility.onHover}
-                            onColumnHeaderClick={this.onClickColumnHeader}
-                            onRenderRow={(props, defaultRender) => <div data-selection-invoke={true}>{defaultRender && defaultRender(props)}</div>}
-                            onRenderItemColumn={(logDialog, i, column: IRenderableColumn) => returnErrorStringWhenError(() => column.render(logDialog, this))}
-                            onItemInvoked={logDialog => this.onClickLogDialogItem(logDialog)}
+                <div className={`cl-page-placeholder ${isPlaceholderVisible ? '' : 'cl-page-placeholder--none'}`}>
+                    <div className="cl-page-placeholder__content">
+                        <div className={`cl-page-placeholder__description ${OF.FontClassNames.xxLarge}`}>Create a Log Dialog</div>
+                        <OF.PrimaryButton
+                            iconProps={{
+                                iconName: "Add"
+                            }}
+                            disabled={isEditingDisabled}
+                            onClick={this.onClickNewChatSession}
+                            ariaDescription={Util.formatMessageId(this.props.intl, FM.LOGDIALOGS_CREATEBUTTONARIALDESCRIPTION)}
+                            text={Util.formatMessageId(this.props.intl, FM.LOGDIALOGS_CREATEBUTTONTITLE)}
                         />
-                    </>
-
-
-                    <ChatSessionModal
-                        app={this.props.app}
-                        editingPackageId={this.props.editingPackageId}
-                        open={this.state.isChatSessionWindowOpen}
-                        onClose={this.onCloseChatSessionWindow}
+                    </div>
+                </div>
+                <>
+                    <div className={isPlaceholderVisible ? 'cl-hidden' : ''}>
+                        <OF.Label htmlFor="logdialogs-input-search" className={OF.FontClassNames.medium}>
+                            Search:
+                            </OF.Label>
+                        <OF.SearchBox
+                            id="logdialogs-input-search"
+                            data-testid="logdialogs-search-box"
+                            className={OF.FontClassNames.mediumPlus}
+                            onChange={this.onChangeSearchString}
+                            onSearch={this.onSearch}
+                        />
+                    </div>
+                    <OF.DetailsList
+                        data-testid="logdialogs-details-list"
+                        key={this.state.dialogKey}
+                        className={`${OF.FontClassNames.mediumPlus} ${isPlaceholderVisible ? 'cl-hidden' : ''}`}
+                        items={computedLogDialogs}
+                        selection={this.selection}
+                        getKey={getDialogKey}
+                        setKey="selectionKey"
+                        columns={this.state.columns}
+                        checkboxVisibility={OF.CheckboxVisibility.onHover}
+                        onColumnHeaderClick={this.onClickColumnHeader}
+                        onRenderRow={(props, defaultRender) => <div data-selection-invoke={true}>{defaultRender && defaultRender(props)}</div>}
+                        onRenderItemColumn={(logDialog, i, column: IRenderableColumn) => returnErrorStringWhenError(() => column.render(logDialog, this))}
+                        onItemInvoked={logDialog => this.onClickLogDialogItem(logDialog)}
                     />
-                {
-                    teachSession && teachSession.teach &&
+                </>
+
+                <ChatSessionModal
+                    app={this.props.app}
+                    editingPackageId={this.props.editingPackageId}
+                    open={this.state.isChatSessionWindowOpen}
+                    onClose={this.onCloseChatSessionWindow}
+                />
+                {teachSession && teachSession.teach &&
                     <TeachSessionModal
                         isOpen={this.state.isTeachDialogModalOpen}
                         app={this.props.app}
@@ -1162,8 +1219,38 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     onConfirm={this.onClickConfirmDelete}
                     title={Util.formatMessageId(intl, FM.LOGDIALOGS_CONFIRMCANCEL_DELETESELECTED, { selectionCount: this.state.selectionCount })}
                 />
+                <TreeView
+                    open={this.state.treeDialogs !== undefined}
+                    app={this.props.app}
+                    originalTrainDialogId={null}
+                    sourceTrainDialog={this.state.currentTrainDialog}
+                    editType={this.state.editType}
+                    editState={editState}
+                    editingPackageId={this.props.editingPackageId}
+                    onCancel={() => this.setState({ treeDialogs: undefined })}
+                    openTrainDialog={() => { }}
+                    trainDialogs={this.state.treeDialogs || []}
+                />
+
             </div>
         );
+    }
+
+    getLogScore(logDialogId: string): number {
+        if (!this.state.logScores) {
+            return 0
+        }
+        const logScore = this.state.logScores.find(ls => ls.logDialogId === logDialogId)
+        return logScore ? logScore.score : 0
+
+    }
+
+    getLogScoreDetails(logDialogId: string): string {
+        if (!this.state.logScores) {
+            return ""
+        }
+        const logScore = this.state.logScores.find(ls => ls.logDialogId === logDialogId)
+        return logScore ? JSON.stringify(logScore, null, 2) : ""
     }
 
     private focusNewChatButton() {

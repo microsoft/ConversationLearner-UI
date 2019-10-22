@@ -1600,6 +1600,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 <TreeView
                     open={this.state.isTreeViewModalOpen}
                     app={this.props.app}
+                    trainDialogs={this.props.trainDialogs}
                     originalTrainDialogId={this.state.originalTrainDialog ? this.state.originalTrainDialog.trainDialogId : null}
                     sourceTrainDialog={this.state.currentTrainDialog}
                     editType={this.state.editType}
