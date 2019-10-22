@@ -436,7 +436,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
         }
 
         const phrase: string = val.detail.phrase || val.detail
-        const row: number = val.detail.row || 0
+        const row: number = val.detail.row - 1 || 0
 
         const words = phrase.split(" ")
         const firstWord = words[0]
