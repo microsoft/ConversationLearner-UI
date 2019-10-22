@@ -164,11 +164,9 @@ class EditApiPlaceholder extends React.Component<Props, ComponentState> {
                         {!this.state.editingExisting &&
                             <div className="cl-actioncreator-form-section">
                                 <TC.Checkbox
-                                    data-testid="action-creator-wait-checkbox"
                                     label="Wait for Response?"
                                     checked={this.state.isTerminal}
                                     onChange={this.onChangeWaitCheckbox}
-                                    style={{ marginTop: '1em', display: 'inline-block' }}
                                     tipType={ToolTip.TipType.ACTION_WAIT}
                                 />
                             </div>

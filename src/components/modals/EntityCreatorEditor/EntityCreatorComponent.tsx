@@ -17,6 +17,8 @@ import FormattedMessageId from '../../FormattedMessageId'
 import { InjectedIntlProps } from 'react-intl'
 // TODO: Eliminate circular reference
 import { NONE_RESOLVER_KEY } from './EntityCreatorContainer'
+import { getValueConditionName } from 'src/Utils/actionCondition'
+import ConditionModal from '../ConditionModal'
 
 export interface IEnumValueForDisplay extends CLM.EnumValue {
     allowDelete: boolean
@@ -33,6 +35,7 @@ interface ReceivedProps {
     isTypeDisabled: boolean
     onChangeType: (option: OF.IDropdownOption | undefined) => void
 
+    entity?: CLM.EntityBase
     name: string
     isNameDisabled: boolean
     onGetNameErrorMessage: (value: string) => string
@@ -77,6 +80,13 @@ interface ReceivedProps {
     onChangeResolver: (option?: OF.IDropdownOption) => void
     isResolutionRequired: boolean
     onChangeResolverResolutionRequired: (ev?: React.FormEvent<HTMLElement | HTMLInputElement>, checked?: boolean) => void
+
+    isConditionCreatorModalOpen: boolean
+    conditions: CLM.Condition[]
+    selectedCondition?: CLM.Condition
+    onClickEditCondition: (condition: CLM.Condition) => void
+    onClickCreateConditionCreator: (condition: CLM.Condition) => void
+    onClickCancelConditionCreator: () => void
 
     enumValues: (IEnumValueForDisplay | null)[]
     onChangeEnum: (index: number, value?: string) => void
@@ -174,37 +184,67 @@ const EditComponent: React.FC<Props> = (props) => {
                 )
             })
         }
-        <div className="cl-entity-creator-checkboxes cl-entity-creator-form">
-            {props.entityTypeKey == CLM.EntityType.LUIS &&
-                <TC.Checkbox
-                    data-testid="entity-creator-resolution-required"
-                    label={Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_FIELDS_RESOLVER_RESOLUTION_REQUIRED_LABEL)}
-                    checked={props.isResolutionRequired}
-                    onChange={props.onChangeResolverResolutionRequired}
-                    disabled={props.selectedResolverKey === NONE_RESOLVER_KEY || props.isEditing}
-                    tipType={ToolTip.TipType.ENTITY_RESOLVER_RESOLUTION_REQUIRED}
-                />
-            }
-            {props.entityTypeKey !== CLM.EntityType.ENUM &&
-                <TC.Checkbox
-                    data-testid="entity-creator-multi-valued-checkbox"
-                    label={Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_FIELDS_MULTIVALUE_LABEL)}
-                    checked={props.isMultiValue}
-                    onChange={props.onChangeMultiValue}
-                    disabled={props.isMultiValueDisabled}
-                    tipType={ToolTip.TipType.ENTITY_MULTIVALUE}
-                />
-            }
-            {props.entityTypeKey === CLM.EntityType.LUIS &&
-                <TC.Checkbox
-                    data-testid="entity-creator-negatable-checkbox"
-                    label={Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_FIELDS_NEGATABLE_LABEL)}
-                    checked={props.isNegatable}
-                    onChange={props.onChangeNegatable}
-                    tipType={ToolTip.TipType.ENTITY_NEGATABLE}
-                />
-            }
-        </div>
+
+        {(props.entityTypeKey === CLM.EntityType.LUIS
+            || props.entityTypeKey !== CLM.EntityType.ENUM)
+            && <div>
+                <OF.Label>Options</OF.Label>
+                {props.entityTypeKey === CLM.EntityType.LUIS &&
+                    <TC.Checkbox
+                        data-testid="entity-creator-resolution-required"
+                        label={Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_FIELDS_RESOLVER_RESOLUTION_REQUIRED_LABEL)}
+                        checked={props.isResolutionRequired}
+                        onChange={props.onChangeResolverResolutionRequired}
+                        disabled={props.selectedResolverKey === NONE_RESOLVER_KEY || props.isEditing}
+                        tipType={ToolTip.TipType.ENTITY_RESOLVER_RESOLUTION_REQUIRED}
+                    />
+                }
+            </div>}
+
+        {props.entityTypeKey !== CLM.EntityType.ENUM &&
+            <TC.Checkbox
+                data-testid="entity-creator-multi-valued-checkbox"
+                label={Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_FIELDS_MULTIVALUE_LABEL)}
+                checked={props.isMultiValue}
+                onChange={props.onChangeMultiValue}
+                disabled={props.isMultiValueDisabled}
+                tipType={ToolTip.TipType.ENTITY_MULTIVALUE}
+            />
+        }
+        {props.entityTypeKey === CLM.EntityType.LUIS &&
+            <TC.Checkbox
+                data-testid="entity-creator-negatable-checkbox"
+                label={Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_FIELDS_NEGATABLE_LABEL)}
+                checked={props.isNegatable}
+                onChange={props.onChangeNegatable}
+                tipType={ToolTip.TipType.ENTITY_NEGATABLE}
+            />
+        }
+
+        {props.conditions.length > 0
+            && <>
+                <OF.Label>Existing Conditions using Entity</OF.Label>
+                <div className="cl-entity-creator__existing-conditions">
+                    {props.conditions.map((c, i) => {
+                        return (
+                            <React.Fragment key={i}>
+                                <div className="cl-entity-creator__existing-condition" data-testid={`entity-creator-existing-condition-${i}`}>
+                                    {props.entity
+                                        ? getValueConditionName(props.entity, c)
+                                        : 'Cannot Display Conditions without associated Entity'}
+                                </div>
+
+                                <OF.DefaultButton
+                                    data-testid={`entity-creator-button-use-condition-${i}`}
+                                    text="Edit"
+                                    iconProps={{ iconName: 'Edit' }}
+                                    onClick={() => props.onClickEditCondition(c)}
+                                />
+                            </React.Fragment>
+                        )
+                    })}
+                </div>
+            </>}
     </div>
 }
 
@@ -350,6 +390,14 @@ const Component: React.SFC<Props> = (props) => {
                 <OF.Icon iconName="Warning" className="cl-icon" />
                 <FormattedMessageId id={FM.ENTITYCREATOREDITOR_DELETE_ENUM_ERROR_WARNING} />
             </div>}
+        />
+        <ConditionModal
+            condition={props.selectedCondition}
+            entities={props.entity ? [props.entity] : []}
+            conditions={props.conditions}
+            isOpen={props.isConditionCreatorModalOpen}
+            onClickCreate={props.onClickCreateConditionCreator}
+            onClickCancel={props.onClickCancelConditionCreator}
         />
     </OF.Modal>
 }
