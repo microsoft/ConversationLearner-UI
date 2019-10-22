@@ -184,37 +184,42 @@ const EditComponent: React.FC<Props> = (props) => {
                 )
             })
         }
-        <div className="cl-entity-creator-checkboxes cl-entity-creator-form">
-            {props.entityTypeKey == CLM.EntityType.LUIS &&
-                <TC.Checkbox
-                    data-testid="entity-creator-resolution-required"
-                    label={Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_FIELDS_RESOLVER_RESOLUTION_REQUIRED_LABEL)}
-                    checked={props.isResolutionRequired}
-                    onChange={props.onChangeResolverResolutionRequired}
-                    disabled={props.selectedResolverKey === NONE_RESOLVER_KEY || props.isEditing}
-                    tipType={ToolTip.TipType.ENTITY_RESOLVER_RESOLUTION_REQUIRED}
-                />
-            }
-            {props.entityTypeKey !== CLM.EntityType.ENUM &&
-                <TC.Checkbox
-                    data-testid="entity-creator-multi-valued-checkbox"
-                    label={Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_FIELDS_MULTIVALUE_LABEL)}
-                    checked={props.isMultiValue}
-                    onChange={props.onChangeMultiValue}
-                    disabled={props.isMultiValueDisabled}
-                    tipType={ToolTip.TipType.ENTITY_MULTIVALUE}
-                />
-            }
-            {props.entityTypeKey === CLM.EntityType.LUIS &&
-                <TC.Checkbox
-                    data-testid="entity-creator-negatable-checkbox"
-                    label={Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_FIELDS_NEGATABLE_LABEL)}
-                    checked={props.isNegatable}
-                    onChange={props.onChangeNegatable}
-                    tipType={ToolTip.TipType.ENTITY_NEGATABLE}
-                />
-            }
-        </div>
+
+        {(props.entityTypeKey === CLM.EntityType.LUIS
+            || props.entityTypeKey !== CLM.EntityType.ENUM)
+            && <div>
+                <OF.Label>Options</OF.Label>
+                {props.entityTypeKey === CLM.EntityType.LUIS &&
+                    <TC.Checkbox
+                        data-testid="entity-creator-resolution-required"
+                        label={Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_FIELDS_RESOLVER_RESOLUTION_REQUIRED_LABEL)}
+                        checked={props.isResolutionRequired}
+                        onChange={props.onChangeResolverResolutionRequired}
+                        disabled={props.selectedResolverKey === NONE_RESOLVER_KEY || props.isEditing}
+                        tipType={ToolTip.TipType.ENTITY_RESOLVER_RESOLUTION_REQUIRED}
+                    />
+                }
+            </div>}
+
+        {props.entityTypeKey !== CLM.EntityType.ENUM &&
+            <TC.Checkbox
+                data-testid="entity-creator-multi-valued-checkbox"
+                label={Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_FIELDS_MULTIVALUE_LABEL)}
+                checked={props.isMultiValue}
+                onChange={props.onChangeMultiValue}
+                disabled={props.isMultiValueDisabled}
+                tipType={ToolTip.TipType.ENTITY_MULTIVALUE}
+            />
+        }
+        {props.entityTypeKey === CLM.EntityType.LUIS &&
+            <TC.Checkbox
+                data-testid="entity-creator-negatable-checkbox"
+                label={Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_FIELDS_NEGATABLE_LABEL)}
+                checked={props.isNegatable}
+                onChange={props.onChangeNegatable}
+                tipType={ToolTip.TipType.ENTITY_NEGATABLE}
+            />
+        }
 
         {props.conditions.length > 0
             && <>

@@ -1821,21 +1821,24 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                     />
                                 </div>
                             </>}
-                        <TC.Checkbox
-                            data-testid="action-creator-wait-checkbox"
-                            label={Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_CHECKBOX_TERMINAL_LABEL)}
-                            checked={this.state.isTerminal}
-                            onChange={this.onChangeWaitCheckbox}
-                            style={{ marginTop: '1em', display: 'inline-block' }}
-                            disabled={this.state.reprompt || [CLM.ActionTypes.END_SESSION, CLM.ActionTypes.SET_ENTITY, CLM.ActionTypes.DISPATCH].includes(this.state.selectedActionTypeOptionKey as CLM.ActionTypes)}
-                            tipType={ToolTip.TipType.ACTION_WAIT}
-                        />
+
+                        <div>
+                            <OF.Label>Options</OF.Label>
+                            <TC.Checkbox
+                                data-testid="action-creator-wait-checkbox"
+                                label={Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_CHECKBOX_TERMINAL_LABEL)}
+                                checked={this.state.isTerminal}
+                                onChange={this.onChangeWaitCheckbox}
+                                disabled={this.state.reprompt || [CLM.ActionTypes.END_SESSION, CLM.ActionTypes.SET_ENTITY, CLM.ActionTypes.DISPATCH].includes(this.state.selectedActionTypeOptionKey as CLM.ActionTypes)}
+                                tipType={ToolTip.TipType.ACTION_WAIT}
+                            />
+                        </div>
+
                         <TC.Checkbox
                             data-testid="action-creator-reprompt-checkbox"
                             label={Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_CHECKBOX_REPROMPT_LABEL)}
                             checked={this.state.reprompt}
                             onChange={this.onChangeRepromptCheckbox}
-                            style={{ marginTop: '4em', display: 'inline-block' }}
                             disabled={!this.state.isTerminal || [CLM.ActionTypes.END_SESSION, CLM.ActionTypes.SET_ENTITY, CLM.ActionTypes.DISPATCH].includes(this.state.selectedActionTypeOptionKey as CLM.ActionTypes)}
                             tipType={ToolTip.TipType.ACTION_REPROMPT}
                         />
@@ -1845,7 +1848,6 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                 label={Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_CHECKBOX_ENTRY_NODE_LABEL)}
                                 checked={this.state.isEntryNode}
                                 onChange={this.onChangeIsEntryNodeCheckbox}
-                                style={{ marginTop: '1em', display: 'inline-block' }}
                                 disabled={[CLM.ActionTypes.END_SESSION, CLM.ActionTypes.SET_ENTITY, CLM.ActionTypes.DISPATCH].includes(this.state.selectedActionTypeOptionKey as CLM.ActionTypes)}
                                 tipType={ToolTip.TipType.ACTION_IS_ENTRY_NODE}
                             />
