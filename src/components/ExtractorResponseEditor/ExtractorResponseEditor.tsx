@@ -414,18 +414,18 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
 
     componentDidMount() {
         // For end 2 end unit testing.
-        document.addEventListener("Test_SelectWord", this.onTestSelectWord)
+        document.addEventListener("Test_SelectWord", this.onTestSelectWord as any)
     }
 
     componentWillUnmount() {
         // For end 2 end unit testing.
-        document.removeEventListener("Test_SelectWord", this.onTestSelectWord)
+        document.removeEventListener("Test_SelectWord", this.onTestSelectWord as any)
     }
 
     /**
      * For cypress end to end unit testing.  Event selects phrase in entity labeller
      * The following will select the word "hello" in the second row (row is 1 based)
-     *   var event = new CustomEvent("Test_SelectWord", { detail: { phrase: "hello", r:ow: 2 }})
+     *   var event = new CustomEvent("Test_SelectWord", { detail: { phrase: "hello", row: 2 }})
      *   event.initEvent("Test_SelectWord", true, true)}
      *   element.dispatchEvent(event)
      * 
@@ -435,20 +435,21 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
      *   element.dispatchEvent(event)
      */
     @autobind
-    onTestSelectWord(val: any) {
+    onTestSelectWord(val: { detail: { phrase: string, row: number } } | { detail: string }) {
+        
         if (!val.detail) {
             throw new Error("Test_SelectWord expecting detail phrase")
         }
 
-        const phrase: string = val.detail.phrase || val.detail
-        const row: number = val.detail.row - 1 || 0
+        const phrase: string = (typeof val.detail !== "string") ? val.detail.phrase : val.detail
+        const row: number = (typeof val.detail !== "string") ? (val.detail.row - 1) : 0
 
         const words = phrase.split(" ")
         const firstWord = words[0]
         const lastWord = words[words.length - 1]
 
         // Get row
-        const rows = Array.from(document.querySelectorAll(".entity-labeler"))
+        const rows = Array.from(document.querySelectorAll('[data-testid="extractor-response-editor-entity-labeler"]'))
         if (row > rows.length - 1) {
             throw new Error("Row index does not exist")
         }
