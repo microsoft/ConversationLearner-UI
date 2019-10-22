@@ -422,16 +422,35 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
         document.removeEventListener("Test_SelectWord", this.onTestSelectWord)
     }
 
-    // For end 2 end unit testing.
+    /**
+     * For cypress end to end unit testing.  Event selects phrase in entity labeller
+     * The following will select the work "hello" in the second row
+     *   var event = new CustomEvent("Test_SelectWord", { detail: { phrase: "hello", row: 2 })
+     *   event.initEvent("Test_SelectWord", true, true)}
+     *   element.dispatchEvent(event)
+     */
     @autobind
     onTestSelectWord(val: any) {
-        const phrase: string = val.detail
+        if (!val.detail) {
+            throw new Error("Test_SelectWord expecting detail phrase")
+        }
+
+        const phrase: string = val.detail.phrase || val.detail
+        const row: number = val.detail.row || 0
+
         const words = phrase.split(" ")
         const firstWord = words[0]
         const lastWord = words[words.length - 1]
 
+        // Get row
+        const rows = Array.from(document.querySelectorAll(".entity-labeler"))
+        if (row > rows.length - 1) {
+            throw new Error("Row index does not exist")
+        }
+
+        const selectedRow = rows[row]
         // Get start div
-        const tokens = Array.from(document.querySelectorAll(".cl-token-node"))
+        const tokens = Array.from(selectedRow.querySelectorAll(".cl-token-node"))
         const firstWordToken = tokens.filter(element => element.children[0].textContent === firstWord)[0]
         const lastWordToken = tokens.filter(element => element.children[0].textContent === lastWord)[0]
 
