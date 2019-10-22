@@ -524,7 +524,6 @@ export class ObiDialogParser {
         }
         if (conditionEntity.entityType !== CLM.EntityType.ENUM || !conditionEntity.enumValues) {
             // Unexpected, shouldn't happen.
-
             throw new Error(`Entity ${conditionEntity.entityName} is not a valid enum`)
         }
         const normalizedValueName = this.normalizeEnumValueName(requiredEntity.value)
