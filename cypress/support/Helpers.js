@@ -88,22 +88,25 @@ export function Moment(dateTime) {
 
 // This will return only the printable Inner Text of an element without markup nor newline characters.
 // Needed because each browser handles this functionality differently.
-// This converts the ‘ and ’ to a '
-// Also converts the “ and ” to a "
+// This trims the string and...
+// ...also converts the ‘ and ’ to a ' and...
+// ...also converts the “ and ” to a " and...
+// ...also keeps the '◾️' and '…' charcters and throws away anything else outside of the typical printable set.
 export function TextContentWithoutNewlines(element) {
   if (element === undefined) { 
     ConLog('TextContentWithoutNewlines', 'undefined element has been passed in.')
-    return undefined 
+    return undefined
   }
-  
+
   const textContent = element.textContent
   if (!textContent) {
     ConLog('TextContentWithoutNewlines', `textContent is undefined, which typically means there is no text. Here is the element that was passed in: ${element.outerHTML}`)
-    return '' 
+    return ''
   }
 
   // See the Cheat Sheet on https://www.regextester.com/15 for help with this 'NOT ^' regex string
-  const returnValue = textContent.replace(/‘|’/g, "'")
+  const returnValue = textContent.trim()
+                                 .replace(/‘|’/g, "'")
                                  .replace(/“|”/g, '"')
                                  .replace(/([^◾️…\x20-\x7E])/gm, '')
   ConLog('TextContentWithoutNewlines', returnValue)
