@@ -42,7 +42,8 @@ export interface ObiDialogParserResult {
     luMap: { [key: string]: string[] }
     lgItems: CLM.LGItem[],
     trainDialogs: CLM.TrainDialog[]
-    warnings: string[]
+    warnings: string[],
+    conditions: { [key: string]: CLM.Condition[] }
 }
 
 export class ObiDialogParser {
@@ -53,6 +54,7 @@ export class ObiDialogParser {
     private lgItems: CLM.LGItem[]
     private luMap: { [key: string]: string[] }
     private warnings: string[]
+    private conditions: { [key: string]: CLM.Condition[] }
     private createActionThunkAsync: (appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null>
     private createEntityThunkAsync: (appId: string, entity: CLM.EntityBase) => Promise<CLM.EntityBase | null>
 
@@ -75,6 +77,7 @@ export class ObiDialogParser {
         this.luMap = {}
         this.dialogs = {}
         this.warnings = []
+        this.conditions = {}
 
         await this.readDialogFiles(files)
 
@@ -92,7 +95,8 @@ export class ObiDialogParser {
             luMap: this.luMap,
             lgItems: this.lgItems,
             trainDialogs,
-            warnings: this.warnings
+            warnings: this.warnings,
+            conditions: this.conditions
         }
     }
 
@@ -308,10 +312,13 @@ export class ObiDialogParser {
                 if (currentRequiredEntity) {
                     // Set the required entity as a condition on the first scorer step.
                     const requiredCondition: CLM.Condition = this.getConditionFromRequiredEntity(currentRequiredEntity)
-                    if (!scorerSteps[0].requiredConditions) {
-                        scorerSteps[0].requiredConditions = []
+                    if (!scorerSteps[0].importId) {
+                        scorerSteps[0].importId = CLM.ModelUtils.generateGUID()
                     }
-                    scorerSteps[0].requiredConditions.push(requiredCondition)
+                    if (!this.conditions[scorerSteps[0].importId]) {
+                        this.conditions[scorerSteps[0].importId] = []
+                    }
+                    this.conditions[scorerSteps[0].importId].push(requiredCondition)
                     // Reset the required entity condition, since we've now used it.
                     currentRequiredEntity = undefined
                 }

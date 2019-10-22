@@ -515,13 +515,22 @@ function findActionFromScorerStep(scorerStep: CLM.TrainScorerStep, actions: CLM.
     return undefined
 }
 
-// Replace imported actions in TrainDialog with real Actions
+/**
+ * Creates actions for the input `TrainDialog`.
+ * Imports happen in 2 stages : in the first, TrainDialogs are created with placeholder actions that
+ * are only stored in UI component state memory.  In the second, real actions are created either
+ * interactively or automatically -- the latter invokes this function.
+ * 
+ * @param scorerStepConditions a map of `TrainScorerStep.importId` values to `Condition`s that should
+ *   be set on the generated action
+ */
 export async function createImportedActions(
     appId: string,
     trainDialog: CLM.TrainDialog,
     templates: CLM.Template[],
     lgItems: CLM.LGItem[] | undefined,
     actions: CLM.ActionBase[],
+    scorerStepConditions: { [key: string]: CLM.Condition[] } | undefined,
     createActionThunkAsync: (appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null>,
 ): Promise<void> {
 
@@ -570,7 +579,7 @@ export async function createImportedActions(
                         }
                     }
 
-                    action = await createActionFromImport(appId, importedAction, templates, scorerStep, createActionThunkAsync)
+                    action = await createActionFromImport(appId, importedAction, templates, scorerStep, scorerStepConditions, createActionThunkAsync)
                     newActions.push(action)
                 }
 
@@ -582,12 +591,18 @@ export async function createImportedActions(
     }
 }
 
-// Greated an real action for an imported one, looking for a matching template
+/**
+ * Creates a real action for an `ImportedAction` action placeholder.
+ * 
+ * @param scorerStepConditions a map of `TrainScorerStep.importId` values to `Condition`s that should
+ *   be set on the generated action
+ */
 async function createActionFromImport(
     appId: string,
     importedAction: ImportedAction,
     templates: CLM.Template[],
     scorerStep: CLM.TrainScorerStep,
+    scorerStepConditions: { [key: string]: CLM.Condition[] } | undefined,
     createActionThunkAsync: (appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null>,
 ): Promise<CLM.ActionBase> {
 
@@ -654,8 +669,8 @@ async function createActionFromImport(
             lgName: importedAction.lgName
         }
     })
-    if (scorerStep.requiredConditions) {
-        action.requiredConditions = scorerStep.requiredConditions
+    if (scorerStep.importId && scorerStepConditions && scorerStepConditions[scorerStep.importId]) {
+        action.requiredConditions = scorerStepConditions[scorerStep.importId]
     }
 
     const newAction = await createActionThunkAsync(appId, action)
