@@ -424,8 +424,13 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
 
     /**
      * For cypress end to end unit testing.  Event selects phrase in entity labeller
-     * The following will select the work "hello" in the second row
-     *   var event = new CustomEvent("Test_SelectWord", { detail: { phrase: "hello", row: 2 })
+     * The following will select the word "hello" in the second row (row is 1 based)
+     *   var event = new CustomEvent("Test_SelectWord", { detail: { phrase: "hello", r:ow: 2 }})
+     *   event.initEvent("Test_SelectWord", true, true)}
+     *   element.dispatchEvent(event)
+     * 
+     * Or default to the first row:
+     *   var event = new CustomEvent("Test_SelectWord", { detail: "hello"})
      *   event.initEvent("Test_SelectWord", true, true)}
      *   element.dispatchEvent(event)
      */
