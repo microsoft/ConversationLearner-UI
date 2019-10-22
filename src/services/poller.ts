@@ -35,7 +35,7 @@ export class Poller {
     // private id = Symbol(Math.floor(Math.random() * 100))
     private polls: ActivePoll[] = []
     constructor(options: IPollerOptions) {
-        global.setInterval(async () => await this.poll(), options.interval)
+        global.setInterval(async () => this.poll(), options.interval)
     }
 
     addPoll<T>(pollConfig: IPollConfig<T>) {

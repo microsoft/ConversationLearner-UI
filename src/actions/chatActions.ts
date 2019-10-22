@@ -80,10 +80,10 @@ export const deleteChatSessionThunkAsync = (session: CLM.Session, app: CLM.AppBa
             dispatch(deleteChatSessionFulfilled(session.sessionId));
 
             if (deleteAssociatedLogDialog) {
-                dispatch(deleteLogDialogThunkAsync(app, session.logDialogId, packageId))
+                await dispatch(deleteLogDialogThunkAsync(app, session.logDialogId, packageId))
             }
             else {
-                dispatch(fetchAllLogDialogsThunkAsync(app, packageId))
+                await dispatch(fetchAllLogDialogsThunkAsync(app, packageId))
             }
             return true;
         } catch (e) {

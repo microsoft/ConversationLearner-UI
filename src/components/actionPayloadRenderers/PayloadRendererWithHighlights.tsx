@@ -52,7 +52,6 @@ interface Props {
     slateValue: SlateValue
 }
 
-
 const renderNode = (props: any): React.ReactNode | void => {
     switch (props.node.type) {
         case NodeTypes.Mention:

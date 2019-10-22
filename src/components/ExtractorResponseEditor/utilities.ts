@@ -340,7 +340,7 @@ function convertSegmentsToSlateValue(normalizedSegements: models.ISegement[], in
             }
         })
 
-    const document = {
+    return {
         "document": {
             "nodes": [
                 {
@@ -353,10 +353,7 @@ function convertSegmentsToSlateValue(normalizedSegements: models.ISegement[], in
             ]
         }
     }
-
-    return document
 }
-
 
 /**
  * Note: this is more like a negative match used to determine characters that split the string instead of
@@ -371,7 +368,6 @@ export const tokenizeRegex = /\s+|[.?,!]/g
  *
  * @param text plain text
  * @param customEntities array of entities
- * @param inlineType
  */
 export const convertEntitiesAndTextToTokenizedEditorValue = (text: string, customEntities: models.IGenericEntity<any>[], inlineNodeType: string) => {
     const labeledTokens = labelTokens(tokenizeText(text, tokenizeRegex), customEntities)
@@ -611,4 +607,3 @@ export const convertExtractorResponseToEditorModels = (extractResponse: CLM.Extr
         preBuiltEntities
     }
 }
-

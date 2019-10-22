@@ -70,7 +70,7 @@ export const editActionThunkAsync = (appId: string, action: ActionBase) => {
 
             // Fetch train dialogs if any train dialogs were impacted
             if (deleteEditResponse.trainDialogIds && deleteEditResponse.trainDialogIds.length > 0) {
-                dispatch(fetchAllTrainDialogsThunkAsync(appId))
+                await dispatch(fetchAllTrainDialogsThunkAsync(appId))
             }
 
             dispatch(fetchApplicationTrainingStatusThunkAsync(appId)).catch()
@@ -110,10 +110,10 @@ export const deleteActionThunkAsync = (appId: string, actionId: string, removeFr
 
             // Fetch train dialogs if any train dialogs were impacted
             if (deleteEditResponse.trainDialogIds && deleteEditResponse.trainDialogIds.length > 0) {
-                dispatch(fetchAllTrainDialogsThunkAsync(appId));
+                await dispatch(fetchAllTrainDialogsThunkAsync(appId));
             }
 
-            dispatch(fetchApplicationTrainingStatusThunkAsync(appId));
+            await dispatch(fetchApplicationTrainingStatusThunkAsync(appId));
             return true;
         } catch (e) {
             const error = e as AxiosError

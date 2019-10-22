@@ -124,7 +124,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         }
         else if (extractionChange.chosenExtractType === ExtractionType.Attempted) {
             for (const trainDialog of extractionChange.trainDialogs) {
-                await this.props.editTrainDialogThunkAsync(this.props.app.appId, trainDialog, { ignoreLabelConflicts: true })
+                this.props.editTrainDialogThunkAsync(this.props.app.appId, trainDialog, { ignoreLabelConflicts: true })
             }
         }
 
