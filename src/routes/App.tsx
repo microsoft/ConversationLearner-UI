@@ -42,7 +42,7 @@ class App extends React.Component<Props, ComponentState> {
   state = initialState
 
   componentDidMount() {
-    this.loadBotInfo()
+    void this.loadBotInfo()
   }
 
   loadBotInfo = async () => {
