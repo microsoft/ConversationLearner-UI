@@ -424,8 +424,8 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
 
     /**
      * For cypress end to end unit testing.  Event selects phrase in entity labeller
-     * The following will select the word "hello" in the second row (row is 1 based)
-     *   var event = new CustomEvent("Test_SelectWord", { detail: { phrase: "hello", row: 2 }})
+     * The following will select the word "hello" in the second row (index is 0 based)
+     *   var event = new CustomEvent("Test_SelectWord", { detail: { phrase: "hello", index: 1 }})
      *   event.initEvent("Test_SelectWord", true, true)}
      *   element.dispatchEvent(event)
      * 
@@ -435,14 +435,14 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
      *   element.dispatchEvent(event)
      */
     @autobind
-    onTestSelectWord(val: { detail: { phrase: string, row: number } } | { detail: string }) {
+    onTestSelectWord(val: { detail: { phrase: string, index: number } } | { detail: string }) {
         
         if (!val.detail) {
             throw new Error("Test_SelectWord expecting detail phrase")
         }
 
         const phrase: string = (typeof val.detail !== "string") ? val.detail.phrase : val.detail
-        const row: number = (typeof val.detail !== "string") ? (val.detail.row - 1) : 0
+        const index: number = (typeof val.detail !== "string") ? val.detail.index : 0
 
         const words = phrase.split(" ")
         const firstWord = words[0]
@@ -450,11 +450,11 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
 
         // Get row
         const rows = Array.from(document.querySelectorAll('[data-testid="extractor-response-editor-entity-labeler"]'))
-        if (row > rows.length - 1) {
+        if (index > rows.length || index < 0) {
             throw new Error("Row index does not exist")
         }
 
-        const selectedRow = rows[row]
+        const selectedRow = rows[index]
         // Get start div
         const tokens = Array.from(selectedRow.querySelectorAll(".cl-token-node"))
         const firstWordToken = tokens.filter(element => element.children[0].textContent === firstWord)[0]
