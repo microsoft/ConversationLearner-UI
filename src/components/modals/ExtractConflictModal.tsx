@@ -131,7 +131,7 @@ const ExtractConflictModal: React.FC<Props> = (props) => {
                                 key: ExtractionType.Attempted,
                                 text: '',
                                 'data-testid': 'inconsistent-entity-modal-option-attempted',
-                            } as OF.IChoiceGroupOption,
+                            },
                         ]}
                         selectedKey={selectedExtractionType}
                     />
@@ -159,7 +159,7 @@ const ExtractConflictModal: React.FC<Props> = (props) => {
                                 key: ExtractionType.Existing,
                                 text: '',
                                 'data-testid': 'inconsistent-entity-modal-option-existing',
-                            } as OF.IChoiceGroupOption,
+                            },
                         ]}
                         selectedKey={selectedExtractionType}
                     />
