@@ -161,7 +161,11 @@ describe('obiUtils', () => {
             let testData: ObiTypes.Case = {
                 value: "$foo == bar"
             }
-            ObiUtils.parseEntityConditionFromDialogCase(testData, entityConditions)
+            const entityAndCondition = ObiUtils.parseEntityConditionFromDialogCase(testData, entityConditions)
+            expect(entityAndCondition).toEqual({
+                entity: "$foo",
+                value: "bar"
+            })
             expect(entityConditions.$foo).toEqual(new Set(["bar"]))
         })
         test('Test multiple conditions', () => {
@@ -170,7 +174,11 @@ describe('obiUtils', () => {
             let testData: ObiTypes.Case = {
                 value: "$foo == two"
             }
-            ObiUtils.parseEntityConditionFromDialogCase(testData, entityConditions)
+            const entityAndCondition = ObiUtils.parseEntityConditionFromDialogCase(testData, entityConditions)
+            expect(entityAndCondition).toEqual({
+                entity: "$foo",
+                value: "two"
+            })
             expect(entityConditions.$foo).toEqual(new Set(["one", "two"]))
         })
         test('Missing condition token', () => {

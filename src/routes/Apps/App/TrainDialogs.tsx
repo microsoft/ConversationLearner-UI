@@ -156,6 +156,8 @@ interface TranscriptImportData {
     autoMerge: boolean
     autoActionCreate: boolean
     warnings: string[]
+    // Conditions are keyed by TrainScorerStep.importId.
+    conditions?: { [key: string]: CLM.Condition[] }
 }
 
 interface ComponentState {
@@ -1123,7 +1125,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 autoCreate: obiImportData.autoCreate,
                 autoMerge: obiImportData.autoMerge,
                 autoActionCreate: obiImportData.autoActionCreate,
-                warnings: obiParseResult.warnings
+                warnings: obiParseResult.warnings,
+                conditions: obiParseResult.conditions
             }
 
             await Util.setStateAsync(this, {
@@ -1226,92 +1229,90 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     // Import a train dialog
     async onImportNextTrainDialog(): Promise<void> {
 
-        if (!this.haveTrainDialogsToImport()) {
+        if (!this.haveTrainDialogsToImport() || !this.state.transcriptImport) {
             return
         }
-        if (this.state.transcriptImport) {
-            // Increment index
-            const importIndex = this.state.transcriptImport.index === undefined ? 0 : this.state.transcriptImport.index + 1
-            await Util.setStateAsync(this, { transcriptImport: { ...this.state.transcriptImport, index: importIndex } })
+        const importData = this.state.transcriptImport
+        // Set or increment import index.
+        importData.index = importData.index === undefined ? 0 : importData.index + 1
+        await Util.setStateAsync(this, { transcriptImport: importData })
 
-            const importData = this.state.transcriptImport
+        // Check if I'm done importing
+        if (importData.index === undefined || importData.index >= importData.trainDialogs.length) {
+            this.setState({
+                transcriptImport: undefined,
+                isImportWaitModalOpen: false
+            })
+            return
+        }
 
-            // Check if I'm done importing
-            if (importData.index === undefined || importData.index >= importData.trainDialogs.length) {
-                this.setState({
-                    transcriptImport: undefined,
-                    isImportWaitModalOpen: false
-                })
-                return
-            }
+        this.setState({ isImportWaitModalOpen: true })
 
-            this.setState({ isImportWaitModalOpen: true })
+        let trainDialog = importData.trainDialogs[importData.index]
 
-            let trainDialog = importData.trainDialogs[importData.index]
+        // Extract entities
+        if (this.props.entities.length > 0) {
+            await this.addEntityExtractions(trainDialog)
+        }
 
-            // Extract entities
-            if (this.props.entities.length > 0) {
-                await this.addEntityExtractions(trainDialog)
-            }
+        // Replay to fill in memory
+        let newTrainDialog = await DialogEditing.onReplayTrainDialog(
+            trainDialog,
+            this.props.app.appId,
+            this.props.entities,
+            this.props.actions,
+            this.props.trainDialogReplayAsync as any,
+        )
 
-            // Replay to fill in memory
-            let newTrainDialog = await DialogEditing.onReplayTrainDialog(
-                trainDialog,
+        DialogUtils.cleanTrainDialog(newTrainDialog)
+
+        // Try to map action again now that we have entities
+        OBIUtils.replaceImportActions(newTrainDialog, this.props.actions, this.props.entities)
+
+        // Automatically create actions for imported actions if requested
+        if (importData.autoActionCreate) {
+            await OBIUtils.createImportedActions(
+                this.props.app.appId,
+                newTrainDialog,
+                this.props.botInfo.templates,
+                importData.lgItems,
+                this.props.actions,
+                importData.conditions,
+                this.props.createActionThunkAsync as any)
+
+            // Replay to validate
+            newTrainDialog = await DialogEditing.onReplayTrainDialog(
+                newTrainDialog,
                 this.props.app.appId,
                 this.props.entities,
                 this.props.actions,
                 this.props.trainDialogReplayAsync as any,
             )
+        }
 
-            DialogUtils.cleanTrainDialog(newTrainDialog)
+        await Util.setStateAsync(this, {
+            originalTrainDialog: newTrainDialog
+        })
 
-            // Try to map action again now that we have entities
-            OBIUtils.replaceImportActions(newTrainDialog, this.props.actions, this.props.entities)
-
-            // Automatically create actions for imported actions if requested
-            if (importData.autoActionCreate) {
-                await OBIUtils.createImportedActions(
-                    this.props.app.appId,
-                    newTrainDialog,
-                    this.props.botInfo.templates,
-                    importData.lgItems,
-                    this.props.actions,
-                    this.props.createActionThunkAsync as any)
-
-                // Replay to validate
-                newTrainDialog = await DialogEditing.onReplayTrainDialog(
-                    newTrainDialog,
-                    this.props.app.appId,
-                    this.props.entities,
-                    this.props.actions,
-                    this.props.trainDialogReplayAsync as any,
-                )
-            }
-
+        // If auto importing and new dialog has matched all actions
+        if (importData.autoCreate && !DialogUtils.hasImportActions(newTrainDialog)) {
+            // Fetch activityHistory as needed for validation checks
+            const teachWithActivities = await ((this.props.fetchActivitiesThunkAsync(this.props.app.appId, newTrainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithActivities>)
             await Util.setStateAsync(this, {
-                originalTrainDialog: newTrainDialog
+                activityHistory: teachWithActivities.activities,
+                editType: EditDialogType.IMPORT
             })
+            newTrainDialog.validity = CLM.Validity.VALID
 
-            // If auto importing and new dialog has matched all actions
-            if (importData.autoCreate && !DialogUtils.hasImportActions(newTrainDialog)) {
-                // Fetch activityHistory as needed for validation checks
-                const teachWithActivities = await ((this.props.fetchActivitiesThunkAsync(this.props.app.appId, newTrainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithActivities>)
-                await Util.setStateAsync(this, {
-                    activityHistory: teachWithActivities.activities,
-                    editType: EditDialogType.IMPORT
-                })
-                newTrainDialog.validity = CLM.Validity.VALID
-
-                await this.onCreateTrainDialog(newTrainDialog)
+            await this.onCreateTrainDialog(newTrainDialog)
+        }
+        else {
+            // Expand LGItems from name to full text
+            if (importData.lgItems) {
+                OBIUtils.expandLGItems(newTrainDialog, importData.lgItems)
             }
-            else {
-                // Expand LGItems from name to full text
-                if (importData.lgItems) {
-                    OBIUtils.expandLGItems(newTrainDialog, importData.lgItems)
-                }
-                this.setState({ isImportWaitModalOpen: false })
-                await this.openTrainDialog(newTrainDialog, EditDialogType.IMPORT)
-            }
+            this.setState({ isImportWaitModalOpen: false })
+            await this.openTrainDialog(newTrainDialog, EditDialogType.IMPORT)
         }
     }
 
