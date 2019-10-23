@@ -77,7 +77,7 @@ export const fetchApplicationTrainingStatusThunkAsync = (appId: string) => {
             onUpdate: trainingStatus => dispatch(fetchApplicationTrainingStatusFulfilled(appId, trainingStatus)),
         }
 
-        await poller.addPoll(pollConfig)
+        void poller.addPoll(pollConfig)
     }
 }
 
