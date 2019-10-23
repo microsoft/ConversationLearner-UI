@@ -75,7 +75,6 @@ export const isConditionEqual = (conditionA: CLM.Condition, conditionB: CLM.Cond
         && conditionA.value === conditionB.value
 }
 
-
 /**
  * Given memory value,
  * If entity is multivalue returns the number of labels/values
