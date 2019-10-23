@@ -8,11 +8,13 @@ const authoringKeys = [
   process.env.LUIS_AUTHORING_KEY_ALT_7,
   process.env.LUIS_AUTHORING_KEY_ALT_8,
   process.env.LUIS_AUTHORING_KEY_ALT_9,
+  process.env.LUIS_AUTHORING_KEY_ALT_10,
+  process.env.LUIS_AUTHORING_KEY_ALT_11,
 ]
 
 let buildNumber = +process.env.CIRCLE_BUILD_NUM
 
-// We have 9 LUIS Authoring Keys that we rotate through.
+// We have 11 LUIS Authoring Keys that we rotate through.
 // We use the Circle CI Build Number to help us get an index to each in sequence.
 
 // Each time a build workflow is kicked off there are 3 jobs:
