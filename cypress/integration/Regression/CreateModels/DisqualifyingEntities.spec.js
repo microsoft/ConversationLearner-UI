@@ -24,24 +24,24 @@ describe('Disqualifying Entities - CreateModels', () => {
       entities.CreateNewEntityThenVerifyInGrid({ name: 'want' })
       entities.CreateNewEntityThenVerifyInGrid({ name: 'sweets' })
     })
+  })
 
-    context('Create Actions', () => {
-      // NOTE: the {enter} in these strings are necessary to triger the entity detection.
-      it('Should create an Action with an expected entity and a disqualifying entity', () => {
-        actions.CreateNewActionThenVerifyInGrid({ responseNameData: common.whatsYourName, expectedEntity: 'name', disqualifyingEntities: ['name'] })
-      })
+  context('Create Actions', () => {
+    // NOTE: the {enter} in these strings are necessary to triger the entity detection.
+    it('Should create an Action with an expected entity and a disqualifying entity', () => {
+      actions.CreateNewActionThenVerifyInGrid({ responseNameData: common.whatsYourName, expectedEntity: 'name', disqualifyingEntities: ['name'] })
+    })
 
-      it('Should create an Action with 2 disqualifying entities', () => {
-        actions.CreateNewActionThenVerifyInGrid({ responseNameData: 'Hey $name{enter}', disqualifyingEntities: ['sweets', 'want'] })
-      })
+    it('Should create an Action with 2 disqualifying entities', () => {
+      actions.CreateNewActionThenVerifyInGrid({ responseNameData: 'Hey $name{enter}', disqualifyingEntities: ['sweets', 'want'] })
+    })
 
-      it('Should create an Action with an expected entity and 2 disqualifying entities', () => {
-        actions.CreateNewActionThenVerifyInGrid({ responseNameData: 'Hey $name{enter}, what do you really want?', expectedEntity: 'want', disqualifyingEntities: ['sweets', 'want'] })
-      })
+    it('Should create an Action with an expected entity and 2 disqualifying entities', () => {
+      actions.CreateNewActionThenVerifyInGrid({ responseNameData: 'Hey $name{enter}, what do you really want?', expectedEntity: 'want', disqualifyingEntities: ['sweets', 'want'] })
+    })
 
-      it('Should create an Action with 2 implicitly required entities', () => {
-        actions.CreateNewActionThenVerifyInGrid({ responseNameData: "Sorry $name{enter}, I can't help you get $want{enter}" })
-      })
+    it('Should create an Action with 2 implicitly required entities', () => {
+      actions.CreateNewActionThenVerifyInGrid({ responseNameData: "Sorry $name{enter}, I can't help you get $want{enter}" })
     })
   })
   // Manually EXPORT this to fixtures folder and name it 'z-disqualifyngEnt'
