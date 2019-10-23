@@ -37,6 +37,16 @@ export function CreateNewAction({
   if (uncheckWaitForResponse) actionModal.UncheckWaitForResponse()
 
   actionModal.SelectType(type)
+
+  // These are in a specific order so as to allow explicitly specifying these entities/conditions
+  // and for that to not be interfered with by the mechanisim in the UI that sets them automatically.
+  //
+  // You can still test the automatic setting of these fields by not explicitly setting the arguments
+  // of those that should be automatically set.
+  if (disqualifyingEntities) actionModal.SelectDisqualifyingEntities(disqualifyingEntities)
+  if (expectedEntity) actionModal.SelectExpectedEntity(expectedEntity)
+  if (requiredEntities) actionModal.SelectRequiredEntities(requiredEntities)
+
   switch(type) {
     case 'TEXT':
     case 'END_SESSION':
@@ -60,20 +70,16 @@ export function CreateNewAction({
       if (button2) actionModal.TypeCardButton2(button2)
       break
   }
-  
-  if (expectedEntity) actionModal.TypeExpectedEntity(expectedEntity)
-  if (requiredEntities) actionModal.TypeRequiredEntities(requiredEntities)
-  if (disqualifyingEntities) actionModal.TypeDisqualifyingEntities(disqualifyingEntities)
 
   actionModal.ClickCreateButton()
 }
- 
+
 export function CreateNewActionThenVerifyInGrid({ 
   responseNameData, // TEXT-response, API-name, CARD-full-details, END_SESSION-data - Used by create operation
-  expectedEntity, 
-  requiredEntities, 
-  disqualifyingEntities, 
-  uncheckWaitForResponse, 
+  expectedEntity,
+  requiredEntities,
+  disqualifyingEntities,
+  uncheckWaitForResponse,
   logicArgs,  // provide an array of strings
   renderArgs, // provide an array of strings
   title,

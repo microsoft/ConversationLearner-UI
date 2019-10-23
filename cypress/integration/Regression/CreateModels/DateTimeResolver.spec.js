@@ -27,7 +27,7 @@ describe('Date Time Resolver - CreateModels', () => {
     it('Should create an Action that requires both of our datetimeV2 Entities', () => {
       actions.CreateNewActionThenVerifyInGrid({ responseNameData: 'You are leaving on $departure{enter} and returning on $return{enter}', requiredEntities: ['departure', 'return'] })
     })
-    
+
     it('Should create an Action that is disqualified by both of our datetimeV2 Entities', () => {
       actions.CreateNewActionThenVerifyInGrid({ responseNameData: 'When are you planning to travel?', disqualifyingEntities: ['departure', 'return'] })
     })
