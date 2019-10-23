@@ -99,8 +99,6 @@ const displayReducer: Reducer<DisplayState> = produce((state: DisplayState, acti
         case AT.FETCH_ENTITY_DELETE_VALIDATION_ASYNC:
         case AT.FETCH_ENTITY_EDIT_VALIDATION_ASYNC:
         case AT.FETCH_ENTITIES_ASYNC:
-        case AT.FETCH_ACTIVITIES_ASYNC:
-        case AT.FETCH_LOG_DIALOG_ASYNC:
         // case AT.FETCH_LOG_DIALOGS_ASYNC: Don't block
         case AT.FETCH_SCOREFROMTRAINDIALOG_ASYNC:
         case AT.FETCH_EXTRACTFROMTRAINDIALOG_ASYNC:
@@ -117,6 +115,12 @@ const displayReducer: Reducer<DisplayState> = produce((state: DisplayState, acti
         case AT.POST_SCORE_FEEDBACK_ASYNC:
         case AT.SPINNER_ADD:
             state.displaySpinner.push(spinnerName(action.type))
+            return
+        case AT.FETCH_ACTIVITIES_ASYNC:
+        case AT.FETCH_LOG_DIALOG_ASYNC:
+            if (!action.noSpinnerDisplay) {
+                state.displaySpinner.push(spinnerName(action.type))
+            }
             return
         case AT.EDIT_TRAINDIALOG_REPLACE_ASYNC:
             if (action.enableSpinner) {

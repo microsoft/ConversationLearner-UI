@@ -485,6 +485,7 @@ export enum FM {
     TESTING_SUBTITLE = 'Testing.subtitle',
     TESTING_FILESAVE = 'Testing.FileSave',
     TESTING_CONFIRM_CLEAR_TITLE = 'Testiing.confirmclear.title',
+    TESTING_WARNING = 'Test Warnings',
 
     // TextVariation
     TEXTVARIATION_PLACEHOLDER = 'TextVariationCreator.placeholder',
@@ -603,6 +604,7 @@ export enum FM {
     TRAINDIALOGS_FILTERING_RESET = 'TrainDialogs.Filters.reset',
     TRAINDIALOGS_LISTVIEW_BUTTON = 'TrainDialogs.ListView.Button',
     TRAINDIALOGS_TREEVIEW_BUTTON = 'TrainDialogs.TreeView.Button',
+    TRAINDIALOGS_IMPORT_WARNING = 'TrainDialogs.ImportWarning',
 
     // TrainscriptComparisions
     TRANSCRIPTCOMPARISONS_DROPDOWN_TITLE = 'TranscriptComparisons.dropdown.title',
@@ -703,7 +705,7 @@ export default {
         [FM.ACTIONSCORER_COLUMNS_RESPONSE]: 'Response',
         [FM.ACTIONSCORER_COLUMNS_ARGUMENTS]: 'Arguments',
         [FM.ACTIONSCORER_COLUMNS_SCORE]: 'Score',
-        [FM.ACTIONSCORER_COLUMNS_ENTITIES]: 'Entities',
+        [FM.ACTIONSCORER_COLUMNS_ENTITIES]: 'Conditions',
         [FM.ACTIONSCORER_COLUMNS_ISTERMINAL]: 'Wait',
         [FM.ACTIONSCORER_COLUMNS_TYPE]: 'Type',
 
@@ -715,8 +717,8 @@ export default {
         [FM.ACTIONDETAILSLIST_COLUMNS_RESPONSE]: 'Response',
         [FM.ACTIONDETAILSLIST_COLUMNS_ARGUMENTS]: 'Arguments',
         [FM.ACTIONDETAILSLIST_COLUMNS_TYPE]: 'Action Type',
-        [FM.ACTIONDETAILSLIST_COLUMNS_REQUIREDENTITIES]: 'Required Entities',
-        [FM.ACTIONDETAILSLIST_COLUMNS_DISQUALIFYINGENTITIES]: 'Disqualifying Entities',
+        [FM.ACTIONDETAILSLIST_COLUMNS_REQUIREDENTITIES]: 'Required Conditions',
+        [FM.ACTIONDETAILSLIST_COLUMNS_DISQUALIFYINGENTITIES]: 'Disqualifying Conditions',
         [FM.ACTIONDETAILSLIST_COLUMNS_SUGGESTEDENTITY]: 'Expected Entity',
         [FM.ACTIONDETAILSLIST_COLUMNS_ISTERMINAL]: 'Wait',
         [FM.ACTIONDETAILSLIST_COLUMNS_REPROMPT]: 'Reprompt',
@@ -971,7 +973,7 @@ export default {
         [FM.TOOLTIP_ACTION_RESPONSE_ROW3]: '"Hi[, $name]"',
 
         [FM.TOOLTIP_ACTION_REQUIRED]: 'Action will not be selected unless Memory contains values for these Entities',
-        [FM.TOOLTIP_ACTION_REQUIRED_TITLE]: 'Required Entities',
+        [FM.TOOLTIP_ACTION_REQUIRED_TITLE]: 'Required Conditions',
         [FM.TOOLTIP_ACTION_REQUIRED_ROW1]: '"How would you like to pay?"',
         [FM.TOOLTIP_ACTION_REQUIRED_ROW2]: '$orderDetails $address',
         [FM.TOOLTIP_ACTION_REQUIRED_ROW3]: '"Hi, $name"',
@@ -980,7 +982,7 @@ export default {
         [FM.TOOLTIP_ACTION_SCORE]: 'Score:',
         [FM.TOOLTIP_ACTION_SCORE_PERCENT]: 'Conversation Learner confidence in performing an Action',
         [FM.TOOLTIP_ACTION_SCORE_TRAINING]: `Action can't be scored yet as Conversation Learner is still training`,
-        [FM.TOOLTIP_ACTION_SCORE_DISQUALIFIED]: 'Action has been disqualified - Required Entities are missing or Blocked Entities are present',
+        [FM.TOOLTIP_ACTION_SCORE_DISQUALIFIED]: 'Action has been disqualified - Required Conditions are missing or Blocked Entities are present',
 
         [FM.TOOLTIP_ACTION_SUGGESTED]: `Hint to Conversation Learner that the user's reply to this Action will likely be a value for this Entity. Pre-Trained Entities cannot be used as Expected Entities.`,
         [FM.TOOLTIP_ACTION_SUGGESTED_TITLE]: 'Expected Response',
@@ -1046,6 +1048,7 @@ export default {
         [FM.TRAINDIALOGS_FILTERING_RESET]: 'Clear',
         [FM.TRAINDIALOGS_LISTVIEW_BUTTON]: 'List View',
         [FM.TRAINDIALOGS_TREEVIEW_BUTTON]: 'Tree View',
+        [FM.TRAINDIALOGS_IMPORT_WARNING]: 'Import Warnings',
 
         // TreeView
         [FM.TREEVIEW_TOGGLE_FULLSCREEN]: 'Toggle Fullscreen',
@@ -1062,8 +1065,8 @@ export default {
         [FM.ACTIONDETAILSLIST_COLUMNS_RESPONSE]: 'Response',
         [FM.ACTIONDETAILSLIST_COLUMNS_ARGUMENTS]: 'Arguments',
         [FM.ACTIONDETAILSLIST_COLUMNS_TYPE]: 'Action Type',
-        [FM.ACTIONDETAILSLIST_COLUMNS_REQUIREDENTITIES]: 'Required Entities',
-        [FM.ACTIONDETAILSLIST_COLUMNS_DISQUALIFYINGENTITIES]: 'Disqualifying Entities',
+        [FM.ACTIONDETAILSLIST_COLUMNS_REQUIREDENTITIES]: 'Required Conditions',
+        [FM.ACTIONDETAILSLIST_COLUMNS_DISQUALIFYINGENTITIES]: 'Disqualifying Conditions',
         [FM.ACTIONDETAILSLIST_COLUMNS_SUGGESTEDENTITY]: 'Expected Entity',
         [FM.ACTIONDETAILSLIST_COLUMNS_ISTERMINAL]: 'Wait',
         [FM.ACTIONDETAILSLIST_COLUMNS_CREATED_DATE_TIME]: 'Created',
@@ -1268,6 +1271,7 @@ export default {
         [FM.TESTING_SUBTITLE]: `Compare and Rate .transcript files`,
         [FM.TESTING_FILESAVE]: 'Name for Test Results',
         [FM.TESTING_CONFIRM_CLEAR_TITLE]: 'Are you sure you want clear this test?',
+        [FM.TESTING_WARNING]: 'Test Warnings',
 
         // TextVariationCreator
         [FM.TEXTVARIATION_PLACEHOLDER]: 'Add alternative input...',

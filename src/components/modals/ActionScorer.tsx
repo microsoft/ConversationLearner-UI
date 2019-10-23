@@ -5,7 +5,7 @@
 import * as React from 'react';
 import * as ActionPayloadRenderers from '../actionPayloadRenderers'
 import * as CLM from '@conversationlearner/models'
-import * as OF from 'office-ui-fabric-react';
+import * as OF from 'office-ui-fabric-react'
 import * as Util from '../../Utils/util'
 import * as DialogEditing from '../../Utils/dialogEditing'
 import actions from '../../actions'
@@ -25,6 +25,7 @@ import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../react-intl-messages'
 import './ActionScorer.css'
 import { autobind } from 'core-decorators';
+import { getValueConditionName, findNumberFromMemory, isValueConditionTrue, isEnumConditionTrue } from '../../Utils/actionCondition'
 
 const MISSING_ACTION = 'missing_action'
 
@@ -39,6 +40,7 @@ interface IRenderableColumn extends OF.IColumn {
     getSortValue: (actionForRender: ActionForRender, component: ActionScorer) => number | string
     render: (actionForRender: ActionForRender, component: ActionScorer, index: number) => React.ReactNode
 }
+
 
 function getColumns(intl: InjectedIntl): IRenderableColumn[] {
     return [
@@ -556,32 +558,66 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         this.props.onActionSelected(trainScorerStep)
     }
 
-    isConditionMet(condition: CLM.Condition): { match: boolean, name: string } {
-        const entity = this.props.entities.filter(e => e.entityId === condition.entityId)[0];
+    convertToScorerCondition(condition: CLM.Condition): { match: boolean, name: string } {
+        const entity = this.props.entities.find(e => e.entityId === condition.entityId)
 
         // If entity is null - there's a bug somewhere
         if (!entity) {
             return { match: false, name: 'ERROR' };
         }
 
-        const enumValue = entity.enumValues && entity.enumValues.find(ev => ev.enumValueId === condition.valueId)
-        const memory = this.props.memories.filter(m => m.entityName === entity.entityName)[0];
-        const match = memory !== undefined
-            && memory.entityValues[0]
-            && memory.entityValues[0].enumValueId === condition.valueId
-        return { match, name: `${entity.entityName} = ${enumValue ? enumValue.enumValue : "NOT FOUND"}` };
+        const memory = this.props.memories.find(m => m.entityName === entity.entityName)
+
+        // If EnumCondition
+        if (condition.valueId) {
+            const enumValue = entity.enumValues && entity.enumValues.find(ev => ev.enumValueId === condition.valueId)
+            const value = enumValue
+                ? enumValue.enumValue
+                : "NOT FOUND"
+
+            const match = memory !== undefined
+                && isEnumConditionTrue(condition, memory)
+
+            return {
+                match,
+                name: `${entity.entityName} == ${value}`
+            }
+        }
+        // If ValueCondition
+        else if (condition.value) {
+            const name = getValueConditionName(entity, condition)
+            let match = false
+            if (memory) {
+                const numberValue = findNumberFromMemory(memory, entity.isMultivalue)
+                if (numberValue) {
+                    match = isValueConditionTrue(condition, numberValue)
+                }
+            }
+
+            return {
+                match,
+                name
+            }
+        }
+        // Other conditions (StringCondition in future)
+        else {
+            return {
+                match: false,
+                name: `Unknown Condition Type`
+            }
+        }
     }
 
     // Check if entity is in memory and return it's name
     entityInMemory(entityId: string): { match: boolean, name: string } {
-        const entity = this.props.entities.filter(e => e.entityId === entityId)[0];
+        const entity = this.props.entities.find(e => e.entityId === entityId);
 
         // If entity is null - there's a bug somewhere
         if (!entity) {
             return { match: false, name: 'ERROR' };
         }
 
-        const memory = this.props.memories.filter(m => m.entityName === entity.entityName)[0];
+        const memory = this.props.memories.find(m => m.entityName === entity.entityName);
         return { match: (memory !== undefined), name: entity.entityName };
     }
 
@@ -590,7 +626,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             return null
         }
 
-        const action = this.props.actions.filter(a => a.actionId === actionId)[0];
+        const action = this.props.actions.find(a => a.actionId === actionId);
 
         // If action is null - there's a bug somewhere
         if (!action) {
@@ -620,7 +656,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         }
         if (action.requiredConditions) {
             for (const condition of action.requiredConditions) {
-                const result = this.isConditionMet(condition)
+                const result = this.convertToScorerCondition(condition)
                 items.push({
                     name: result.name,
                     neg: false,
@@ -632,7 +668,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         }
         if (action.negativeConditions) {
             for (const condition of action.negativeConditions) {
-                const result = this.isConditionMet(condition)
+                const result = this.convertToScorerCondition(condition)
                 items.push({
                     name: result.name,
                     neg: true,
@@ -710,7 +746,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         }
         if (action.requiredConditions) {
             for (const condition of action.requiredConditions) {
-                const result = this.isConditionMet(condition)
+                const result = this.convertToScorerCondition(condition)
                 if (!result.match) {
                     return false
                 }
@@ -718,7 +754,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         }
         if (action.negativeConditions) {
             for (const condition of action.negativeConditions) {
-                const result = this.isConditionMet(condition)
+                const result = this.convertToScorerCondition(condition)
                 if (result.match) {
                     return false
                 }
@@ -733,7 +769,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             || !unscoredAction.reason
             || unscoredAction.reason === CLM.ScoreReason.NotCalculated) {
 
-            const action = this.props.actions.filter((a: CLM.ActionBase) => a.actionId === unscoredAction.actionId)[0];
+            const action = this.props.actions.find(a => a.actionId === unscoredAction.actionId)
 
             // If action is null - there's a bug somewhere
             if (!action) {

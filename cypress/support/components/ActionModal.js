@@ -23,10 +23,6 @@ export function ClickCancelDeleteWithWarningButton() { popupModal.VerifyContentA
 
 export function ClickTrainDialogFilterButton() { cy.Get('[data-testid="action-creator-editor-train-dialog-filter-button"]').Click() }
 
-export function TypeExpectedEntity(entityName) { TypeMultipleEntities('.cl-action-creator--expected-entity', [entityName]) }
-export function TypeRequiredEntities(entityNames) { TypeMultipleEntities('.cl-action-creator--required-entities', entityNames) }
-export function TypeDisqualifyingEntities(entityNames) { TypeMultipleEntities('.cl-action-creator--disqualifying-entities', entityNames) }
-
 export function SelectType(type) { SelectFromDropdown('[data-testid="dropdown-action-type"]', type) }
 export function SelectApi(apiName) { SelectFromDropdown('[data-testid="dropdown-api-option"]', apiName) }
 export function SelectCard(cardName) { SelectFromDropdown('[data-testid="action-card-template"]', cardName) }
@@ -112,6 +108,13 @@ function TypeApiArgs(apiArgLabel, args) {
 // }
 
 
+// This set of functions are currently not being used due to...
+// Bug 2332: Enter Key Selects Wrong Thing in Create Actions Required and Disqualifying Conditions fields.
+// However, if/when that bug is fixed, these can be used to validate that it is fixed.
+export function TypeExpectedEntity(entityName) { TypeMultipleEntities('.cl-action-creator--expected-entity', [entityName]) }
+export function TypeRequiredEntities(entityNames) { TypeMultipleEntities('.cl-action-creator--required-entities', entityNames) }
+export function TypeDisqualifyingEntities(entityNames) { TypeMultipleEntities('.cl-action-creator--disqualifying-entities', entityNames) }
+
 // Pass in an undefined 'entityNames' to just clear the field
 function TypeMultipleEntities(selector, entityNames) {
   cy.Get('.cl-modal_body').within(() => {
@@ -121,5 +124,16 @@ function TypeMultipleEntities(selector, entityNames) {
           entityNames.forEach(entityName => cy.wrap(element).type(`$${entityName}`).wait(1000).type('{enter}{esc}'))
         })
     })
+  })
+}
+
+export function SelectExpectedEntity(entityName) { SelectMultipleEntities('[data-testid="action-expected-entity"]', [entityName]) }
+export function SelectRequiredEntities(entityNames) { SelectMultipleEntities('[data-testid="action-required-entities"]', entityNames) }
+export function SelectDisqualifyingEntities(entityNames) { SelectMultipleEntities('[data-testid="action-disqualifying-entities"]', entityNames) }
+
+function SelectMultipleEntities(selector, entityNames) {
+  entityNames.forEach(entityName => {
+    cy.Get(selector).find('input.ms-BasePicker-input').Click()
+    cy.Get('button.ms-Suggestions-itemButton').ExactMatch(entityName).Click()
   })
 }

@@ -16,7 +16,7 @@ import TranscriptList from '../../../components/modals/TranscriptList'
 import FormattedMessageId from '../../../components/FormattedMessageId'
 import CompareDialogsModal from '../../../components/modals/CompareDialogsModal'
 import RateDialogsModal from '../../../components/modals/RateDialogsModal'
-import TestWaitModal from '../../../components/modals/ProgressModal'
+import ProgressModal from '../../../components/modals/ProgressModal'
 import TranscriptTestPicker from '../../../components/modals/TranscriptTestPicker'
 import ConfirmCancelModal from '../../../components/modals/ConfirmCancelModal'
 import { autobind } from 'core-decorators'
@@ -30,10 +30,16 @@ import { injectIntl, InjectedIntlProps } from 'react-intl'
 import './Testing.css'
 
 const SAVE_SUFFIX = ".cltr"
+const NUM_PARALLEL_TESTS = 30
 
 interface ComponentState {
-    testIndex: number
     testItems: Test.TestItem[]
+    testSlots: string[]
+    doneCount: number
+    completedTestIds: string[]
+    warnings: string[]
+    startTime: number
+    remainingTime: number
     testSet: Test.TestSet | undefined
     viewConversationIds: string[] | undefined
     viewConversationPivot: string | undefined
@@ -51,8 +57,13 @@ class Testing extends React.Component<Props, ComponentState> {
     constructor(props: Props) {
         super(props)
         this.state = {
-            testIndex: 0,
             testItems: [],
+            testSlots: [],
+            doneCount: -1,
+            completedTestIds: [],
+            warnings: [],
+            startTime: 0,
+            remainingTime: 0,
             testSet: undefined,
             viewConversationIds: undefined,
             viewConversationPivot: undefined,
@@ -72,7 +83,7 @@ class Testing extends React.Component<Props, ComponentState> {
         const testSet = Test.TestSet.Create(this.state.testSet)
         testSet.compareAll()
         testSet.initRating()
-        this.setState({testSet: testSet})
+        this.setState({ testSet: testSet })
     }
 
     newTestSet(): Test.TestSet {
@@ -84,24 +95,26 @@ class Testing extends React.Component<Props, ComponentState> {
                     lgName: (a.clientData && a.clientData.lgName) ? a.clientData.lgName : "",
                     actionId: a.actionId,
                     text: "",
-                    suggestions: []}
-                })
+                    suggestions: []
+                }
+            })
 
-            return Test.TestSet.Create({appId: this.props.app.appId, lgItems})
+        return Test.TestSet.Create({ appId: this.props.app.appId, lgItems })
     }
-    
+
     @autobind
     async onLoadTranscriptFiles(transcriptFiles: any): Promise<void> {
         if (transcriptFiles.length > 0) {
 
             try {
-                const testSet = this.state.testSet 
+                const testSet = this.state.testSet
                     ? Test.TestSet.Create(this.state.testSet)
                     : this.newTestSet()
-                
+
+                this.props.spinnerAdd()
                 await testSet.addTranscriptFiles(transcriptFiles)
 
-                await Util.setStateAsync(this, {testSet})
+                await Util.setStateAsync(this, { testSet })
 
                 // Recompute comparisons and rankings
                 await this.onTranscriptsChanged()
@@ -109,6 +122,9 @@ class Testing extends React.Component<Props, ComponentState> {
             catch (e) {
                 const error = e as Error
                 this.props.setErrorDisplay(ErrorType.Error, `invalid .transcript file`, error.message, null)
+            }
+            finally {
+                this.props.spinnerRemove()
             }
         }
     }
@@ -118,13 +134,13 @@ class Testing extends React.Component<Props, ComponentState> {
         if (lgFiles.length > 0) {
 
             try {
-                const testSet = this.state.testSet 
+                const testSet = this.state.testSet
                     ? Test.TestSet.Create(this.state.testSet)
                     : this.newTestSet()
-                
+
                 await testSet.addLGFiles(lgFiles)
 
-                await Util.setStateAsync(this, {testSet})
+                await Util.setStateAsync(this, { testSet })
 
                 // Recompute comparisons and rankings
                 await this.onTranscriptsChanged()
@@ -140,13 +156,13 @@ class Testing extends React.Component<Props, ComponentState> {
     onChangeName(event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, text: string) {
         const testSet = Test.TestSet.Create(this.state.testSet)
         testSet.fileName = text
-        this.setState({testSet: testSet})
+        this.setState({ testSet: testSet })
     }
 
     @autobind
     onCancelTest(): void {
         this.setState({
-            testItems: []
+            doneCount: -1
         })
     }
 
@@ -158,140 +174,129 @@ class Testing extends React.Component<Props, ComponentState> {
 
         const testSet = Test.TestSet.Create(this.state.testSet)
         testSet.compareAll()
-        this.setState({testSet: testSet})
+        this.setState({ testSet: testSet })
     }
 
-    @autobind
-    async testNextTranscript() {
-
-        if (!this.state.testItems || this.state.testItems.length === 0) {
-            return
-        }
-
-        // Check if I'm done importing files
-        if (this.state.testIndex === this.state.testItems.length) {
-            this.setState({ 
-                testItems: []
-            })
-            await this.onTranscriptsChanged()
-            this.onSaveSet()
-            return
-        }
-
-        // Get the next test item
-        const testItem = this.state.testItems[this.state.testIndex]
-        this.setState({ testIndex: this.state.testIndex + 1 })
+    async onValidateTranscript(testItem: Test.TestItem, testId: string): Promise<void> {
 
         try {
-            await this.onValidateTranscript(testItem)
+            if (!this.state.testSet) {
+                throw new Error("Missing Test Set")
+            }
+            if (!testItem.transcript) {
+                throw new Error("Missing transcript")
+            }
+            const conversationId = testItem.conversationId
+
+            const transcriptValidationTurns: CLM.TranscriptValidationTurn[] = []
+            let transcriptValidationTurn: CLM.TranscriptValidationTurn = { inputText: "", apiResults: [] }
+            let invalidTranscript = false
+            let apiResults: CLM.FilledEntity[] = []
+
+            for (let activity of testItem.transcript) {
+                // TODO: Handle conversation updates
+                if (!activity.type || activity.type === "message") {
+                    if (activity.text === "END_SESSION") {
+                        break
+                    }
+                    if (activity.from.role === "user") {
+                        // If already have user input push it
+                        if (transcriptValidationTurn.inputText !== "") {
+                            transcriptValidationTurns.push(transcriptValidationTurn)
+                        }
+                        transcriptValidationTurn = { inputText: activity.text, apiResults: [] }
+                    }
+                    else if (activity.from.role === "bot") {
+                        if (transcriptValidationTurn) {
+                            // If API call include API results
+                            if (activity.channelData && activity.channelData.type === "ActionCall") {
+                                const actionCall = activity.channelData as OBIUtils.TranscriptActionCall
+                                apiResults = await OBIUtils.importActionOutput(actionCall.actionOutput, this.props.entities, this.props.app)
+                                transcriptValidationTurn.apiResults.push(apiResults)
+                            }
+                            else {
+                                transcriptValidationTurn.apiResults.push([])
+                            }
+                        }
+                        else {
+                            invalidTranscript = true
+                            break
+                        }
+                    }
+                }
+            }
+            // Add last turn
+            if (transcriptValidationTurn) {
+                transcriptValidationTurns.push(transcriptValidationTurn)
+            }
+
+            const sourceName = `${this.props.app.appName} (${testItem.sourceName})`
+
+            let validationResult: Test.TestItem
+            if (invalidTranscript) {
+                validationResult = {
+                    sourceName,
+                    conversationId,
+                    logDialogId: null,
+                    invalidTranscript: true
+                }
+            }
+            else {
+                const logDialogId = await ((this.props.fetchTranscriptValidationThunkAsync(this.props.app.appId, this.props.editingPackageId, testId, transcriptValidationTurns) as any) as Promise<string | null>)
+                let resultTranscript: BB.Activity[] | undefined
+
+                // If log was retr}ieved and I'm not done
+                if (logDialogId && this.state.doneCount !== -1) {
+
+                    resultTranscript = await OBIUtils.getLogDialogActivities(
+                        this.props.app.appId,
+                        logDialogId,
+                        this.props.user,
+                        this.props.actions,
+                        this.props.entities,
+                        conversationId,
+                        sourceName,
+                        this.props.fetchLogDialogThunkAsync as any,
+                        this.props.fetchActivitiesThunkAsync as any) as BB.Activity[]
+                }
+
+                // Substitute back in any LG refs
+                const transcript = Util.deepCopy(resultTranscript) || []
+                OBIUtils.toLG(transcript, this.state.testSet.lgItems, this.props.entities, this.props.actions)
+
+                validationResult = {
+                    sourceName,
+                    conversationId,
+                    logDialogId,
+                    transcript
+                }
+            }
+
+            // Need to check that dialog as still open as user may canceled the test
+            if (this.state.testSet && this.state.doneCount !== -1) {
+                this.setState(prevState => {
+                    const testSet = Test.TestSet.Create(prevState.testSet)
+                    testSet.addTestItem(validationResult)
+                    return {
+                        testSet: testSet,
+                        testSlots: [...prevState.testSlots, testId],
+                        doneCount: prevState.doneCount + 1
+                    }
+                })
+            }
         }
         catch (e) {
             const error = e as Error
-            this.props.setErrorDisplay(ErrorType.Error, `Source: ${testItem.sourceName} Conversation: ${testItem.conversationId}`, error.message, null)
-            this.setState({
-                testItems: []
+            const message = `${testItem.conversationId}: ${error.message}`
+            // Free the slot, so I can keep testing the rest
+            this.setState(prevState => {
+                return {
+                    testSlots: [...prevState.testSlots, testId],
+                    doneCount: prevState.doneCount + 1,
+                    warnings: [...prevState.warnings, message]
+                }
             })
         }
-    }
-
-    async onValidateTranscript(testItem: Test.TestItem): Promise<void> {
-
-        if (!testItem.transcript) {
-            throw new Error("Missing transcript")
-        }
-        // Copy validation set
-        const testSet = Test.TestSet.Create(this.state.testSet)
-        const conversationId = testItem.conversationId
-
-        const transcriptValidationTurns: CLM.TranscriptValidationTurn[] = []
-        let transcriptValidationTurn: CLM.TranscriptValidationTurn = { inputText: "", apiResults: []}
-        let invalidTranscript = false
-        let apiResults: CLM.FilledEntity[] = []
-
-        for (let activity of testItem.transcript) {
-            // TODO: Handle conversation updates
-            if (!activity.type || activity.type === "message") {
-                if (activity.text === "END_SESSION") {
-                    break
-                }
-                if (activity.from.role === "user") {
-                    // If already have user input push it
-                    if (transcriptValidationTurn.inputText !== "") {
-                        transcriptValidationTurns.push(transcriptValidationTurn)
-                    }
-                    transcriptValidationTurn = { inputText: activity.text, apiResults: []}
-                }
-                else if (activity.from.role === "bot") {
-                    if (transcriptValidationTurn) {
-                        // If API call include API results
-                        if (activity.channelData && activity.channelData.type === "ActionCall") {
-                            const actionCall = activity.channelData as OBIUtils.TranscriptActionCall
-                            apiResults = await OBIUtils.importActionOutput(actionCall.actionOutput, this.props.entities, this.props.app)
-                            transcriptValidationTurn.apiResults.push(apiResults)
-                        }
-                        else {
-                            transcriptValidationTurn.apiResults.push([])
-                        }
-                    }
-                    else {
-                        invalidTranscript = true
-                        break
-                    }
-                }
-            }
-        }
-        // Add last turn
-        if (transcriptValidationTurn) {
-            transcriptValidationTurns.push(transcriptValidationTurn)
-        }
-
-        const sourceName = `${this.props.app.appName} (${testItem.sourceName})`
-
-        let validationResult: Test.TestItem
-        if (invalidTranscript) {
-            validationResult = { 
-                sourceName,
-                conversationId,
-                logDialogId: null, 
-                invalidTranscript: true
-            }
-        }
-        else {
-            const logDialogId = await ((this.props.fetchTranscriptValidationThunkAsync(this.props.app.appId, this.props.editingPackageId, this.props.user.id, transcriptValidationTurns) as any) as Promise<string | null>)
-
-            let resultTranscript: BB.Activity[] | undefined
-            if (logDialogId) {
-
-                resultTranscript = await OBIUtils.getLogDialogActivities(
-                    this.props.app.appId, 
-                    logDialogId,
-                    this.props.user, 
-                    this.props.actions,
-                    this.props.entities,
-                    conversationId,
-                    sourceName,
-                    this.props.fetchLogDialogThunkAsync as any,
-                    this.props.fetchActivitiesThunkAsync as any) as BB.Activity[]
-            }
-
-            // Substitute back in any LG refs
-            const transcript = Util.deepCopy(resultTranscript) || []
-            OBIUtils.toLG(transcript, testSet.lgItems, this.props.entities, this.props.actions)
-
-            validationResult = { 
-                sourceName,
-                conversationId,
-                logDialogId, 
-                transcript
-            }
-        }
-
-        // Need to check that dialog as still open as user may canceled the test
-        if (this.state.testSet) {
-            testSet.addTestItem(validationResult)
-            await Util.setStateAsync(this, { testSet: testSet })
-        }
-        await this.testNextTranscript()
     }
 
     @autobind
@@ -315,8 +320,68 @@ class Testing extends React.Component<Props, ComponentState> {
     async startTest(sourceName: string): Promise<void> {
         if (this.state.testSet) {
             const testItems = this.state.testSet.getTestItems(sourceName)
-            await Util.setStateAsync(this, { testItems, testIndex: 0 })
-            await this.testNextTranscript()
+            await Util.setStateAsync(this, {
+                testItems,
+                completedTestIds: [],
+                warnings: [],
+                doneCount: 0,
+                startTime: new Date().getTime(),
+                remainingTime: 0
+            })
+            const testSlots: string[] = []
+            for (let i = 0; i < NUM_PARALLEL_TESTS; i = i + 1) {
+                testSlots.push(`ValidationTest ${i}`)
+            }
+            await Util.setStateAsync(this, { testSlots })
+
+            setTimeout(this.testNextTranscript, 500)
+        }
+    }
+
+    @autobind
+    async testNextTranscript() {
+
+        // Check if I'm done
+        if (this.state.doneCount === -1 || this.state.doneCount === this.state.testItems.length) {
+            this.setState({
+                doneCount: -1,
+                testItems: []
+            })
+            this.onTranscriptsChanged()
+            this.onSaveSet()
+        }
+        else {
+            // Call myself a again after delay
+            setTimeout(this.testNextTranscript, 1000)
+
+            // Update time esimate after 1 completed item
+            if (this.state.doneCount > 1) {
+                const curTime = new Date().getTime()
+                const ellapsedTime = curTime - this.state.startTime
+                const timePerItem = ellapsedTime / this.state.doneCount
+                const remainingCount = this.state.testItems.length - this.state.doneCount
+                const remainingTime = timePerItem * remainingCount
+                this.setState({ remainingTime })
+            }
+
+            // Find an untested item
+            const untestedItems = this.state.testItems.filter(ti =>
+                !this.state.completedTestIds.includes(ti.conversationId))
+
+            // If there are still untested items and a slot is available
+            if (untestedItems.length !== 0 && this.state.testSlots.length > 0) {
+
+                // Get the next slot and test tiem
+                const testSlot = this.state.testSlots[0]
+                const testItem = untestedItems[0]
+                this.setState(prevState => {
+                    return {
+                        completedTestIds: [...prevState.completedTestIds, testItem.conversationId],
+                        testSlots: prevState.testSlots.filter(ts => ts !== testSlot)
+                    }
+                })
+                await this.onValidateTranscript(testItem, testSlot)
+            }
         }
     }
 
@@ -324,9 +389,9 @@ class Testing extends React.Component<Props, ComponentState> {
     onView(compareType: Test.ComparisonResultType, comparePivot?: string, compareSource?: string): void {
 
         if (this.state.testSet) {
-            const viewConversationIds = compareSource && comparePivot 
-            ? this.state.testSet.getComparisonConversationIds(compareSource, comparePivot, compareType)
-            : this.state.testSet.getAllConversationIds()
+            const viewConversationIds = compareSource && comparePivot
+                ? this.state.testSet.getComparisonConversationIds(compareSource, comparePivot, compareType)
+                : this.state.testSet.getAllConversationIds()
 
             this.onViewConversationIds(viewConversationIds, comparePivot)
         }
@@ -350,14 +415,14 @@ class Testing extends React.Component<Props, ComponentState> {
         // TODO: consider only clearing when .transcripts have changed
         // and allowing user to continue partially rated set of .transcripts
         testSet.initRating()
-        this.setState({testSet: testSet, isRateDialogsOpen: true})
+        this.setState({ testSet: testSet, isRateDialogsOpen: true })
     }
 
     @autobind
     async onRate(ratingPair: Test.RatingPair) {
         const testSet = Test.TestSet.Create(this.state.testSet)
         testSet.addRatingResult(ratingPair)
-        await Util.setStateAsync(this, {testSet})
+        await Util.setStateAsync(this, { testSet })
     }
 
     @autobind
@@ -373,7 +438,7 @@ class Testing extends React.Component<Props, ComponentState> {
         if (this.state.testSet) {
             const testSet = Test.TestSet.Create(this.state.testSet)
             testSet.calcRankings()
-            await Util.setStateAsync(this, {testSet})
+            await Util.setStateAsync(this, { testSet })
         }
     }
 
@@ -395,7 +460,7 @@ class Testing extends React.Component<Props, ComponentState> {
 
     @autobind
     onClear() {
-        this.setState({isConfirmClearModalOpen: true})
+        this.setState({ isConfirmClearModalOpen: true })
     }
 
     @autobind
@@ -405,7 +470,7 @@ class Testing extends React.Component<Props, ComponentState> {
         // Clear filename so user can reload same file
         let fileInput = (this.loadSetFileInput as HTMLInputElement)
         fileInput.value = ""
-        this.setState({testSet: testSet, isConfirmClearModalOpen: false})
+        this.setState({ testSet: testSet, isConfirmClearModalOpen: false })
     }
 
     @autobind
@@ -427,7 +492,7 @@ class Testing extends React.Component<Props, ComponentState> {
             const testSet = Test.TestSet.Create(this.state.testSet)
             // Use app name, removing unsafe characters
             testSet.fileName = this.props.app.appName.replace(/[^a-zA-Z0-9-_\.]/g, '')
-            await Util.setStateAsync(this, {testSet})
+            await Util.setStateAsync(this, { testSet })
 
         }
 
@@ -454,7 +519,7 @@ class Testing extends React.Component<Props, ComponentState> {
                 testSet.compareAll()
                 testSet.initRating()
             }
-            await Util.setStateAsync(this, {testSet})
+            await Util.setStateAsync(this, { testSet })
         }
         catch (e) {
             const error = e as Error
@@ -481,9 +546,19 @@ class Testing extends React.Component<Props, ComponentState> {
         return ''
     }
 
+    @autobind
+    async onCloseTestWarning(): Promise<void> {
+        this.setState({ warnings: [] })
+    }
+
+    // Progress count is less jumpy when smoothed between in progress and completed
+    displayCount(): number {
+        return Math.round((this.state.doneCount + this.state.completedTestIds.length) * 0.5)
+    }
+
     render() {
 
-        const saveDisabled = !this.state.testSet 
+        const saveDisabled = !this.state.testSet
             || this.state.testSet.items.length === 0
             || (this.state.testSet.fileName !== undefined && this.onGetNameErrorMessage(this.state.testSet.fileName) !== '')
 
@@ -514,7 +589,7 @@ class Testing extends React.Component<Props, ComponentState> {
                         ref={ele => (this.loadSetFileInput = ele)}
                         multiple={false}
                     />
-                    <div className="cl-modal-buttons_secondary"/>
+                    <div className="cl-modal-buttons_secondary" />
                     <div className="cl-modal-buttons_primary">
                         <OF.DefaultButton
                             disabled={saveDisabled}
@@ -539,8 +614,8 @@ class Testing extends React.Component<Props, ComponentState> {
                         />
                     </div>
                 </div>
-            <div className="cl-testing-body">
-                    <OF.Pivot 
+                <div className="cl-testing-body">
+                    <OF.Pivot
                         linkSize={OF.PivotLinkSize.large}
                     >
                         <OF.PivotItem
@@ -580,14 +655,16 @@ class Testing extends React.Component<Props, ComponentState> {
                     onConfirm={this.onConfirmClear}
                     title={Util.formatMessageId(this.props.intl, FM.TESTING_CONFIRM_CLEAR_TITLE)}
                 />
-                <TestWaitModal
+                <ProgressModal
                     open={this.state.testItems.length > 0}
-                    title={"Testing"}
-                    index={this.state.testIndex}
+                    title="Testing"
+                    index={this.displayCount()}
                     total={this.state.testItems.length}
+                    warningCount={this.state.warnings.length}
                     onClose={this.onCancelTest}
+                    remainingTime={this.state.remainingTime}
                 />
-                {this.state.viewConversationIds && this.state.testSet && 
+                {this.state.viewConversationIds && this.state.testSet &&
                     <CompareDialogsModal
                         app={this.props.app}
                         testSet={this.state.testSet}
@@ -604,11 +681,25 @@ class Testing extends React.Component<Props, ComponentState> {
                         onClose={this.onCloseRate}
                     />
                 }
-                {this.state.isTestPickerOpen && this.state.testSet && 
+                {this.state.isTestPickerOpen && this.state.testSet &&
                     <TranscriptTestPicker
                         sourceNames={this.state.testSet.sourceNames}
                         onAbandon={this.onPickTestAbandon}
                         onSubmit={this.onPickTestSubmit}
+                    />
+                }
+                {this.state.doneCount === -1 && this.state.warnings && this.state.warnings.length > 0 &&
+                    <ConfirmCancelModal
+                        open={true}
+                        onOk={() => this.onCloseTestWarning()}
+                        title={Util.formatMessageId(this.props.intl, FM.TESTING_WARNING)}
+                        message={() =>
+                            <OF.List
+                                className="cl-warning-list"
+                                items={this.state.warnings}
+                                onRenderCell={(item: string, index: number) => { return item }}
+                            />
+                        }
                     />
                 }
             </div>
@@ -631,7 +722,9 @@ const mapDispatchToProps = (dispatch: any) => {
         fetchActivitiesThunkAsync: actions.train.fetchActivitiesThunkAsync,
         fetchLogDialogThunkAsync: actions.log.fetchLogDialogThunkAsync,
         fetchTranscriptValidationThunkAsync: actions.app.fetchTranscriptValidationThunkAsync,
-        setErrorDisplay: actions.display.setErrorDisplay
+        setErrorDisplay: actions.display.setErrorDisplay,
+        spinnerAdd: actions.display.spinnerAdd,
+        spinnerRemove: actions.display.spinnerRemove
     }, dispatch);
 }
 

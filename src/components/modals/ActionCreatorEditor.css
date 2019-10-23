@@ -14,3 +14,8 @@
     display: grid;
     grid-gap: 0.5em;
 }
+
+.cl-tag-item-suggestion--add-condition {
+    background-color: white;
+    width: 100%;
+}

@@ -2,14 +2,15 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
-import * as CLM from '@conversationlearner/models'
 import * as BB from 'botbuilder'
-import * as Util from './util'
+import * as CLM from '@conversationlearner/models'
 import * as DialogEditing from './dialogEditing'
 import * as DialogUtils from './dialogUtils'
+import * as Util from './util'
 import Plain from 'slate-plain-serializer'
 import { REPROMPT_SELF } from '../types/const'
 import { ImportedAction } from '../types/models'
+import { Case } from '../types/obiTypes'
 import { User } from '../types'
 
 export async function toTranscripts(
@@ -38,19 +39,19 @@ export interface OBIImportData {
 
 // Return activities for the given logDialogId
 export async function getLogDialogActivities(
-    appId: string, 
-    logDialogId: string, 
-    user: User, 
+    appId: string,
+    logDialogId: string,
+    user: User,
     actions: CLM.ActionBase[],
     entities: CLM.EntityBase[],
     conversationId: string | undefined,
     channelId: string | undefined,
-    fetchLogDialogThunkAsync: (appId: string, logDialogId: string, replaceLocal: boolean, nullOnNotFound: boolean) => Promise<CLM.LogDialog>,
-    fetchActivitiesAsync: (appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string, useMarkdown: boolean) => Promise<CLM.TeachWithActivities>
-    ): Promise<Util.RecursivePartial<BB.Activity>[]> {
+    fetchLogDialogThunkAsync: (appId: string, logDialogId: string, replaceLocal: boolean, nullOnNotFound: boolean, noSpinnerDisplay: boolean) => Promise<CLM.LogDialog>,
+    fetchActivitiesThunkAsync: (appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string, useMarkdown: boolean, noSpinnerDisplay: boolean) => Promise<CLM.TeachWithActivities>
+): Promise<Util.RecursivePartial<BB.Activity>[]> {
 
     // Fetch the LogDialog
-    const logDialog = await fetchLogDialogThunkAsync(appId, logDialogId, true, true)
+    const logDialog = await fetchLogDialogThunkAsync(appId, logDialogId, true, true, true)
     if (!logDialog) {
         return []
     }
@@ -59,7 +60,7 @@ export async function getLogDialogActivities(
     const trainDialog = CLM.ModelUtils.ToTrainDialog(logDialog, actions, entities)
 
     // Return activities
-    const teachWithActivities = await fetchActivitiesAsync(appId, trainDialog, user.name, user.id, false)
+    const teachWithActivities = await fetchActivitiesThunkAsync(appId, trainDialog, user.name, user.id, false, true)
     const activites = teachWithActivities.activities
     if (conversationId || channelId) {
         addActivityReferences(activites, conversationId, channelId)
@@ -81,7 +82,7 @@ function addActivityReferences(activities: Util.RecursivePartial<BB.Activity>[],
 
 async function getActivities(appId: string, trainDialog: CLM.TrainDialog, user: User, definitions: CLM.AppDefinition,
     fetchActivitiesAsync: (appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string, useMarkdown: boolean) => Promise<CLM.TeachWithActivities>
-    ): Promise<BB.Transcript> {
+): Promise<BB.Transcript> {
     const newTrainDialog = Util.deepCopy(trainDialog)
     newTrainDialog.definitions = definitions
 
@@ -374,6 +375,41 @@ export function generateEntityMapForAction(action: CLM.ActionBase, filledEntityM
     return map
 }
 
+export interface ConditionEntityAndValue {
+    entity: string
+    value: string
+}
+
+// NOTA BENE : We currently assume that switch nodes will only be acting on values returned by
+// API calls, and that values will be compared using strict string equality.
+export function parseEntityConditionFromDialogCase(branch: Case, entityConditions: { [key: string]: Set<string> }):
+    ConditionEntityAndValue {
+    if (!branch.value) {
+        throw new Error("SwitchCondition cases must have value")
+    }
+    // Currently we only support equality expressions.
+    const tokens = branch.value.split("==").map(
+        (i) => {
+            const trimmed = i.trim()
+            if (trimmed.length === 0) {
+                throw new Error("SwitchCondition entity and value must be non-empty")
+            }
+            return trimmed
+        }
+    )
+    if (tokens.length !== 2) {
+        throw new Error("SwitchCondition case is expected to have format 'x == y'")
+    }
+    const [entity, value] = tokens
+    let conditionValues = entityConditions[entity]
+    if (!conditionValues) {
+        conditionValues = new Set<string>()
+        entityConditions[entity] = conditionValues
+    }
+    conditionValues.add(value)
+    return { entity, value }
+}
+
 // Return hash text for the given activity
 export function hashTextFromActivity(activity: BB.Activity, entities: CLM.EntityBase[], filledEntities: CLM.FilledEntity[] | undefined): string {
 
@@ -432,13 +468,13 @@ export function replaceImportActions(trainDialog: CLM.TrainDialog, actions: CLM.
 export function expandLGItems(trainDialog: CLM.TrainDialog, lgItems: CLM.LGItem[]): void {
     for (const round of trainDialog.rounds) {
         for (const scorerStep of round.scorerSteps) {
-                const lgName = scorerStep.importText ? lgNameFromImportText(scorerStep.importText) : null
-                if (lgName) {
-                    let lgItem = lgItems.find(lg => lg.lgName === lgName)
-                    if (lgItem) {
-                        scorerStep.importText = lgItem.text
-                    }
+            const lgName = scorerStep.importText ? lgNameFromImportText(scorerStep.importText) : null
+            if (lgName) {
+                let lgItem = lgItems.find(lg => lg.lgName === lgName)
+                if (lgItem) {
+                    scorerStep.importText = lgItem.text
                 }
+            }
         }
     }
 }
@@ -479,13 +515,22 @@ function findActionFromScorerStep(scorerStep: CLM.TrainScorerStep, actions: CLM.
     return undefined
 }
 
-// Replace imported actions in TrainDialog with real Actions
+/**
+ * Creates actions for the input `TrainDialog`.
+ * Imports happen in 2 stages : in the first, TrainDialogs are created with placeholder actions that
+ * are only stored in UI component state memory.  In the second, real actions are created either
+ * interactively or automatically -- the latter invokes this function.
+ * 
+ * @param scorerStepConditions a map of `TrainScorerStep.importId` values to `Condition`s that should
+ *   be set on the generated action
+ */
 export async function createImportedActions(
     appId: string,
     trainDialog: CLM.TrainDialog,
     templates: CLM.Template[],
     lgItems: CLM.LGItem[] | undefined,
     actions: CLM.ActionBase[],
+    scorerStepConditions: { [key: string]: CLM.Condition[] } | undefined,
     createActionThunkAsync: (appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null>,
 ): Promise<void> {
 
@@ -502,7 +547,6 @@ export async function createImportedActions(
 
                 // Otherwise create a new one
                 if (!action) {
-
                     const isTerminal = round.scorerSteps.length === scoreIndex + 1
                     let importedAction: ImportedAction | undefined
                     if (lgItems) {
@@ -510,10 +554,10 @@ export async function createImportedActions(
                         if (lgName) {
                             let lgItem = lgItems.find(lg => lg.lgName === lgName)
                             if (lgItem) {
-                                importedAction = { 
-                                    text: lgItem.text, 
-                                    buttons: lgItem.suggestions, 
-                                    isTerminal, 
+                                importedAction = {
+                                    text: lgItem.text,
+                                    buttons: lgItem.suggestions,
+                                    isTerminal,
                                     reprompt: lgItem.suggestions.length > 0,
                                     lgName
                                 }
@@ -526,15 +570,16 @@ export async function createImportedActions(
                         }
                     }
                     if (!importedAction) {
-                        importedAction = { 
-                            text: scorerStep.importText, 
-                            buttons: [], 
-                            isTerminal, 
+                        importedAction = {
+                            text: scorerStep.importText,
+                            buttons: [],
+                            isTerminal,
                             reprompt: false,
-                            actionHash: CLM.hashText(scorerStep.importText)}
+                            actionHash: CLM.hashText(scorerStep.importText)
+                        }
                     }
 
-                    action = await createActionFromImport(appId, importedAction, templates, createActionThunkAsync)
+                    action = await createActionFromImport(appId, importedAction, templates, scorerStep, scorerStepConditions, createActionThunkAsync)
                     newActions.push(action)
                 }
 
@@ -546,11 +591,18 @@ export async function createImportedActions(
     }
 }
 
-// Greated an real action for an imported one, looking for a matching template
+/**
+ * Creates a real action for an `ImportedAction` action placeholder.
+ * 
+ * @param scorerStepConditions a map of `TrainScorerStep.importId` values to `Condition`s that should
+ *   be set on the generated action
+ */
 async function createActionFromImport(
     appId: string,
     importedAction: ImportedAction,
     templates: CLM.Template[],
+    scorerStep: CLM.TrainScorerStep,
+    scorerStepConditions: { [key: string]: CLM.Condition[] } | undefined,
     createActionThunkAsync: (appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null>,
 ): Promise<CLM.ActionBase> {
 
@@ -612,10 +664,14 @@ async function createActionFromImport(
         actionType,
         entityId: undefined,
         enumValueId: undefined,
-        clientData: { 
-            actionHashes: importedAction.actionHash ? [importedAction.actionHash] : [], 
-            lgName: importedAction.lgName }
+        clientData: {
+            actionHashes: importedAction.actionHash ? [importedAction.actionHash] : [],
+            lgName: importedAction.lgName
+        }
     })
+    if (scorerStep.importId && scorerStepConditions && scorerStepConditions[scorerStep.importId]) {
+        action.requiredConditions = scorerStepConditions[scorerStep.importId]
+    }
 
     const newAction = await createActionThunkAsync(appId, action)
     if (!newAction) {
@@ -671,7 +727,7 @@ export function areTranscriptsEqual(transcript1: Util.RecursivePartial<BB.Activi
         throw new Error("Not a valid comparison.  ConversationIds do not match.")
     }
     if (transcript1[0].channelId === transcript2[0].channelId) {
-        throw new Error("Not a valid comparison.  Same channel.") 
+        throw new Error("Not a valid comparison.  Same channel.")
     }
     for (let i = 0; i < Math.min(transcript1.length, transcript2.length); i = i + 1) {
         const activity1 = transcript1[i]

@@ -355,7 +355,7 @@ export interface Case {
      * Value which must match the condition property
      */
     value: string;
-    case:  any;
+    case?:  any;
 }
 
 export enum Event {
