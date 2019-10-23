@@ -231,20 +231,20 @@ const Component: React.FC<Props> = (props) => {
             return
         }
 
-        const cond: CLM.Condition = {
+        const conditionFromState: CLM.Condition = {
             entityId: selectedEntityOption.data.entityId,
             condition: selectedOperatorOption.data
         }
 
         if (showNumberValue) {
-            cond.value = numberValue
+            conditionFromState.value = numberValue
         }
         else if (selectedEnumValueOption) {
             // TODO: Fix enum types
-            cond.valueId = selectedEnumValueOption.data.enumValueId!
+            conditionFromState.valueId = selectedEnumValueOption.data.enumValueId!
         }
 
-        return cond
+        return conditionFromState
     }
 
     const onClickCreate = () => {
