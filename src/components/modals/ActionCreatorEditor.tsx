@@ -129,7 +129,7 @@ const convertEntityToConditionalTags = (entity: CLM.EntityBase, expand = true): 
     }]
 }
 
-// Entities that can be chosen for required / blocking
+// Returns deduplicated array of conditions currently used as required or negative conditions.
 const conditionalEntityTags = (entities: CLM.EntityBase[], actionz: CLM.ActionBase[]): IConditionalTag[] => {
     // Might have duplicates since different actions can have same conditions
     const actionConditionTags = actionz

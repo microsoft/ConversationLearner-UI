@@ -547,7 +547,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                             placeholder={Util.formatMessageId(this.props.intl, FM.TEXTVARIATION_PLACEHOLDER)}
                             onKeyPress={(event) => {
                                 if (event.key === 'Enter') {
-                                    this.onSubmitTextVariation()
+                                    void this.onSubmitTextVariation()
                                     event.preventDefault()
                                 }
                             }}

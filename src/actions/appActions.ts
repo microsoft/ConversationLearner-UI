@@ -97,7 +97,7 @@ export const createApplicationThunkAsync = (userId: string, application: CLM.App
             }
 
             dispatch(createApplicationFulfilled(newApp, obiImportData))
-            await dispatch(fetchApplicationTrainingStatusThunkAsync(newApp.appId));
+            void dispatch(fetchApplicationTrainingStatusThunkAsync(newApp.appId))
             return newApp
         }
         catch (e) {
@@ -331,7 +331,7 @@ export const copyApplicationThunkAsync = (srcUserId: string, destUserId: string,
         try {
             dispatch(copyApplicationAsync(srcUserId, destUserId, appId))
             await clClient.appCopy(srcUserId, destUserId, appId)
-            await dispatch(fetchApplicationsThunkAsync(destUserId))
+            void dispatch(fetchApplicationsThunkAsync(destUserId))
             dispatch(copyApplicationFulfilled())
         }
         catch (e) {

@@ -46,7 +46,7 @@ export const createTrainDialogThunkAsync = (appId: string, trainDialog: CLM.Trai
         try {
             const createdTrainDialog = await clClient.trainDialogsCreate(appId, trainDialog)
             dispatch(createTrainDialogFulfilled(createdTrainDialog))
-            await dispatch(fetchApplicationTrainingStatusThunkAsync(appId))
+            void dispatch(fetchApplicationTrainingStatusThunkAsync(appId))
             return createdTrainDialog
         }
         catch (e) {
@@ -94,7 +94,7 @@ export const editTrainDialogThunkAsync = (appId: string, trainDialog: PartialTra
             await clClient.trainDialogEdit(appId, trainDialog, options)
             dispatch(editTrainDialogFulfilled(appId, trainDialog))
             if (trainDialog.rounds) {
-                await dispatch(fetchApplicationTrainingStatusThunkAsync(appId))
+                void dispatch(fetchApplicationTrainingStatusThunkAsync(appId))
             }
             return trainDialog
         }
@@ -412,8 +412,8 @@ export const trainDialogMergeThunkAsync = (appId: string, newTrainDialog: CLM.Tr
             }
 
             // TODO: Make more efficient by deleting and loading only changed ones
-            await dispatch(fetchAllTrainDialogsThunkAsync(appId))
-            await dispatch(fetchApplicationTrainingStatusThunkAsync(appId))
+            void dispatch(fetchAllTrainDialogsThunkAsync(appId))
+            void dispatch(fetchApplicationTrainingStatusThunkAsync(appId))
             dispatch(trainDialogMergeFulfilled())
         }
         catch (e) {
@@ -465,7 +465,7 @@ export const trainDialogReplaceThunkAsync = (appId: string, destinationTrainDial
             promises.push(clClient.trainDialogEdit(appId, updatedDestinationDialog))
             await Promise.all(promises)
 
-            await dispatch(fetchApplicationTrainingStatusThunkAsync(appId))
+            void dispatch(fetchApplicationTrainingStatusThunkAsync(appId))
             dispatch(trainDialogReplaceFulfilled(updatedDestinationDialog, deleteDialogId))
         }
         catch (e) {
@@ -587,12 +587,12 @@ export const deleteTrainDialogThunkAsync = (app: CLM.AppBase, trainDialogId: str
         try {
             await clClient.trainDialogsDelete(app.appId, trainDialogId)
             dispatch(deleteTrainDialogFulfilled(trainDialogId))
-            await dispatch(fetchApplicationTrainingStatusThunkAsync(app.appId))
+            void dispatch(fetchApplicationTrainingStatusThunkAsync(app.appId))
         } catch (e) {
             const error = e as AxiosError
             dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.DELETE_TRAIN_DIALOG_REJECTED))
             dispatch(deleteTrainDialogRejected())
-            await dispatch(fetchAllTrainDialogsThunkAsync(app.appId))
+            void dispatch(fetchAllTrainDialogsThunkAsync(app.appId))
         }
     }
 }

@@ -54,7 +54,7 @@ const rules: any[] = [
     {
         deserialize(el: any, next: any): object | void {
             const type = INLINES_TAGS[el.tagName.toLowerCase()]
-            if (type == NodeTypes.Mention) {
+            if (type === NodeTypes.Mention) {
                 return {
                     object: 'inline',
                     kind: 'inline',

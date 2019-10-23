@@ -244,7 +244,7 @@ const Component: React.FC<Props> = (props) => {
             cond.valueId = selectedEnumValueOption.data.enumValueId!
         }
 
-        return condition
+        return cond
     }
 
     const onClickCreate = () => {
