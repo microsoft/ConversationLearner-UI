@@ -248,9 +248,9 @@ const Component: React.FC<Props> = (props) => {
     }
 
     const onClickCreate = () => {
-        const cond = createConditionFromState()
-        if (cond) {
-            props.onClickCreate(cond)
+        const conditionFromState = createConditionFromState()
+        if (conditionFromState) {
+            props.onClickCreate(conditionFromState)
         }
         else {
             console.warn(`User attempted to create condition but condition did not exist. Usually means there is bad state calculation in modal.`)
@@ -261,8 +261,8 @@ const Component: React.FC<Props> = (props) => {
         props.onClickCancel()
     }
 
-    const onClickExistingCondition = (cond: CLM.Condition) => {
-        props.onClickCreate(cond)
+    const onClickExistingCondition = (theCondition: CLM.Condition) => {
+        props.onClickCreate(theCondition)
     }
 
     const isOperatorDisabled = selectedEntityOption && selectedEntityOption.data.entityType === CLM.EntityType.ENUM
