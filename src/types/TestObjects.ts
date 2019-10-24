@@ -496,7 +496,7 @@ export class TestSet {
     // Get sourceName for a transcript
     sourceName(transcript: BB.Activity[]): string {
         if (transcript.length === 0 || !transcript[0].channelId) {
-            throw new Error("Transcript does not have a channelId")
+            throw new Error(`Transcript ${this.conversationId(transcript)} does not have a channelId`)
         }
         return transcript[0].channelId
     }
