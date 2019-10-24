@@ -515,6 +515,18 @@ function findActionFromScorerStep(scorerStep: CLM.TrainScorerStep, actions: CLM.
     return undefined
 }
 
+// TODO - docu
+interface EnumEntityAndValueIds {
+    enumEntityId: string
+    enumValueId: string
+}
+
+// TODO - docu
+interface ActionAndEntitiesFromCondition {
+    action: CLM.ActionBase
+    enumValues?: EnumEntityAndValueIds[]
+}
+
 /**
  * Creates actions for the input `TrainDialog`.
  * Imports happen in 2 stages : in the first, TrainDialogs are created with placeholder actions that
@@ -530,20 +542,20 @@ export async function createImportedActions(
     templates: CLM.Template[],
     lgItems: CLM.LGItem[] | undefined,
     actions: CLM.ActionBase[],
+    entities: CLM.EntityBase[],
     scorerStepConditions: { [key: string]: CLM.Condition[] } | undefined,
     createActionThunkAsync: (appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null>,
 ): Promise<void> {
 
     const newActions: CLM.ActionBase[] = []
     for (const round of trainDialog.rounds) {
-        for (let scoreIndex = 0; scoreIndex < round.scorerSteps.length; scoreIndex = scoreIndex + 1) {
-            const scorerStep = round.scorerSteps[scoreIndex]
+        for (const [scoreIndex, scorerStep] of round.scorerSteps.entries()) {
+            let action: CLM.ActionBase | undefined
 
+            // First check to see if matching action already exists
+            action = findActionFromScorerStep(scorerStep, [...newActions, ...actions], [])
             if (scorerStep.importText) {
-                let action: CLM.ActionBase | undefined
 
-                // First check to see if matching action already exists
-                action = findActionFromScorerStep(scorerStep, [...newActions, ...actions], [])
 
                 // Otherwise create a new one
                 if (!action) {
@@ -578,7 +590,6 @@ export async function createImportedActions(
                             actionHash: CLM.hashText(scorerStep.importText)
                         }
                     }
-
                     action = await createActionFromImport(appId, importedAction, templates, scorerStep, scorerStepConditions, createActionThunkAsync)
                     newActions.push(action)
                 }
@@ -586,8 +597,121 @@ export async function createImportedActions(
                 // Update scorer step
                 scorerStep.labelAction = action.actionId
                 delete scorerStep.importText
+            } else {
+                // TODO - we may need to look for an action to update here..?!?
+                if (action && action.actionType === CLM.ActionTypes.API_LOCAL) {
+                    // TODO - if this scorer step is an API_LOCAL and the following scorer step has a required condition,
+                    // create a *new* action that wets the memory state to that required condition.
+                    const actionAndEntities = await maybeCreateApiActionForCondition(
+                        appId, action, scoreIndex, round.scorerSteps, scorerStepConditions, entities, createActionThunkAsync)
+                    if (!actionAndEntities) {
+                        continue
+                    }
+                    // Update scorer step.
+                    scorerStep.labelAction = actionAndEntities.action.actionId
+                    const logicResult: CLM.LogicResult = scorerStep.logicResult ?
+                        scorerStep.logicResult : { logicValue: undefined, changedFilledEntities: [] }
+                    if (actionAndEntities.enumValues) {
+                        for (const conditionEntity of actionAndEntities.enumValues) {
+                            const filledEntity: CLM.FilledEntity = {
+                                entityId: conditionEntity.enumEntityId,
+                                values: [{
+                                    userText: null,
+                                    displayText: null,
+                                    builtinType: null,
+                                    resolution: null,
+                                    enumValueId: conditionEntity.enumValueId
+                                }]
+                            }
+                            logicResult.changedFilledEntities.push(filledEntity)
+                        }
+//                        delete scorerStep.importText
+                    }
+                }
             }
         }
+    }
+}
+
+async function maybeCreateApiActionForCondition(
+    appId: string,
+    apiAction: CLM.ActionBase,
+    actionStepIndex: number,
+    scorerSteps: CLM.TrainScorerStep[],
+    scorerStepConditions: { [key: string]: CLM.Condition[] } | undefined,
+    entities: CLM.EntityBase[],
+    createActionThunkAsync: (appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null>):
+    Promise<ActionAndEntitiesFromCondition | null> {
+    if (actionStepIndex === scorerSteps.length || !scorerStepConditions) {
+        // No scorer step follows this action, or there are no conditions, so nothing to do.
+        return null
+    }
+    const nextScorerStep = scorerSteps[actionStepIndex + 1]
+    if (!nextScorerStep.importId || !scorerStepConditions[nextScorerStep.importId]) {
+        // No conditions set on the scorer step following this action, so nothing to do.
+        return null
+    }
+    // The scorer step following this API action has condition(s) set on it.
+    // We need to replace this API action with a new copy that sets entity state to fulfill the condition(s).
+    /*
+    const actionCopy = Util.deepCopy(apiAction)
+    actionCopy.actionId = CLM.CL_STUB_IMPORT_ACTION_ID
+    */
+
+    const conditions = scorerStepConditions[nextScorerStep.importId]
+    const conditionEntities: EnumEntityAndValueIds[] = []
+    let conditionStrings: string[] = []
+    for (const condition of conditions) {
+        // Find the entity.
+        const conditionEntity = entities.find(e => e.entityId === condition.entityId)
+        if (!conditionEntity) {
+            throw new Error(`Couldn't find entity with id ${condition.entityId}`)
+        }
+        // If it's an enum, find the value.
+        if (conditionEntity.entityType === CLM.EntityType.ENUM) {
+            if (!conditionEntity.enumValues) {
+                throw new Error(`Enum entity ${conditionEntity.entityName} missing enum values`)
+            }
+            const enumValue = conditionEntity.enumValues.find(val => val.enumValueId === condition.valueId)
+            if (!enumValue) {
+                throw new Error(`Enum entity ${conditionEntity.entityName} missing enum value ${condition.valueId}`)
+            }
+            conditionStrings.push(enumValue.enumValue)
+            conditionEntities.push({
+                enumEntityId: condition.entityId,
+                enumValueId: condition.valueId!
+            })
+        } else {
+            conditionStrings.push(conditionEntity.entityName)
+        }
+    }
+    /*
+    const conditionString = conditionStrings.join("_")
+
+    if (actionCopy.payload) {
+        try {
+            const payloadJson = JSON.parse(actionCopy.payload)
+            if (payloadJson.payload) {
+                payloadJson.payload = `${payloadJson.payload}_${conditionString}`
+            } else {
+                payloadJson.payload = conditionString
+            }
+        }
+        catch (error) {
+            actionCopy.payload = `${actionCopy.payload}_${conditionString}`
+        }
+    } else {
+        actionCopy.payload = `stubaction_${conditionString}`
+    }
+
+    const newAction = await createActionThunkAsync(appId, actionCopy)
+    if (!newAction) {
+        throw new Error("Unable to create action")
+    }
+    */
+    return {
+        action: newAction,
+        enumValues: conditionEntities
     }
 }
 

@@ -1277,8 +1277,10 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 this.props.botInfo.templates,
                 importData.lgItems,
                 this.props.actions,
+                this.props.entities,
                 importData.conditions,
-                this.props.createActionThunkAsync as any)
+                this.props.createActionThunkAsync as any,
+            )
 
             // Replay to validate
             newTrainDialog = await DialogEditing.onReplayTrainDialog(
