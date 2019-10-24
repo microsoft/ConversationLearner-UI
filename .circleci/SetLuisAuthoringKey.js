@@ -22,16 +22,19 @@ let buildNumber = +process.env.CIRCLE_BUILD_NUM
 //  2) the smoke test run
 //  3) the regression test run
 
+// The two test jobs will each consume the resources of one of our authoring keys.
+// The actual build job will NOT consume the resources of one of our authoring keys, but
+// that is okay since as we cycle through the list of authoring keys the next time through
+// a previously unused keys will get used and a different authoring key will go unused.
+
 let authoringKeyIndex = Math.floor(buildNumber % authoringKeys.length)
 let luisAuthoringKey = authoringKeys[authoringKeyIndex]
 
-// The actual build job will NOT consume the resources of one of our authoring keys.
-// The other two test jobs will each consume the resources of one of our authoring keys.
 // Because of the math used in the algorithm above, the number of authoring keys should
 // not be divisible by 3, otherwise 1 out of every 3 keys will rarely get used.
-// The reason it is rarely is that other things can influence the next build number to be
-// used, like if the build fails, then the other two jobs won't run so only 1 build number
-// will be consumed and that will change the index of the unused key.
+// There are other things can influence the next build number to be used, like if the
+// build fails, then the other two jobs won't run so only 1 build number
+// will be consumed.
 
 console.log(`export LUIS_AUTHORING_KEY=${luisAuthoringKey}\n`)
 console.log(`export CYPRESS_BUILD_NUM=${buildNumber}\n`)
