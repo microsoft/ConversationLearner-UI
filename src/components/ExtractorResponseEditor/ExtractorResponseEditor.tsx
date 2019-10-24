@@ -414,24 +414,49 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
 
     componentDidMount() {
         // For end 2 end unit testing.
-        document.addEventListener("Test_SelectWord", this.onTestSelectWord)
+        document.addEventListener("Test_SelectWord", this.onTestSelectWord as any)
     }
 
     componentWillUnmount() {
         // For end 2 end unit testing.
-        document.removeEventListener("Test_SelectWord", this.onTestSelectWord)
+        document.removeEventListener("Test_SelectWord", this.onTestSelectWord as any)
     }
 
-    // For end 2 end unit testing.
+    /**
+     * For cypress end to end unit testing.  Event selects phrase in entity labeller
+     * The following will select the word "hello" in the second row (index is 0 based)
+     *   var event = new CustomEvent("Test_SelectWord", { detail: { phrase: "hello", index: 1 }})
+     *   event.initEvent("Test_SelectWord", true, true)}
+     *   element.dispatchEvent(event)
+     * 
+     * Or default to the first row:
+     *   var event = new CustomEvent("Test_SelectWord", { detail: "hello"})
+     *   event.initEvent("Test_SelectWord", true, true)}
+     *   element.dispatchEvent(event)
+     */
     @autobind
-    onTestSelectWord(val: any) {
-        const phrase: string = val.detail
+    onTestSelectWord(val: { detail: { phrase: string, index: number } } | { detail: string }) {
+        
+        if (!val.detail) {
+            throw new Error("Test_SelectWord expecting detail phrase")
+        }
+
+        const phrase: string = (typeof val.detail !== "string") ? val.detail.phrase : val.detail
+        const index: number = (typeof val.detail !== "string") ? val.detail.index : 0
+
         const words = phrase.split(" ")
         const firstWord = words[0]
         const lastWord = words[words.length - 1]
 
+        // Get row
+        const rows = Array.from(document.querySelectorAll('[data-testid="extractor-response-editor-entity-labeler"]'))
+        if (index > rows.length || index < 0) {
+            throw new Error("Row index does not exist")
+        }
+
+        const selectedRow = rows[index]
         // Get start div
-        const tokens = Array.from(document.querySelectorAll(".cl-token-node"))
+        const tokens = Array.from(selectedRow.querySelectorAll(".cl-token-node"))
         const firstWordToken = tokens.filter(element => element.children[0].textContent === firstWord)[0]
         const lastWordToken = tokens.filter(element => element.children[0].textContent === lastWord)[0]
 
