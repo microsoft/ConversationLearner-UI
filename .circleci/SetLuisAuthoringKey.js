@@ -25,7 +25,7 @@ let buildNumber = +process.env.CIRCLE_BUILD_NUM
 // The two test jobs will each consume the resources of one of our authoring keys.
 // The actual build job will NOT consume the resources of one of our authoring keys, but
 // that is okay since as we cycle through the list of authoring keys the next time through
-// a previously unused keys will get used and a different authoring key will go unused.
+// the previously unused keys will get used and different authoring keys will go unused.
 
 let authoringKeyIndex = Math.floor(buildNumber % authoringKeys.length)
 let luisAuthoringKey = authoringKeys[authoringKeyIndex]
