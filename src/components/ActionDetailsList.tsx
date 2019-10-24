@@ -374,6 +374,14 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                         case CLM.ActionTypes.SET_ENTITY: {
                             return `set-${action.entityId}-${action.enumValueId}`
                         }
+                        case CLM.ActionTypes.DISPATCH: {
+                            const dispatchAction = new CLM.DispatchAction(action)
+                            return dispatchAction.modelName
+                        }
+                        case CLM.ActionTypes.CHANGE_MODEL: {
+                            const changeModelAction = new CLM.DispatchAction(action)
+                            return changeModelAction.modelName
+                        }
                         default: {
                             console.warn(`Could not get sort value for unknown action type: ${action.actionType}`)
                             return ''
