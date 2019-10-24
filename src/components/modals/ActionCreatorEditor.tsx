@@ -1875,7 +1875,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                             && <TC.Dropdown
                                 data-testid="action-creator-dropdown-model-name"
                                 label="Model"
-                                options={this.state.modelOptions}
+                                options={this.state.modelOptions.filter(mo => mo.data.appId !== this.props.app.appId)}
                                 onChange={this.onChangeModelType}
                                 selectedKey={this.state.selectedModelOptionKey}
                                 tipType={ToolTip.TipType.ACTION_CHANGE_MODEL}
