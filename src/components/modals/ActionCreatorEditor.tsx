@@ -1481,11 +1481,20 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     }
 
     saveDisabled(): boolean {
-        // SET_ENTITY Actions are immutable
-        if (this.props.action
-            && (this.props.action.actionType === CLM.ActionTypes.SET_ENTITY
-                || this.props.action.actionType === CLM.ActionTypes.DISPATCH)) {
-            return true
+        // If editing
+        if (this.props.action) {
+            const actionType = this.props.action.actionType
+            if (actionType === CLM.ActionTypes.SET_ENTITY
+                || actionType === CLM.ActionTypes.DISPATCH) {
+                return true
+            }
+        }
+        // If creating
+        else {
+            const actionType = this.state.selectedActionTypeOptionKey as CLM.ActionTypes
+            if (actionType === CLM.ActionTypes.DISPATCH) {
+                return true
+            }
         }
 
         return this.areInputsInvalid()
