@@ -515,7 +515,10 @@ function findActionFromScorerStep(scorerStep: CLM.TrainScorerStep, actions: CLM.
     return undefined
 }
 
-// TODO - docu
+/**
+ * Holds information about enum entities that should be set in a TrainDialog after a round containing
+ * an API action with known output values.
+ */
 interface EnumDataFromCondition {
     enumEntityId: string
     enumValueId: string
@@ -688,6 +691,7 @@ function getEnumConditionData(entities: CLM.EntityBase[], conditions: CLM.Condit
             // This should not happen; entities created from conditions in .dialog import should always be enum.
             throw new Error(`Entity ${conditionEntity.entityId} is not a valid enum`)
         }
+        // Find the specific enum value referenced by the condition.
         const enumValue = conditionEntity.enumValues.find(val => val.enumValueId === condition.valueId)
         if (!enumValue) {
             throw new Error(`Enum entity ${conditionEntity.entityName} missing enum value ${condition.valueId}`)
