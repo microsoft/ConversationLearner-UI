@@ -980,12 +980,12 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 }
 
                 // TODO: Rename to ModelPayload?
-                const dispatchPayload: CLM.DispatchPayload = {
+                const modelPayload: CLM.ModelPayload = {
                     modelId: model.appId,
                     modelName: model.appName,
                 }
 
-                payload = JSON.stringify(dispatchPayload)
+                payload = JSON.stringify(modelPayload)
                 break;
             }
             default:
