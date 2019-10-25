@@ -128,12 +128,12 @@ describe('Undo Entity Labeling - Edit and Branching', () => {
     it("Begin to add a new entity but cancel, verify Entity labeling changes don't happen", () => {
       train.SelectChatTurnExactMatch('The user asks another question')
       entityDetectionPanel.VerifyCanLabelTextAsEntity('user')
-      train.ClickNewEntityButton()
+      entityDetectionPanel.ClickNewEntityButton()
       entityModal.ClickCancelButton()
     })
 
     it('Add a new entity, verify it is used automatically and that we can undo it', () => {
-      train.ClickNewEntityButton()
+      entityDetectionPanel.ClickNewEntityButton()
       entities.CreateNewEntity({ name: 'four' })
       entityDetectionPanel.VerifyTextIsLabeledAsEntity('user', 'four')
       entityDetectionPanel.ClickEntityLabelUndoButton()

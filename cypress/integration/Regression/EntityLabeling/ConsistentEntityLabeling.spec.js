@@ -175,16 +175,16 @@ describe('Consistent Entity Labeling', () => {
       entityDetectionPanel.VerifyMatchWarning(1)
     })
 
-    it('Re-lable the entities to set things right in this Train Dialog', () => {
-      train.XLabelTextAsEntity()
-    })
-
-    it('', () => {
-    })
-
     it('verify that the alternative text at index 1 is not labeled.', () => {
       entityDetectionPanel.VerifyTextIsNotLabeledAsEntity('Tag', 'multi', 1)
       entityDetectionPanel.VerifyTextIsNotLabeledAsEntity('Frog', 'multi', 1)
+    })
+
+    it('Re-lable the entities to set things right in this Train Dialog', () => {
+      //train.XLabelTextAsEntity()
+    })
+
+    it('', () => {
     })
 
     it('Close the Train Dialog', () => {
