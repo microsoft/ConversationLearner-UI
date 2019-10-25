@@ -430,6 +430,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 const expectedEntityTags = convertEntityIdsToTags((action.suggestedEntity ? [action.suggestedEntity] : []), this.props.entities)
                 let selectedApiOptionKey: string | undefined
                 let selectedCardOptionKey: string | undefined
+                let selectedModelOptionKey: string | undefined
                 let entityWarning = false
 
                 const slateValuesMap = {}
@@ -502,6 +503,14 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                         selectedEnumValueOptionKey: action.enumValueId,
                     }
                 }
+                else if (action.actionType === CLM.ActionTypes.DISPATCH) {
+                    const dispatchAction = new CLM.DispatchAction(action)
+                    selectedModelOptionKey = dispatchAction.modelId
+                }
+                else if (action.actionType === CLM.ActionTypes.CHANGE_MODEL) {
+                    const changeModelAction = new CLM.DispatchAction(action)
+                    selectedModelOptionKey = changeModelAction.modelId
+                }
 
                 const requiredEntityTagsFromPayload = Object.values(slateValuesMap)
                     .reduce<OF.ITag[]>((entities, value) => {
@@ -530,6 +539,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     selectedActionTypeOptionKey: action.actionType,
                     selectedApiOptionKey,
                     selectedCardOptionKey,
+                    selectedModelOptionKey,
                     slateValuesMap,
                     secondarySlateValuesMap,
                     expectedEntityTags,
@@ -1880,7 +1890,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                 </div>
                             </>}
 
-                        {this.state.selectedActionTypeOptionKey === CLM.ActionTypes.CHANGE_MODEL
+                        {(this.state.selectedActionTypeOptionKey === CLM.ActionTypes.DISPATCH
+                        || this.state.selectedActionTypeOptionKey === CLM.ActionTypes.CHANGE_MODEL)
                             && <TC.Dropdown
                                 data-testid="action-creator-dropdown-model-name"
                                 label="Model"
@@ -1888,6 +1899,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                 onChange={this.onChangeModelType}
                                 selectedKey={this.state.selectedModelOptionKey}
                                 tipType={ToolTip.TipType.ACTION_CHANGE_MODEL}
+                                disabled={this.state.selectedActionTypeOptionKey === CLM.ActionTypes.DISPATCH}
                             />}
 
                         {this.state.selectedActionTypeOptionKey !== CLM.ActionTypes.CHANGE_MODEL
