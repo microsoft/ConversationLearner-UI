@@ -3,6 +3,8 @@
  * Licensed under the MIT License.
  */
 
+import * as helpers from '../Helpers'
+
 // TODO - REMOVE THIS BEFORE CODE REVIEW
 // TODO - REMOVE THIS BEFORE CODE REVIEW
 // TODO - REMOVE THIS BEFORE CODE REVIEW

@@ -69,7 +69,7 @@ export function VerifyEntityFilter(entity) { cy.Get('[data-testid="dropdown-filt
 export function VerifyActionFilter(action) { cy.Get('[data-testid="dropdown-filter-by-action"] > span.ms-Dropdown-title').ExactMatch(action) }
 export function ClickClearFilterButton() { cy.Get('[data-testid="train-dialogs-clear-filter-button"]').Click() }
 
-export function GetDescription() { return Cypress.$('[data-testid="train-dialog-description"]').attr('value') }
+export function GetDescriptions() { return Cypress.$('[data-testid="train-dialog-description"]').attr('value') }
 export function VerifyDescription(expectedDescription) { cy.Get(`[data-testid="train-dialog-description"][value="${expectedDescription}"]`) }
 export function TypeDescription(description) { cy.Get('[data-testid="train-dialog-description"]').clear().type(`${description}{enter}`) }
 

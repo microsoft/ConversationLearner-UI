@@ -35,7 +35,7 @@ describe('New Entity Label on Existing Phrase 2 - Entity Labeling', () => {
 
     it('Score Actions, verify that the Entitly Label Conflict modal pops up and that we can close it without change to our labeling', () => {
       train.ClickScoreActionsButton()
-      traentityDetectionPanelin.VerifyEntityLabelConflictPopupAndClose(undefined, [{ text: 'Two', entity: 'anEntity' }, { text: 'phrase', entity: 'anEntity' }])
+      entityDetectionPanel.VerifyEntityLabelConflictPopupAndClose(undefined, [{ text: 'Two', entity: 'anEntity' }, { text: 'phrase', entity: 'anEntity' }])
       entityDetectionPanel.VerifyEntityLabel('Two', 'anEntity')
       entityDetectionPanel.VerifyEntityLabel('phrase', 'anEntity')
     })
