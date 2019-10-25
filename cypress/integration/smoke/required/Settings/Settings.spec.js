@@ -155,11 +155,6 @@ describe("Settings - Settings", () => {
     it('Reload the page, then verify that the deleted model is still not in the list', () => {
       cy.reload(true) // Force reload of the page without using the cache
       homePage.VerifyModelNameIsNotInList(renamedModelName)
-
-// TODO: REMOVE THIS ONCE VERIFIED
-// TODO: REMOVE THIS ONCE VERIFIED
-// TODO: REMOVE THIS ONCE VERIFIED
-throw new Error('The test PASSED - this error is only to test that the regression tests will run even if a smoke test fails...')      
     })
   })
 
