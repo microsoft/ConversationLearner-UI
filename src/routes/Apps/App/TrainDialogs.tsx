@@ -1277,9 +1277,16 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 this.props.botInfo.templates,
                 importData.lgItems,
                 this.props.actions,
-                this.props.entities,
                 importData.conditions,
                 this.props.createActionThunkAsync as any,
+            )
+
+            // Update memory state, if applicable.
+            OBIUtils.setMemoryStateForImportedTrainDialog(
+                this.props.entities,
+                this.props.actions,
+                newTrainDialog,
+                importData.conditions,
             )
 
             // Replay to validate

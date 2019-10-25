@@ -516,15 +516,10 @@ function findActionFromScorerStep(scorerStep: CLM.TrainScorerStep, actions: CLM.
 }
 
 // TODO - docu
-interface EnumEntityAndValueIds {
+interface EnumDataFromCondition {
     enumEntityId: string
     enumValueId: string
-}
-
-// TODO - docu
-interface ActionAndEntitiesFromCondition {
-    action: CLM.ActionBase
-    enumValues?: EnumEntityAndValueIds[]
+    enumValueText: string
 }
 
 /**
@@ -542,11 +537,9 @@ export async function createImportedActions(
     templates: CLM.Template[],
     lgItems: CLM.LGItem[] | undefined,
     actions: CLM.ActionBase[],
-    entities: CLM.EntityBase[],
     scorerStepConditions: { [key: string]: CLM.Condition[] } | undefined,
     createActionThunkAsync: (appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null>,
 ): Promise<void> {
-
     const newActions: CLM.ActionBase[] = []
     for (const round of trainDialog.rounds) {
         for (const [scoreIndex, scorerStep] of round.scorerSteps.entries()) {
@@ -555,7 +548,6 @@ export async function createImportedActions(
             // First check to see if matching action already exists
             action = findActionFromScorerStep(scorerStep, [...newActions, ...actions], [])
             if (scorerStep.importText) {
-
 
                 // Otherwise create a new one
                 if (!action) {
@@ -597,122 +589,116 @@ export async function createImportedActions(
                 // Update scorer step
                 scorerStep.labelAction = action.actionId
                 delete scorerStep.importText
-            } else {
-                // TODO - we may need to look for an action to update here..?!?
-                if (action && action.actionType === CLM.ActionTypes.API_LOCAL) {
-                    // TODO - if this scorer step is an API_LOCAL and the following scorer step has a required condition,
-                    // create a *new* action that wets the memory state to that required condition.
-                    const actionAndEntities = await maybeCreateApiActionForCondition(
-                        appId, action, scoreIndex, round.scorerSteps, scorerStepConditions, entities, createActionThunkAsync)
-                    if (!actionAndEntities) {
-                        continue
-                    }
-                    // Update scorer step.
-                    scorerStep.labelAction = actionAndEntities.action.actionId
-                    const logicResult: CLM.LogicResult = scorerStep.logicResult ?
-                        scorerStep.logicResult : { logicValue: undefined, changedFilledEntities: [] }
-                    if (actionAndEntities.enumValues) {
-                        for (const conditionEntity of actionAndEntities.enumValues) {
-                            const filledEntity: CLM.FilledEntity = {
-                                entityId: conditionEntity.enumEntityId,
-                                values: [{
-                                    userText: null,
-                                    displayText: null,
-                                    builtinType: null,
-                                    resolution: null,
-                                    enumValueId: conditionEntity.enumValueId
-                                }]
-                            }
-                            logicResult.changedFilledEntities.push(filledEntity)
-                        }
-//                        delete scorerStep.importText
-                    }
-                }
             }
         }
     }
 }
 
-async function maybeCreateApiActionForCondition(
-    appId: string,
-    apiAction: CLM.ActionBase,
-    actionStepIndex: number,
-    scorerSteps: CLM.TrainScorerStep[],
-    scorerStepConditions: { [key: string]: CLM.Condition[] } | undefined,
+/**
+ * Updates memory state by setting `logicResult` in the `TrainDialog` `TrainScorerSteps` for cases where
+ * the dialog produces a deterministic output from an API call.
+ */
+export function setMemoryStateForImportedTrainDialog(
     entities: CLM.EntityBase[],
-    createActionThunkAsync: (appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null>):
-    Promise<ActionAndEntitiesFromCondition | null> {
-    if (actionStepIndex === scorerSteps.length || !scorerStepConditions) {
-        // No scorer step follows this action, or there are no conditions, so nothing to do.
-        return null
+    actions: CLM.ActionBase[],
+    trainDialog: CLM.TrainDialog,
+    scorerStepConditions: { [key: string]: CLM.Condition[] } | undefined) {
+    if (!scorerStepConditions) {
+        // If this is undefined, then there were no SwithCondition nodes in our imported dialog, so nothing to do.
+        return
     }
-    const nextScorerStep = scorerSteps[actionStepIndex + 1]
-    if (!nextScorerStep.importId || !scorerStepConditions[nextScorerStep.importId]) {
-        // No conditions set on the scorer step following this action, so nothing to do.
-        return null
+    for (const round of trainDialog.rounds) {
+        setMemoryStateForApiActionWithSwitch(entities, actions, round.scorerSteps, scorerStepConditions)
     }
-    // The scorer step following this API action has condition(s) set on it.
-    // We need to replace this API action with a new copy that sets entity state to fulfill the condition(s).
-    /*
-    const actionCopy = Util.deepCopy(apiAction)
-    actionCopy.actionId = CLM.CL_STUB_IMPORT_ACTION_ID
-    */
+}
 
-    const conditions = scorerStepConditions[nextScorerStep.importId]
-    const conditionEntities: EnumEntityAndValueIds[] = []
-    let conditionStrings: string[] = []
+/**
+ * Updates memory state for a single `TrainRound`.  Specifically, if we have an API action followed by
+ * a `SwitchCondition` node that consumes the output of that API, we know that each branch of the dialog
+ * should represent a scenario where the API has returned the given conditional value.  This code sets
+ * that conditional value in bot memory. 
+ */
+function setMemoryStateForApiActionWithSwitch(
+    entities: CLM.EntityBase[],
+    actions: CLM.ActionBase[],
+    scorerSteps: CLM.TrainScorerStep[],
+    scorerStepConditions: { [key: string]: CLM.Condition[] }) {
+    for (let i = 0; i < scorerSteps.length - 1; i = i + 1) {
+        if (!scorerSteps[i].labelAction) {
+            // Need a labelAction to figure out which action is associated with the scorer step.
+            continue
+        }
+        const j = i + 1
+        if (j >= scorerSteps.length) {
+            // There is no next action; we're done.
+            break
+        }
+        const actionId1 = scorerSteps[i].labelAction
+        const action1 = actions.find(a => a.actionId === actionId1)
+        if (!action1 || action1.actionType !== CLM.ActionTypes.API_LOCAL) {
+            // We only care about API actions followed by SwitchCondition-gated nodes.
+            continue
+        }
+        const scorerStep = scorerSteps[i]
+        const nextScorerStep = scorerSteps[j]
+        if (!nextScorerStep.importId || !scorerStepConditions[nextScorerStep.importId]) {
+            // The next action is not a SwitchCondition-gated node.
+            continue
+        }
+        // Get conditions from the SwitchCondition-gated node.
+        const conditions = scorerStepConditions[nextScorerStep.importId]
+        const enumConditionData = getEnumConditionData(entities, conditions)
+        // Set the logic result on the *current* scorer step.
+        if (!scorerStep.logicResult) {
+            scorerStep.logicResult = { logicValue: undefined, changedFilledEntities: [] }
+        }
+        for (const conditionEntity of enumConditionData) {
+            const filledEntity: CLM.FilledEntity = {
+                entityId: conditionEntity.enumEntityId,
+                values: [{
+                    userText: conditionEntity.enumValueText,
+                    displayText: conditionEntity.enumValueText,
+                    builtinType: null,
+                    resolution: null,
+                    enumValueId: conditionEntity.enumValueId
+                }]
+            }
+            scorerStep.logicResult.changedFilledEntities.push(filledEntity)
+        }
+    }
+}
+
+/**
+ * Gets the enum entity and enum value associated with the given conditions.
+ * @throws if the entity referenced in any `Condition` is not a valid enum.
+ */
+function getEnumConditionData(entities: CLM.EntityBase[], conditions: CLM.Condition[]): EnumDataFromCondition[] {
+    const output: EnumDataFromCondition[] = []
     for (const condition of conditions) {
+        if (!condition.valueId) {
+            // This should not happen; conditions created from conditions in .dialog import should always reference enum entities.
+            throw new Error(`Action condition doesn't reference an entity`)
+        }
         // Find the entity.
         const conditionEntity = entities.find(e => e.entityId === condition.entityId)
         if (!conditionEntity) {
             throw new Error(`Couldn't find entity with id ${condition.entityId}`)
         }
-        // If it's an enum, find the value.
-        if (conditionEntity.entityType === CLM.EntityType.ENUM) {
-            if (!conditionEntity.enumValues) {
-                throw new Error(`Enum entity ${conditionEntity.entityName} missing enum values`)
-            }
-            const enumValue = conditionEntity.enumValues.find(val => val.enumValueId === condition.valueId)
-            if (!enumValue) {
-                throw new Error(`Enum entity ${conditionEntity.entityName} missing enum value ${condition.valueId}`)
-            }
-            conditionStrings.push(enumValue.enumValue)
-            conditionEntities.push({
-                enumEntityId: condition.entityId,
-                enumValueId: condition.valueId!
-            })
-        } else {
-            conditionStrings.push(conditionEntity.entityName)
+        if (conditionEntity.entityType !== CLM.EntityType.ENUM || !conditionEntity.enumValues) {
+            // This should not happen; entities created from conditions in .dialog import should always be enum.
+            throw new Error(`Entity ${conditionEntity.entityId} is not a valid enum`)
         }
-    }
-    /*
-    const conditionString = conditionStrings.join("_")
-
-    if (actionCopy.payload) {
-        try {
-            const payloadJson = JSON.parse(actionCopy.payload)
-            if (payloadJson.payload) {
-                payloadJson.payload = `${payloadJson.payload}_${conditionString}`
-            } else {
-                payloadJson.payload = conditionString
-            }
+        const enumValue = conditionEntity.enumValues.find(val => val.enumValueId === condition.valueId)
+        if (!enumValue) {
+            throw new Error(`Enum entity ${conditionEntity.entityName} missing enum value ${condition.valueId}`)
         }
-        catch (error) {
-            actionCopy.payload = `${actionCopy.payload}_${conditionString}`
-        }
-    } else {
-        actionCopy.payload = `stubaction_${conditionString}`
+        output.push({
+            enumEntityId: condition.entityId,
+            enumValueId: condition.valueId,
+            enumValueText: enumValue.enumValue,
+        })
     }
-
-    const newAction = await createActionThunkAsync(appId, actionCopy)
-    if (!newAction) {
-        throw new Error("Unable to create action")
-    }
-    */
-    return {
-        action: newAction,
-        enumValues: conditionEntities
-    }
+    return output
 }
 
 /**
