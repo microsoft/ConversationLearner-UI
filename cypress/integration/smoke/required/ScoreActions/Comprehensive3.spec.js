@@ -9,7 +9,7 @@ import * as entities from '../../../../support/Entities'
 import * as actions from '../../../../support/Actions'
 import * as actionModal from '../../../../support/components/ActionModal'
 import * as scorerModal from '../../../../support/components/ScorerModal'
-import * as entityDetectionPanel from '../../../support/components/EntityDetectionPanel'
+import * as entityDetectionPanel from '../../../../support/components/EntityDetectionPanel'
 import * as train from '../../../../support/Train'
 import * as helpers from '../../../../support/Helpers'
 

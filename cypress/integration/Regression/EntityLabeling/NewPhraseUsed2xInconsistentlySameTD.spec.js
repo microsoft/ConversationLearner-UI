@@ -9,7 +9,7 @@ import * as entityDetectionPanel from '../../../support/components/EntityDetecti
 import * as train from '../../../support/Train'
 import * as helpers from '../../../support/Helpers'
 
-describe('New Entity Label on Existing Phrase 1 - Entity Labeling', () => {
+describe('New Phrase Used 2 Times Inconsistently - Entity Labeling', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
 
   context('Setup', () => {

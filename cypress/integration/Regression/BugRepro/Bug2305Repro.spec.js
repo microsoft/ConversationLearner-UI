@@ -34,21 +34,21 @@ describe('Bug 2305 Repro', () => {
 
     // Bug 2305: "Save As Is" Fails with status code 404
     // Once this bug is fixed comment out this block of code and uncomment the next block
-    it('Verify that Bug 2305 reproduced', () => {
-      helpers.VerifyErrorMessageContains('Request failed with status code 404')
-      helpers.VerifyErrorMessageContains('{"errorMessages":["No such training dialog exists"]}')
-    })
+    // it('Verify that Bug 2305 reproduced', () => {
+    //   helpers.VerifyErrorMessageContains('Request failed with status code 404')
+    //   helpers.VerifyErrorMessageContains('{"errorMessages":["No such training dialog exists"]}')
+    // })
     
     // Bug 2305: "Save As Is" Fails with status code 404
     // This code should work once this bug is fixed...
     // Uncomment this and comment out the above to detect a regression.
-    // it('Verify that Bug 2305 did not reproduce', () => {
-    //   const expectedTrainDialogs = [
-    //     { firstInput: 'The green frog jumped.', lastInput: 'The green frog jumped.', lastResponse: 'The only response' },
-    //     { firstInput: 'The green frog jumped.', lastInput: 'The brown dog ran.', lastResponse: '' },
-    //   ]
-    //   train.VerifyListOfTrainDialogs(expectedTrainDialogs)
-    // })
+    it('Verify that Bug 2305 did not reproduce', () => {
+      const expectedTrainDialogs = [
+        { firstInput: 'The green frog jumped.', lastInput: 'The green frog jumped.', lastResponse: 'The only response' },
+        { firstInput: 'The green frog jumped.', lastInput: 'The brown dog ran.', lastResponse: '' },
+      ]
+      train.VerifyListOfTrainDialogs(expectedTrainDialogs)
+    })
   })
 })
 
