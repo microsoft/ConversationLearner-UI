@@ -3,6 +3,7 @@ import * as model from '../../support/components/ModelPage'
 import * as trainDialog from '../../support/Train'
 import * as logDialogs from '../../support/components/LogDialogsGrid'
 import * as logDialog from '../../support/components/LogDialogModal'
+import * as entityDetectionPanel from '../../support/components/EntityDetectionPanel'
 import constants from '../../support/constants'
 import s from '../../support/selectors'
 import * as util from '../../support/utilities'
@@ -191,8 +192,8 @@ describe('Entity Conflicts', () => {
                     model.NavigateToTrainDialogs()
                     trainDialog.CreateNewTrainDialog()
                     trainDialog.TypeYourMessage(testData.userInput1)
-                    trainDialog.RemoveEntityLabel(labeledWord1, testData.entityName)
-                    trainDialog.LabelTextAsEntity(labeledWord2, testData.entityName)
+                    entityDetectionPanel.RemoveEntityLabel(labeledWord1, testData.entityName)
+                    entityDetectionPanel.LabelTextAsEntity(labeledWord2, testData.entityName)
                 })
 
                 it('should show entity conflict modal when score actions is clicked', () => {
@@ -205,7 +206,7 @@ describe('Entity Conflicts', () => {
                     cy.get(s.dialogModal.entityConflictModal.buttonCancel)
                         .click()
 
-                    trainDialog.VerifyEntityLabel(labeledWord2, testData.entityName)
+                    entityDetectionPanel.VerifyEntityLabel(labeledWord2, testData.entityName)
                 })
 
                 it('should change the labels if Accept is clicked', () => {
@@ -216,7 +217,7 @@ describe('Entity Conflicts', () => {
                         .click()
 
                     // TODO: Selects score actions immediately, need to verify memory
-                    // trainDialog.VerifyEntityLabel(labeledWord1, testData.entityName)
+                    // entityDetectionPanel.VerifyEntityLabel(labeledWord1, testData.entityName)
                     trainDialog.SelectTextAction(testData.actionResponse)
                     trainDialog.ClickAbandonDeleteButton()
 
@@ -259,13 +260,13 @@ describe('Entity Conflicts', () => {
                     .click()
 
                 trainDialog.SelectChatTurnExactMatch(testData.userInput1)
-                trainDialog.RemoveEntityLabel(labeledWord1, testData.entityName)
-                trainDialog.LabelTextAsEntity(labeledWord2, testData.entityName)
+                entityDetectionPanel.RemoveEntityLabel(labeledWord1, testData.entityName)
+                entityDetectionPanel.LabelTextAsEntity(labeledWord2, testData.entityName)
                 trainDialog.ClickSubmitChangesButton()
 
                 trainDialog.SelectChatTurnExactMatch(testData.userInput2)
-                trainDialog.RemoveEntityLabel(labeledWord1, testData.entityName)
-                trainDialog.LabelTextAsEntity(labeledWord2, testData.entityName)
+                entityDetectionPanel.RemoveEntityLabel(labeledWord1, testData.entityName)
+                entityDetectionPanel.LabelTextAsEntity(labeledWord2, testData.entityName)
                 trainDialog.ClickSubmitChangesButton()
 
                 trainDialog.ClickSaveCloseButton()

@@ -5,6 +5,7 @@
 
 import * as models from '../../../support/Models'
 import * as modelPage from '../../../support/components/ModelPage'
+import * as entityDetectionPanel from '../../../support/components/EntityDetectionPanel'
 import * as train from '../../../support/Train'
 import * as helpers from '../../../support/Helpers'
 
@@ -28,18 +29,18 @@ describe("Bug 2253 Repro", () => {
 
     it('Alter the Entity Label', () => {
       train.SelectChatTurnExactMatch('My foot is dirty.')
-      train.RemoveEntityLabel('dirty', 'conditionOfFoot')
+      entityDetectionPanel.RemoveEntityLabel('dirty', 'conditionOfFoot')
       train.ClickSubmitChangesButton()
     })
 
     // Bug 2253: Inconsistent Entity Label warning popup comes up when it should not
     // Once this bug is fixed comment out this block of code and uncomment the next block
     it('Verify that Bug 2253 reproduced', () => {
-      train.VerifyEntityLabelConflictPopup()
+      entityDetectionPanel.VerifyEntityLabelConflictPopup()
     })
     
     // it('Verify that Bug 2253 did not reproduce', () => {
-    //   train.VerifyNoEntityLabelConflictPopup()
+    //   entityDetectionPanel.VerifyNoEntityLabelConflictPopup()
     // })
   })
 })

@@ -5,7 +5,7 @@
 
 import * as models from '../../../support/Models'
 import * as modelPage from '../../../support/components/ModelPage'
-import * as scorerModal from '../../../support/components/ScorerModal'
+import * as entityDetectionPanel from '../../../support/components/EntityDetectionPanel'
 import * as train from '../../../support/Train'
 import * as memoryTableComponent from '../../../support/components/MemoryTableComponent'
 import * as helpers from '../../../support/Helpers'
@@ -27,12 +27,12 @@ describe('API Memory Manipulation - Train', () => {
 
     it('Should invoke API Callbacks to move "anchovies" from "Toppings" to "OutOfStock" memory', () => {
       train.TypeYourMessage('I would like cheese, mushrooms, peppers, sausage, olives, and anchovies on a large pizza')
-      train.LabelTextAsEntity('sausage', '+Toppings')
-      train.LabelTextAsEntity('olives', '+Toppings')
-      train.LabelTextAsEntity('anchovies', '+Toppings')
-      train.LabelTextAsEntity('peppers', '+Toppings')
-      train.LabelTextAsEntity('mushrooms', '+Toppings')
-      train.LabelTextAsEntity('cheese', '+Toppings')
+      entityDetectionPanel.LabelTextAsEntity('sausage', '+Toppings')
+      entityDetectionPanel.LabelTextAsEntity('olives', '+Toppings')
+      entityDetectionPanel.LabelTextAsEntity('anchovies', '+Toppings')
+      entityDetectionPanel.LabelTextAsEntity('peppers', '+Toppings')
+      entityDetectionPanel.LabelTextAsEntity('mushrooms', '+Toppings')
+      entityDetectionPanel.LabelTextAsEntity('cheese', '+Toppings')
       train.ClickScoreActionsButton()
       memoryTableComponent.VerifyEntityValues('Toppings', ['cheese', 'mushrooms', 'peppers', 'sausage', 'olives'])
       memoryTableComponent.VerifyEntityValues('OutOfStock', ['anchovies'])
@@ -63,7 +63,7 @@ describe('API Memory Manipulation - Train', () => {
 
     it('Should remove one of the toppings and verify the resulting list is correct', () => {
       train.TypeYourMessage('Leave off the sausage')
-      train.LabelTextAsEntity('sausage', '-Toppings')
+      entityDetectionPanel.LabelTextAsEntity('sausage', '-Toppings')
       train.ClickScoreActionsButton()
       memoryTableComponent.VerifyEntityValues('Toppings', ['cheese', 'mushrooms', 'peppers', 'olives'])
       memoryTableComponent.VerifyDisplacedEntityValues('Toppings', ['sausage'])

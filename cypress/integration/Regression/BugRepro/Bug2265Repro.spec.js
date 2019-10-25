@@ -5,6 +5,7 @@
 
 import * as models from '../../../support/Models'
 import * as modelPage from '../../../support/components/ModelPage'
+import * as entityDetectionPanel from '../../../support/components/EntityDetectionPanel'
 import * as train from '../../../support/Train'
 import * as helpers from '../../../support/Helpers'
 
@@ -44,7 +45,7 @@ describe('Bug 2265 Repro', () => {
 
     it('Select a Bot Turn, + Action + Entity - Create an Enum Entity', () => {
       train.SelectChatTurnExactMatch('The user asks a silly question')
-      train.LabelTextAsEntity('user', 'one')
+      entityDetectionPanel.LabelTextAsEntity('user', 'one')
       train.ClickSubmitChangesButton()
     })
 

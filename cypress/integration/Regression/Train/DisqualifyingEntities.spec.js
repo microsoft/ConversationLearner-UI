@@ -6,6 +6,7 @@
 import * as models from '../../../support/Models'
 import * as modelPage from '../../../support/components/ModelPage'
 import * as memoryTableComponent from '../../../support/components/MemoryTableComponent'
+import * as entityDetectionPanel from '../../../support/components/EntityDetectionPanel'
 import * as scorerModal from '../../../support/components/ScorerModal'
 import * as train from '../../../support/Train'
 import * as common from '../../../support/Common'
@@ -44,7 +45,7 @@ describe('Disqualifying Entities - Train', () => {
     context('2nd Round', () => {
       it('Should type in another user utterance, verify it is labled as the "name" Entity and click Score Actions button', () => {
         train.TypeYourMessage('Sam')
-        train.VerifyEntityLabel('Sam', 'name')
+        entityDetectionPanel.VerifyEntityLabel('Sam', 'name')
         train.ClickScoreActionsButton()
       })
 
@@ -110,7 +111,7 @@ describe('Disqualifying Entities - Train', () => {
 
       it('Should type in a user utterance and click Score Actions button', () => {
         train.TypeYourMessage('I want a million dollars')
-        train.LabelTextAsEntity('a million dollars', 'want')
+        entityDetectionPanel.LabelTextAsEntity('a million dollars', 'want')
         train.ClickScoreActionsButton()
       })
 
@@ -124,7 +125,7 @@ describe('Disqualifying Entities - Train', () => {
     context('2nd Round', () => {
       it('Should type in a user utterance and click Score Actions button', () => {
         train.TypeYourMessage('Sandeep')
-        train.VerifyEntityLabel('Sandeep', 'name')
+        entityDetectionPanel.VerifyEntityLabel('Sandeep', 'name')
         train.ClickScoreActionsButton()
       })
 

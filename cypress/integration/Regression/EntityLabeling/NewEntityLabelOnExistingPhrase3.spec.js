@@ -5,6 +5,7 @@
 
 import * as models from '../../../support/Models'
 import * as modelPage from '../../../support/components/ModelPage'
+import * as entityDetectionPanel from '../../../support/components/EntityDetectionPanel'
 import * as train from '../../../support/Train'
 import * as helpers from '../../../support/Helpers'
 
@@ -27,12 +28,12 @@ describe('New Entity Label on Existing Phrase 2 - Entity Labeling', () => {
 
     it('User utters another existing phrase and labels an entity', () => {
       train.TypeYourMessage("Pearls of wisdom are useless unless diligently applied to one's own life.")
-      train.LabelTextAsEntity('wisdom', 'anEntity')
+      entityDetectionPanel.LabelTextAsEntity('wisdom', 'anEntity')
     })
 
     it('Score Actions, verify that the Entitly Label Conflict modal pops up and that we can change our labeling', () => {
       train.ClickScoreActionsButton()
-      train.VerifyEntityLabelConflictPopupAndChangeToAttempted(undefined, [{ text: 'wisdom', entity: 'anEntity' }])
+      entityDetectionPanel.VerifyEntityLabelConflictPopupAndChangeToAttempted(undefined, [{ text: 'wisdom', entity: 'anEntity' }])
     })
 
     it('Select the only Bot response', () => {
@@ -54,7 +55,7 @@ describe('New Entity Label on Existing Phrase 2 - Entity Labeling', () => {
 
       it('Verify that the affected turn is now Entity labeled', () => {
         train.SelectChatTurnExactMatch("Pearls of wisdom are useless unless diligently applied to one's own life.")
-        train.VerifyEntityLabel('wisdom', 'anEntity')
+        entityDetectionPanel.VerifyEntityLabel('wisdom', 'anEntity')
       })
 
       it('Click Replay button and verify it clears the warning for this Train Dialog', () => {

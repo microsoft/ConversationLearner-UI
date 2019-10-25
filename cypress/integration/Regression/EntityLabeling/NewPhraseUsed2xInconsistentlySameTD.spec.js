@@ -5,6 +5,7 @@
 
 import * as models from '../../../support/Models'
 import * as modelPage from '../../../support/components/ModelPage'
+import * as entityDetectionPanel from '../../../support/components/EntityDetectionPanel'
 import * as train from '../../../support/Train'
 import * as helpers from '../../../support/Helpers'
 
@@ -27,7 +28,7 @@ describe('New Entity Label on Existing Phrase 1 - Entity Labeling', () => {
 
     it('User types a new and unique phrase and labels a word as an Entity', () => {
       train.TypeYourMessage('A totally unique phrase')
-      train.LabelTextAsEntity('unique', 'anEntity')
+      entityDetectionPanel.LabelTextAsEntity('unique', 'anEntity')
       train.ClickScoreActionsButton()
       train.SelectTextAction('The only response')
     })
@@ -38,7 +39,7 @@ describe('New Entity Label on Existing Phrase 1 - Entity Labeling', () => {
     })
 
     it('Change to Previously Submitted Label from prior turn, then select the only Bot response', () => {
-      train.VerifyEntityLabelConflictPopupAndChangeToPevious([{ text: 'unique', entity: 'anEntity' }])
+      entityDetectionPanel.VerifyEntityLabelConflictPopupAndChangeToPevious([{ text: 'unique', entity: 'anEntity' }])
       train.SelectTextAction('The only response')
     })
   
@@ -68,12 +69,12 @@ describe('New Entity Label on Existing Phrase 1 - Entity Labeling', () => {
     
     it('Remove the Entity label from one of the phrases', () => {
       train.SelectChatTurnExactMatch('A totally unique phrase')
-      train.RemoveEntityLabel('unique', 'anEntity')
+      entityDetectionPanel.RemoveEntityLabel('unique', 'anEntity')
       train.ClickSubmitChangesButton()
     })
     
     it('Change the other turn in this TD to our Attempted change', () => {
-      train.VerifyEntityLabelConflictPopupAndChangeToAttempted([{ text: 'unique', entity: 'anEntity' }])
+      entityDetectionPanel.VerifyEntityLabelConflictPopupAndChangeToAttempted([{ text: 'unique', entity: 'anEntity' }])
     })
 
   // -----------------------------------------------------------------------------------------------------------------------------

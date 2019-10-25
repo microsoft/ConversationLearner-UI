@@ -5,10 +5,8 @@
 
 import * as models from '../../../support/Models'
 import * as modelPage from '../../../support/components/ModelPage'
-import * as memoryTableComponent from '../../../support/components/MemoryTableComponent'
-import * as scorerModal from '../../../support/components/ScorerModal'
+import * as entityDetectionPanel from '../../../support/components/EntityDetectionPanel'
 import * as train from '../../../support/Train'
-import * as common from '../../../support/Common'
 import * as helpers from '../../../support/Helpers'
 
 describe('API Callbacks - Train', () => {
@@ -34,8 +32,8 @@ describe('API Callbacks - Train', () => {
 
     it('Should invoke "LogicWithArgs" API Callback and verify it is in the chat pane', () => {
       train.TypeYourMessage('LogicWithArgs ThingOne and ThingTwo')
-      train.LabelTextAsEntity('ThingOne', '1stArg')
-      train.LabelTextAsEntity('ThingTwo', '2ndArg')
+      entityDetectionPanel.LabelTextAsEntity('ThingOne', '1stArg')
+      entityDetectionPanel.LabelTextAsEntity('ThingTwo', '2ndArg')
       train.ClickScoreActionsButton()
       train.SelectApiCardAction('LogicWithArgs', 'API Call:', 'LogicWithArgs(ThingOne,ThingTwo)')
     })

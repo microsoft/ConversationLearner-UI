@@ -6,8 +6,7 @@
 import * as models from '../../support/Models'
 import * as modelPage from '../../support/components/ModelPage'
 import * as train from '../../support/Train'
-import * as trainDialogsGrid from '../../support/components/TrainDialogsGrid'
-import * as common from '../../support/Common'
+import * as entityDetectionPanel from '../../../support/components/EntityDetectionPanel'
 import * as helpers from '../../support/Helpers'
 
 describe('Consistent Entity Labeling', () => {
@@ -19,8 +18,7 @@ describe('Consistent Entity Labeling', () => {
     it('Import a model, wait for training to complete and start a new Train Dialog', () => {
       models.ImportModel('z-temp', 'temp-cnstntEntLabel.cl')
       modelPage.NavigateToTrainDialogs()
-      cy.WaitForTrainingStatusCompleted()
-      train.CreateNewTrainDialog()
+      //cy.WaitForTrainingStatusCompleted()
     })
   })
 
@@ -35,8 +33,8 @@ describe('Consistent Entity Labeling', () => {
     })
 
     it('Re-lable the entities to set things right in this Train Dialog', () => {
-      train.XLabelTextAsEntity('Frog', 'multi', 1)
-      train.XLabelTextAsEntity('Tag', 'multi', 1)
+      entityDetectionPanel.LabelTextAsEntity('Frog', 'multi', 1)
+      entityDetectionPanel.LabelTextAsEntity('Tag', 'multi', 1)
     })
 
     it('', () => {

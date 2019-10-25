@@ -5,6 +5,7 @@
 
 import * as models from '../../../support/Models'
 import * as modelPage from '../../../support/components/ModelPage'
+import * as entityDetectionPanel from '../../../support/components/EntityDetectionPanel'
 import * as train from '../../../support/Train'
 import * as helpers from '../../../support/Helpers'
 
@@ -25,21 +26,21 @@ describe('Duplicate Entity Labels - ErrorHandling', () => {
 
     it('Type in a user utterance and label some of the text', () => {
       train.TypeYourMessage('My name is Joe Schmo')
-      train.LabelTextAsEntity('Joe', 'name')
-      train.LabelTextAsEntity('Schmo', 'name')
+      entityDetectionPanel.LabelTextAsEntity('Joe', 'name')
+      entityDetectionPanel.LabelTextAsEntity('Schmo', 'name')
     })
 
     it('Verify the warning message in the Entity label panel comes up.', () => {
-      train.VerifyDuplicateEntityLabelsWarning('name')
+      entityDetectionPanel.VerifyDuplicateEntityLabelsWarning('name')
     })
 
     it('Duplicate label more of the text', () => {
-      train.LabelTextAsEntity('My', 'word')
-      train.LabelTextAsEntity('name', 'word')
+      entityDetectionPanel.LabelTextAsEntity('My', 'word')
+      entityDetectionPanel.LabelTextAsEntity('name', 'word')
     })
 
     it('Verify the warning message in the Entity label panel changes.', () => {
-      train.VerifyDuplicateEntityLabelsWarning('word, name')
+      entityDetectionPanel.VerifyDuplicateEntityLabelsWarning('word, name')
     })
 
     it('Score Action and save Train Dialog', () => {
@@ -64,11 +65,11 @@ describe('Duplicate Entity Labels - ErrorHandling', () => {
     })
 
     it('Remove one of the erroneous labels', () => {
-      train.RemoveEntityLabel('My', 'word')
+      entityDetectionPanel.RemoveEntityLabel('My', 'word')
     })
 
     it('Verify the warning message in the Entity label panel changed', () => {
-      train.VerifyDuplicateEntityLabelsWarning('name')
+      entityDetectionPanel.VerifyDuplicateEntityLabelsWarning('name')
     })
 
     it('Submit the change and verify warning message under Chat Panel shows up', () => {
@@ -82,11 +83,11 @@ describe('Duplicate Entity Labels - ErrorHandling', () => {
     })
 
     it('Remove one of the erroneous labels', () => {
-      train.RemoveEntityLabel('Schmo', 'name')
+      entityDetectionPanel.RemoveEntityLabel('Schmo', 'name')
     })
 
     it('Verify the warning message in the Entity label panel goes away', () => {
-      train.VerifyNoDuplicateEntityLabelsWarning()
+      entityDetectionPanel.VerifyNoDuplicateEntityLabelsWarning()
     })
 
     it('Submit the change and verify warning message under Chat Panel changes', () => {

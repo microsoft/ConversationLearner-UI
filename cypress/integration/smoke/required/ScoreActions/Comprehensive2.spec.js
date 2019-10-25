@@ -9,6 +9,7 @@ import * as entities from '../../../../support/Entities'
 import * as actions from '../../../../support/Actions'
 import * as actionModal from '../../../../support/components/ActionModal'
 import * as scorerModal from '../../../../support/components/ScorerModal'
+import * as entityDetectionPanel from '../../../support/components/EntityDetectionPanel'
 import * as train from '../../../../support/Train'
 import * as helpers from '../../../../support/Helpers'
 
@@ -67,7 +68,7 @@ describe('Comprehensive 2 - Score Actions', () => {
 
     it('Label an entity from prior User Turn to cause a change in the API qualification', () => {
       train.SelectChatTurnStartsWith('Render these')
-      train.LabelTextAsEntity('disqualify', 'disqualifier')
+      entityDetectionPanel.LabelTextAsEntity('disqualify', 'disqualifier')
       train.ClickSubmitChangesButton()
       train.SelectChatTurnExactMatch('Uhhhh…')
     })
@@ -76,7 +77,7 @@ describe('Comprehensive 2 - Score Actions', () => {
 
     it('Label another entity from prior User Turn to cause a change in the API qualification', () => {
       train.SelectChatTurnStartsWith('Render these')
-      train.LabelTextAsEntity('OneFromAnEntity', '1stArg')
+      entityDetectionPanel.LabelTextAsEntity('OneFromAnEntity', '1stArg')
       train.ClickSubmitChangesButton()
       train.SelectChatTurnExactMatch('Uhhhh…')
     })
@@ -85,7 +86,7 @@ describe('Comprehensive 2 - Score Actions', () => {
 
     it('Label yet another entity from prior User Turn to cause a change in the API qualification', () => {
       train.SelectChatTurnStartsWith('Render these')
-      train.LabelTextAsEntity('TwoToBeUsedByApiCall', '2ndArg')
+      entityDetectionPanel.LabelTextAsEntity('TwoToBeUsedByApiCall', '2ndArg')
       train.ClickSubmitChangesButton()
       train.SelectChatTurnExactMatch('Uhhhh…')
     })
@@ -94,7 +95,7 @@ describe('Comprehensive 2 - Score Actions', () => {
 
     it('Remove label from the disqualifying entity from prior User Turn to cause a change in the API qualification', () => {
       train.SelectChatTurnStartsWith('Render these')
-      train.RemoveEntityLabel('disqualify', 'disqualifier')
+      entityDetectionPanel.RemoveEntityLabel('disqualify', 'disqualifier')
       train.ClickSubmitChangesButton()
       train.SelectChatTurnExactMatch('Uhhhh…')
     })

@@ -8,6 +8,7 @@ import * as modelPage from '../../../support/components/ModelPage'
 import * as entities from '../../../support/Entities'
 import * as actions from '../../../support/Actions'
 import * as train from '../../../support/Train'
+import * as entityDetectionPanel from '../../../support/components/EntityDetectionPanel'
 import * as memoryTableComponent from '../../../support/components/MemoryTableComponent'
 import * as helpers from '../../../support/Helpers'
 
@@ -41,7 +42,7 @@ describe('Entity Labeling - Create Model', () => {
       train.AddTags(['Tag', 'Frog'])
 
       train.TypeYourMessage('This is Tag.')
-      train.LabelTextAsEntity('Tag', 'multi', false)
+      entityDetectionPanel.LabelTextAsEntity('Tag', 'multi', 0, false)
       train.ClickScoreActionsButton()
       train.SelectTextAction('Hello')
     })
@@ -55,8 +56,8 @@ describe('Entity Labeling - Create Model', () => {
     it('Label multiple words as the same entity.', () => {
       train.TypeYourMessage('This is Frog and Tag.')
       memoryTableComponent.VerifyEntityValues('multi', ['Tag'])
-      train.VerifyEntityLabel('Tag', 'multi')
-      train.LabelTextAsEntity('Frog', 'multi', false)
+      entityDetectionPanel.VerifyEntityLabel('Tag', 'multi')
+      entityDetectionPanel.LabelTextAsEntity('Frog', 'multi', 0, false)
       train.ClickScoreActionsButton()
       memoryTableComponent.VerifyEntityValues('multi', ['Tag', 'Frog'])
       train.SelectTextAction('Hi')
@@ -71,8 +72,8 @@ describe('Entity Labeling - Create Model', () => {
     it('Reverse the labeled words and once again label them as the same entity.', () => {
       train.TypeYourMessage('This is Tag and Frog.')
       memoryTableComponent.VerifyEntityValues('multi', ['Tag', 'Frog'])
-      train.VerifyEntityLabel('Tag', 'multi')
-      train.VerifyEntityLabel('Frog', 'multi')
+      entityDetectionPanel.VerifyEntityLabel('Tag', 'multi')
+      entityDetectionPanel.VerifyEntityLabel('Frog', 'multi')
       train.ClickScoreActionsButton()
       train.SelectTextAction('Hi')
 

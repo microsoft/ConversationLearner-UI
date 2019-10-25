@@ -7,7 +7,7 @@ import * as models from '../../../support/Models'
 import * as modelPage from '../../../support/components/ModelPage'
 import * as train from '../../../support/Train'
 import * as trainDialogsGrid from '../../../support/components/TrainDialogsGrid'
-import * as common from '../../../support/Common'
+import * as entityDetectionPanel from '../../../support/components/EntityDetectionPanel'
 import * as helpers from '../../../support/Helpers'
 
 describe('Consistent Entity Labeling', () => {
@@ -27,32 +27,32 @@ describe('Consistent Entity Labeling', () => {
   context('Train - Standard Input', () => {
     it('Should get an error message after removing single entity label & prevent scoring actions till fixed', () => {
       train.TypeYourMessage('This is Tag.')
-      train.RemoveEntityLabel('Tag', 'multi')
+      entityDetectionPanel.RemoveEntityLabel('Tag', 'multi')
       train.ClickScoreActionsButton()
-      train.VerifyEntityLabelConflictPopupAndClose([textEntityPairs[0]])
+      entityDetectionPanel.VerifyEntityLabelConflictPopupAndClose([textEntityPairs[0]])
       train.ClickScoreActionsButton()
-      train.VerifyEntityLabelConflictPopupAndChangeToPevious([textEntityPairs[0]])
+      entityDetectionPanel.VerifyEntityLabelConflictPopupAndChangeToPevious([textEntityPairs[0]])
       train.SelectTextAction('Hello')
     })
 
     it('Should get an error message after removing a different single entity label & prevent scoring actions till fixed', () => {
       train.TypeYourMessage('This is Frog and Tag.')
-      train.RemoveEntityLabel('Frog', 'multi')
+      entityDetectionPanel.RemoveEntityLabel('Frog', 'multi')
       train.ClickScoreActionsButton()
-      train.VerifyEntityLabelConflictPopupAndClose(textEntityPairs)
+      entityDetectionPanel.VerifyEntityLabelConflictPopupAndClose(textEntityPairs)
       train.ClickScoreActionsButton()
-      train.VerifyEntityLabelConflictPopupAndChangeToPevious(textEntityPairs)
+      entityDetectionPanel.VerifyEntityLabelConflictPopupAndChangeToPevious(textEntityPairs)
       train.SelectTextAction('Hi')
     })
 
     it('Should get an error message after removing two entity labels & prevent scoring actions till fixed', () => {
       train.TypeYourMessage('This is Tag and Frog.')
-      train.RemoveEntityLabel('Tag', 'multi')
-      train.RemoveEntityLabel('Frog', 'multi')
+      entityDetectionPanel.RemoveEntityLabel('Tag', 'multi')
+      entityDetectionPanel.RemoveEntityLabel('Frog', 'multi')
       train.ClickScoreActionsButton()
-      train.VerifyEntityLabelConflictPopupAndClose(textEntityPairs)
+      entityDetectionPanel.VerifyEntityLabelConflictPopupAndClose(textEntityPairs)
       train.ClickScoreActionsButton()
-      train.VerifyEntityLabelConflictPopupAndChangeToPevious(textEntityPairs)
+      entityDetectionPanel.VerifyEntityLabelConflictPopupAndChangeToPevious(textEntityPairs)
       train.SelectTextAction('Hi')
     })
   })
@@ -71,23 +71,23 @@ describe('Consistent Entity Labeling', () => {
       train.TypeAlternativeInput('This is Frog and Tag.')
       train.TypeAlternativeInput('This is Tag and Frog.')
 
-      train.VerifyEntityLabelWithinSpecificInput([textEntityPairs[0]], 0)
-      train.VerifyEntityLabelWithinSpecificInput(textEntityPairs, 1)
-      train.VerifyEntityLabelWithinSpecificInput(textEntityPairs, 2)
+      entityDetectionPanel.VerifyEntityLabelWithinSpecificInput([textEntityPairs[0]], 0)
+      entityDetectionPanel.VerifyEntityLabelWithinSpecificInput(textEntityPairs, 1)
+      entityDetectionPanel.VerifyEntityLabelWithinSpecificInput(textEntityPairs, 2)
     })
 
     it('Should get an error message after removing two entity labels from alternative input & prevent scoring actions till fixed', () => {
-      train.RemoveEntityLabel('Tag', 'multi', 1)
-      train.RemoveEntityLabel('Frog', 'multi', 2)
+      entityDetectionPanel.RemoveEntityLabel('Tag', 'multi', 1)
+      entityDetectionPanel.RemoveEntityLabel('Frog', 'multi', 2)
 
       train.ClickScoreActionsButton()
-      train.VerifyEntityLabelConflictPopupAndClose(textEntityPairs)
+      entityDetectionPanel.VerifyEntityLabelConflictPopupAndClose(textEntityPairs)
       train.ClickScoreActionsButton()
-      train.VerifyEntityLabelConflictPopupAndChangeToPevious(textEntityPairs)
+      entityDetectionPanel.VerifyEntityLabelConflictPopupAndChangeToPevious(textEntityPairs)
 
-      train.VerifyEntityLabelConflictPopupAndClose(textEntityPairs)
+      entityDetectionPanel.VerifyEntityLabelConflictPopupAndClose(textEntityPairs)
       train.ClickScoreActionsButton()
-      train.VerifyEntityLabelConflictPopupAndChangeToPevious(textEntityPairs)
+      entityDetectionPanel.VerifyEntityLabelConflictPopupAndChangeToPevious(textEntityPairs)
       train.SelectTextAction('Hi')
 
       train.SaveAsIsVerifyInGrid()
@@ -99,27 +99,27 @@ describe('Consistent Entity Labeling', () => {
       train.EditTraining('This is Tag.', 'This is Tag.', 'Hi')
       train.SelectChatTurnExactMatch('This is Tag.')
 
-      train.VerifyEntityLabelWithinSpecificInput([textEntityPairs[0]], 0)
-      train.VerifyEntityLabelWithinSpecificInput(textEntityPairs, 1)
-      train.VerifyEntityLabelWithinSpecificInput(textEntityPairs, 2)
+      entityDetectionPanel.VerifyEntityLabelWithinSpecificInput([textEntityPairs[0]], 0)
+      entityDetectionPanel.VerifyEntityLabelWithinSpecificInput(textEntityPairs, 1)
+      entityDetectionPanel.VerifyEntityLabelWithinSpecificInput(textEntityPairs, 2)
     })
 
     it('Remove two entity labels from alternative input', () => {
-      train.RemoveEntityLabel('Tag', 'multi', 1)
-      train.RemoveEntityLabel('Frog', 'multi', 2)
+      entityDetectionPanel.RemoveEntityLabel('Tag', 'multi', 1)
+      entityDetectionPanel.RemoveEntityLabel('Frog', 'multi', 2)
     })
     
     it('Verify user cannot submit changes without accepting auto-re-labling of the 1st alternative input that we changed', () => {
       train.ClickSubmitChangesButton()
-      train.VerifyEntityLabelConflictPopupAndClose(textEntityPairs)
+      entityDetectionPanel.VerifyEntityLabelConflictPopupAndClose(textEntityPairs)
       train.ClickSubmitChangesButton()
-      train.VerifyEntityLabelConflictPopupAndChangeToPevious(textEntityPairs)
+      entityDetectionPanel.VerifyEntityLabelConflictPopupAndChangeToPevious(textEntityPairs)
     })
 
     it('Verify user cannot submit changes without accepting auto-re-labling of the 2nd alternative input that we changed', () => {
-      train.VerifyEntityLabelConflictPopupAndClose(textEntityPairs)
+      entityDetectionPanel.VerifyEntityLabelConflictPopupAndClose(textEntityPairs)
       train.ClickSubmitChangesButton()
-      train.VerifyEntityLabelConflictPopupAndChangeToPevious(textEntityPairs)
+      entityDetectionPanel.VerifyEntityLabelConflictPopupAndChangeToPevious(textEntityPairs)
     })
 
     it('Abandon the changes', () => {
@@ -134,13 +134,13 @@ describe('Consistent Entity Labeling', () => {
 
     it('Remove both Entity labels', () => {
       train.SelectChatTurnExactMatch('This is Frog and Tag.')
-      train.RemoveEntityLabel('Tag', 'multi')
-      train.RemoveEntityLabel('Frog', 'multi')
+      entityDetectionPanel.RemoveEntityLabel('Tag', 'multi')
+      entityDetectionPanel.RemoveEntityLabel('Frog', 'multi')
     })
 
     it('Change other instance of the phrase to attempted changes we just made', () => {
       train.ClickSubmitChangesButton()
-      train.VerifyEntityLabelConflictPopupAndChangeToAttempted(textEntityPairs)
+      entityDetectionPanel.VerifyEntityLabelConflictPopupAndChangeToAttempted(textEntityPairs)
     })
 
     it('Save the changes', () => {
@@ -172,7 +172,7 @@ describe('Consistent Entity Labeling', () => {
     
     it('Select the user turn and verify there is an error message', () => {
       train.SelectChatTurnExactMatch('This is Tag.')
-      train.VerifyMatchWarning(1)
+      entityDetectionPanel.VerifyMatchWarning(1)
     })
 
     it('Re-lable the entities to set things right in this Train Dialog', () => {
@@ -183,8 +183,8 @@ describe('Consistent Entity Labeling', () => {
     })
 
     it('verify that the alternative text at index 1 is not labeled.', () => {
-      train.VerifyTextIsNotLabeledAsEntity('Tag', 'multi', 1)
-      train.VerifyTextIsNotLabeledAsEntity('Frog', 'multi', 1)
+      entityDetectionPanel.VerifyTextIsNotLabeledAsEntity('Tag', 'multi', 1)
+      entityDetectionPanel.VerifyTextIsNotLabeledAsEntity('Frog', 'multi', 1)
     })
 
     it('Close the Train Dialog', () => {

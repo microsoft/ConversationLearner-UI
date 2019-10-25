@@ -5,6 +5,7 @@
 
 import * as models from '../../../support/Models'
 import * as modelPage from '../../../support/components/ModelPage'
+import * as entityDetectionPanel from '../../../support/components/EntityDetectionPanel'
 import * as train from '../../../support/Train'
 import * as helpers from '../../../support/Helpers'
 
@@ -27,30 +28,30 @@ describe('New Entity Label on Existing Phrase 1 - Entity Labeling', () => {
 
     it('User utters an existing phrase and labels an entity', () => {
       train.TypeYourMessage('Phrase used only once.')
-      train.LabelTextAsEntity('once', 'anEntity') // always an entity...LOL
+      entityDetectionPanel.LabelTextAsEntity('once', 'anEntity') // always an entity...LOL
     })
 
     it('Score Actions, verify that the Entitly Label Conflict modal pops up and that we can close it without change to our labeling', () => {
       train.ClickScoreActionsButton()
-      train.VerifyEntityLabelConflictPopupAndClose(undefined, [{ text: 'once', entity: 'anEntity' }])
-      train.VerifyEntityLabel('once', 'anEntity')
+      entityDetectionPanel.VerifyEntityLabelConflictPopupAndClose(undefined, [{ text: 'once', entity: 'anEntity' }])
+      entityDetectionPanel.VerifyEntityLabel('once', 'anEntity')
     })
 
     it('Change to Previously Submitted Labels from other Train Dialogs...after we Score Actions', () => {
       train.ClickScoreActionsButton()
-      train.VerifyEntityLabelConflictPopupAndChangeToPevious(undefined, [{ text: 'once', entity: 'anEntity' }])
+      entityDetectionPanel.VerifyEntityLabelConflictPopupAndChangeToPevious(undefined, [{ text: 'once', entity: 'anEntity' }])
     })
 
     it('Verify that the label was removed and then relable it', () => {
       train.SelectTextAction('The only response')
       train.SelectChatTurnExactMatch('Phrase used only once.')
-      train.VerifyWordNotLabeledAsEntity('once', 'anEntity')
-      train.LabelTextAsEntity('once', 'anEntity')
+      entityDetectionPanel.VerifyWordNotLabeledAsEntity('once', 'anEntity')
+      entityDetectionPanel.LabelTextAsEntity('once', 'anEntity')
     })
 
     it('Change to Attempted labels all matching phrases found in other Train Dialogs...after we Score Actions', () => {
       train.ClickSubmitChangesButton()
-      train.VerifyEntityLabelConflictPopupAndChangeToAttempted(undefined, [{ text: 'once', entity: 'anEntity' }])
+      entityDetectionPanel.VerifyEntityLabelConflictPopupAndChangeToAttempted(undefined, [{ text: 'once', entity: 'anEntity' }])
     })
 
     it('Save the Train Dialog and verify that it is in the grid', () => {
@@ -65,7 +66,7 @@ describe('New Entity Label on Existing Phrase 1 - Entity Labeling', () => {
 
     it('Verify that the affected turn is now Entity labeled', () => {
       train.SelectChatTurnExactMatch('Phrase used only once.')
-      train.VerifyEntityLabel('once', 'anEntity')
+      entityDetectionPanel.VerifyEntityLabel('once', 'anEntity')
     })
 
     it('Click Replay button and verify it clears the warning for this Train Dialog', () => {

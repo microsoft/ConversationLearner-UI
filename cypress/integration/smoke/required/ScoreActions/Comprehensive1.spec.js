@@ -10,6 +10,7 @@ import * as actions from '../../../../support/Actions'
 import * as actionModal from '../../../../support/components/ActionModal'
 import * as scorerModal from '../../../../support/components/ScorerModal'
 import * as common from '../../../../support/Common'
+import * as entityDetectionPanel from '../../../support/components/EntityDetectionPanel'
 import * as train from '../../../../support/Train'
 import * as common from '../../../../support/Common'
 import * as helpers from '../../../../support/Helpers'
@@ -64,8 +65,8 @@ describe('Comprehensive 1 - Score Actions', () => {
 
     it('Name Entity in User Turn', () => {
       train.TypeYourMessage('My name is Jeff')
-      train.RemoveEntityLabel('My', 'name')
-      train.LabelTextAsEntity('Jeff', 'name')
+      entityDetectionPanel.RemoveEntityLabel('My', 'name')
+      entityDetectionPanel.LabelTextAsEntity('Jeff', 'name')
     })
 
     it('Uses the "name" Entity in a new Bot Response', () => {

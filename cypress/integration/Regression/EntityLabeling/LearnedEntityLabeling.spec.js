@@ -6,6 +6,7 @@
 import * as models from '../../../support/Models'
 import * as modelPage from '../../../support/components/ModelPage'
 import * as memoryTableComponent from '../../../support/components/MemoryTableComponent'
+import * as entityDetectionPanel from '../../../support/components/EntityDetectionPanel'
 import * as scorerModal from '../../../support/components/ScorerModal'
 import * as train from '../../../support/Train'
 import * as common from '../../../support/Common'
@@ -34,7 +35,7 @@ describe('Learned Entity Labeling', () => {
 
     it('Should auto-label Entity in user utterance based existing Train Dialog', () => {
       train.TypeYourMessage('My name is David.')
-      train.VerifyEntityLabel('David', 'name')
+      entityDetectionPanel.VerifyEntityLabel('David', 'name')
     })
 
     it('Should find labeled Entity in memory', () => {
@@ -51,7 +52,7 @@ describe('Learned Entity Labeling', () => {
 
     it('Should require manual Entity labeling', () => {
       train.TypeYourMessage('My name is Susan.')
-      train.LabelTextAsEntity('Susan', 'name')
+      entityDetectionPanel.LabelTextAsEntity('Susan', 'name')
     })
 
     it('Should find labeled Entity in memory', () => {
@@ -76,7 +77,7 @@ describe('Learned Entity Labeling', () => {
 
     it('Should auto-label Entity in user utterance based previous Train Dialog', () => {
       train.TypeYourMessage('My name is Gabriella.')
-      train.VerifyEntityLabel('Gabriella', 'name')
+      entityDetectionPanel.VerifyEntityLabel('Gabriella', 'name')
     })
 
     it('Should find labeled Entity in memory', () => {

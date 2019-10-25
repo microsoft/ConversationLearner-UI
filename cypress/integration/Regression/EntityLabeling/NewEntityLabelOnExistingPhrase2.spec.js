@@ -5,6 +5,7 @@
 
 import * as models from '../../../support/Models'
 import * as modelPage from '../../../support/components/ModelPage'
+import * as entityDetectionPanel from '../../../support/components/EntityDetectionPanel'
 import * as train from '../../../support/Train'
 import * as helpers from '../../../support/Helpers'
 
@@ -28,34 +29,34 @@ describe('New Entity Label on Existing Phrase 2 - Entity Labeling', () => {
 
     it('User utters another existing phrase and labels an entity', () => {
       train.TypeYourMessage('Two instances of this phrase there are.')
-      train.LabelTextAsEntity('Two', 'anEntity')
-      train.LabelTextAsEntity('phrase', 'anEntity')
+      entityDetectionPanel.LabelTextAsEntity('Two', 'anEntity')
+      entityDetectionPanel.LabelTextAsEntity('phrase', 'anEntity')
     })
 
     it('Score Actions, verify that the Entitly Label Conflict modal pops up and that we can close it without change to our labeling', () => {
       train.ClickScoreActionsButton()
-      train.VerifyEntityLabelConflictPopupAndClose(undefined, [{ text: 'Two', entity: 'anEntity' }, { text: 'phrase', entity: 'anEntity' }])
-      train.VerifyEntityLabel('Two', 'anEntity')
-      train.VerifyEntityLabel('phrase', 'anEntity')
+      traentityDetectionPanelin.VerifyEntityLabelConflictPopupAndClose(undefined, [{ text: 'Two', entity: 'anEntity' }, { text: 'phrase', entity: 'anEntity' }])
+      entityDetectionPanel.VerifyEntityLabel('Two', 'anEntity')
+      entityDetectionPanel.VerifyEntityLabel('phrase', 'anEntity')
     })
 
     it('Change to Previously Submitted Labels from other Train Dialogs...after we Score Actions', () => {
       train.ClickScoreActionsButton()
-      train.VerifyEntityLabelConflictPopupAndChangeToPevious(undefined, [{ text: 'Two', entity: 'anEntity' }, { text: 'phrase', entity: 'anEntity' }])
+      entityDetectionPanel.VerifyEntityLabelConflictPopupAndChangeToPevious(undefined, [{ text: 'Two', entity: 'anEntity' }, { text: 'phrase', entity: 'anEntity' }])
     })
 
     it('Verify that the label was removed and then relable it', () => {
       train.SelectTextAction('The only response')
       train.SelectChatTurnExactMatch('Two instances of this phrase there are.')
-      train.VerifyWordNotLabeledAsEntity('Two', 'anEntity')
-      train.VerifyWordNotLabeledAsEntity('phrase', 'anEntity')
-      train.LabelTextAsEntity('Two', 'anEntity')
-      train.LabelTextAsEntity('phrase', 'anEntity')
+      entityDetectionPanel.VerifyWordNotLabeledAsEntity('Two', 'anEntity')
+      entityDetectionPanel.VerifyWordNotLabeledAsEntity('phrase', 'anEntity')
+      entityDetectionPanel.LabelTextAsEntity('Two', 'anEntity')
+      entityDetectionPanel.LabelTextAsEntity('phrase', 'anEntity')
     })
 
     it('Change to Attempted labels all matching phrases found in other Train Dialogs...after we Score Actions', () => {
       train.ClickSubmitChangesButton()
-      train.VerifyEntityLabelConflictPopupAndChangeToAttempted(undefined, [{ text: 'Two', entity: 'anEntity' }, { text: 'phrase', entity: 'anEntity' }])
+      entityDetectionPanel.VerifyEntityLabelConflictPopupAndChangeToAttempted(undefined, [{ text: 'Two', entity: 'anEntity' }, { text: 'phrase', entity: 'anEntity' }])
     })
 
     it('Save the Train Dialog and verify that it is in the grid', () => {
@@ -70,7 +71,7 @@ describe('New Entity Label on Existing Phrase 2 - Entity Labeling', () => {
 
     it('Verify that the affected turn is now Entity labeled', () => {
       train.SelectChatTurnExactMatch('Two instances of this phrase there are.')
-      train.VerifyEntityLabel('Two', 'anEntity')
+      entityDetectionPanel.VerifyEntityLabel('Two', 'anEntity')
     })
 
     it('Click Replay button and verify it clears the warning for this Train Dialog', () => {
@@ -90,7 +91,7 @@ describe('New Entity Label on Existing Phrase 2 - Entity Labeling', () => {
 
     it('Verify that the affected turn is now Entity labeled', () => {
       train.SelectChatTurnExactMatch('Two instances of this phrase there are.')
-      train.VerifyEntityLabel('Two', 'anEntity')
+      entityDetectionPanel.VerifyEntityLabel('Two', 'anEntity')
     })
 
     it('Click Replay button and verify it clears the warning for this Train Dialog', () => {

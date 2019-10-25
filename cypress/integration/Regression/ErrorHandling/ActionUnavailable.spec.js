@@ -7,6 +7,7 @@ import * as models from '../../../support/Models'
 import * as modelPage from '../../../support/components/ModelPage'
 import * as train from '../../../support/Train'
 import * as trainDialogsGrid from '../../../support/components/TrainDialogsGrid'
+import * as entityDetectionPanel from '../../../support/components/EntityDetectionPanel'
 import * as common from '../../../support/Common'
 import * as helpers from '../../../support/Helpers'
 
@@ -29,7 +30,7 @@ describe('Action Unavailable - ErrorHandling', () => {
 
     it('Add user turn "Joe" and label it as the "name" entity', () => {
       train.TypeYourMessage('Joe')
-      train.LabelTextAsEntity('Joe', 'name')
+      entityDetectionPanel.LabelTextAsEntity('Joe', 'name')
     })
 
     it('Score Actions to train the Bot to respond with "Hello Joe"', () => {
@@ -39,7 +40,7 @@ describe('Action Unavailable - ErrorHandling', () => {
 
     it('Introduce an error in the Bot response by removing the entity label from "Joe"', () => {
       train.SelectChatTurnExactMatch('Joe')
-      train.RemoveEntityLabel('Joe', 'name')
+      entityDetectionPanel.RemoveEntityLabel('Joe', 'name')
       train.ClickSubmitChangesButton()
     })
 
@@ -72,7 +73,7 @@ describe('Action Unavailable - ErrorHandling', () => {
 
     it('Fix the user turn that caused the error', () => {
       train.SelectChatTurnExactMatch('Joe')
-      train.LabelTextAsEntity('Joe', 'name')
+      entityDetectionPanel.LabelTextAsEntity('Joe', 'name')
       train.ClickSubmitChangesButton()
     })
 

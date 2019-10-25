@@ -6,6 +6,7 @@
 import * as models from '../../../../support/Models'
 import * as modelPage from '../../../../support/components/ModelPage'
 import * as scorerModal from '../../../../support/components/ScorerModal'
+import * as entityDetectionPanel from '../../../support/components/EntityDetectionPanel'
 import * as train from '../../../../support/Train'
 import * as helpers from '../../../../support/Helpers'
 
@@ -34,24 +35,24 @@ describe('Comprehensive 5 - Score Actions', () => {
   context('Modify the Training then Verify Action Scoring', () => {
     it('Modify Entity Labels', () => {
       train.SelectChatTurnExactMatch('My name is Jeff')
-      train.RemoveEntityLabel('Jeff', 'name')
+      entityDetectionPanel.RemoveEntityLabel('Jeff', 'name')
       train.ClickSubmitChangesButton()
 
       train.SelectChatTurnExactMatch('Render these API Arguments: OneFromAnEntity, TwoToBeUsedByApiCall - and temporarily disqualify the Api response')
-      train.RemoveEntityLabel('OneFromAnEntity', '1stArg')
-      train.RemoveEntityLabel('TwoToBeUsedByApiCall', '2ndArg')
+      entityDetectionPanel.RemoveEntityLabel('OneFromAnEntity', '1stArg')
+      entityDetectionPanel.RemoveEntityLabel('TwoToBeUsedByApiCall', '2ndArg')
       train.ClickSubmitChangesButton()
 
       train.SelectChatTurnExactMatch('Clear Entity Values: 1stArg - 2ndArg - disqualifier - clear - fruit - name - set')
-      train.RemoveEntityLabel('1stArg', 'clear')
-      train.RemoveEntityLabel('2ndArg', 'clear')
+      entityDetectionPanel.RemoveEntityLabel('1stArg', 'clear')
+      entityDetectionPanel.RemoveEntityLabel('2ndArg', 'clear')
       train.ClickSubmitChangesButton()
 
       train.SelectChatTurnExactMatch('Set Entities: 1stArg: FirstArg - 2ndArg: SecondArg - fruit: PEACHES - name: Cindy - disqualifier: DISQUALIFIED')
-      train.RemoveEntityLabel('2ndArg:', 'set')
-      train.RemoveEntityLabel('fruit:', 'set')
-      train.LabelTextAsEntity('1stArg: FirstArg', '1stArg')
-      train.LabelTextAsEntity('disqualifier: DISQUALIFIED', 'disqualifier')
+      entityDetectionPanel.RemoveEntityLabel('2ndArg:', 'set')
+      entityDetectionPanel.RemoveEntityLabel('fruit:', 'set')
+      entityDetectionPanel.LabelTextAsEntity('1stArg: FirstArg', '1stArg')
+      entityDetectionPanel.LabelTextAsEntity('disqualifier: DISQUALIFIED', 'disqualifier')
       train.ClickSubmitChangesButton()
 
       train.ClickReplayButton()
