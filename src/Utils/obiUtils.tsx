@@ -48,7 +48,7 @@ export async function getLogDialogActivities(
     channelId: string | undefined,
     fetchLogDialogThunkAsync: (appId: string, logDialogId: string, replaceLocal: boolean, nullOnNotFound: boolean, noSpinnerDisplay: boolean) => Promise<CLM.LogDialog>,
     fetchActivitiesThunkAsync: (appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string, useMarkdown: boolean, noSpinnerDisplay: boolean) => Promise<CLM.TeachWithActivities>
-    ): Promise<Util.RecursivePartial<BB.Activity>[]> {
+): Promise<Util.RecursivePartial<BB.Activity>[]> {
 
     // Fetch the LogDialog
     const logDialog = await fetchLogDialogThunkAsync(appId, logDialogId, true, true, true)
@@ -375,9 +375,15 @@ export function generateEntityMapForAction(action: CLM.ActionBase, filledEntityM
     return map
 }
 
+export interface ConditionEntityAndValue {
+    entity: string
+    value: string
+}
+
 // NOTA BENE : We currently assume that switch nodes will only be acting on values returned by
 // API calls, and that values will be compared using strict string equality.
-export function parseEntityConditionFromDialogCase(branch: Case, entityConditions: { [key: string]: Set<string> }) {
+export function parseEntityConditionFromDialogCase(branch: Case, entityConditions: { [key: string]: Set<string> }):
+    ConditionEntityAndValue {
     if (!branch.value) {
         throw new Error("SwitchCondition cases must have value")
     }
@@ -401,6 +407,7 @@ export function parseEntityConditionFromDialogCase(branch: Case, entityCondition
         entityConditions[entity] = conditionValues
     }
     conditionValues.add(value)
+    return { entity, value }
 }
 
 // Return hash text for the given activity
@@ -508,13 +515,22 @@ function findActionFromScorerStep(scorerStep: CLM.TrainScorerStep, actions: CLM.
     return undefined
 }
 
-// Replace imported actions in TrainDialog with real Actions
+/**
+ * Creates actions for the input `TrainDialog`.
+ * Imports happen in 2 stages : in the first, TrainDialogs are created with placeholder actions that
+ * are only stored in UI component state memory.  In the second, real actions are created either
+ * interactively or automatically -- the latter invokes this function.
+ * 
+ * @param scorerStepConditions a map of `TrainScorerStep.importId` values to `Condition`s that should
+ *   be set on the generated action
+ */
 export async function createImportedActions(
     appId: string,
     trainDialog: CLM.TrainDialog,
     templates: CLM.Template[],
     lgItems: CLM.LGItem[] | undefined,
     actions: CLM.ActionBase[],
+    scorerStepConditions: { [key: string]: CLM.Condition[] } | undefined,
     createActionThunkAsync: (appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null>,
 ): Promise<void> {
 
@@ -531,7 +547,6 @@ export async function createImportedActions(
 
                 // Otherwise create a new one
                 if (!action) {
-
                     const isTerminal = round.scorerSteps.length === scoreIndex + 1
                     let importedAction: ImportedAction | undefined
                     if (lgItems) {
@@ -564,7 +579,7 @@ export async function createImportedActions(
                         }
                     }
 
-                    action = await createActionFromImport(appId, importedAction, templates, createActionThunkAsync)
+                    action = await createActionFromImport(appId, importedAction, templates, scorerStep, scorerStepConditions, createActionThunkAsync)
                     newActions.push(action)
                 }
 
@@ -576,11 +591,18 @@ export async function createImportedActions(
     }
 }
 
-// Greated an real action for an imported one, looking for a matching template
+/**
+ * Creates a real action for an `ImportedAction` action placeholder.
+ * 
+ * @param scorerStepConditions a map of `TrainScorerStep.importId` values to `Condition`s that should
+ *   be set on the generated action
+ */
 async function createActionFromImport(
     appId: string,
     importedAction: ImportedAction,
     templates: CLM.Template[],
+    scorerStep: CLM.TrainScorerStep,
+    scorerStepConditions: { [key: string]: CLM.Condition[] } | undefined,
     createActionThunkAsync: (appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null>,
 ): Promise<CLM.ActionBase> {
 
@@ -647,6 +669,9 @@ async function createActionFromImport(
             lgName: importedAction.lgName
         }
     })
+    if (scorerStep.importId && scorerStepConditions && scorerStepConditions[scorerStep.importId]) {
+        action.requiredConditions = scorerStepConditions[scorerStep.importId]
+    }
 
     const newAction = await createActionThunkAsync(appId, action)
     if (!newAction) {
