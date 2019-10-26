@@ -275,8 +275,7 @@ function getActionPayloadRenderer(action: CLM.ActionBase, component: ActionDetai
         return <span data-testid="actions-list-dispatch" className={OF.FontClassNames.mediumPlus}>Dispatch to model: {dispatchAction.modelName}</span>
     }
     else if (action.actionType === CLM.ActionTypes.CHANGE_MODEL) {
-        // TODO: Change to ModelAction?
-        const changeModelAction = new CLM.DispatchAction(action)
+        const changeModelAction = new CLM.ChangeModelAction(action)
         return <span data-testid="actions-list-change-model" className={OF.FontClassNames.mediumPlus}>Change to model: {changeModelAction.modelName}</span>
     }
 
@@ -379,7 +378,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                             return dispatchAction.modelName
                         }
                         case CLM.ActionTypes.CHANGE_MODEL: {
-                            const changeModelAction = new CLM.DispatchAction(action)
+                            const changeModelAction = new CLM.ChangeModelAction(action)
                             return changeModelAction.modelName
                         }
                         default: {

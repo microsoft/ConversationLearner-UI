@@ -508,7 +508,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     selectedModelOptionKey = dispatchAction.modelId
                 }
                 else if (action.actionType === CLM.ActionTypes.CHANGE_MODEL) {
-                    const changeModelAction = new CLM.DispatchAction(action)
+                    const changeModelAction = new CLM.ChangeModelAction(action)
                     selectedModelOptionKey = changeModelAction.modelId
                 }
 
@@ -1891,7 +1891,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                             </>}
 
                         {(this.state.selectedActionTypeOptionKey === CLM.ActionTypes.DISPATCH
-                        || this.state.selectedActionTypeOptionKey === CLM.ActionTypes.CHANGE_MODEL)
+                            || this.state.selectedActionTypeOptionKey === CLM.ActionTypes.CHANGE_MODEL)
                             && <TC.Dropdown
                                 data-testid="action-creator-dropdown-model-name"
                                 label="Model"
@@ -1914,11 +1914,9 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                 tipType={ToolTip.TipType.ACTION_WAIT}
                             />
                         </div>
-                        
+
                         {this.state.selectedActionTypeOptionKey !== CLM.ActionTypes.CHANGE_MODEL
                             && <>
-                            
-
                                 <TC.Checkbox
                                     data-testid="action-creator-reprompt-checkbox"
                                     label={Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_CHECKBOX_REPROMPT_LABEL)}
