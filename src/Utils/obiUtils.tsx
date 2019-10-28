@@ -647,13 +647,13 @@ function setMemoryStateForApiActionWithSwitch(
             // The next action is not a SwitchCondition-gated node.
             continue
         }
-        // Get conditions from the SwitchCondition-gated node.
-        const conditions = scorerStepConditions[nextScorerStep.importId]
-        const enumConditionData = getEnumConditionData(entities, conditions)
         // Set the logic result on the *current* scorer step.
         if (!scorerStep.logicResult) {
             scorerStep.logicResult = { logicValue: undefined, changedFilledEntities: [] }
         }
+        // Get conditions from the SwitchCondition-gated node.
+        const conditions = scorerStepConditions[nextScorerStep.importId]
+        const enumConditionData = conditions.map(condition => getEnumConditionData(entities, condition))
         for (const conditionEntity of enumConditionData) {
             const filledEntity: CLM.FilledEntity = {
                 entityId: conditionEntity.enumEntityId,
@@ -674,34 +674,30 @@ function setMemoryStateForApiActionWithSwitch(
  * Gets the enum entity and enum value associated with the given conditions.
  * @throws if the entity referenced in any `Condition` is not a valid enum.
  */
-function getEnumConditionData(entities: CLM.EntityBase[], conditions: CLM.Condition[]): EnumDataFromCondition[] {
-    const output: EnumDataFromCondition[] = []
-    for (const condition of conditions) {
-        if (!condition.valueId) {
-            // This should not happen; conditions created from conditions in .dialog import should always reference enum entities.
-            throw new Error(`Action condition doesn't reference an entity`)
-        }
-        // Find the entity.
-        const conditionEntity = entities.find(e => e.entityId === condition.entityId)
-        if (!conditionEntity) {
-            throw new Error(`Couldn't find entity with id ${condition.entityId}`)
-        }
-        if (conditionEntity.entityType !== CLM.EntityType.ENUM || !conditionEntity.enumValues) {
-            // This should not happen; entities created from conditions in .dialog import should always be enum.
-            throw new Error(`Entity ${conditionEntity.entityId} is not a valid enum`)
-        }
-        // Find the specific enum value referenced by the condition.
-        const enumValue = conditionEntity.enumValues.find(val => val.enumValueId === condition.valueId)
-        if (!enumValue) {
-            throw new Error(`Enum entity ${conditionEntity.entityName} missing enum value ${condition.valueId}`)
-        }
-        output.push({
-            enumEntityId: condition.entityId,
-            enumValueId: condition.valueId,
-            enumValueText: enumValue.enumValue,
-        })
+function getEnumConditionData(entities: CLM.EntityBase[], condition: CLM.Condition): EnumDataFromCondition {
+    if (!condition.valueId) {
+        // This should not happen; conditions created from conditions in .dialog import should always reference enum entities.
+        throw new Error(`Action condition doesn't reference an entity`)
     }
-    return output
+    // Find the entity.
+    const conditionEntity = entities.find(e => e.entityId === condition.entityId)
+    if (!conditionEntity) {
+        throw new Error(`Couldn't find entity with id ${condition.entityId}`)
+    }
+    if (conditionEntity.entityType !== CLM.EntityType.ENUM || !conditionEntity.enumValues) {
+        // This should not happen; entities created from conditions in .dialog import should always be enum.
+        throw new Error(`Entity ${conditionEntity.entityId} is not a valid enum`)
+    }
+    // Find the specific enum value referenced by the condition.
+    const enumValue = conditionEntity.enumValues.find(val => val.enumValueId === condition.valueId)
+    if (!enumValue) {
+        throw new Error(`Enum entity ${conditionEntity.entityName} missing enum value ${condition.valueId}`)
+    }
+    return {
+        enumEntityId: condition.entityId,
+        enumValueId: condition.valueId,
+        enumValueText: enumValue.enumValue,
+    }
 }
 
 /**
