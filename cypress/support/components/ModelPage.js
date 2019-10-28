@@ -37,7 +37,7 @@ export class TrainingStatus {
     
     const trainingStatusElements = Cypress.$('[data-testid^="training-status-"]')
     if (Cypress.$(trainingStatusElements).find('[data-testid="training-status-completed"]').length > 0) {
-      this.waitForTrainingStatusNotCompleteTime = new Date().getTime() + 4000
+      this.waitForTrainingStatusNotCompleteTime = new Date().getTime() + 8000
     }
     this.DumpIfChanged(trainingStatusElements)
   }
