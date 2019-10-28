@@ -302,7 +302,7 @@ export class ObiDialogParser {
             currentRequiredCondition = node.requiredCondition
         }
 
-        let rounds = [...currentRounds]
+        let rounds = Util.deepCopy(currentRounds)
         // Build up a training round from any applicable steps in this node.
         const obiDialog = node.dialog
         if (obiDialog.steps) {
@@ -335,10 +335,10 @@ export class ObiDialogParser {
                 } else {
                     // If we get here, then the current node has steps to execute *without* an intervening intent
                     // (user utterance).  We therefore must append these scorer steps to the previous round.
-                    if (currentRounds.length === 0) {
+                    if (rounds.length === 0) {
                         throw new Error(`Attempting to append scorer steps to a non-existent round in node ${obiDialog.$id}`)
                     }
-                    let round = currentRounds[currentRounds.length - 1]
+                    let round = rounds[rounds.length - 1]
                     round.scorerSteps = [...round.scorerSteps, ...scorerSteps]
                 }
             }
