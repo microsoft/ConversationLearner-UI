@@ -546,53 +546,52 @@ export async function createImportedActions(
     const newActions: CLM.ActionBase[] = []
     for (const round of trainDialog.rounds) {
         for (const [scoreIndex, scorerStep] of round.scorerSteps.entries()) {
-            let action: CLM.ActionBase | undefined
-
-            // First check to see if matching action already exists
-            action = findActionFromScorerStep(scorerStep, [...newActions, ...actions], [])
-            if (scorerStep.importText) {
-
-                // Otherwise create a new one
-                if (!action) {
-                    const isTerminal = round.scorerSteps.length === scoreIndex + 1
-                    let importedAction: ImportedAction | undefined
-                    if (lgItems) {
-                        const lgName = lgNameFromImportText(scorerStep.importText)
-                        if (lgName) {
-                            let lgItem = lgItems.find(lg => lg.lgName === lgName)
-                            if (lgItem) {
-                                importedAction = {
-                                    text: lgItem.text,
-                                    buttons: lgItem.suggestions,
-                                    isTerminal,
-                                    reprompt: lgItem.suggestions.length > 0,
-                                    lgName
-                                }
-                            }
-                            else {
-                                // LARS thow error once CCI .dialog transformer has been fixed
-                                lgItem = { lgName: "", text: "Can't Parse LG", suggestions: [] }
-                                //throw new Error(`LG name ${prompt} undefined`)
-                            }
-                        }
-                    }
-                    if (!importedAction) {
-                        importedAction = {
-                            text: scorerStep.importText,
-                            buttons: [],
-                            isTerminal,
-                            reprompt: false,
-                            actionHash: CLM.hashText(scorerStep.importText)
-                        }
-                    }
-                    action = await createActionFromImport(appId, importedAction, templates, scorerStep, scorerStepConditions, createActionThunkAsync)
-                    newActions.push(action)
-                }
-
-                // Update scorer step
-                scorerStep.labelAction = action.actionId
-                delete scorerStep.importText
+            if (!scorerStep.importText) {
+                continue
             }
+            // First check to see if matching action already exists.
+            let action = findActionFromScorerStep(scorerStep, [...newActions, ...actions], [])
+
+            // If not, create a new one.
+            if (!action) {
+                const isTerminal = round.scorerSteps.length === scoreIndex + 1
+                let importedAction: ImportedAction | undefined
+                if (lgItems) {
+                    const lgName = lgNameFromImportText(scorerStep.importText)
+                    if (lgName) {
+                        let lgItem = lgItems.find(lg => lg.lgName === lgName)
+                        if (lgItem) {
+                            importedAction = {
+                                text: lgItem.text,
+                                buttons: lgItem.suggestions,
+                                isTerminal,
+                                reprompt: lgItem.suggestions.length > 0,
+                                lgName
+                            }
+                        }
+                        else {
+                            // LARS thow error once CCI .dialog transformer has been fixed
+                            lgItem = { lgName: "", text: "Can't Parse LG", suggestions: [] }
+                            //throw new Error(`LG name ${prompt} undefined`)
+                        }
+                    }
+                }
+                if (!importedAction) {
+                    importedAction = {
+                        text: scorerStep.importText,
+                        buttons: [],
+                        isTerminal,
+                        reprompt: false,
+                        actionHash: CLM.hashText(scorerStep.importText)
+                    }
+                }
+                action = await createActionFromImport(appId, importedAction, templates, scorerStep, scorerStepConditions, createActionThunkAsync)
+                newActions.push(action)
+            }
+
+            // Update scorer step
+            scorerStep.labelAction = action.actionId
+            delete scorerStep.importText
         }
     }
 }
