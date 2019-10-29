@@ -1110,7 +1110,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
     async importOBIFiles(obiImportData: OBIUtils.OBIImportData): Promise<void> {
         const obiDialogParser = new OBIDialogParser.ObiDialogParser(
-            this.props.app,
+            this.props.app.appId,
             this.props.actions,
             this.props.entities,
             this.props.createActionThunkAsync as any,

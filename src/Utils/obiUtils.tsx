@@ -293,7 +293,7 @@ export async function trainDialogFromTranscriptImport(
                             score: 1
                         }
 
-                        const actionFilledEntities = await importActionOutput(actionCall.actionOutput, entities, app, createEntityThunkAsync)
+                        const actionFilledEntities = await importActionOutput(actionCall.actionOutput, entities, app.appId, createEntityThunkAsync)
                         // Store placeholder output in LogicResult
                         logicResult = {
                             logicValue: undefined,
@@ -872,7 +872,7 @@ export function areTranscriptsEqual(transcript1: Util.RecursivePartial<BB.Activi
 export async function importActionOutput(
     actionResults: OBIActionOutput[],
     entities: CLM.EntityBase[],
-    app: CLM.AppBase,
+    appId: string,
     createEntityThunkAsync?: ((appId: string, entity: CLM.EntityBase) => Promise<CLM.EntityBase | null>)
 ): Promise<CLM.FilledEntity[]> {
 
@@ -906,7 +906,7 @@ export async function importActionOutput(
                 doNotMemorize: false
             }
 
-            entityId = await ((createEntityThunkAsync(app.appId, newEntity) as any) as Promise<string>)
+            entityId = await ((createEntityThunkAsync(appId, newEntity) as any) as Promise<string>)
             if (!entityId) {
                 throw new Error("Invalid Entity Definition")
             }
