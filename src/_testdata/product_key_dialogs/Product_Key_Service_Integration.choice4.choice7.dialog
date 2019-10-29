@@ -1,0 +1,16 @@
+//Product_Key_Service_Integration.Yes.Office.dialog
+{
+  "$schema": "../../app.schema",
+  "$type": "Microsoft.AdaptiveDialog",
+  "recognizer": "main.lu",
+  "rules": [],
+  "steps": [
+    {
+      "$type": "Microsoft.SendActivity",
+      "activity": "[option18]"
+    },
+    {
+      "$type": "Microsoft.EndDialog"
+    }
+  ]
+}

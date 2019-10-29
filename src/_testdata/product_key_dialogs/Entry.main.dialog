@@ -1,0 +1,97 @@
+{
+  "$schema": "../../app.schema",
+  "$type": "Microsoft.AdaptiveDialog",
+  "recognizer": "main.lu",
+  "rules": [
+/*    {
+      "$type": "Microsoft.IntentRule",
+      "intent": "Greeting_main",
+      "steps": [
+        {
+          "$type": "Microsoft.BeginDialog",
+          "dialog": "Greeting.main"
+        }
+      ]
+    },
+    {
+      "$type": "Microsoft.IntentRule",
+      "intent": "Escalate_main",
+      "steps": [
+        {
+          "$type": "Microsoft.BeginDialog",
+          "dialog": "Escalate.main"
+        }
+      ]
+    },
+    {
+      "$type": "Microsoft.IntentRule",
+      "intent": "End_of_Conversation_main",
+      "steps": [
+        {
+          "$type": "Microsoft.BeginDialog",
+          "dialog": "End_of_Conversation.main"
+        }
+      ]
+    },
+    {
+      "$type": "Microsoft.IntentRule",
+      "intent": "Confirmed_Success_main",
+      "steps": [
+        {
+          "$type": "Microsoft.BeginDialog",
+          "dialog": "Confirmed_Success.main"
+        }
+      ]
+    },
+    {
+      "$type": "Microsoft.IntentRule",
+      "intent": "Confirmed_Failure_main",
+      "steps": [
+        {
+          "$type": "Microsoft.BeginDialog",
+          "dialog": "Confirmed_Failure.main"
+        }
+      ]
+    },
+    {
+      "$type": "Microsoft.IntentRule",
+      "intent": "Goodbye_main",
+      "steps": [
+        {
+          "$type": "Microsoft.BeginDialog",
+          "dialog": "Goodbye.main"
+        }
+      ]
+    },
+    {
+      "$type": "Microsoft.IntentRule",
+      "intent": "Start_over_main",
+      "steps": [
+        {
+          "$type": "Microsoft.BeginDialog",
+          "dialog": "Start_over.main"
+        }
+      ]
+    },
+    {
+      "$type": "Microsoft.IntentRule",
+      "intent": "Thank_you_main",
+      "steps": [
+        {
+          "$type": "Microsoft.BeginDialog",
+          "dialog": "Thank_you.main"
+        }
+      ]
+    },*/
+    {
+      "$type": "Microsoft.IntentRule",
+      "intent": "Product_Key_Service_Integration_main",
+      "steps": [
+        {
+          "$type": "Microsoft.BeginDialog",
+          "dialog": "Product_Key_Service_Integration.main"
+        }
+      ]
+    }
+  ]
+}
