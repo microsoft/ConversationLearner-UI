@@ -45,28 +45,53 @@ describe('obiDialogParser', () => {
                 }
                 dialogFiles.push(pathToFileObject(pathItem.path))
             }
-            let numActions = 0
+            let actions: CLM.ActionBase[] = []
             const fakeCreateActionThunk = (appId: string, action: CLM.ActionBase) => {
                 return new Promise<CLM.ActionBase>((resolve) => {
                     // Update the action id and return the action.
                     let outputAction = Util.deepCopy(action)
-                    outputAction.actionId = `${numActions}`
-                    numActions = numActions + 1
+                    outputAction.actionId = `${actions.length}`
+                    actions.push(outputAction)
                     resolve(outputAction)
                 })
             }
-            let numEntities = 0
+            let entities: CLM.EntityBase[] = []
             const fakeCreateEntityThunk = (appId: string, entity: CLM.EntityBase) => {
                 return new Promise<CLM.EntityBase>((resolve) => {
                     // Update the entity id and return the entity.
                     let outputEntity = Util.deepCopy(entity)
-                    outputEntity.entityId = `${numEntities}`
-                    numEntities = numEntities + 1
+                    outputEntity.entityId = `${entities.length}`
+                    entities.push(outputEntity)
                     resolve(outputEntity)
                 })
             }
             const parser = new ObiDialog.ObiDialogParser("fake-appid", [], [], fakeCreateActionThunk, fakeCreateEntityThunk)
             const importResults: ObiDialog.ObiDialogParserResult = await parser.parse(dialogFiles)
+            // Expect that just 1 action and 1 entity were created.
+            // Dialogs referencing the same logical API or SwitchCondition should reuse the same action or entity after initial creation.
+            expect(actions.length).toEqual(1)
+            expect(actions[0].payload).toEqual(JSON.stringify({
+                payload: "Replace Here",
+                logicArguments: [],
+                renderArguments: [],
+                isPlaceholder: true
+            }))
+            expect(entities.length).toEqual(1)
+            expect(entities[0].entityType).toEqual(CLM.EntityType.ENUM)
+            expect(entities[0].enumValues).toEqual([
+                {enumValue: "Office"},
+                {enumValue: "Windows"},
+                {enumValue: "OfficeTest"}
+            ])
+            // There are 3 SwitchCondition nodes in the dialogs, so we expect 3 conditions to be imported.
+            expect(Object.keys(importResults.conditions).length).toEqual(3)
+            for (const key of Object.keys(importResults.conditions)) {
+                const conditions = importResults.conditions[key]
+                expect(conditions.length).toEqual(1)
+                const condition: CLM.Condition = conditions[0]
+                expect(condition.condition).toEqual(CLM.ConditionType.EQUAL)
+            }
+
             expect(importResults.trainDialogs.length).toEqual(4)
             // Validate 1st TrainDialog.
             {
