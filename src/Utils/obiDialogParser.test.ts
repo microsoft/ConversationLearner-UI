@@ -13,7 +13,7 @@ describe('obiDialogParser', () => {
     /**
      * Given a path __relative to this test file__, returns an absolute path to the same file.
      */
-    function pathRelativeToCurrentFile(inputPath: string): string {
+    function absolutePathFromPathRelativeToCurrentFile(inputPath: string): string {
         const thisFilePath = module.filename
         const thisFileDir = fspath.dirname(fspath.resolve(thisFilePath))
         return fspath.join(thisFileDir, inputPath)
@@ -35,7 +35,7 @@ describe('obiDialogParser', () => {
          */
         test('Test product key example', async () => {
             // Collect array of input files for the OBI dialog parser.
-            const path = pathRelativeToCurrentFile('../_testdata/product_key_dialogs')
+            const path = absolutePathFromPathRelativeToCurrentFile('../_testdata/product_key_dialogs')
             const globResults = klaw(path)
             const dialogFiles: File[] = []
             for (const pathItem of globResults) {
