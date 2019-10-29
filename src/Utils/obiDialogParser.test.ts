@@ -10,6 +10,9 @@ import * as fspath from 'path'
 import * as klaw from 'klaw-sync'
 
 describe('obiDialogParser', () => {
+    /**
+     * Given a path __relative to this test file__, returns an absolute path to the same file.
+     */
     function pathRelativeToCurrentFile(inputPath: string): string {
         const thisFilePath = module.filename
         const thisFileDir = fspath.dirname(fspath.resolve(thisFilePath))
@@ -17,7 +20,7 @@ describe('obiDialogParser', () => {
     }
 
     /**
-     * Given a path __relative to this test file__, returns a `File` object wrapping that file.
+     * Given an absolute path or path relative to CWD of test execution, returns a `File` object wrapping that file.
      */
     function pathToFileObject(path: string): File {
         const content = fs.readFileSync(path)
@@ -111,6 +114,56 @@ describe('obiDialogParser', () => {
                 expect(round3.scorerSteps[0].importText).toEqual("[option15]")
                 expect(round3.scorerSteps[1].scoredAction!.actionType).toEqual(CLM.ActionTypes.API_LOCAL)
                 expect(round3.scorerSteps[2].importText).toEqual("[option18]")
+            }
+            // Validate 3rd TrainDialog.
+            {
+                const dialog = importResults.trainDialogs[2]
+                expect(dialog.rounds.length).toEqual(4)
+                const round0 = dialog.rounds[0]
+                expect(round0.extractorStep.textVariations.length).toEqual(3)
+                expect(round0.extractorStep.textVariations[0].text).toEqual("Download Office with Product Key")
+                expect(round0.scorerSteps.length).toEqual(1)
+                expect(round0.scorerSteps[0].importText).toEqual("[option14]")
+                const round1 = dialog.rounds[1]
+                expect(round1.extractorStep.textVariations.length).toEqual(1)
+                expect(round1.extractorStep.textVariations[0].text).toEqual("Yes")
+                expect(round1.scorerSteps.length).toEqual(3)
+                expect(round1.scorerSteps[0].importText).toEqual("[option15]")
+                expect(round1.scorerSteps[1].scoredAction!.actionType).toEqual(CLM.ActionTypes.API_LOCAL)
+                expect(round1.scorerSteps[2].importText).toEqual("[option19]")
+                const round2 = dialog.rounds[2]
+                expect(round2.extractorStep.textVariations.length).toEqual(1)
+                expect(round2.extractorStep.textVariations[0].text).toEqual("Where_can_I_my_product_key_")
+                expect(round2.scorerSteps.length).toEqual(2)
+                expect(round2.scorerSteps[0].importText).toEqual("[option20]")
+                expect(round2.scorerSteps[1].importText).toEqual("[option21]")
+                const round3 = dialog.rounds[3]
+                expect(round3.extractorStep.textVariations.length).toEqual(1)
+                expect(round3.extractorStep.textVariations[0].text).toEqual("No")
+                expect(round3.scorerSteps.length).toEqual(1)
+                expect(round3.scorerSteps[0].importText).toEqual("[option24]")
+            }
+            // Validate 4th TrainDialog.
+            {
+                const dialog = importResults.trainDialogs[3]
+                expect(dialog.rounds.length).toEqual(3)
+                const round0 = dialog.rounds[0]
+                expect(round0.extractorStep.textVariations.length).toEqual(3)
+                expect(round0.extractorStep.textVariations[0].text).toEqual("Download Office with Product Key")
+                expect(round0.scorerSteps.length).toEqual(1)
+                expect(round0.scorerSteps[0].importText).toEqual("[option14]")
+                const round1 = dialog.rounds[1]
+                expect(round1.extractorStep.textVariations.length).toEqual(1)
+                expect(round1.extractorStep.textVariations[0].text).toEqual("Yes")
+                expect(round1.scorerSteps.length).toEqual(3)
+                expect(round1.scorerSteps[0].importText).toEqual("[option15]")
+                expect(round1.scorerSteps[1].scoredAction!.actionType).toEqual(CLM.ActionTypes.API_LOCAL)
+                expect(round1.scorerSteps[2].importText).toEqual("[option19]")
+                const round2 = dialog.rounds[2]
+                expect(round2.extractorStep.textVariations.length).toEqual(1)
+                expect(round2.extractorStep.textVariations[0].text).toEqual("I_prefer_to_talk_to_a_Microsoft_Customer_Service_representative")
+                expect(round2.scorerSteps.length).toEqual(1)
+                expect(round2.scorerSteps[0].importText).toEqual("[option25]")
             }
         })
     })
