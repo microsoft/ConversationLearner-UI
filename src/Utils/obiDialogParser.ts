@@ -7,8 +7,8 @@ import * as DialogEditing from './dialogEditing'
 import * as OBIUtils from './obiUtils'
 import * as Util from './util'
 import * as OBITypes from '../types/obiTypes'
-import * as stripJsonComments from 'strip-json-comments'
 import * as fspath from 'path'
+import * as stripJsonComments from 'strip-json-comments'
 
 enum OBIStepType {
     BEGIN_DIALOG = "Microsoft.BeginDialog",
