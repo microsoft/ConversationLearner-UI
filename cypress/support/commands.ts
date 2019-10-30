@@ -84,7 +84,7 @@ Cypress.Commands.add("WaitForTrainingStatusCompleted", () => {
   cy.log('WaitForTrainingStatusCompleted')
   cy.Enqueue(() => {
     let trainingStatus = new modelPage.TrainingStatus()
-    cy.wrap(1, { timeout: 20000 }).should(() => { return trainingStatus.WaitForCompleted() })
+    trainingStatus.WaitForCompleted()
   })
 })
 
