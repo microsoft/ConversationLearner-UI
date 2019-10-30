@@ -7,6 +7,7 @@ import * as DialogEditing from './dialogEditing'
 import * as OBIUtils from './obiUtils'
 import * as Util from './util'
 import * as OBITypes from '../types/obiTypes'
+import * as fspath from 'path'
 import * as stripJsonComments from 'strip-json-comments'
 
 enum OBIStepType {
@@ -47,7 +48,7 @@ export interface ObiDialogParserResult {
 }
 
 export class ObiDialogParser {
-    private app: CLM.AppBase
+    private appId: string
     private actions: CLM.ActionBase[] = []
     private entities: CLM.EntityBase[] = []
     private dialogs: { [key: string]: OBITypes.OBIDialog }
@@ -59,13 +60,13 @@ export class ObiDialogParser {
     private createEntityThunkAsync: (appId: string, entity: CLM.EntityBase) => Promise<CLM.EntityBase | null>
 
     constructor(
-        app: CLM.AppBase,
+        appId: string,
         actions: CLM.ActionBase[],
         entities: CLM.EntityBase[],
         createActionThunkAsync: (appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null>,
         createEntityThunkAsync: (appId: string, entity: CLM.EntityBase) => Promise<CLM.EntityBase | null>
     ) {
-        this.app = app
+        this.appId = appId
         this.actions = [...actions]
         this.entities = [...entities]
         this.createActionThunkAsync = createActionThunkAsync
@@ -107,7 +108,7 @@ export class ObiDialogParser {
                 const fileText = await Util.readFileAsync(file)
                 const obiDialog: OBITypes.OBIDialog = JSON.parse(stripJsonComments(fileText))
                 // Set name, removing suffix
-                obiDialog.$id = this.removeSuffix(file.name)
+                obiDialog.$id = this.removeSuffix(fspath.basename(file.name))
                 this.dialogs[obiDialog.$id] = obiDialog
             }
             else if (file.name.endsWith('.lu')) {
@@ -143,7 +144,6 @@ export class ObiDialogParser {
     private async collectDialogNodes(obiDialog: OBITypes.OBIDialog, conditionalEntities: { [key: string]: Set<string> }):
         Promise<ObiDialogNode> {
         let node: ObiDialogNode = new ObiDialogNode(obiDialog)
-        // TODO(thpar) : add steps for capturing API input and output.
         if (obiDialog.rules) {
             await this.collectDialogRuleChildren(node, obiDialog.rules, conditionalEntities)
         }
@@ -303,7 +303,7 @@ export class ObiDialogParser {
             currentRequiredCondition = node.requiredCondition
         }
 
-        let rounds = [...currentRounds]
+        let rounds = Util.deepCopy(currentRounds)
         // Build up a training round from any applicable steps in this node.
         const obiDialog = node.dialog
         if (obiDialog.steps) {
@@ -322,6 +322,7 @@ export class ObiDialogParser {
                     // Reset the required condition, since we've now used it.
                     currentRequiredCondition = undefined
                 }
+
                 if (currentIntent) {
                     const extractorStep: CLM.TrainExtractorStep = {
                         textVariations: this.getTextVariations(currentIntent)
@@ -335,10 +336,10 @@ export class ObiDialogParser {
                 } else {
                     // If we get here, then the current node has steps to execute *without* an intervening intent
                     // (user utterance).  We therefore must append these scorer steps to the previous round.
-                    if (currentRounds.length === 0) {
+                    if (rounds.length === 0) {
                         throw new Error(`Attempting to append scorer steps to a non-existent round in node ${obiDialog.$id}`)
                     }
-                    let round = currentRounds[currentRounds.length - 1]
+                    let round = rounds[rounds.length - 1]
                     round.scorerSteps = [...round.scorerSteps, ...scorerSteps]
                 }
             }
@@ -504,7 +505,7 @@ export class ObiDialogParser {
             packageDeletionId: null,
             doNotMemorize: false
         }
-        const entityId = await ((this.createEntityThunkAsync(this.app.appId, newEntity) as any) as Promise<string>)
+        const entityId = await ((this.createEntityThunkAsync(this.appId, newEntity) as any) as Promise<string>)
         if (!entityId) {
             throw new Error(`Failed to create entity ${entityName}`)
         }
@@ -577,7 +578,7 @@ export class ObiDialogParser {
         const hashText = JSON.stringify(step)
         let action: CLM.ActionBase | undefined | null = OBIUtils.findActionFromHashText(hashText, this.actions)
         if (!action && this.createActionThunkAsync) {
-            action = await DialogEditing.getOrCreatePlaceholderAPIAction(this.app.appId, step.url,
+            action = await DialogEditing.getOrCreatePlaceholderAPIAction(this.appId, step.url,
                 isTerminal, this.actions, this.createActionThunkAsync as any)
         }
         // Create an entity for each output parameter in the action.
@@ -587,7 +588,7 @@ export class ObiDialogParser {
                 (field) => { return { entityName: field } }
             )
         }
-        const filledEntities = await OBIUtils.importActionOutput(actionOutputEntities, this.entities, this.app,
+        const filledEntities = await OBIUtils.importActionOutput(actionOutputEntities, this.entities, this.appId,
             this.createEntityThunkAsync)
         const scoreInput: CLM.ScoreInput = {
             filledEntities,

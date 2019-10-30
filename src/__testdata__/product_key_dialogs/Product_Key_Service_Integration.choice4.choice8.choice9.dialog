@@ -1,0 +1,43 @@
+//Product_Key_Service_Integration.Yes.Windows.Where_can_I_my_product_key_.dialog
+{
+  "$schema": "../../app.schema",
+  "$type": "Microsoft.AdaptiveDialog",
+  "recognizer": "main.lu",
+  "rules": [
+    {
+      "$type": "Microsoft.IntentRule",
+      "intent": "Product_Key_Service_Integration_choice4_choice8_choice9_choice11",
+      "steps": [
+        {
+          "$type": "Microsoft.BeginDialog",
+          "dialog": "Product_Key_Service_Integration.choice4.choice8.choice9.choice11"
+        }
+      ]
+    },
+    {
+      "$type": "Microsoft.IntentRule",
+      "intent": "Product_Key_Service_Integration_choice4_choice8_choice9_choice12",
+      "steps": [
+        {
+          "$type": "Microsoft.BeginDialog",
+          "dialog": "Product_Key_Service_Integration.choice4.choice8.choice9.choice12"
+        }
+      ]
+    }
+  ],
+  "steps": [
+    {
+      "$type": "Microsoft.SendActivity",
+      "activity": "[option20]"
+    },
+    {
+      "$type": "Microsoft.TextInput",
+      "property": "dialog.option21",
+      "prompt": "[option21]",
+      "alwaysPrompt": true
+    },
+    {
+      "$type": "Microsoft.EndDialog"
+    }
+  ]
+}
