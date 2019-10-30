@@ -56,7 +56,7 @@ describe('obiDialogParser', () => {
             const fakeCreateActionThunk = (appId: string, action: CLM.ActionBase) => {
                 return new Promise<CLM.ActionBase>((resolve) => {
                     // Update the action id and return the action.
-                    let outputAction = Util.deepCopy(action)
+                    const outputAction = Util.deepCopy(action)
                     outputAction.actionId = `${actions.length}`
                     actions.push(outputAction)
                     resolve(outputAction)
@@ -66,7 +66,7 @@ describe('obiDialogParser', () => {
             const fakeCreateEntityThunk = (appId: string, entity: CLM.EntityBase) => {
                 return new Promise<CLM.EntityBase>((resolve) => {
                     // Update the entity id and return the entity.
-                    let outputEntity = Util.deepCopy(entity)
+                    const outputEntity = Util.deepCopy(entity)
                     outputEntity.entityId = `${entities.length}`
                     entities.push(outputEntity)
                     resolve(outputEntity)
