@@ -16,9 +16,6 @@ describe('obiDialogParser', () => {
     function absolutePathFromPathRelativeToCurrentFile(inputPath: string): string {
         const thisFilePath = module.filename
         const thisFileDir = fspath.dirname(fspath.resolve(thisFilePath))
-        // DEBUG - deleteme
-        const outPath = fspath.join(thisFileDir, inputPath)
-        console.log(`!!!!!!!!!!! path is ${outPath}`)
         return fspath.join(thisFileDir, inputPath)
     }
 
@@ -42,8 +39,6 @@ describe('obiDialogParser', () => {
             const globResults = klaw(path)
             const dialogFiles: File[] = []
             for (const pathItem of globResults) {
-                // DEBUG - deleteme
-                console.log(`!!!!!!!!!!!!!!! glob path is ${pathItem.path}`)
                 if (!pathItem.stats.isFile()) {
                     // Skip non-file objects.
                     continue

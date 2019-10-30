@@ -13,27 +13,7 @@
           "dialog": "Product_Key_Service_Integration.choice4"
         }
       ]
-    } /*,
-    {
-      "$type": "Microsoft.IntentRule",
-      "intent": "Product_Key_Service_Integration_choice5",
-      "steps": [
-        {
-          "$type": "Microsoft.BeginDialog",
-          "dialog": "Product_Key_Service_Integration.choice5"
-        }
-      ]
-    },
-    {
-      "$type": "Microsoft.IntentRule",
-      "intent": "Product_Key_Service_Integration_choice6",
-      "steps": [
-        {
-          "$type": "Microsoft.BeginDialog",
-          "dialog": "Product_Key_Service_Integration.choice6"
-        }
-      ]
-    } */
+    }
   ],
   "steps": [
     {
