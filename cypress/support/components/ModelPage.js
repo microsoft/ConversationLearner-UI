@@ -26,19 +26,18 @@ export function NavigateToMyModels() { cy.Get('[data-testid="app-index-nav-link-
 export function VerifyHomeLinkShowsIncidentTriangle() { cy.Get('[data-testid="app-index-nav-link-home"]').find('i[data-icon-name="IncidentTriangle"]') }
 export function VerifyHomeLinkDoesNotShowIncidentTriangle() { cy.Get('[data-testid="app-index-nav-link-home"]').DoesNotContain('i[data-icon-name="IncidentTriangle"]') }
 
-// Verify for just the Left Pane "Train Dialogs" link.
-export function VerifyNoErrorTriangleOnPage() { VerifyIncidentIcon(false, 'cl-color-error') }
-export function VerifyErrorTriangleForTrainDialogs() { VerifyIncidentIcon(true, 'cl-color-error') }
-export function VerifyNoWarningTriangleOnPage() { VerifyIncidentIcon(false, 'cl-color-warning') }
-export function VerifyWarningTriangleForTrainDialogs() { VerifyIncidentIcon(true, 'cl-color-warning') }
+export function VerifyNoIncidentTriangleOnPage() { VerifyErrorIcon(false) }
 
-function VerifyIncidentIcon(errorIconExpected, colorClassSelector)
+// Verify for just the Left Pane "Train Dialogs" link.
+export function VerifyIncidentTriangleForTrainDialogs() { VerifyErrorIcon(true) }
+
+function VerifyErrorIcon(errorIconExpected)
 {
   let funcName = `VerifyErrorIcon(${errorIconExpected})`
 
   cy.WaitForStableDOM()
   cy.wrap({ countFound: -1, timesInARowAtThisCount: 0 }, { timeout: 10000 }).should(retryInfo => {
-    const elements = Cypress.$(`i[data-icon-name="IncidentTriangle"].${colorClassSelector}`)
+    const elements = Cypress.$('i[data-icon-name="IncidentTriangle"].cl-color-error')
     if(elements.length === retryInfo.countFound) { retryInfo.timesInARowAtThisCount ++ }
     else {
       // The count changed since the last time we looked at this.
