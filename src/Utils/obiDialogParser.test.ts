@@ -16,6 +16,9 @@ describe('obiDialogParser', () => {
     function absolutePathFromPathRelativeToCurrentFile(inputPath: string): string {
         const thisFilePath = module.filename
         const thisFileDir = fspath.dirname(fspath.resolve(thisFilePath))
+        // DEBUG - deleteme
+        const outPath = fspath.join(thisFileDir, inputPath)
+        console.log(`!!!!!!!!!!! path is ${outPath}`)
         return fspath.join(thisFileDir, inputPath)
     }
 
@@ -39,13 +42,15 @@ describe('obiDialogParser', () => {
             const globResults = klaw(path)
             const dialogFiles: File[] = []
             for (const pathItem of globResults) {
+                // DEBUG - deleteme
+                console.log(`!!!!!!!!!!!!!!! glob path is ${pathItem.path}`)
                 if (!pathItem.stats.isFile()) {
                     // Skip non-file objects.
                     continue
                 }
                 dialogFiles.push(pathToFileObject(pathItem.path))
             }
-            let actions: CLM.ActionBase[] = []
+            const actions: CLM.ActionBase[] = []
             const fakeCreateActionThunk = (appId: string, action: CLM.ActionBase) => {
                 return new Promise<CLM.ActionBase>((resolve) => {
                     // Update the action id and return the action.
@@ -55,7 +60,7 @@ describe('obiDialogParser', () => {
                     resolve(outputAction)
                 })
             }
-            let entities: CLM.EntityBase[] = []
+            const entities: CLM.EntityBase[] = []
             const fakeCreateEntityThunk = (appId: string, entity: CLM.EntityBase) => {
                 return new Promise<CLM.EntityBase>((resolve) => {
                     // Update the entity id and return the entity.
