@@ -1,5 +1,5 @@
 import * as helpers from './Helpers.js'
-import * as modelPage from './components/ModelPage'
+import * as trainingStatus from './components/TrainingStatus'
 
 declare global {
   namespace Cypress {
@@ -83,8 +83,7 @@ Cypress.Commands.add('ExactMatches', { prevSubject: 'element' }, (elements, expe
 Cypress.Commands.add("WaitForTrainingStatusCompleted", () => {
   cy.log('WaitForTrainingStatusCompleted')
   cy.Enqueue(() => {
-    let trainingStatus = new modelPage.TrainingStatus()
-    cy.wrap(1, { timeout: 120000 }).should(() => { return trainingStatus.WaitForCompleted() })
+    new trainingStatus.TrainingStatus().WaitForCompleted()
   })
 })
 
