@@ -1110,7 +1110,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
     async importOBIFiles(obiImportData: OBIUtils.OBIImportData): Promise<void> {
         const obiDialogParser = new OBIDialogParser.ObiDialogParser(
-            this.props.app,
+            this.props.app.appId,
             this.props.actions,
             this.props.entities,
             this.props.createActionThunkAsync as any,
@@ -1278,7 +1278,16 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 importData.lgItems,
                 this.props.actions,
                 importData.conditions,
-                this.props.createActionThunkAsync as any)
+                this.props.createActionThunkAsync as any,
+            )
+
+            // Update memory state, if applicable.
+            OBIUtils.setMemoryStateForImportedTrainDialog(
+                this.props.entities,
+                this.props.actions,
+                newTrainDialog,
+                importData.conditions,
+            )
 
             // Replay to validate
             newTrainDialog = await DialogEditing.onReplayTrainDialog(
