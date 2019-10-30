@@ -4,7 +4,6 @@
 */
 
 import * as helpers from '../../support/Helpers'
-import * as modelPage from '../../support/components/ModelPage'
 
 // To get this to work edit the ConversationLearner-UI\cypress.json file and put an X in front of "baseUrl"
 // Remember to undo that change before checking in or running other tests.
