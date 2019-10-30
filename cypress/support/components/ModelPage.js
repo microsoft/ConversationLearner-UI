@@ -41,6 +41,7 @@ export class TrainingStatus {
     this.pollingStoppedWarning = false
     this.failed = false
     this.completed = false
+    this.currentStatus = "unknown"
     
     this._GetTrainingStatus()
 
@@ -67,7 +68,7 @@ export class TrainingStatus {
       }
 
       if (!this.running) { 
-        throw new Error('Still Waiting for Status == Running') 
+        throw new Error(`Stauts is ${this.currentStatus} - Still Waiting for Status == Running or Completed`) 
       }
 
       // The status is now Running so we need to wait a different 
@@ -86,7 +87,7 @@ export class TrainingStatus {
       }
       
       if (this.running) { 
-        throw new Error('Still Waiting for Status == Completed') 
+        throw new Error(`Stauts is ${this.currentStatus} - Still Waiting for Status == Completed`)
       }
 
       // The status is no longer Running so we need to wait a different 
@@ -115,21 +116,21 @@ export class TrainingStatus {
                   this.trainingStatusHtml != priorTraingStatusHtml
 
     if (changed) {
-      const trainingStatusHtml = this.trainingStatusHtml
-      function TrainingStatusContains(target) { 
-        const returnValue = trainingStatusHtml.includes(target)
-        helpers.ConLog(funcName, `'${target}': ${returnValue}`)
-        return returnValue
-      }
-      
       helpers.ConLog(funcName, `Number of Training Status Elements Found: ${this.trainingStatusElements.length} - Elements: ${this.trainingStatusHtml}`)
       
-      this.queued = TrainingStatusContains('data-testid="training-status-queued"')
-      this.running = TrainingStatusContains('data-testid="training-status-running"')
-      this.pollingStoppedWarning = TrainingStatusContains('data-testid="training-status-polling-stopped-warning"')
-      this.failed = TrainingStatusContains('data-testid="training-status-failed"')
-      this.completed = TrainingStatusContains('data-testid="training-status-completed"')
+      this.queued = this._TrainingStatusContains('queued')
+      this.running = this._TrainingStatusContains('running')
+      this.pollingStoppedWarning = this._TrainingStatusContains('polling-stopped-warning')
+      this.failed = this._TrainingStatusContains('failed')
+      this.completed = this._TrainingStatusContains('completed')
     }
+  }
+
+  _TrainingStatusContains(target) { 
+    const returnValue = this.trainingStatusHtml.includes(`data-testid="training-status-${target}`)
+    helpers.ConLog('_TrainingStatusContains', `'${target}': ${returnValue}`)
+    if (returnValue) { this.currentStatus = target }
+    return returnValue
   }
 
   _MonitorTrainingStatus() {
