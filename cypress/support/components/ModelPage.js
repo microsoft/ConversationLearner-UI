@@ -36,6 +36,7 @@ export class TrainingStatus {
     this.canRefreshTrainingStatusTime = 0
     this.trainingStatusElements = []
     this.trainingStatusHtml = ''
+    this.queued = false
     this.running = false
     this.pollingStoppedWarning = false
     this.failed = false
@@ -61,8 +62,6 @@ export class TrainingStatus {
   _RetryWaitForRunning() {
     cy.log('Training Status is NOT Running - Waiting for it Start Running')
     cy.wrap(1, { timeout: 5 * 60 * 1000 }).should(() => {
-      helpers.ConLog('RetryWaitForRunning', 'a try')
-
       if (this._MonitorTrainingStatus()) { 
         return // Because the status is now complete!
       }
@@ -82,8 +81,6 @@ export class TrainingStatus {
   _RetryWaitForCompleted() {
     cy.log('Training Status is Running - Waiting for it to Complete')
     cy.wrap(1, { timeout: 40 * 1000 }).should(() => {
-      helpers.ConLog('RetryWaitForCompleted', 'a try')
-      
       if (this._MonitorTrainingStatus()) { 
         return // Because the status is now complete!
       }
@@ -127,10 +124,11 @@ export class TrainingStatus {
       
       helpers.ConLog(funcName, `Number of Training Status Elements Found: ${this.trainingStatusElements.length} - Elements: ${this.trainingStatusHtml}`)
       
-      this.completed = TrainingStatusContains('data-testid="training-status-completed"')
+      this.queued = TrainingStatusContains('data-testid="training-status-queued"')
       this.running = TrainingStatusContains('data-testid="training-status-running"')
       this.pollingStoppedWarning = TrainingStatusContains('data-testid="training-status-polling-stopped-warning"')
       this.failed = TrainingStatusContains('data-testid="training-status-failed"')
+      this.completed = TrainingStatusContains('data-testid="training-status-completed"')
     }
   }
 
