@@ -1,0 +1,280 @@
+> # Intent definitions
+
+## Confirmed_Success_choice0
+- Yes
+
+## Confirmed_Success_choice1
+- No,_thanks
+
+## Confirmed_Failure_choice2
+- Talk_to_an_agent
+
+## Confirmed_Failure_choice3
+- Rephrase
+
+## Product_Key_Service_Integration_choice4_choice8_choice9_choice11_choice7
+- Office
+
+## Product_Key_Service_Integration_choice4_choice8_choice9_choice11
+- Yes
+
+## Product_Key_Service_Integration_choice4_choice8_choice9_choice12
+- No
+
+## Product_Key_Service_Integration_choice4_choice8_choice9
+- Where_can_I_my_product_key_
+
+## Product_Key_Service_Integration_choice4_choice8_choice10
+- I_prefer_to_talk_to_a_Microsoft_Customer_Service_representative
+
+## Product_Key_Service_Integration_choice4_choice7
+- Office
+
+## Product_Key_Service_Integration_choice4_choice8
+- Windows
+
+## Product_Key_Service_Integration_choice6_choice11_choice8_choice9_choice12_choice7
+- Office
+
+## Product_Key_Service_Integration_choice6_choice11_choice8_choice9_choice12
+- No
+
+## Product_Key_Service_Integration_choice6_choice11_choice8_choice9
+- Where_can_I_my_product_key_
+
+## Product_Key_Service_Integration_choice6_choice11_choice8_choice10
+- I_prefer_to_talk_to_a_Microsoft_Customer_Service_representative
+
+## Product_Key_Service_Integration_choice6_choice11_choice7
+- Office
+
+## Product_Key_Service_Integration_choice6_choice11_choice8
+- Windows
+
+## Product_Key_Service_Integration_choice6_choice11
+- Yes
+
+## Product_Key_Service_Integration_choice6_choice12
+- No
+
+## Product_Key_Service_Integration_choice4
+- Yes
+
+## Product_Key_Service_Integration_choice5
+- No
+
+## Product_Key_Service_Integration_choice6
+- Where_can_I_find_my_product_key_
+
+## Greeting_main
+- Good afternoon
+- Good morning
+- Hello
+- Hello agent!
+- Hello and good morning to you
+- Hello can you help me?
+- Hello can you please help me
+- Hello friend
+- Hello good afternoon
+- Hello good evening
+- Hello greeting
+- Hello how are you
+- Hello how are you doing?
+- Hello how are you?
+- Hello I need help
+- Hello madam
+- Hello my friend
+- Hello sir
+- Hello support
+- Hello team
+- Hello there
+- Hello there, how are you?
+- Hello virtual agent
+- Hello!
+- Hello, good day to you
+- Hello, good evening
+- Hello, good morning
+- Hello, how are you doing today?
+- Hello, how are you?
+- Hello, I need help
+- Hey
+- Hey !
+- Hey :)
+- Hey good morning
+- Hey how are u
+- Hey I need help
+- Hey man
+- Hi
+- Hi agent
+- Hi can you help me
+- Hi good afternoon
+- Hi good day
+- Hi good evening
+- Hi how are you
+- Hi how are you doing today?
+- Hi I hope you can help me
+- Hi I need help
+- Hi I need help here
+- Hi support
+- Hi support team
+- Hi there!
+- Hi virtual agent
+
+## Escalate_main
+- Talk to agent
+- Talk to a person
+- Talk to someone
+- Call back
+- Call customer service
+- Call me please
+- Call support
+- Call technical support
+- Call was discontinued with support
+- Can an agent call me
+- Can I call
+- Can I connect to my previous agent
+- Can I get a number
+- Can I get in touch with someone else
+- Can I get real agent support
+- Can I get transferred to a person to call
+- Can I have a call in number Or can I be called
+- Can I have a representative call me
+- Can I schedule a call
+- Can I speak to a representative
+- Can I talk to a human
+- Can I talk to a human assistant
+- Can someone call me
+- Can u provide me a customer support to discuss about technical issue
+- Cannot contact the support contact number listed
+- Chat with a human
+- Chat with a representative
+- Chat with agent
+- Chat with someone please
+- Chat with support
+- Connect me to a live agent
+- Connect me to a person
+- Contact a person
+- Contact agent
+- Contact customer support
+- Contact number
+- Contact someone
+- Contact with human
+- Could some one contact me by phone
+- Customer agent
+- Customer representative
+- Customer service
+- Got disconnected from help chat with a person
+- Hello, I want to rejoin to chat with expert
+- I disconnect from live agent, please reconnect me to him
+- I have lost contact with live chat support, can you reconnect me
+- I need a customer service number
+- I need a manager to contact me
+- I need customer service
+- I need help from a person
+- I need phone number
+- I need tech assistance
+- I need technical support
+- I need to have a live chat session
+- I need to reconnect to a support chat
+- I need to speak with a live argent
+- I need to talk to a specialist please
+- I want to talk to customer service
+- I want to proceed with live support
+- I want to speak with a consultant
+- I want to talk to Enforcement
+- I what to speak with a live tech
+- I would like to speak with an associate
+- I would like to talk to a technician
+- Talk with tech support member
+
+## End_of_Conversation_main
+
+## Confirmed_Success_main
+
+## Confirmed_Failure_main
+
+## Goodbye_main
+- Bye
+- Bye bye thanks again
+- Bye for now
+- Bye now
+- Bye until later!
+- Glad to talk to you also. Have a nice day.
+- Good bye
+- Have a good day
+- Have a good night
+- Have a great day
+- Have a great day. You're doing fine.
+- Have a nice day
+- Have a wonderful day :)
+- I have no problems. Good bye.
+- I will do something later. Thanks, Goodbye
+- I will need to talk to you later.
+- Nice to talk to you too.bye.
+- No thank you have a good night
+- No thank you good bye
+- No thank you, bye
+- No thank you. Goodbye.
+- No thanks! Have a nice day!
+- No, thank you. Have a nice day!
+- No, thanks for your help, good-bye.
+- No, thanks very much. Have a nice day.
+- None of the above. Goodbye
+- Nope i'm all good thanks and goodbye
+- Nope thank you have a nice day bye
+- Nope. Bye Bye.
+- Not at the moment. Thanks and have a nice day.
+- Not helpful. Goodbye.
+- Ok thanks and have a great day
+- Ok thanks see u later
+- Perfect! Have a great day!
+- Same here. Have a great day
+- Same here. Bye for now...
+- See you again
+- See you later
+- Sorry bye thx for the help
+- Sorry I got a go to work have a great day
+- Sorry i have to go. Bye
+- Take care and have a great day
+- Thank for talking me have a nice day
+- Thank you Bye
+- Thank you and goodbye!
+- Thank you and have a great day
+- Thank you by for now thanks for your help,
+- Thank you for your help! Goodbye!
+- Thank you have a nice day
+- Thank you I will have a look
+- Thank you so much bye bye
+- Thank you so much. Have a nice day!
+- Thank you, have a good day.
+- Thank you, see you later.
+- Thank you. Goodbye
+- Thank you. Bye.
+- Thanks for help good bye
+- Thanks for helping goodbye
+- Thanks for your help. Goodbye..
+- Thanks for your help. Have a great day!!
+- Thanks good by
+- Thanks good bye
+- Thanks, have a good night
+- Thanks. Goodbye
+- Thanks. I will end the chat now.
+- Thanks. I'm fine now. Have a good day.
+- Thx. Goodbye
+
+## Start_over_main
+- start over
+- restart
+- let's begin again
+
+## Thank_you_main
+- thanks
+- thank you
+- thanks so much
+- ty
+
+## Product_Key_Service_Integration_main
+- Download Office with Product Key
+- How do I download Office
+- Install Office Product key
+

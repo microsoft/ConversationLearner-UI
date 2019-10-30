@@ -1,0 +1,40 @@
+//Product_Key_Service_Integration.Yes.Windows.dialog
+{
+  "$schema": "../../app.schema",
+  "$type": "Microsoft.AdaptiveDialog",
+  "recognizer": "main.lu",
+  "rules": [
+    {
+      "$type": "Microsoft.IntentRule",
+      "intent": "Product_Key_Service_Integration_choice4_choice8_choice9",
+      "steps": [
+        {
+          "$type": "Microsoft.BeginDialog",
+          "dialog": "Product_Key_Service_Integration.choice4.choice8.choice9"
+        }
+      ]
+    },
+
+    {
+      "$type": "Microsoft.IntentRule",
+      "intent": "Product_Key_Service_Integration_choice4_choice8_choice10",
+      "steps": [
+        {
+          "$type": "Microsoft.BeginDialog",
+          "dialog": "Product_Key_Service_Integration.choice4.choice8.choice10"
+        }
+      ]
+    }
+  ],
+  "steps": [
+    {
+      "$type": "Microsoft.TextInput",
+      "property": "dialog.option19",
+      "prompt": "[option19]",
+      "alwaysPrompt": true
+    },
+    {
+      "$type": "Microsoft.EndDialog"
+    }
+  ]
+}
