@@ -1,0 +1,116 @@
+# option0
+- ```
+Hi! I'm a virtual agent. I can help with account questions, orders, store information, and more.
+[Suggestions=]
+```
+# option1
+- ```
+If you'd like to speak to a human agent, let me know at any time.
+[Suggestions=]
+```
+# option2
+- ```
+So, what can I help you with today?
+[Suggestions=]
+```
+# option3
+- ```
+To connect with a person now, click on the following link: <link>
+[Suggestions=]
+```
+# option4
+- ```
+Did that answer your question?
+[Suggestions=]
+```
+# option5
+- ```
+Place holder for AdaptiveCard
+[Suggestions=]
+```
+# option7
+- ```
+Thanks for your feedback.
+[Suggestions=]
+```
+# option8
+- ```
+Can I help with anything else?
+[Suggestions=Yes|No,_thanks]
+```
+# option9
+- ```
+Go ahead. I'm listening.
+[Suggestions=]
+```
+# option10
+- ```
+Sorry I wasn't able to help better. Would you like to talk to a human agent or to try rephrasing?
+[Suggestions=Talk_to_an_agent|Rephrase]
+```
+# option11
+- ```
+Thanks for chatting with me. Bye!
+[Suggestions=]
+```
+# option12
+- ```
+Ok, I'll start over.
+[Suggestions=]
+```
+# option13
+- ```
+You're welcome!
+[Suggestions=]
+```
+# option14
+- ```
+OK. Let's use your product key to find the correct download link. Do you have your Office product key?
+[Suggestions=Yes|No|Where_can_I_find_my_product_key_]
+```
+# option15
+- ```
+Great. Type your 25-character product key using the format XXXXX-XXXXX-XXXXX-XXXXX-XXXXX.
+[Suggestions=]
+```
+# option18
+- ```
+**Here's your Office download link**
+
+To download Office or to get help with your subscription, go to [{{custom.office.productkey.downloadurl}}](https://cciportal-mseg.azurewebsites.net/app/dialog/%7B%7Bcustom.office.productkey.downloadurl%7D%7D).
+[Suggestions=]
+```
+# option19
+- ```
+Sorry, but you entered a Windows product key. Make sure you have your correct Office product key and try again.
+[Suggestions=Where_can_I_my_product_key_|I_prefer_to_talk_to_a_Microsoft_Customer_Service_representative]
+```
+# option20
+- ```
+**How to find your Office product key**
+
+An Office product key uses a combination of 25 letters and numbers. Select your version of Office below for help with finding your product key:
+
+1.  [Office 365, 2019, 2016, or 2013](https://support.office.com/article/12a5763a-d45c-4685-8c95-a44500213759)
+2.  [Office 2011 for Mac](https://support.office.com/article/670b19d6-7743-45ae-a53c-66080cec7e33)
+3.  [Office 2010](https://support.office.com/article/1e8ef39c-2bd4-4581-a0ae-5cf25ebed489)
+4.  [Office 2007](https://support.office.com/article/fabe03d9-fbc3-452e-8fd4-d1c2e661d518)
+[Suggestions=]
+```
+# option21
+- ```
+Were you able to find your product key?
+[Suggestions=Yes|No]
+```
+# option24
+- ```
+**Download Office without a product key**
+
+Okay. You can still download your copy of Office without a product key. For more information, see [Download and install or reinstall Office 365 or Office 2016 on your PC or Mac](https://support.office.com/en-us/article/Download-and-install-or-reinstall-Office-365-or-Office-2016-on-your-PC-or-Mac-4414eaaf-0478-48be-9c42-23adc4716658S).
+[Suggestions=]
+```
+# option25
+- ```
+Ok.. Connecting to agent now.
+[Suggestions=]
+```

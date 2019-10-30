@@ -211,7 +211,7 @@ class Testing extends React.Component<Props, ComponentState> {
                             // If API call include API results
                             if (activity.channelData && activity.channelData.type === "ActionCall") {
                                 const actionCall = activity.channelData as OBIUtils.TranscriptActionCall
-                                apiResults = await OBIUtils.importActionOutput(actionCall.actionOutput, this.props.entities, this.props.app)
+                                apiResults = await OBIUtils.importActionOutput(actionCall.actionOutput, this.props.entities, this.props.app.appId)
                                 transcriptValidationTurn.apiResults.push(apiResults)
                             }
                             else {
