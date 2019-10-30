@@ -26,6 +26,19 @@ export function NavigateToMyModels() { cy.Get('[data-testid="app-index-nav-link-
 export function VerifyHomeLinkShowsIncidentTriangle() { cy.Get('[data-testid="app-index-nav-link-home"]').find('i[data-icon-name="IncidentTriangle"]') }
 export function VerifyHomeLinkDoesNotShowIncidentTriangle() { cy.Get('[data-testid="app-index-nav-link-home"]').DoesNotContain('i[data-icon-name="IncidentTriangle"]') }
 
+function XFind(trainingStatusElements, toFind) {
+  helpers.ConLog(`**XFind(${toFind})`, 'START')
+  for (let i = 0; i < trainingStatusElements.length; i++) {
+    const outerHTML = trainingStatusElements[i].outerHTML
+    const found = outerHTML.includes(toFind)
+    helpers.ConLog(`**XFind(${toFind})`, `found: ${found} - ${outerHTML}`)
+    if (found) return true
+    //if (trainingStatusElements[i].outerHTML.includes(toFind)) return true
+  }
+  return false
+}
+
+
 // To validate that this code works, search src\actions\appActions.ts for these and alter them:
 //   fetchApplicationTrainingStatusThunkAsync
 //   interval:
@@ -37,7 +50,10 @@ export class TrainingStatus {
     
     const trainingStatusElements = Cypress.$('[data-testid^="training-status-"]')
     if (Cypress.$(trainingStatusElements).find('[data-testid="training-status-completed"]').length > 0) {
-      this.waitForTrainingStatusNotCompleteTime = new Date().getTime() + 4000
+      // This is most likely due to the previous training. So we need to wait until we see a different
+      // status, most likely queued or running, before we can accept a completed status, however
+      // 4 seconds is the longest we will wait for that before we call it complete.
+      this.waitForTrainingStatusQueuedOrRunningTime = new Date().getTime() + 4000
     }
     this.DumpIfChanged(trainingStatusElements)
   }
@@ -56,31 +72,41 @@ export class TrainingStatus {
     }
     
     if (changed) {
+      helpers.ConLog('TrainingStatus.DumpIfChanged', `Number of Training Status Elements Found: ${trainingStatusElements.length}`)
       for (let i = 0; i < trainingStatusElements.length; i++) {
         helpers.ConLog('TrainingStatus.DumpIfChanged', trainingStatusElements[i].outerHTML)
       }
       this.lastTrainingStatusElements = trainingStatusElements
     }
   }
-
+  
   WaitForCompleted() {
     const trainingStatusElements = Cypress.$('[data-testid^="training-status-"]')
     const currentTime = new Date().getTime()
     
     this.DumpIfChanged(trainingStatusElements)
 
-    const completed = Cypress.$(trainingStatusElements).find('[data-testid="training-status-completed"]').length > 0
+    //const completed = Cypress.$(trainingStatusElements).find('[data-testid="training-status-completed"]').length > 0
+    const completed = XFind(trainingStatusElements, 'data-testid="training-status-completed"')
     if (completed) {
-      if (currentTime > this.waitForTrainingStatusNotCompleteTime) {
+      if (currentTime > this.waitForTrainingStatusQueuedOrRunningTime) {
         helpers.ConLog('TrainingStatus.WaitForCompleted', 'Training Status IS COMPLETED!')
+  helpers.ConLog('TrainingStatus.DumpIfChanged', `Number of Training Status Elements Found: ${trainingStatusElements.length}`)
+  for (let i = 0; i < trainingStatusElements.length; i++) {
+    helpers.ConLog('TrainingStatus.DumpIfChanged', trainingStatusElements[i].outerHTML)
+  }
         return
       }
+      helpers.ConLog('TrainingStatus.WaitForCompleted', 'Waiting to see queued or running before we can accept the current completed status')
       throw new Error('Retry - Waiting for Training Status to become queued or running before we accept complete for the status')
     }
-    this.waitForTrainingStatusNotCompleteTime = 0
+    this.waitForTrainingStatusQueuedOrRunningTime = 0
 
-    const pollingStoppedWarning = Cypress.$(trainingStatusElements).find('[data-testid="training-status-polling-stopped-warning"]').length > 0
-    const failed = Cypress.$(trainingStatusElements).find('[data-testid="training-status-failed"]').length > 0
+    // const pollingStoppedWarning = Cypress.$(trainingStatusElements).find('[data-testid="training-status-polling-stopped-warning"]').length > 0
+    // const failed = Cypress.$(trainingStatusElements).find('[data-testid="training-status-failed"]').length > 0
+    const queued = XFind(trainingStatusElements, 'data-testid="training-status-queued"')
+    const pollingStoppedWarning = XFind(trainingStatusElements, 'data-testid="training-status-polling-stopped-warning"')
+    const failed = XFind(trainingStatusElements, 'data-testid="training-status-failed"')
 
     if ((pollingStoppedWarning || failed) && (currentTime > this.canRefreshTrainingStatusTime)) {
       this.canRefreshTrainingStatusTime = currentTime + 2000
@@ -89,25 +115,26 @@ export class TrainingStatus {
 
       // When we get here it is possible there are two refresh buttons on the page, one that
       // is covered up by a popup dialog, so we need to click on the last one found.
-      const elements = Cypress.$(trainingStatusElements).find('[data-testid="training-status-refresh-button"]')
+      const elements = Cypress.$('button[data-testid="training-status-refresh-button"]')
       Cypress.$(elements[elements.length - 1]).click()
     }
     throw new Error('Retry - Training Status is NOT yet complete')
   }
 }
 
-export function VerifyNoIncidentTriangleOnPage() { VerifyErrorIcon(false) }
-
 // Verify for just the Left Pane "Train Dialogs" link.
-export function VerifyIncidentTriangleForTrainDialogs() { VerifyErrorIcon(true) }
+export function VerifyNoErrorTriangleOnPage() { VerifyIncidentIcon(false, 'cl-color-error') }
+export function VerifyErrorTriangleForTrainDialogs() { VerifyIncidentIcon(true, 'cl-color-error') }
+export function VerifyNoWarningTriangleOnPage() { VerifyIncidentIcon(false, 'cl-color-warning') }
+export function VerifyWarningTriangleForTrainDialogs() { VerifyIncidentIcon(true, 'cl-color-warning') }
 
-function VerifyErrorIcon(errorIconExpected)
+function VerifyIncidentIcon(errorIconExpected, colorClassSelector)
 {
   let funcName = `VerifyErrorIcon(${errorIconExpected})`
 
   cy.WaitForStableDOM()
   cy.wrap({ countFound: -1, timesInARowAtThisCount: 0 }, { timeout: 10000 }).should(retryInfo => {
-    const elements = Cypress.$('i[data-icon-name="IncidentTriangle"].cl-color-error')
+    const elements = Cypress.$(`i[data-icon-name="IncidentTriangle"].${colorClassSelector}`)
     if(elements.length === retryInfo.countFound) { retryInfo.timesInARowAtThisCount ++ }
     else {
       // The count changed since the last time we looked at this.
