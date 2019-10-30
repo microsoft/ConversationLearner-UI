@@ -42,7 +42,7 @@ describe('obiDialogParser', () => {
             }
 
             // Collect array of input files for the OBI dialog parser.
-            const path = absolutePathFromPathRelativeToCurrentFile('../_testdata/product_key_dialogs')
+            const path = absolutePathFromPathRelativeToCurrentFile('../__testdata__/product_key_dialogs')
             const globResults = klaw(path)
             const dialogFiles: File[] = []
             for (const pathItem of globResults) {
