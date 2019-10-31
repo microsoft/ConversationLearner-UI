@@ -212,7 +212,10 @@ export function getTip(tipType: string) {
         case TipType.ACTION_CHANGE_MODEL:
             return (
                 <div>
-                    Change Model
+                    <div className={OF.FontClassNames.mediumPlus}>Change Model</div>
+                    <p>
+                        Forward the user input to another model and make that model the active model to receive all future input in conversation.
+                    </p>
                 </div>
             )
         case TipType.ACTION_END_SESSION:

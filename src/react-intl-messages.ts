@@ -553,6 +553,8 @@ export enum FM {
     TOOLTIP_ACTION_TYPE_ENDSESSION = 'ToolTip.ACTION_TYPE.EndSesion',
     TOOLTIP_ACTION_TYPE_SET_ENTITY = 'ToolTip.ACTION_TYPE.SetEntity',
     TOOLTIP_ACTION_TYPE_CARD = 'ToolTip.ACTION_TYPE.Card',
+    TOOLTIP_ACTION_TYPE_DISPATCH = 'ToolTip.ACTION_TYPE.Dispatch',
+    TOOLTIP_ACTION_TYPE_CHANGE_MODEL = 'ToolTip.ACTION_TYPE.ChangeModel',
     TOOLTIP_ACTION_WAIT = 'ToolTip.ACTION_WAIT',
     TOOLTIP_ACTION_WAIT_TITLE = 'ToolTip.ACTION_WAIT_TITLE',
 
@@ -996,6 +998,8 @@ export default {
         [FM.TOOLTIP_ACTION_TYPE_ENDSESSION]: 'Indicate Bot is done',
         [FM.TOOLTIP_ACTION_TYPE_SET_ENTITY]: 'Set an entity to a known enum value',
         [FM.TOOLTIP_ACTION_TYPE_CARD]: 'Renders an Adaptive Card template',
+        [FM.TOOLTIP_ACTION_TYPE_DISPATCH]: 'Dispatches the input to specified model',
+        [FM.TOOLTIP_ACTION_TYPE_CHANGE_MODEL]: `Forwards the input to specified model similar to 'Dispatch', but also persists the change so all future inputs in conversation are directed to the model.`,
         [FM.TOOLTIP_ACTION_WAIT]: 'When selected, Bot will wait for more user input before taking another Action',
         [FM.TOOLTIP_ACTION_WAIT_TITLE]: 'Wait For Response',
 

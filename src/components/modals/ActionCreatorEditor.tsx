@@ -1244,7 +1244,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
         const textPayload = this.state.slateValuesMap[TEXT_SLOT]
         const isPayloadMissing = (actionTypeOption.key === CLM.ActionTypes.TEXT && textPayload && textPayload.document.text.length === 0)
-        const isTerminal = actionTypeOption.key === CLM.ActionTypes.END_SESSION
+        const isTerminal = [CLM.ActionTypes.END_SESSION, CLM.ActionTypes.DISPATCH, CLM.ActionTypes.CHANGE_MODEL].includes(actionTypeOption.key as CLM.ActionTypes)
             ? true
             : actionTypeOption.key === CLM.ActionTypes.SET_ENTITY
                 ? false
@@ -1822,6 +1822,18 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                 </>
                             )}
 
+                        {(this.state.selectedActionTypeOptionKey === CLM.ActionTypes.DISPATCH
+                            || this.state.selectedActionTypeOptionKey === CLM.ActionTypes.CHANGE_MODEL)
+                            && <TC.Dropdown
+                                data-testid="action-creator-dropdown-model-name"
+                                label="Model"
+                                options={this.state.modelOptions.filter(mo => mo.data.appId !== this.props.app.appId)}
+                                onChange={this.onChangeModelType}
+                                selectedKey={this.state.selectedModelOptionKey}
+                                tipType={ToolTip.TipType.ACTION_CHANGE_MODEL}
+                                disabled={this.state.selectedActionTypeOptionKey === CLM.ActionTypes.DISPATCH}
+                            />}
+
                         {this.state.selectedActionTypeOptionKey !== CLM.ActionTypes.CARD
                             && this.state.selectedActionTypeOptionKey !== CLM.ActionTypes.END_SESSION
                             && this.state.selectedActionTypeOptionKey !== CLM.ActionTypes.SET_ENTITY
@@ -1847,7 +1859,6 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                             )}
 
                         {this.state.selectedActionTypeOptionKey !== CLM.ActionTypes.DISPATCH
-                            && this.state.selectedActionTypeOptionKey !== CLM.ActionTypes.CHANGE_MODEL
                             && <>
                                 <div className="cl-action-creator--required-entities">
                                     <CLTagPicker
@@ -1890,18 +1901,6 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                 </div>
                             </>}
 
-                        {(this.state.selectedActionTypeOptionKey === CLM.ActionTypes.DISPATCH
-                            || this.state.selectedActionTypeOptionKey === CLM.ActionTypes.CHANGE_MODEL)
-                            && <TC.Dropdown
-                                data-testid="action-creator-dropdown-model-name"
-                                label="Model"
-                                options={this.state.modelOptions.filter(mo => mo.data.appId !== this.props.app.appId)}
-                                onChange={this.onChangeModelType}
-                                selectedKey={this.state.selectedModelOptionKey}
-                                tipType={ToolTip.TipType.ACTION_CHANGE_MODEL}
-                                disabled={this.state.selectedActionTypeOptionKey === CLM.ActionTypes.DISPATCH}
-                            />}
-
                         <div>
                             <OF.Label>Options</OF.Label>
                             <TC.Checkbox
@@ -1910,7 +1909,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                 checked={this.state.isTerminal}
                                 onChange={this.onChangeWaitCheckbox}
 
-                                disabled={this.state.reprompt || [CLM.ActionTypes.END_SESSION, CLM.ActionTypes.SET_ENTITY, CLM.ActionTypes.DISPATCH].includes(this.state.selectedActionTypeOptionKey as CLM.ActionTypes)}
+                                disabled={this.state.reprompt || [CLM.ActionTypes.END_SESSION, CLM.ActionTypes.SET_ENTITY, CLM.ActionTypes.DISPATCH, CLM.ActionTypes.CHANGE_MODEL].includes(this.state.selectedActionTypeOptionKey as CLM.ActionTypes)}
                                 tipType={ToolTip.TipType.ACTION_WAIT}
                             />
                         </div>
