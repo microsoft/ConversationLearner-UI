@@ -5,6 +5,7 @@
 
 import * as models from '../../../support/Models'
 import * as modelPage from '../../../support/components/ModelPage'
+import * as chatPanel from '../../../support/components/ChatPanel'
 import * as train from '../../../support/Train'
 import * as trainDialogsGrid from '../../../support/components/TrainDialogsGrid'
 import * as entityDetectionPanel from '../../../support/components/EntityDetectionPanel'
@@ -68,8 +69,8 @@ describe('Consistent Entity Labeling', () => {
   context('Train - Alternative Input', () => {
     it('Automatically label entites in alternative input', () => {
       train.TypeYourMessage('This is Tag.')
-      train.TypeAlternativeInput('This is Frog and Tag.')
-      train.TypeAlternativeInput('This is Tag and Frog.')
+      entityDetectionPanel.TypeAlternativeInput('This is Frog and Tag.')
+      entityDetectionPanel.TypeAlternativeInput('This is Tag and Frog.')
 
       entityDetectionPanel.VerifyEntityLabelWithinSpecificInput([textEntityPairs[0]], 0)
       entityDetectionPanel.VerifyEntityLabelWithinSpecificInput(textEntityPairs, 1)
@@ -97,7 +98,7 @@ describe('Consistent Entity Labeling', () => {
   context('Edit and Change to Previous Submited Labels', () => {
     it('Edit the training and verify the entities are labeled', () => {
       train.EditTraining('This is Tag.', 'This is Tag.', 'Hi')
-      train.SelectChatTurnExactMatch('This is Tag.')
+      chatPanel.SelectChatTurnExactMatch('This is Tag.')
 
       entityDetectionPanel.VerifyEntityLabelWithinSpecificInput([textEntityPairs[0]], 0)
       entityDetectionPanel.VerifyEntityLabelWithinSpecificInput(textEntityPairs, 1)
@@ -133,7 +134,7 @@ describe('Consistent Entity Labeling', () => {
     })
 
     it('Remove both Entity labels', () => {
-      train.SelectChatTurnExactMatch('This is Frog and Tag.')
+      chatPanel.SelectChatTurnExactMatch('This is Frog and Tag.')
       entityDetectionPanel.RemoveEntityLabel('Tag', 'multi')
       entityDetectionPanel.RemoveEntityLabel('Frog', 'multi')
     })
@@ -159,7 +160,7 @@ describe('Consistent Entity Labeling', () => {
     // Once this bug is fixed comment out this block of code and uncomment the next block
     it('Verify that Bug 2327 reproduced', () => {
       train.VerifyNoErrorMessage()
-      train.VerifyChatTurnHasNoError(0)
+      chatPanel.VerifyChatTurnHasNoError(0)
     })
 
     // Bug 2327: Typical Error indicators missing from Alternative Text error
@@ -167,11 +168,11 @@ describe('Consistent Entity Labeling', () => {
     // Uncomment this and comment out the above to detect a regression.
     // it('Verify that the general error appears', () => {
     //   train.VerifyErrorMessage(common.trainDialogHasErrorsMessage)
-    //   train.VerifyChatTurnHasError(0)
+    //   chatPanel.VerifyChatTurnHasError(0)
     // })
     
     it('Select the user turn and verify there is an error message', () => {
-      train.SelectChatTurnExactMatch('This is Tag.')
+      chatPanel.SelectChatTurnExactMatch('This is Tag.')
       entityDetectionPanel.VerifyMatchWarning(1)
     })
 

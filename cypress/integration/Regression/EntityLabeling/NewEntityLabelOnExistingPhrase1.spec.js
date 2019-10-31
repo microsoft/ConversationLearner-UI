@@ -6,6 +6,7 @@
 import * as models from '../../../support/Models'
 import * as modelPage from '../../../support/components/ModelPage'
 import * as entityDetectionPanel from '../../../support/components/EntityDetectionPanel'
+import * as chatPanel from '../../../support/components/ChatPanel'
 import * as train from '../../../support/Train'
 import * as helpers from '../../../support/Helpers'
 
@@ -44,7 +45,7 @@ describe('New Entity Label on Existing Phrase 1 - Entity Labeling', () => {
 
     it('Verify that the label was removed and then relable it', () => {
       train.SelectTextAction('The only response')
-      train.SelectChatTurnExactMatch('Phrase used only once.')
+      chatPanel.SelectChatTurnExactMatch('Phrase used only once.')
       entityDetectionPanel.VerifyWordNotLabeledAsEntity('once', 'anEntity')
       entityDetectionPanel.LabelTextAsEntity('once', 'anEntity')
     })
@@ -65,7 +66,7 @@ describe('New Entity Label on Existing Phrase 1 - Entity Labeling', () => {
     })
 
     it('Verify that the affected turn is now Entity labeled', () => {
-      train.SelectChatTurnExactMatch('Phrase used only once.')
+      chatPanel.SelectChatTurnExactMatch('Phrase used only once.')
       entityDetectionPanel.VerifyEntityLabel('once', 'anEntity')
     })
 

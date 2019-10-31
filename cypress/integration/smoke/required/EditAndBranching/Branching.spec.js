@@ -5,6 +5,7 @@
 
 import * as models from '../../../../support/Models'
 import * as modelPage from '../../../../support/components/ModelPage'
+import * as chatPanel from '../../../support/components/ChatPanel'
 import * as train from '../../../../support/Train'
 import * as helpers from '../../../../support/Helpers'
 
@@ -25,7 +26,7 @@ describe('Branching - Edit and Branching', () => {
   context('Branch and Extend Training', () => {
     it('Should edit a specific Train Dialog and capture the original chat messages for verification later', () => {
       train.EditTraining('My name is David.', 'My name is Susan.', 'Hello $name')
-      cy.WaitForStableDOM().then(() => { originalChatMessages = train.GetAllChatMessages() })
+      cy.WaitForStableDOM().then(() => { originalChatMessages = chatPanel.GetAllChatMessages() })
     })
 
     it('Should branch a turn', () => {
@@ -41,7 +42,7 @@ describe('Branching - Edit and Branching', () => {
     })
 
     it('Should capture the changes for verification later', () => {
-      cy.WaitForStableDOM().then(() => { editedChatMessages = train.GetAllChatMessages() })
+      cy.WaitForStableDOM().then(() => { editedChatMessages = chatPanel.GetAllChatMessages() })
     })
 
     it('Should save the changes and confirm they show up in the grid', () => {

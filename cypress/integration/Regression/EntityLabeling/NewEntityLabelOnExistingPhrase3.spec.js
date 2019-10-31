@@ -6,6 +6,7 @@
 import * as models from '../../../support/Models'
 import * as modelPage from '../../../support/components/ModelPage'
 import * as entityDetectionPanel from '../../../support/components/EntityDetectionPanel'
+import * as chatPanel from '../../../support/components/ChatPanel'
 import * as train from '../../../support/Train'
 import * as helpers from '../../../support/Helpers'
 
@@ -54,7 +55,7 @@ describe('New Entity Label on Existing Phrase 2 - Entity Labeling', () => {
       })
 
       it('Verify that the affected turn is now Entity labeled', () => {
-        train.SelectChatTurnExactMatch("Pearls of wisdom are useless unless diligently applied to one's own life.")
+        chatPanel.SelectChatTurnExactMatch("Pearls of wisdom are useless unless diligently applied to one's own life.")
         entityDetectionPanel.VerifyEntityLabel('wisdom', 'anEntity')
       })
 

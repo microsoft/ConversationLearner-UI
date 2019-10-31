@@ -8,6 +8,7 @@ import * as modelPage from '../../../support/components/ModelPage'
 import * as entityModal from '../../../support/components/EntityModal'
 import * as entityDetectionPanel from '../../../support/components/EntityDetectionPanel'
 import * as entities from '../../../support/Entities'
+import * as chatPanel from '../../../support/components/ChatPanel'
 import * as train from '../../../support/Train'
 import * as helpers from '../../../support/Helpers'
 
@@ -24,14 +25,14 @@ describe('Undo Entity Labeling - Edit and Branching', () => {
   context('Undo Entity Label Change', () => {
     it('Edit user turn and verify that "Submit Changes" and "Undo" buttons are disabled', () => {
       train.EditTraining('The user asks a silly question', 'The user asks their final question', 'The Bot responds once again')
-      train.SelectChatTurnExactMatch('The user asks a silly question')
+      chatPanel.SelectChatTurnExactMatch('The user asks a silly question')
       train.VerifySubmitChangesButtonIsDisabled()
       entityDetectionPanel.VerifyEntityLabelUndoButtonIsDisabled()
     })
     
     it('Verify that after selecting an entity to label, we can select a different user turn and label text', () => {
       entityDetectionPanel.SelectEntityLabel('user', 'one')
-      train.SelectChatTurnExactMatch('The user asks another question')
+      chatPanel.SelectChatTurnExactMatch('The user asks another question')
     })
 
     // Bug 2264: Selecting a labeled Entity then selecting a different user turn disables the ability to label Entities
@@ -49,11 +50,11 @@ describe('Undo Entity Labeling - Edit and Branching', () => {
     it('Select a Bot turn to reset the internal UI state', () => {
       // This resets the internal UI state so that either the bug no longer has an effect,
       // or the Entity selector goes away and we can continue testing other scenarios.
-      train.SelectChatTurnExactMatch('Bot responds with a silly answer')
+      chatPanel.SelectChatTurnExactMatch('Bot responds with a silly answer')
     })
 
     it('Remove Entity label from the 1st user turn', () => {
-      train.SelectChatTurnExactMatch('The user asks a silly question')
+      chatPanel.SelectChatTurnExactMatch('The user asks a silly question')
       entityDetectionPanel.RemoveEntityLabel('user', 'one')
     })
 
@@ -68,7 +69,7 @@ describe('Undo Entity Labeling - Edit and Branching', () => {
     })
 
     it('Select a Bot turn to cause any potential UI changes to trigger', () => {
-      train.SelectChatTurnExactMatch('Bot responds with a silly answer')
+      chatPanel.SelectChatTurnExactMatch('Bot responds with a silly answer')
     })
 
     it('Verify the formatted user turn', () => {
@@ -76,7 +77,7 @@ describe('Undo Entity Labeling - Edit and Branching', () => {
     })
 
     it('Relable a word of a user turn to a different Entity', () => {
-      train.SelectChatTurnExactMatch('The user asks a silly question')
+      chatPanel.SelectChatTurnExactMatch('The user asks a silly question')
       entityDetectionPanel.RemoveEntityLabel('user', 'one')
       entityDetectionPanel.LabelTextAsEntity('user', 'two')
     })
@@ -87,8 +88,8 @@ describe('Undo Entity Labeling - Edit and Branching', () => {
     it('Undo the change and verify that the Entity label is restored', () => {
       entityDetectionPanel.ClickEntityLabelUndoButton()
       entityDetectionPanel.VerifyTextIsLabeledAsEntity('user', 'two')
-      train.SelectChatTurnExactMatch('Bot responds with a silly answer')
-      train.SelectChatTurnExactMatch('The user asks a silly question')
+      chatPanel.SelectChatTurnExactMatch('Bot responds with a silly answer')
+      chatPanel.SelectChatTurnExactMatch('The user asks a silly question')
       entityDetectionPanel.VerifyTextIsLabeledAsEntity('user', 'one')
     })
 
@@ -104,14 +105,14 @@ describe('Undo Entity Labeling - Edit and Branching', () => {
     })
 
     it('Verify undo on a totally new Entity labeled word works', () => {
-      train.SelectChatTurnExactMatch('The user asks another question')
+      chatPanel.SelectChatTurnExactMatch('The user asks another question')
       entityDetectionPanel.LabelTextAsEntity('user', 'one')
       entityDetectionPanel.ClickEntityLabelUndoButton()
       entityDetectionPanel.VerifyTextIsNotLabeledAsEntity('user', 'one')
     })
 
     it('Verify undo on multiple changes to a user turn', () => {
-      train.SelectChatTurnExactMatch('The user asks their final question')
+      chatPanel.SelectChatTurnExactMatch('The user asks their final question')
       entityDetectionPanel.RemoveEntityLabel('user', 'one')
       entityDetectionPanel.RemoveEntityLabel('asks', 'two')
       
@@ -126,7 +127,7 @@ describe('Undo Entity Labeling - Edit and Branching', () => {
     })
 
     it("Begin to add a new entity but cancel, verify Entity labeling changes don't happen", () => {
-      train.SelectChatTurnExactMatch('The user asks another question')
+      chatPanel.SelectChatTurnExactMatch('The user asks another question')
       entityDetectionPanel.VerifyCanLabelTextAsEntity('user')
       entityDetectionPanel.ClickNewEntityButton()
       entityModal.ClickCancelButton()
@@ -141,7 +142,7 @@ describe('Undo Entity Labeling - Edit and Branching', () => {
     })
 
     it('Manually undo a change - remove Entity label and then add the same label back again', () => {
-      train.SelectChatTurnExactMatch('The user asks a silly question')
+      chatPanel.SelectChatTurnExactMatch('The user asks a silly question')
       entityDetectionPanel.RemoveEntityLabel('user', 'one')
       train.VerifySubmitChangesButtonIsEnabled()
       entityDetectionPanel.VerifyEntityLabelUndoButtonIsEnabled()
@@ -164,7 +165,7 @@ describe('Undo Entity Labeling - Edit and Branching', () => {
     // })
 
     it('Verify that the user chat turn did not change', () => {
-      train.SelectChatTurnExactMatch('Bot responds with a silly answer')
+      chatPanel.SelectChatTurnExactMatch('Bot responds with a silly answer')
       train.VerifyChatTurnIsAnExactMatchWithMarkup('The <strong><em>user</em></strong> asks a silly question', 6, 0)
     })
   })

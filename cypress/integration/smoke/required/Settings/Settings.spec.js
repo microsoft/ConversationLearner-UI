@@ -8,6 +8,7 @@ import * as models from '../../../../support/Models'
 import * as modelPage from '../../../../support/components/ModelPage'
 import * as entitiesGrid from '../../../../support/components/EntitiesGrid'
 import * as actionsGrid from '../../../../support/components/ActionsGrid'
+import * as chatPanel from '../../../support/components/ChatPanel'
 import * as train from '../../../../support/Train'
 import * as settings from '../../../../support/components/Settings'
 import * as helpers from '../../../../support/Helpers'
@@ -37,7 +38,7 @@ describe("Settings - Settings", () => {
         cy.WaitForStableDOM().then(() => {
           trainDialog.description = train.GetDescriptions()
           trainDialog.tags = train.GetAllTags()
-          trainDialog.chatMessages = train.GetAllChatMessages()
+          trainDialog.chatMessages = chatPanel.GetAllChatMessages()
   
           train.ClickSaveCloseButton()
         })

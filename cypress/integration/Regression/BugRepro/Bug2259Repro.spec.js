@@ -9,6 +9,7 @@ import * as entities from '../../../support/Entities'
 import * as actions from '../../../support/Actions'
 import * as actionModal from '../../../support/components/ActionModal'
 import * as scorerModal from '../../../support/components/ScorerModal'
+import * as chatPanel from '../../../support/components/ChatPanel'
 import * as train from '../../../support/Train'
 import * as common from '../../../support/Common'
 import * as helpers from '../../../support/Helpers'
@@ -29,7 +30,7 @@ describe('Bug 2259 Repro', () => {
     })
 
     it('Select a Bot Turn, + Action + Entity - Create an Enum Entity', () => {
-      train.SelectChatTurnExactMatch('What kind of fruit do you like?')
+      chatPanel.SelectChatTurnExactMatch('What kind of fruit do you like?')
       scorerModal.ClickAddActionButton()
       actionModal.ClickAddEntityButton()
       entities.CreateNewEntity({ type: 'Enum', name: 'anEnum', enumValues: ['ONE', 'TWO'] })

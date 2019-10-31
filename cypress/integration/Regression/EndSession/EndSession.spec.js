@@ -5,6 +5,7 @@
 
 import * as models from '../../../support/Models'
 import * as modelPage from '../../../support/components/ModelPage'
+import * as chatPanel from '../../../support/components/ChatPanel'
 import * as train from '../../../support/Train'
 import * as scorerModal from '../../../support/components/ScorerModal'
 import * as helpers from '../../../support/Helpers'
@@ -39,12 +40,12 @@ describe('End Session', () => {
     })
 
     it('End Session Score Action should be disabled for 1st Bot turn', () => {
-      train.SelectChatTurnExactMatch('Hello')
+      chatPanel.SelectChatTurnExactMatch('Hello')
       scorerModal.VerifyContainsDisabledEndSessionAction('Goodbye')
     })
 
     it('End Session Score Action button should be labeled "Selected" for last Bot turn', () => {
-      train.SelectChatTurnExactMatch('EndSession: Goodbye')
+      chatPanel.SelectChatTurnExactMatch('EndSession: Goodbye')
       scorerModal.VerifyContainsSelectedEndSessionAction('Goodbye')
     })
 
@@ -64,22 +65,22 @@ describe('End Session', () => {
     })
 
     it('Should delete EndSession turn', () => {
-      train.SelectChatTurnExactMatch('EndSession: Goodbye')
+      chatPanel.SelectChatTurnExactMatch('EndSession: Goodbye')
       train.ClickDeleteChatTurn()
     })
 
     it('End Session Action should be disabled for remaining Bot turn', () => {
-      train.SelectChatTurnExactMatch('Hello')
+      chatPanel.SelectChatTurnExactMatch('Hello')
       scorerModal.VerifyContainsDisabledEndSessionAction('Goodbye')
     })
 
     it('Should delete last user turn and cause a Bot turn to be the last turn', () => {
-      train.SelectChatTurnExactMatch('Bye')
+      chatPanel.SelectChatTurnExactMatch('Bye')
       train.ClickDeleteChatTurn()
     })
 
     it('End Session Action should now be enabled', () => {
-      train.SelectChatTurnExactMatch('Hello')
+      chatPanel.SelectChatTurnExactMatch('Hello')
       scorerModal.VerifyContainsEnabledEndSessionAction('Goodbye')
     })
 
@@ -96,7 +97,7 @@ describe('End Session', () => {
     })
 
     it('End Session Score Action button should be labeled "Selected" for last Bot turn', () => {
-      train.SelectChatTurnExactMatch('EndSession: Goodbye')
+      chatPanel.SelectChatTurnExactMatch('EndSession: Goodbye')
       scorerModal.VerifyContainsSelectedEndSessionAction('Goodbye')
     })
 
@@ -105,7 +106,7 @@ describe('End Session', () => {
     })
 
     it('End Session Score Action should be disabled for 1st Bot turn', () => {
-      train.SelectChatTurnExactMatch('Okay')
+      chatPanel.SelectChatTurnExactMatch('Okay')
       scorerModal.VerifyContainsDisabledEndSessionAction('Goodbye')
     })
 

@@ -5,6 +5,7 @@
 
 import * as models from '../../../support/Models'
 import * as modelPage from '../../../support/components/ModelPage'
+import * as chatPanel from '../../../support/components/ChatPanel'
 import * as train from '../../../support/Train'
 import * as trainDialogsGrid from '../../../support/components/TrainDialogsGrid'
 import * as entityDetectionPanel from '../../../support/components/EntityDetectionPanel'
@@ -39,18 +40,18 @@ describe('Action Unavailable - ErrorHandling', () => {
     })
 
     it('Introduce an error in the Bot response by removing the entity label from "Joe"', () => {
-      train.SelectChatTurnExactMatch('Joe')
+      chatPanel.SelectChatTurnExactMatch('Joe')
       entityDetectionPanel.RemoveEntityLabel('Joe', 'name')
       train.ClickSubmitChangesButton()
     })
 
     it('Verify the general message appears and the chat turn is marked with error colors', () => {
       train.VerifyErrorMessage(common.trainDialogHasErrorsMessage)
-      train.VerifyChatTurnHasError(1)
+      chatPanel.VerifyChatTurnHasError(1)
     })
 
     it('Verify the specifics of the error on the turn', () => {
-      train.SelectChatTurnStartsWith('Hello')
+      chatPanel.SelectChatTurnStartsWith('Hello')
       train.VerifyErrorMessage('Action is unavailable')
       train.VerifyChatTurnIsAnExactMatch('Hello [$name]', 2, 1)
     })
@@ -66,19 +67,19 @@ describe('Action Unavailable - ErrorHandling', () => {
     it('Edit the training and verify it has errors', () => {
       train.EditTraining(`Joe`, 'Joe', "Hello $name")
       train.VerifyErrorMessage(common.trainDialogHasErrorsMessage)
-      train.SelectChatTurnStartsWith('Hello')
+      chatPanel.SelectChatTurnStartsWith('Hello')
       train.VerifyErrorMessage('Action is unavailable')
       train.VerifyChatTurnIsAnExactMatch('Hello [$name]', 2, 1)
     })
 
     it('Fix the user turn that caused the error', () => {
-      train.SelectChatTurnExactMatch('Joe')
+      chatPanel.SelectChatTurnExactMatch('Joe')
       entityDetectionPanel.LabelTextAsEntity('Joe', 'name')
       train.ClickSubmitChangesButton()
     })
 
     it('Verify that there are no more errors', () => {
-      train.VerifyChatTurnHasNoError(1)
+      chatPanel.VerifyChatTurnHasNoError(1)
       train.VerifyNoErrorMessage()
       train.ClickSaveCloseButton()
       modelPage.VerifyNoErrorTriangleOnPage()

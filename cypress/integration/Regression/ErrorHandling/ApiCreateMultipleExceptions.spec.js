@@ -5,6 +5,7 @@
 
 import * as models from '../../../support/Models'
 import * as modelPage from '../../../support/components/ModelPage'
+import * as chatPanel from '../../../support/components/ChatPanel'
 import * as train from '../../../support/Train'
 import * as trainDialogsGrid from '../../../support/components/TrainDialogsGrid'
 import * as entityDetectionPanel from '../../../support/components/EntityDetectionPanel'
@@ -121,7 +122,7 @@ describe('API Create Multiple Exceptions - ErrorHandling', () => {
       train.ClickScoreActionsButton()
       train.VerifyErrorPopup("Error in Bot's EntityDetectionCallback:  An intentional error was invoked in the EntityDetectionCallback function.")
       train.ClickPopupConfirmCancelOkButton()
-      train.VerifyChatMessageCount(20)
+      chatPanel.VerifyChatMessageCount(20)
     })
 
     it('Should add a user turn, to be used later to cause an error, and verify it is in the chat pane', () => {

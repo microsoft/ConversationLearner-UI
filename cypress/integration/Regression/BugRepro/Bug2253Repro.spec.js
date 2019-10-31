@@ -6,6 +6,7 @@
 import * as models from '../../../support/Models'
 import * as modelPage from '../../../support/components/ModelPage'
 import * as entityDetectionPanel from '../../../support/components/EntityDetectionPanel'
+import * as chatPanel from '../../../support/components/ChatPanel'
 import * as train from '../../../support/Train'
 import * as helpers from '../../../support/Helpers'
 
@@ -28,7 +29,7 @@ describe("Bug 2253 Repro", () => {
     })
 
     it('Alter the Entity Label', () => {
-      train.SelectChatTurnExactMatch('My foot is dirty.')
+      chatPanel.SelectChatTurnExactMatch('My foot is dirty.')
       entityDetectionPanel.RemoveEntityLabel('dirty', 'conditionOfFoot')
       train.ClickSubmitChangesButton()
     })

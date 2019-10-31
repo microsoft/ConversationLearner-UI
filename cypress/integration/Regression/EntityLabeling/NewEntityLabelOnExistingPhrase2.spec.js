@@ -6,6 +6,7 @@
 import * as models from '../../../support/Models'
 import * as modelPage from '../../../support/components/ModelPage'
 import * as entityDetectionPanel from '../../../support/components/EntityDetectionPanel'
+import * as chatPanel from '../../../support/components/ChatPanel'
 import * as train from '../../../support/Train'
 import * as helpers from '../../../support/Helpers'
 
@@ -47,7 +48,7 @@ describe('New Entity Label on Existing Phrase 2 - Entity Labeling', () => {
 
     it('Verify that the label was removed and then relable it', () => {
       train.SelectTextAction('The only response')
-      train.SelectChatTurnExactMatch('Two instances of this phrase there are.')
+      chatPanel.SelectChatTurnExactMatch('Two instances of this phrase there are.')
       entityDetectionPanel.VerifyWordNotLabeledAsEntity('Two', 'anEntity')
       entityDetectionPanel.VerifyWordNotLabeledAsEntity('phrase', 'anEntity')
       entityDetectionPanel.LabelTextAsEntity('Two', 'anEntity')
@@ -70,7 +71,7 @@ describe('New Entity Label on Existing Phrase 2 - Entity Labeling', () => {
     })
 
     it('Verify that the affected turn is now Entity labeled', () => {
-      train.SelectChatTurnExactMatch('Two instances of this phrase there are.')
+      chatPanel.SelectChatTurnExactMatch('Two instances of this phrase there are.')
       entityDetectionPanel.VerifyEntityLabel('Two', 'anEntity')
     })
 
@@ -90,7 +91,7 @@ describe('New Entity Label on Existing Phrase 2 - Entity Labeling', () => {
     })
 
     it('Verify that the affected turn is now Entity labeled', () => {
-      train.SelectChatTurnExactMatch('Two instances of this phrase there are.')
+      chatPanel.SelectChatTurnExactMatch('Two instances of this phrase there are.')
       entityDetectionPanel.VerifyEntityLabel('Two', 'anEntity')
     })
 

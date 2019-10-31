@@ -5,6 +5,7 @@
 
 import * as models from '../../../support/Models'
 import * as modelPage from '../../../support/components/ModelPage'
+import * as chatPanel from '../../../support/components/ChatPanel'
 import * as train from '../../../support/Train'
 import * as helpers from '../../../support/Helpers'
 
@@ -28,18 +29,18 @@ describe('Last Turn and Undo - Edit and Branching', () => {
     })
     
     it('Preserve all chat messages for later verification', () => {
-      cy.WaitForStableDOM().then(() => { chatMessages = train.GetAllChatMessages() })
+      cy.WaitForStableDOM().then(() => { chatMessages = chatPanel.GetAllChatMessages() })
     })
 
     it('Type in a message, verify that Undo button is present and user cannot select another chat turn', () => {
       train.TypeYourMessage('A message to be undone!')
       train.VerifyTurnUndoButtonIsPresent()
-      train.VerifyChatPanelIsDisabled()
+      chatPanel.VerifyChatPanelIsDisabled()
     })
 
     it('Undo the last message, verify turn was discarded and Undo button is gone.', () => {
       train.ClickTurnUndoButton()
-      train.VerifyChatPanelIsEnabled()
+      chatPanel.VerifyChatPanelIsEnabled()
       train.VerifyAllChatMessages(chatMessages)
       train.VerifyTurnUndoButtonIsMissing()
     })
@@ -47,7 +48,7 @@ describe('Last Turn and Undo - Edit and Branching', () => {
     it('Type in another message, verify that Undo button is present and user cannot select another chat turn', () => {
       train.TypeYourMessage('A message to persist')
       train.VerifyTurnUndoButtonIsPresent()
-      train.VerifyChatPanelIsDisabled()
+      chatPanel.VerifyChatPanelIsDisabled()
     })
 
     it('Click Score Actions, verify that Undo botton goes away', () => {

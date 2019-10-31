@@ -5,6 +5,7 @@
 
 import * as models from '../../../support/Models'
 import * as modelPage from '../../../support/components/ModelPage'
+import * as chatPanel from '../../../support/components/ChatPanel'
 import * as train from '../../../support/Train'
 import * as trainDialogsGrid from '../../../support/components/TrainDialogsGrid'
 import * as common from '../../../support/Common'
@@ -55,7 +56,7 @@ describe('Missing Action - ErrorHandling', () => {
       train.EditTraining(common.gonnaDeleteAnAction, common.gonnaDeleteAnAction, '')
       train.VerifyErrorMessage(common.trainDialogHasErrorsMessage)
 
-      train.SelectChatTurnStartsWith("ERROR: Can't find Action Id")
+      chatPanel.SelectChatTurnStartsWith("ERROR: Can't find Action Id")
       train.VerifyErrorMessage('Action does not exist')
       scorerModal.VerifyMissingActionNotice()
     })

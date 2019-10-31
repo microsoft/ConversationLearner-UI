@@ -11,6 +11,7 @@ import * as actionModal from '../../../../support/components/ActionModal'
 import * as scorerModal from '../../../../support/components/ScorerModal'
 import * as common from '../../../../support/Common'
 import * as entityDetectionPanel from '../../../../support/components/EntityDetectionPanel'
+import * as chatPanel from '../../../support/components/ChatPanel'
 import * as train from '../../../../support/Train'
 import * as common from '../../../../support/Common'
 import * as helpers from '../../../../support/Helpers'
@@ -46,7 +47,7 @@ describe('Comprehensive 1 - Score Actions', () => {
     })
 
     it('Select the action that was just used as a Bot Response', () => {
-      train.SelectLastChatTurn()
+      chatPanel.SelectLastChatTurn()
     })
 
     generatedScoreActionsData.VerifyScoreActionsList()
@@ -58,7 +59,7 @@ describe('Comprehensive 1 - Score Actions', () => {
       actions.CreateNewAction({ responseNameData: 'Hello', uncheckWaitForResponse: true })
       train.ClickScoreActionsButton()
       train.VerifyChatTurnIsAnExactMatch(common.whatsYourName, 3, 2)
-      train.SelectLastChatTurn()
+      chatPanel.SelectLastChatTurn()
     })
 
     generatedScoreActionsData.VerifyScoreActionsList()
@@ -100,7 +101,7 @@ describe('Comprehensive 1 - Score Actions', () => {
     // Once this bug is fixed remove this block of code and the test suite should work as expected.
     it('Hack around Bug 2243', () => {
       scorerModal.ClickTextAction('What kind of fruit do you like?')
-      train.SelectChatTurnExactMatch('What kind of fruit do you like?', 1)
+      chatPanel.SelectChatTurnExactMatch('What kind of fruit do you like?', 1)
     })
 
     generatedScoreActionsData.VerifyScoreActionsList()
@@ -108,7 +109,7 @@ describe('Comprehensive 1 - Score Actions', () => {
     it('Select Set Entity Action fruit: ORANGES', () => {
       scorerModal.ClickSetEntityAction('fruit: ORANGES')
       train.ClickScoreActionsButton()
-      train.SelectLastChatTurn()
+      chatPanel.SelectLastChatTurn()
     })
 
     generatedScoreActionsData.VerifyScoreActionsList()

@@ -10,6 +10,7 @@ import * as actions from '../../../../support/Actions'
 import * as actionModal from '../../../../support/components/ActionModal'
 import * as scorerModal from '../../../../support/components/ScorerModal'
 import * as entityDetectionPanel from '../../../../support/components/EntityDetectionPanel'
+import * as chatPanel from '../../../support/components/ChatPanel'
 import * as train from '../../../../support/Train'
 import * as helpers from '../../../../support/Helpers'
 
@@ -34,7 +35,7 @@ describe('Comprehensive 3 - Score Actions', () => {
 
     it('Add two more entities', () => {
       train.ClickScoreActionsButton()
-      train.SelectLastChatTurn()
+      chatPanel.SelectLastChatTurn()
       scorerModal.ClickAddActionButton()
 
       actionModal.ClickAddEntityButton()
@@ -48,7 +49,7 @@ describe('Comprehensive 3 - Score Actions', () => {
 
     it('Add another Bot response', () => {
       scorerModal.ClickTextAction('Uhhhh...')
-      train.SelectLastChatTurn()
+      chatPanel.SelectLastChatTurn()
     })
 
     generatedScoreActionsData.VerifyScoreActionsList()
@@ -115,7 +116,7 @@ describe('Comprehensive 3 - Score Actions', () => {
 
     it('Bot Response to finish the round and allow scrutiny of the Action scores', () => {
       scorerModal.ClickTextAction('Uhhhh...')
-      train.SelectLastChatTurn()
+      chatPanel.SelectLastChatTurn()
     })
 
     generatedScoreActionsData.VerifyScoreActionsList()

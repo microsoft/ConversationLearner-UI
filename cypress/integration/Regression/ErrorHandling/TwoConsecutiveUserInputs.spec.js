@@ -5,6 +5,7 @@
 
 import * as models from '../../../support/Models'
 import * as modelPage from '../../../support/components/ModelPage'
+import * as chatPanel from '../../../support/components/ChatPanel'
 import * as train from '../../../support/Train'
 import * as trainDialogsGrid from '../../../support/components/TrainDialogsGrid'
 import * as common from '../../../support/Common'
@@ -33,7 +34,7 @@ describe('Two Consecutive User Inputs - ErrorHandling', () => {
     })
 
     it('Should select the chat turn containing the error and validate the specific error message', () => {
-      train.SelectChatTurnExactMatch('Sam')
+      chatPanel.SelectChatTurnExactMatch('Sam')
       train.VerifyErrorMessage('Two consecutive User Inputs')
     })
 
@@ -48,12 +49,12 @@ describe('Two Consecutive User Inputs - ErrorHandling', () => {
     it('Should edit the Train Dialog and verify the errors still exist', () => {
       train.EditTraining(`Hey`, 'world peace', "Sorry $name, I can't help you get $want")
       train.VerifyErrorMessage(common.trainDialogHasErrorsMessage)
-      train.SelectChatTurnExactMatch('Sam')
+      chatPanel.SelectChatTurnExactMatch('Sam')
       train.VerifyErrorMessage('Two consecutive User Inputs')
     })
 
     it('Should fix the error and verify that all error messages are gone', () => {
-      train.SelectChatTurnExactMatch('InsertedText')
+      chatPanel.SelectChatTurnExactMatch('InsertedText')
       train.ClickDeleteChatTurn()
       train.VerifyNoErrorMessage()
     })

@@ -6,6 +6,7 @@
 import * as models from '../../../support/Models'
 import * as modelPage from '../../../support/components/ModelPage'
 import * as entityDetectionPanel from '../../../support/components/EntityDetectionPanel'
+import * as chatPanel from '../../../support/components/ChatPanel'
 import * as train from '../../../support/Train'
 import * as helpers from '../../../support/Helpers'
 
@@ -60,7 +61,7 @@ describe('Duplicate Entity Labels - ErrorHandling', () => {
     })
 
     it('Select the offensive User turn and verify warning message under chat panel changes', () => {
-      train.SelectChatTurnExactMatch('My name is Joe Schmo')
+      chatPanel.SelectChatTurnExactMatch('My name is Joe Schmo')
       train.VerifyWarningMessage('Non-multivalue Entity labeled with more than one value: "word"')
     })
 
@@ -78,7 +79,7 @@ describe('Duplicate Entity Labels - ErrorHandling', () => {
     })
 
     it('Select the offensive User turn again and verify warning message under chat panel changed due to correcting 1 of the Entity labels', () => {
-      train.SelectChatTurnExactMatch('My name is Joe Schmo')
+      chatPanel.SelectChatTurnExactMatch('My name is Joe Schmo')
       train.VerifyWarningMessage('Non-multivalue Entity labeled with more than one value: "name"')
     })
 

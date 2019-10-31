@@ -5,6 +5,7 @@
 
 import * as models from '../../../support/Models'
 import * as modelPage from '../../../support/components/ModelPage'
+import * as chatPanel from '../../../support/components/ChatPanel'
 import * as train from '../../../support/Train'
 import * as trainDialogsGrid from '../../../support/components/TrainDialogsGrid'
 import * as helpers from '../../../support/Helpers'
@@ -29,7 +30,7 @@ describe('Verify Edit Training Controls And Labels - Edit And Branching', () => 
   context('Edit Train Dialog', () => {
     it('Should edit a Train Dialog and capture the chat messages to verifiy later', () => {
       train.EditTraining('My name is David.', 'My name is Susan.', 'Hello $name')
-      cy.WaitForStableDOM().then(() => { originalChatMessages = train.GetAllChatMessages() })
+      cy.WaitForStableDOM().then(() => { originalChatMessages = chatPanel.GetAllChatMessages() })
     })
 
     it('Should verify the labels for the Close and Delete buttons', () => {

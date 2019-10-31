@@ -7,6 +7,7 @@ import * as models from '../../../../support/Models'
 import * as modelPage from '../../../../support/components/ModelPage'
 import * as scorerModal from '../../../../support/components/ScorerModal'
 import * as entityDetectionPanel from '../../../../support/components/EntityDetectionPanel'
+import * as chatPanel from '../../../support/components/ChatPanel'
 import * as train from '../../../../support/Train'
 import * as helpers from '../../../../support/Helpers'
 
@@ -28,27 +29,27 @@ describe('Comprehensive 5 - Score Actions', () => {
     })
 
     it('Select and Verify Each Bot Turn', () => {
-      train.VerifyEachBotChatTurn(() => { generatedScoreActionsData.VerifyScoreActionsListUnwrapped() })      
+      chatPanel.VerifyEachBotChatTurn(() => { generatedScoreActionsData.VerifyScoreActionsListUnwrapped() })      
     })
   })
 
   context('Modify the Training then Verify Action Scoring', () => {
     it('Modify Entity Labels', () => {
-      train.SelectChatTurnExactMatch('My name is Jeff')
+      chatPanel.SelectChatTurnExactMatch('My name is Jeff')
       entityDetectionPanel.RemoveEntityLabel('Jeff', 'name')
       train.ClickSubmitChangesButton()
 
-      train.SelectChatTurnExactMatch('Render these API Arguments: OneFromAnEntity, TwoToBeUsedByApiCall - and temporarily disqualify the Api response')
+      chatPanel.SelectChatTurnExactMatch('Render these API Arguments: OneFromAnEntity, TwoToBeUsedByApiCall - and temporarily disqualify the Api response')
       entityDetectionPanel.RemoveEntityLabel('OneFromAnEntity', '1stArg')
       entityDetectionPanel.RemoveEntityLabel('TwoToBeUsedByApiCall', '2ndArg')
       train.ClickSubmitChangesButton()
 
-      train.SelectChatTurnExactMatch('Clear Entity Values: 1stArg - 2ndArg - disqualifier - clear - fruit - name - set')
+      chatPanel.SelectChatTurnExactMatch('Clear Entity Values: 1stArg - 2ndArg - disqualifier - clear - fruit - name - set')
       entityDetectionPanel.RemoveEntityLabel('1stArg', 'clear')
       entityDetectionPanel.RemoveEntityLabel('2ndArg', 'clear')
       train.ClickSubmitChangesButton()
 
-      train.SelectChatTurnExactMatch('Set Entities: 1stArg: FirstArg - 2ndArg: SecondArg - fruit: PEACHES - name: Cindy - disqualifier: DISQUALIFIED')
+      chatPanel.SelectChatTurnExactMatch('Set Entities: 1stArg: FirstArg - 2ndArg: SecondArg - fruit: PEACHES - name: Cindy - disqualifier: DISQUALIFIED')
       entityDetectionPanel.RemoveEntityLabel('2ndArg:', 'set')
       entityDetectionPanel.RemoveEntityLabel('fruit:', 'set')
       entityDetectionPanel.LabelTextAsEntity('1stArg: FirstArg', '1stArg')
@@ -59,7 +60,7 @@ describe('Comprehensive 5 - Score Actions', () => {
     })
 
     it('Select and Verify Each Bot Turn', () => {
-      train.VerifyEachBotChatTurn(() => { generatedScoreActionsData.VerifyScoreActionsListUnwrapped() })      
+      chatPanel.VerifyEachBotChatTurn(() => { generatedScoreActionsData.VerifyScoreActionsListUnwrapped() })      
     })
 
     it('Save the Train Dialog', () => {

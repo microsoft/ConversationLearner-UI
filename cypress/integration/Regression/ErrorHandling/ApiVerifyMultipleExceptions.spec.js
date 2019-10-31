@@ -6,6 +6,7 @@
 import * as models from '../../../support/Models'
 import * as modelPage from '../../../support/components/ModelPage'
 import * as entityDetectionPanel from '../../../support/components/EntityDetectionPanel'
+import * as chatPanel from '../../../support/components/ChatPanel'
 import * as train from '../../../support/Train'
 import * as helpers from '../../../support/Helpers'
 
@@ -34,28 +35,28 @@ describe('API Verify Multiple Exceptions - ErrorHandling', () => {
     })
 
     it('Should introduce an Entity detection error at the last Bot turn and verify it', () => {
-      train.SelectChatTurnExactMatch('An entityError shall go here as well')
+      chatPanel.SelectChatTurnExactMatch('An entityError shall go here as well')
       entityDetectionPanel.LabelTextAsEntity('entityError', 'entityError')
       train.ClickSubmitChangesButton()
       VerifyAllBotChatMessages(true)
     })
 
     it('Should remove the Entity detection error at the last Bot turn and verify it', () => {
-      train.SelectChatTurnExactMatch('An entityError shall go here as well')
+      chatPanel.SelectChatTurnExactMatch('An entityError shall go here as well')
       entityDetectionPanel.RemoveEntityLabel('entityError', 'entityError')
       train.ClickSubmitChangesButton()
       VerifyAllBotChatMessages()
     })
 
     it('Should introduce an Entity detection error at the first Bot turn and verify it affects all Bot responses', () => {
-      train.SelectChatTurnExactMatch('This can be an entityError')
+      chatPanel.SelectChatTurnExactMatch('This can be an entityError')
       entityDetectionPanel.LabelTextAsEntity('entityError', 'entityError')
       train.ClickSubmitChangesButton()
       VerifyAllBotChatMessagesAreForEntityDetectionCallback()
     })
 
     it('Should remove the Entity detection error at the first Bot turn and verify it', () => {
-      train.SelectChatTurnExactMatch('This can be an entityError')
+      chatPanel.SelectChatTurnExactMatch('This can be an entityError')
       entityDetectionPanel.RemoveEntityLabel('entityError', 'entityError')
       train.ClickSubmitChangesButton()
       VerifyAllBotChatMessages(undefined, true)
