@@ -3,12 +3,9 @@
  * Licensed under the MIT License.
  */
 
-import * as popupModal from './components/PopupModal'
-import * as modelPage from './components/ModelPage'
-import * as scorerModal from './components/ScorerModal'
-import * as trainDialogsGrid from './components/TrainDialogsGrid'
-import * as mergeModal from './components/MergeModal'
-import * as helpers from './Helpers'
+import * as popupModal from './PopupModal'
+import * as scorerModal from './ScorerModal'
+import * as helpers from '../Helpers'
 
 export function VerifyChatPanelIsDisabled() { cy.Get('div.cl-chatmodal_webchat').find('div.cl-overlay') }
 export function VerifyChatPanelIsEnabled() { cy.Get('div.cl-chatmodal_webchat').DoesNotContain('div.cl-overlay') }
