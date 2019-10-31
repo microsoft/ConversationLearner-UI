@@ -178,6 +178,14 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                     const [name, value] = Util.setEntityActionDisplay(action, component.props.entities)
                     return <span data-testid="action-scorer-action-set-entity" className={OF.FontClassNames.mediumPlus}>{name}: {value}</span>
                 }
+                else if (action.actionType === CLM.ActionTypes.DISPATCH) {
+                    const dispatchAction = new CLM.DispatchAction(action)
+                    return <span data-testid="action-scorer-action-dispatch" className={OF.FontClassNames.mediumPlus}>Dispatch to model: {dispatchAction.modelName}</span>
+                }
+                else if (action.actionType === CLM.ActionTypes.CHANGE_MODEL) {
+                    const changeModelAction = new CLM.ChangeModelAction(action)
+                    return <span data-testid="action-scorer-action-change-model" className={OF.FontClassNames.mediumPlus}>Change to model: {changeModelAction.modelName}</span>
+                }
 
                 return <span className={OF.FontClassNames.mediumPlus}>{CLM.ActionBase.GetPayload(action, defaultEntityMap)}</span>
             }
@@ -408,7 +416,8 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         const newAction = await ((this.props.createActionThunkAsync(this.props.app.appId, action) as any) as Promise<CLM.ActionBase>)
         if (newAction
             && (
-                newAction.actionType === CLM.ActionTypes.END_SESSION
+                (newAction.actionType === CLM.ActionTypes.END_SESSION
+                    || newAction.actionType === CLM.ActionTypes.CHANGE_MODEL)
                     ? this.props.isEndSessionAvailable
                     : true
             )

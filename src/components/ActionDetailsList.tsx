@@ -89,7 +89,8 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
                     ? true
                     : entity.entityType !== CLM.EntityType.ENUM
             }
-            case CLM.ActionTypes.DISPATCH: {
+            case CLM.ActionTypes.DISPATCH:
+            case CLM.ActionTypes.CHANGE_MODEL: {
                 // TODO: Could validate access to model, but don't have access to it within this model
                 return false
             }
@@ -273,6 +274,10 @@ function getActionPayloadRenderer(action: CLM.ActionBase, component: ActionDetai
         const dispatchAction = new CLM.DispatchAction(action)
         return <span data-testid="actions-list-dispatch" className={OF.FontClassNames.mediumPlus}>Dispatch to model: {dispatchAction.modelName}</span>
     }
+    else if (action.actionType === CLM.ActionTypes.CHANGE_MODEL) {
+        const changeModelAction = new CLM.ChangeModelAction(action)
+        return <span data-testid="actions-list-change-model" className={OF.FontClassNames.mediumPlus}>Change to model: {changeModelAction.modelName}</span>
+    }
 
     return <span className={OF.FontClassNames.mediumPlus}>Unknown Action Type</span>
 }
@@ -367,6 +372,14 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                         }
                         case CLM.ActionTypes.SET_ENTITY: {
                             return `set-${action.entityId}-${action.enumValueId}`
+                        }
+                        case CLM.ActionTypes.DISPATCH: {
+                            const dispatchAction = new CLM.DispatchAction(action)
+                            return dispatchAction.modelName
+                        }
+                        case CLM.ActionTypes.CHANGE_MODEL: {
+                            const changeModelAction = new CLM.ChangeModelAction(action)
+                            return changeModelAction.modelName
                         }
                         default: {
                             console.warn(`Could not get sort value for unknown action type: ${action.actionType}`)

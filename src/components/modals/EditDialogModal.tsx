@@ -125,7 +125,8 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         }
 
         // Disable if last action is end session
-        if (lastAction.actionType === CLM.ActionTypes.END_SESSION) {
+        if (lastAction.actionType === CLM.ActionTypes.END_SESSION
+            || lastAction.actionType === CLM.ActionTypes.CHANGE_MODEL) {
             return true
         }
 

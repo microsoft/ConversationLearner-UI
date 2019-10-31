@@ -255,6 +255,7 @@ export function hasEndSession(trainDialog: CLM.TrainDialog, allActions: CLM.Acti
     const lastAction = allActions.find(a => a.actionId === lastScorerStep.labelAction)
     if (lastAction) {
         return lastAction.actionType === CLM.ActionTypes.END_SESSION
+            || lastAction.actionType === CLM.ActionTypes.CHANGE_MODEL
     }
     return false
 }

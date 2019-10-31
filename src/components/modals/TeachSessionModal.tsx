@@ -596,7 +596,8 @@ class TeachModal extends React.Component<Props, ComponentState> {
             hasTerminalAction: scoredAction.isTerminal,
             nextActivityIndex: this.state.nextActivityIndex + 1
         })
-        if (scoredAction.actionType === CLM.ActionTypes.END_SESSION) {
+        if (scoredAction.actionType === CLM.ActionTypes.END_SESSION
+            || scoredAction.actionType === CLM.ActionTypes.CHANGE_MODEL) {
             this.props.onEndSessionActivity(this.state.tags, this.state.description)
         }
     }

@@ -128,7 +128,7 @@ function generateDispatchActions(sourceModelPairs: SourceAndModelPair[]) {
             return
         }
 
-        const dispatchPayload: CLM.DispatchPayload = {
+        const modelPayload: CLM.ModelPayload = {
             modelId: smp.model.appId,
             modelName: smp.model.appName
         }
@@ -138,7 +138,7 @@ function generateDispatchActions(sourceModelPairs: SourceAndModelPair[]) {
             actionId: uuid(),
             createdDateTime: new Date().toJSON(),
             actionType: CLM.ActionTypes.DISPATCH,
-            payload: JSON.stringify(dispatchPayload),
+            payload: JSON.stringify(modelPayload),
             isTerminal: true,
             requiredEntitiesFromPayload: [],
             requiredEntities: [],
@@ -146,7 +146,7 @@ function generateDispatchActions(sourceModelPairs: SourceAndModelPair[]) {
             requiredConditions: [],
             negativeConditions: [],
             clientData: {
-                importHashes: []
+                actionHashes: [],
             }
         }
 

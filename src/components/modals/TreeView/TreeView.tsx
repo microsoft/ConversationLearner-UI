@@ -166,6 +166,14 @@ class TreeView extends React.Component<Props, ComponentState> {
             const [name, value] = Util.setEntityActionDisplay(action, this.props.entities)
             return `Set Entity - ${name}: ${value}`
         }
+        else if (action.actionType === CLM.ActionTypes.DISPATCH) {
+            const dispatchAction = new CLM.DispatchAction(action)
+            return `Dispatch to Model: ${dispatchAction.modelName}`
+        }
+        else if (action.actionType === CLM.ActionTypes.CHANGE_MODEL) {
+            const changeModelAction = new CLM.ChangeModelAction(action)
+            return `Change to Model: ${changeModelAction.modelName}`
+        }
         else {
             return "UNKNOWN ACTION TYPE"
         }
