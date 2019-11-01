@@ -50,8 +50,8 @@ describe('New Phrase Used 2 Times Inconsistently - Entity Labeling', () => {
   })
   context('A detour to verify that Bug 2301 reproduced and work around it', () => {
     it('Verify that both user turns have the expected markup that bug 2301 produces', () => {
-      train.VerifyChatTurnIsAnExactMatchWithMarkup('A totally <strong><em>unique</em></strong> phrase', 4, 0)
-      train.VerifyChatTurnIsAnExactMatchWithMarkup('A totally unique phrase<br>', 4, 2)
+      chatPanel.VerifyChatTurnIsAnExactMatchWithMarkup('A totally <strong><em>unique</em></strong> phrase', 4, 0)
+      chatPanel.VerifyChatTurnIsAnExactMatchWithMarkup('A totally unique phrase<br>', 4, 2)
     })
 
     it('Save the Train Dialog and Re-edit the same', () => {
@@ -64,8 +64,8 @@ describe('New Phrase Used 2 Times Inconsistently - Entity Labeling', () => {
   // -----------------------------------------------------------------------------------------------------------------------------
 
     it('Verify that both user turns have the expected markup', () => {
-      train.VerifyChatTurnIsAnExactMatchWithMarkup('A totally <strong><em>unique</em></strong> phrase', 4, 0)
-      train.VerifyChatTurnIsAnExactMatchWithMarkup('A totally <strong><em>unique</em></strong> phrase', 4, 2)
+      chatPanel.VerifyChatTurnIsAnExactMatchWithMarkup('A totally <strong><em>unique</em></strong> phrase', 4, 0)
+      chatPanel.VerifyChatTurnIsAnExactMatchWithMarkup('A totally <strong><em>unique</em></strong> phrase', 4, 2)
     })
     
     it('Remove the Entity label from one of the phrases', () => {
@@ -81,15 +81,15 @@ describe('New Phrase Used 2 Times Inconsistently - Entity Labeling', () => {
     // Bug 2323: "Change attempted labels to match..." option fails to update the markup on affected chat turns
     // Once this bug is fixed comment out this block of code and uncomment the next block
     it('Verify that both user turns have the expected markup that bug 2323 produces', () => {
-      train.VerifyChatTurnIsAnExactMatchWithMarkup('A totally <strong><em>unique</em></strong> phrase', 4, 0)
-      train.VerifyChatTurnIsAnExactMatchWithMarkup('A totally <strong><em>unique</em></strong> phrase', 4, 2)
+      chatPanel.VerifyChatTurnIsAnExactMatchWithMarkup('A totally <strong><em>unique</em></strong> phrase', 4, 0)
+      chatPanel.VerifyChatTurnIsAnExactMatchWithMarkup('A totally <strong><em>unique</em></strong> phrase', 4, 2)
     })
 
     // Bug 2323: "Change attempted labels to match..." option fails to update the markup on affected chat turns
     // Once this bug is fixed uncomment this block of code and comment out the block above.
     // it('Verify that both user turns have the expected markup and that bug 2323 did not reproduce', () => {
-    //   train.VerifyChatTurnIsAnExactMatchWithMarkup('A totally unique phrase<br>', 4, 0)
-    //   train.VerifyChatTurnIsAnExactMatchWithMarkup('A totally unique phrase<br>', 4, 2)
+    //   chatPanel.VerifyChatTurnIsAnExactMatchWithMarkup('A totally unique phrase<br>', 4, 0)
+    //   chatPanel.VerifyChatTurnIsAnExactMatchWithMarkup('A totally unique phrase<br>', 4, 2)
     // })
     
     it('', () => {

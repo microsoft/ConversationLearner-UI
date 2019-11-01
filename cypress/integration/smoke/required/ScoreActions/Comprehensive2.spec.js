@@ -10,7 +10,7 @@ import * as actions from '../../../../support/Actions'
 import * as actionModal from '../../../../support/components/ActionModal'
 import * as scorerModal from '../../../../support/components/ScorerModal'
 import * as entityDetectionPanel from '../../../../support/components/EntityDetectionPanel'
-import * as chatPanel from '../../../support/components/ChatPanel'
+import * as chatPanel from '../../../../support/components/ChatPanel'
 import * as train from '../../../../support/Train'
 import * as helpers from '../../../../support/Helpers'
 

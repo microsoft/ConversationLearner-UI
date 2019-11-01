@@ -1,5 +1,6 @@
 import * as models from '../../support/Models'
 import * as model from '../../support/components/ModelPage'
+import * as chatPanel from '../../support/components/ChatPanel'
 import * as trainDialog from '../../support/Train'
 import * as logDialogs from '../../support/components/LogDialogsGrid'
 import * as logDialog from '../../support/components/LogDialogModal'
@@ -359,7 +360,7 @@ describe('Entity Conflicts', () => {
                             .click()
 
                         // Due to bug this has to be second input
-                        trainDialog.InsertUserInputAfter(testData.userInput3, 'New User Input')
+                        chatPanel.InsertUserInputAfter(testData.userInput3, 'New User Input')
 
                         cy.get(s.logConversionConflictsModal.modal, { timeout: 10000 })
                     })

@@ -7,11 +7,33 @@ import * as helpers from '../../support/Helpers'
 import * as homePage from '../../support/components/HomePage'
 import * as modelPage from '../../support/components/ModelPage'
 import * as models from '../../support/Models'
+import * as chatPanel from '../../support/components/ChatPanel'
+import * as scorerModal from '../../support/components/ScorerModal'
 import * as train from '../../support/Train'
 import * as trainDialogsGrid from '../../support/components/TrainDialogsGrid'
 
 describe('zTemp', () => {
-  it('Temporary Experimental Test', () => {
+  it('Experiment with action-scorer-entity-toggle', () => {
+    const SelectorTextResponse = '[data-testid="action-scorer-text-response"]'
+
+    homePage.Visit()
+    homePage.LoadModel('expectedEntityLablel')
+    modelPage.NavigateToTrainDialogs()
+    train.EditTraining('Hello', 'David', 'Hello $name')
+
+    chatPanel.SelectChatTurnExactMatch('Hello David')
+
+    cy.Enqueue(() => {
+      const elements = scorerModal.FindActionRowElements(SelectorTextResponse, 'Hello David')
+      Cypress.$(elements).find('[data-testid="action-scorer-entity-toggle"]').click()
+      cy.WaitForStableDOM().then(() => {
+        let newText = helpers.TextContentWithoutNewlines(Cypress.$(elements).find(SelectorTextResponse)[0])
+        if (newText != 'Hello $name') { throw new Error(`Found ZERO elements that exactly matches 'Hello $name'`) }
+      })
+    })
+  })
+
+  it.skip('Experiment with scroll bar on home page', () => {
     //models.ImportModel('z-importTest', 'z-whatsYourName.cl')
     
     homePage.Visit()
@@ -33,7 +55,7 @@ describe('zTemp', () => {
     })
   })
 
-  it.skip('Temporary Experimental Test', () => {
+  it.skip('Verify too many multiple tags', () => {
     // TODO: Turn this into a full test case since there is a 20 tag 
     // limit and produces a bug when saving the Train Dialog.
     // Bug 1930: Train Dialog - Tag Editor should prevent user from entering more than 20 tags.

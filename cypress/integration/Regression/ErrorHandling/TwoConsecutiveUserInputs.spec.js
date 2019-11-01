@@ -29,7 +29,7 @@ describe('Two Consecutive User Inputs - ErrorHandling', () => {
 
     it('Should create an error and verify the general error message shows up', () => {
       train.EditTraining('Hey', 'world peace', "Sorry $name, I can't help you get $want")
-      train.InsertUserInputAfter('Sam', 'InsertedText')
+      chatPanel.InsertUserInputAfter('Sam', 'InsertedText')
       train.VerifyErrorMessage(common.trainDialogHasErrorsMessage)
     })
 

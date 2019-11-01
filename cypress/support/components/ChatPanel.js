@@ -144,15 +144,6 @@ function SelectChatTurnInternal(message, index, matchPredicate) {
   })
 }
 
-
-
-
-
-// Creates the '@allChatTurns' alias.
-export function CreateAliasForAllChatTurns() {
-  cy.Get('[data-testid="web-chat-utterances"]').as('allChatTurns')
-}
-
 export function VerifyChatTurnControlButtons(element, index) {
   let turnIsUserTurn
   if (element.classList.contains('wc-message-from-me')) turnIsUserTurn = true
@@ -287,10 +278,6 @@ function VerifyChatTurnInternal(expectedTurnCount, turnIndex, verificationFunc, 
     verificationFunc(chatMessages[turnIndex])
   })
 }
-
-
-
-
 
 // Verify that the branch button is within the same control group as the message.
 export function VerifyBranchButtonGroupContainsMessage(message) {

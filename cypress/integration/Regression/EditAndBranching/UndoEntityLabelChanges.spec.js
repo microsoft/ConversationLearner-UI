@@ -73,7 +73,7 @@ describe('Undo Entity Labeling - Edit and Branching', () => {
     })
 
     it('Verify the formatted user turn', () => {
-      train.VerifyChatTurnIsAnExactMatchWithMarkup('The <strong><em>user</em></strong> asks a silly question', 6, 0)
+      chatPanel.VerifyChatTurnIsAnExactMatchWithMarkup('The <strong><em>user</em></strong> asks a silly question', 6, 0)
     })
 
     it('Relable a word of a user turn to a different Entity', () => {
@@ -101,7 +101,7 @@ describe('Undo Entity Labeling - Edit and Branching', () => {
     // })
 
     it('Verify the formatted user turn', () => {
-      train.VerifyChatTurnIsAnExactMatchWithMarkup('The <strong><em>user</em></strong> asks a silly question', 6, 0)
+      chatPanel.VerifyChatTurnIsAnExactMatchWithMarkup('The <strong><em>user</em></strong> asks a silly question', 6, 0)
     })
 
     it('Verify undo on a totally new Entity labeled word works', () => {
@@ -166,7 +166,7 @@ describe('Undo Entity Labeling - Edit and Branching', () => {
 
     it('Verify that the user chat turn did not change', () => {
       chatPanel.SelectChatTurnExactMatch('Bot responds with a silly answer')
-      train.VerifyChatTurnIsAnExactMatchWithMarkup('The <strong><em>user</em></strong> asks a silly question', 6, 0)
+      chatPanel.VerifyChatTurnIsAnExactMatchWithMarkup('The <strong><em>user</em></strong> asks a silly question', 6, 0)
     })
   })
 })

@@ -180,7 +180,7 @@ describe("Settings - Settings", () => {
           cy.WaitForStableDOM().then(() => {
             train.VerifyDescription(trainDialog.description)
             train.VerifyTags(trainDialog.tags)
-            train.VerifyAllChatMessages(trainDialog.chatMessages)
+            chatPanel.VerifyAllChatMessages(trainDialog.chatMessages)
             train.ClickSaveCloseButton()
           })
         })

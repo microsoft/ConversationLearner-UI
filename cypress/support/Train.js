@@ -14,8 +14,6 @@ import * as helpers from './Helpers'
 let currentTrainingSummary
 let originalTrainingSummary
 let isBranched
-let originalChatMessages
-let editedChatMessages
 
 function Today() { return Cypress.moment().format("MM/DD/YYYY") }
 

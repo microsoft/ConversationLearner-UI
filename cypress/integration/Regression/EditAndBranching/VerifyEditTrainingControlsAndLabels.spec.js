@@ -47,7 +47,7 @@ describe('Verify Edit Training Controls And Labels - Edit And Branching', () => 
     })
 
     it('Should branch the Train Dialog at a specific chat turn', () => {
-      train.BranchChatTurn('My name is Susan.', 'I am Groot')
+      chatPanel.BranchChatTurn('My name is Susan.', 'I am Groot')
     })
 
     it('Should verify that labels changed on two of the buttons to "Save Branch" and "Abandon Branch"', () => {
@@ -62,7 +62,7 @@ describe('Verify Edit Training Controls And Labels - Edit And Branching', () => 
     it('Should abandon the branched training and verify the original training remains in its original state', () => {
       train.AbandonBranchChanges()
       train.EditTraining('My name is David.', 'My name is Susan.', 'Hello $name')
-      train.VerifyAllChatMessages(originalChatMessages)
+      chatPanel.VerifyAllChatMessages(originalChatMessages)
     })
 
     it('Should close the Train Dialog', () => {

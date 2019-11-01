@@ -41,7 +41,7 @@ describe('Last Turn and Undo - Edit and Branching', () => {
     it('Undo the last message, verify turn was discarded and Undo button is gone.', () => {
       train.ClickTurnUndoButton()
       chatPanel.VerifyChatPanelIsEnabled()
-      train.VerifyAllChatMessages(chatMessages)
+      chatPanel.VerifyAllChatMessages(chatMessages)
       train.VerifyTurnUndoButtonIsMissing()
     })
 

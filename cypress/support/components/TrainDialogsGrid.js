@@ -52,16 +52,17 @@ export function VerifyErrorIconForTrainGridRow(rowIndex) { cy.Get(`div.ms-List-c
 
 export function VerifyDescriptionForRow(row, description) { cy.Get(`div[data-item-index=${row}][data-automationid="DetailsRow"]`).find('span[data-testid="train-dialogs-description"]').contains(description) }
 
-// The purpose of the TdGrid class is find a specific row in the Train Dialog Grid and to wait till the 
+// The purpose of the TdGrid class is to find a specific row in the Train Dialog Grid and to wait till the 
 // Train Dialog Grid is ready before attempting to perform the find operation.
 export class TdGrid {
+// Public:
   // 1) Start here, do not call the constructor. This will construct an instance for you AFTER this class has determined
   //    that the Train Dialog Grid is ready and done rendering.
   //
   // RETURNS: an instance of TdGrid. 
   //
   // This is intended to be used from a cy.something().should(()=>{tdGridObj = TdGrid.GetTdGrid()})
-  // .then(() =>{use the returned object to call one of the FindGridRow* functions})
+  // .then(() =>{use the returned object to call one of the FindGridRow* functions or properties of the grid rows})
   //
   // This was designed to be retried. It will throw an error until we can validate that the Train Dialog Grid is stable
   // and then it will return a TdGrid object. (refer to existing code for usage examples)
@@ -184,6 +185,7 @@ export class TdGrid {
     return this._tags
   }
 
+// Private:
   // You should not be calling this directly unless you really know what you are doing.
   constructor() {
     this._firstInputs = undefined
@@ -199,6 +201,7 @@ export class TdGrid {
 
   // You should not be calling this directly unless you really know what you are doing.
   // This monitors the grid looking for it to stabilize.
+  // If it is not stable it will use setTimeout to retry by calling itself again ~50ms later.
   static MonitorGrid() {
     const funcName = 'TdGrid.MonitorGrid'
     if (modelPage.IsOverlaid()) {
