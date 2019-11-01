@@ -8,7 +8,6 @@ import * as Util from '../../Utils/util'
 import * as CLM from '@conversationlearner/models'
 import actions from '../../actions'
 import FormattedMessageId from '../FormattedMessageId'
-import { returntypeof } from 'react-redux-typescript'
 import { getLuisApplicationCultures } from '../../epics/apiHelpers'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
@@ -466,8 +465,8 @@ export interface ReceivedProps {
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
-const stateProps = returntypeof(mapStateToProps);
-const dispatchProps = returntypeof(mapDispatchToProps);
-type Props = typeof stateProps & typeof dispatchProps & ReceivedProps & InjectedIntlProps
+type stateProps = ReturnType<typeof mapStateToProps>
+type dispatchProps = ReturnType<typeof mapDispatchToProps>
+type Props = stateProps & dispatchProps & ReceivedProps & InjectedIntlProps
 
-export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(AppCreator))
+export default connect<stateProps, dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(AppCreator))
