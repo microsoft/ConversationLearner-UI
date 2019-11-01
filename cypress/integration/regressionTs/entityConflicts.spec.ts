@@ -25,7 +25,7 @@ describe('Entity Conflicts', () => {
         function createModelToTestConflicts(wordToLabel: string, entityName: string) {
             cy.visit(`/`)
             util.importModel(testData.modelName, testData.modelFile)
-            cy.get(s.trainingStatus.running, { timeout: constants.training.timeout })
+            cy.wait(2000)
             cy.get(s.trainingStatus.completed, { timeout: constants.training.timeout })
 
             cy.get(s.model.buttonNavTrainDialogs)
@@ -168,6 +168,8 @@ describe('Entity Conflicts', () => {
         const labeledWord1 = 'test'
         const labeledWord2 = 'input'
         const testData = {
+            modelName: util.generateUniqueModelName('entityConflicts'),
+            modelFile: 'z-entityConflicts.cl',
             entityName: 'testEntity',
             userInput1: `${labeledWord1} ${labeledWord2} 1`,
             userInput2: `${labeledWord1} ${labeledWord2} 2`,
@@ -176,9 +178,10 @@ describe('Entity Conflicts', () => {
         }
 
         before(() => {
-            models.ImportModel('z-entityConflicts', 'z-entityConflicts.cl')
+            util.importModel(testData.modelName, testData.modelFile)
 
-            cy.WaitForTrainingStatusCompleted()
+            cy.wait(2000)
+            cy.get(s.trainingStatus.completed, { timeout: constants.training.timeout })
         })
 
         context('Train Dialogs', () => {
@@ -223,7 +226,8 @@ describe('Entity Conflicts', () => {
                     cy.get(s.confirmCancelModal.buttonConfirm)
                         .click()
 
-                    cy.WaitForTrainingStatusCompleted()
+                    cy.wait(1000)
+                    cy.get(s.trainingStatus.completed, { timeout: constants.training.timeout })
                 })
             })
         })

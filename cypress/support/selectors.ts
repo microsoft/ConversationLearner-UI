@@ -217,6 +217,7 @@ const selectors = {
         buttonAddAction: '[data-testid="chat-edit-add-bot-response-button"]',
         buttonAddInput: '[data-testid="chat-edit-add-user-input-button"]',
         buttonBranch: '[data-testid="edit-dialog-modal-branch-button"]',
+        buttonDeleteActivity: '[data-testid="chat-edit-delete-turn-button"]',
     },
     settings: {
         buttonNewVersion: '[data-testid="settings-button-new-version"]',
