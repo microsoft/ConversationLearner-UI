@@ -1,12 +1,14 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 
-import { doesTrainDialogMatch, findMatchingTrainDialog, isPrimaryTrainDialog, mergeTrainDialogs, hasInternalLabelConflict } from './dialogUtils'
+import { doesTrainDialogMatch, findMatchingTrainDialog, isPrimaryTrainDialog, mergeTrainDialogs, mergeTrainDialogTags, hasInternalLabelConflict, isConflictingTextVariation, isIncompatibleTextVariation, getCorrectedDialogs } from './dialogUtils'
 import { makeTrainDialog, makeExtractorStep, makeScorerStep, makeLabelEntities } from './testDataUtil'
 import { deepCopy } from './util'
 import * as CLM from '@conversationlearner/models'
+import * as uuid from 'uuid/v4'
+import { fromLogTag } from '../types'
 
 describe('dialogUtils', () => {
 
@@ -19,7 +21,7 @@ describe('dialogUtils', () => {
                     "entity2_id": "entity2_value"
                 }],
                 // Round with one scorer step
-                scorerSteps: { 
+                scorerSteps: {
                     "action1": ["entity1_id", "entity2_id"]
                 }
             },
@@ -35,7 +37,7 @@ describe('dialogUtils', () => {
                     "entity3_id": "entity3_value"
                 }],
                 // Round with multiple scorer steps
-                scorerSteps: { 
+                scorerSteps: {
                     "action2_id": ["entity1_id", "entity3_id"],
                     "action1_id": ["entity1_id"]
                 }
@@ -45,7 +47,7 @@ describe('dialogUtils', () => {
                     "entity1_id": "entity1_value"
                 }],
                 // End Round with multiple scorer steps
-                scorerSteps: { 
+                scorerSteps: {
                     "action4_id": ["entity1_id", "entity3_id"],
                     "action1_id": ["entity1_id"]
                 }
@@ -105,7 +107,7 @@ describe('dialogUtils', () => {
             const shortDialog = copyTrainDialog()
 
             shortDialog.rounds.pop()
-            
+
             let result = doesTrainDialogMatch(shortDialog, trainDialog1)
             expect(result).toEqual(true)
 
@@ -118,9 +120,9 @@ describe('dialogUtils', () => {
             const newDialog = copyTrainDialog()
 
             // Add a label - should fail
-            let newLabelledEntities = makeLabelEntities({"new_id": "value"})
+            let newLabelledEntities = makeLabelEntities({ "new_id": "value" })
             newDialog.rounds[0].extractorStep.textVariations[0].labelEntities.push(newLabelledEntities[0])
-            
+
             let result = doesTrainDialogMatch(newDialog, trainDialog1)
             expect(result).toEqual(false)
 
@@ -129,7 +131,7 @@ describe('dialogUtils', () => {
 
             // Delete all labels - should fail
             newDialog.rounds[0].extractorStep.textVariations[0].labelEntities = []
-            
+
             result = doesTrainDialogMatch(newDialog, trainDialog1)
             expect(result).toEqual(false)
 
@@ -137,9 +139,9 @@ describe('dialogUtils', () => {
             expect(result).toEqual(false)
 
             // Different labels - should fail
-            newLabelledEntities = makeLabelEntities({"entityN1_id": "entity1_value", "entityN2_id": "entity2_value"})
+            newLabelledEntities = makeLabelEntities({ "entityN1_id": "entity1_value", "entityN2_id": "entity2_value" })
             newDialog.rounds[0].extractorStep.textVariations[0].labelEntities = newLabelledEntities
-            
+
             result = doesTrainDialogMatch(newDialog, trainDialog1)
             expect(result).toEqual(false)
 
@@ -162,7 +164,7 @@ describe('dialogUtils', () => {
             const shortDialog = copyTrainDialog()
 
             shortDialog.rounds[shortDialog.rounds.length - 1].scorerSteps.pop()
-            
+
             let result = doesTrainDialogMatch(shortDialog, trainDialog1)
             expect(result).toEqual(true)
 
@@ -175,7 +177,7 @@ describe('dialogUtils', () => {
             const shortDialog = copyTrainDialog()
 
             shortDialog.rounds[shortDialog.rounds.length - 1].scorerSteps = []
-            
+
             let result = doesTrainDialogMatch(shortDialog, trainDialog1)
             expect(result).toEqual(true)
 
@@ -188,7 +190,7 @@ describe('dialogUtils', () => {
             const shortDialog = copyTrainDialog()
             shortDialog.rounds.pop()
             shortDialog.rounds[shortDialog.rounds.length - 1].scorerSteps = []
-            
+
             let result = doesTrainDialogMatch(shortDialog, trainDialog1)
             expect(result).toEqual(true)
 
@@ -201,7 +203,7 @@ describe('dialogUtils', () => {
             const shortDialog = copyTrainDialog()
 
             shortDialog.rounds[shortDialog.rounds.length - 2].scorerSteps.pop()
-            
+
             let result = doesTrainDialogMatch(shortDialog, trainDialog1)
             expect(result).toEqual(false)
 
@@ -274,7 +276,7 @@ describe('dialogUtils', () => {
     describe('isLonger', () => {
 
         test('removeRound', () => {
-            
+
             // Create two new train dailogs a bit different from the base
             const trainDialog2 = copyTrainDialog()
             trainDialog2.rounds.pop()
@@ -287,7 +289,7 @@ describe('dialogUtils', () => {
         })
 
         test('removeScorerStep', () => {
-            
+
             // Create two new train dailogs a bit different from the base
             const trainDialog2 = copyTrainDialog()
             trainDialog2.rounds[trainDialog2.rounds.length - 1].scorerSteps.pop()
@@ -300,7 +302,7 @@ describe('dialogUtils', () => {
         })
 
         test('same', () => {
-            
+
             let result = isPrimaryTrainDialog(trainDialog1, trainDialog1)
             expect(result).toEqual(true)
         })
@@ -309,7 +311,7 @@ describe('dialogUtils', () => {
     describe('mergeTrainDialogs', () => {
 
         test('addTextVariation', () => {
-            
+
             const trainDialog2 = copyTrainDialog()
             trainDialog2.rounds[0].extractorStep = makeExtractorStep(
                 [{
@@ -319,7 +321,7 @@ describe('dialogUtils', () => {
             )
 
             // Need a copy as will be mutated
-            let trainDialog1C  = copyTrainDialog()
+            let trainDialog1C = copyTrainDialog()
             let result = mergeTrainDialogs(trainDialog1C, trainDialog2)
             // New text variation should be added
             expect(result.rounds[0].extractorStep.textVariations.length).toEqual(2)
@@ -336,7 +338,7 @@ describe('dialogUtils', () => {
         })
 
         test('addScorerStep', () => {
-            
+
             const trainDialog2 = copyTrainDialog()
             const lastRound = trainDialog2.rounds.length - 1
             trainDialog2.rounds[lastRound].scorerSteps.push(
@@ -344,7 +346,7 @@ describe('dialogUtils', () => {
             )
 
             // Need a copy as will be mutated
-            let trainDialog1C  = copyTrainDialog()
+            let trainDialog1C = copyTrainDialog()
             let result = mergeTrainDialogs(trainDialog1C, trainDialog2)
             // Larger train dialog should be returned
             expect(result.trainDialogId).toEqual(trainDialog2.trainDialogId)
@@ -361,7 +363,7 @@ describe('dialogUtils', () => {
         })
 
         test('addRound', () => {
-            
+
             const trainDialog2 = copyTrainDialog()
             trainDialog2.rounds.pop()
 
@@ -383,7 +385,7 @@ describe('dialogUtils', () => {
         })
 
         test('keysAndDescription', () => {
-            
+
             const trainDialog1C = copyTrainDialog()
             trainDialog1C.tags = ["old1", "old2"]
             trainDialog1C.description = "short"
@@ -404,6 +406,279 @@ describe('dialogUtils', () => {
             result = mergeTrainDialogs(trainDialog1C, trainDialog2)
             expect(result.tags.length).toEqual(2)
             expect(result.description).toEqual("this is a long description")
+        })
+    })
+
+    describe('mergeTrainDialogTags', () => {
+        test('given dialog 1 with from log tag remove on merged tags', () => {
+            // Arrange
+            const dialog1Tags = [fromLogTag]
+            const dialog2Tags = ['othertag']
+
+            const dialog1 = makeTrainDialog([])
+            dialog1.tags = dialog1Tags
+            const dialog2 = makeTrainDialog([])
+            dialog2.tags = dialog2Tags
+
+            // Act
+            const mergedTags = mergeTrainDialogTags(dialog1, dialog2)
+
+            // Assert
+            expect(mergedTags).not.toContain(fromLogTag)
+        })
+    })
+
+    describe('isConflictingTextVariation', () => {
+        // Arrange
+        const e1Id = uuid()
+        const e2Id = uuid()
+
+        const testData = {
+            tvDiffText: {
+                text: 'text variation 2',
+                labelEntities: [],
+            },
+            tvNoEntities: {
+                text: 'text variation',
+                labelEntities: [],
+            },
+            tvEntity1Start: {
+                text: 'text variation',
+                labelEntities: [
+                    {
+                        entityId: e1Id,
+                        startCharIndex: 0,
+                        endCharIndex: 3,
+                        entityText: "text",
+                        resolution: {},
+                        builtinType: "",
+                    },
+                ],
+            },
+            tvEntity1End: {
+                text: 'text variation',
+                labelEntities: [
+                    {
+                        entityId: e1Id,
+                        startCharIndex: 5,
+                        endCharIndex: 13,
+                        entityText: "variation",
+                        resolution: {},
+                        builtinType: "",
+                    },
+                ],
+            },
+            tvEntity2: {
+                text: 'text variation',
+                labelEntities: [
+                    {
+                        entityId: e2Id,
+                        startCharIndex: 0,
+                        endCharIndex: 3,
+                        entityText: "text",
+                        resolution: {},
+                        builtinType: ""
+                    },
+                ],
+            },
+        }
+
+        test('given variations with different text return false', () => {
+            const isConflict = isConflictingTextVariation(testData.tvDiffText, testData.tvNoEntities)
+            expect(isConflict).toBe(false)
+        })
+
+        test('given variations with same text and same entities return false', () => {
+            const isConflict = isConflictingTextVariation(testData.tvEntity2, deepCopy(testData.tvEntity2))
+            expect(isConflict).toBe(false)
+        })
+
+        test('given variations with different number of entities return true', () => {
+            const isConflict = isConflictingTextVariation(testData.tvNoEntities, testData.tvEntity1Start)
+            expect(isConflict).toBe(true)
+        })
+
+        test('given variations with entities in different position return true', () => {
+            const isConflict = isConflictingTextVariation(testData.tvEntity1Start, testData.tvEntity2)
+            expect(isConflict).toBe(true)
+        })
+
+        test('given variations with different entities return true', () => {
+            const isConflict = isConflictingTextVariation(testData.tvEntity1Start, testData.tvEntity2)
+            expect(isConflict).toBe(true)
+        })
+    })
+
+    describe('isIncompatibleTextVariation', () => {
+        // Arrange
+        const e1Id = uuid()
+        const e2Id = uuid()
+
+        const testData = {
+            tvEntity1: {
+                text: 'text variation',
+                labelEntities: [
+                    {
+                        entityId: e1Id,
+                        startCharIndex: 0,
+                        endCharIndex: 3,
+                        entityText: "text",
+                        resolution: {},
+                        builtinType: ""
+                    },
+                ],
+            },
+            tvEntity1twoWords: {
+                text: 'text variation',
+                labelEntities: [
+                    {
+                        entityId: e1Id,
+                        startCharIndex: 0,
+                        endCharIndex: 3,
+                        entityText: "text",
+                        resolution: {},
+                        builtinType: ""
+                    },
+                    {
+                        entityId: e1Id,
+                        startCharIndex: 5,
+                        endCharIndex: 13,
+                        entityText: "variation",
+                        resolution: {},
+                        builtinType: ""
+                    },
+                ],
+            },
+            tvEntity2: {
+                text: 'text variation',
+                labelEntities: [
+                    {
+                        entityId: e2Id,
+                        startCharIndex: 0,
+                        endCharIndex: 3,
+                        entityText: "text",
+                        resolution: {},
+                        builtinType: ""
+                    },
+                ],
+            },
+        }
+
+        test('given variations that have different number of entities return true', () => {
+            const isIncompatible = isIncompatibleTextVariation(testData.tvEntity1, testData.tvEntity1twoWords)
+            expect(isIncompatible).toBe(true)
+        })
+
+        test('given variations with different entities return true', () => {
+            const isIncompatible = isIncompatibleTextVariation(testData.tvEntity1, testData.tvEntity2)
+            expect(isIncompatible).toBe(true)
+        })
+    })
+
+    describe('getCorrectedDialogs', () => {
+        // Arrange
+        const e1Id = uuid()
+        const textVariation01: CLM.TextVariation = {
+            text: 'text variation',
+            labelEntities: [
+                {
+                    entityId: e1Id,
+                    startCharIndex: 0,
+                    endCharIndex: 3,
+                    entityText: "text",
+                    resolution: {},
+                    builtinType: ""
+                },
+            ],
+        }
+
+        const textVariation02: CLM.TextVariation = {
+            text: 'some other words',
+            labelEntities: [
+                {
+                    entityId: e1Id,
+                    startCharIndex: 0,
+                    endCharIndex: 3,
+                    entityText: "some",
+                    resolution: {},
+                    builtinType: ""
+                },
+            ],
+        }
+
+        const dialog1 = makeTrainDialog([
+            {
+                textVariations: [{
+                    "entity1_id": "entity1_value",
+                }],
+                // Round with one scorer step
+                scorerSteps: {
+                    "action1": []
+                }
+            },
+        ], uuid())
+
+        const dialog2 = makeTrainDialog([
+            {
+                textVariations: [{
+                    "entity1_id": "entity1_value",
+                    "entity2_id": "entity2_value"
+                }],
+                // Round with one scorer step
+                scorerSteps: {
+                    "action1": []
+                }
+            },
+        ], uuid())
+        dialog2.rounds[0].extractorStep.textVariations[0] = textVariation01
+
+        const dialog3 = makeTrainDialog([
+            {
+                textVariations: [{
+                    "entity1_id": "entity1_value",
+                    "entity2_id": "entity2_value"
+                }],
+                // Round with one scorer step
+                scorerSteps: {
+                    "action1": []
+                }
+            },
+        ], uuid())
+        dialog3.rounds[0].extractorStep.textVariations = [textVariation01, textVariation02]
+
+        // Will not conflict with any dialogs because the variation does not match text
+        const attemptedTextVariationNoMatch: CLM.TextVariation = {
+            text: 'text that does not exist',
+            labelEntities: []
+        }
+
+        // Will conflict with dialog1
+        const attemptedTextVariationConflict: CLM.TextVariation = {
+            text: 'text variation',
+            labelEntities: []
+        }
+
+        test(`given new extraction that doesn't conflict with any dialog, return empty array`, () => {
+            const correctedDialogs = getCorrectedDialogs(attemptedTextVariationNoMatch, [dialog1, dialog2, dialog3])
+            expect(correctedDialogs).toEqual([])
+        })
+
+        test(`given new extraction that conflicts with N dialogs, return N with text variations changed and validity set to WARNING`, () => {
+            const correctedDialogs = getCorrectedDialogs(attemptedTextVariationConflict, [dialog1, dialog2])
+            expect(correctedDialogs.length).toBe(1)
+
+            expect(correctedDialogs[0].rounds[0].extractorStep.textVariations[0]).toEqual(attemptedTextVariationConflict)
+            expect(correctedDialogs[0].validity).toBe(CLM.Validity.WARNING)
+        })
+
+        test(`given new extraction that conflicts with N dialogs, return N with text variations changed and validity set to WARNING`, () => {
+            const correctedDialogs = getCorrectedDialogs(attemptedTextVariationConflict, [dialog1, dialog2, dialog3])
+            expect(correctedDialogs.length).toBe(2)
+
+            expect(correctedDialogs[0].validity).toBe(CLM.Validity.WARNING)
+            expect(correctedDialogs[0].rounds[0].extractorStep.textVariations[0]).toEqual(attemptedTextVariationConflict)
+            expect(correctedDialogs[1].validity).toBe(CLM.Validity.INVALID)
+            expect(correctedDialogs[1].rounds[0].extractorStep.textVariations[0]).toEqual(attemptedTextVariationConflict)
         })
     })
 })

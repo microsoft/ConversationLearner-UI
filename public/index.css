@@ -83,10 +83,6 @@ html {
   cursor: pointer;
 }
 
-.cl-payloadrenderer-session-primary {
-  font-style: italic;
-}
-
 .cl-icon {
   color: var(--color-themePrimary) !important;
 }
@@ -280,7 +276,7 @@ html {
     margin-bottom: 15px;
 }
 
-i[data-icon-name="Delete"]:hover, 
+i[data-icon-name="Delete"]:hover,
 i[data-icon-name="Edit"]:hover {
   cursor: pointer;
 }
@@ -289,13 +285,13 @@ i[data-icon-name="Edit"]:hover {
   display: inline-block;
 }
 
-.cl-font--emphasis 
+.cl-font--emphasis
 {
   font-weight: bold !important;
   color: #000000;
 }
 
-.cl-font--demphasis 
+.cl-font--demphasis
 {
   font-weight: lighter !important;
   color: #000000;
@@ -456,8 +452,8 @@ i[data-icon-name="Edit"]:hover {
 }
 
 .cl-modal.cl-modal--importwait {
-  height: 90px;
-  width: 400px;
+  height: 100px;
+  width: 500px;
   padding: 20px;
   text-align: center !important;
 }
@@ -532,6 +528,12 @@ i[data-icon-name="Edit"]:hover {
   /* TODO: Remove padding here, it should be the content inside that decides padding, otherwise all modals should have padding */
   padding: 1em;
 }
+
+
+.cl-modal.cl-modal--high {
+  margin-top: -490px;
+}
+
 @media (max-width: 600px) {
   .cl-modal.cl-modal--small {
     width: 80%;
@@ -656,10 +658,12 @@ i[data-icon-name="Edit"]:hover {
   grid-template: auto / min-content 1fr;
   grid-gap: 1em;
   width: 100%;
+  position: relative;
 }
 
 .cl-file-picker-button {
   white-space: nowrap;
+  width: 160px;
 }
 
 .cl-form {
@@ -810,7 +814,7 @@ i[data-icon-name="Edit"]:hover {
   border-style: solid;
   border-color: rgb(255, 255, 255);
   border-image: initial;
-  outline: rgb(102, 102, 102) solid 1px;
+  outline-color: rgb(102, 102, 102);
 }
 
 .ms-Button--transparent {
@@ -846,7 +850,7 @@ i[data-icon-name="Edit"]:hover {
   border-style: solid;
   border-color: rgb(255, 255, 255);
   border-image: initial;
-  outline: rgb(102, 102, 102) solid 1px;
+  outline-color: rgb(102, 102, 102);
 }
 .ms-Button--default:not(.cl-button-delete):disabled {
   background-color: white !important;
@@ -1010,4 +1014,9 @@ i[data-icon-name="Edit"]:hover {
 
 .cl-hidden {
   visibility: hidden
+}
+
+.cl-warning-list {
+  height: 200px;
+  overflow-y: auto;
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 import * as React from 'react'
@@ -8,30 +8,49 @@ import * as ToolTip from '../ToolTips/ToolTips'
 import * as TC from '../tipComponents'
 import * as OF from 'office-ui-fabric-react'
 import * as Util from '../../Utils/util'
+import * as DialogUtils from '../../Utils/dialogUtils'
 import * as ActionPayloadEditor from './ActionPayloadEditor'
 import Plain from 'slate-plain-serializer'
 import actions from '../../actions'
 import ActionDeleteModal from './ActionDeleteModal'
+import ConditionModal from './ConditionModal'
 import ConfirmCancelModal from './ConfirmCancelModal'
 import EntityCreatorEditor from './EntityCreatorEditor'
 import AdaptiveCardViewer from './AdaptiveCardViewer/AdaptiveCardViewer'
 import CLTagPicker from '../CLTagPicker'
 import HelpIcon from '../HelpIcon'
-import { compareTwoStrings } from 'string-similarity'
+import { ImportedAction } from '../../types/models'
 import { Value } from 'slate'
 import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import { State } from '../../types'
+import { FeatureStrings, State } from '../../types'
+import { REPROMPT_SELF } from '../../types/const'
 import { CLTagItem, ICLPickerItemProps } from './CLTagItem'
 import { withRouter } from 'react-router-dom'
 import { RouteComponentProps } from 'react-router'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../react-intl-messages'
 import './ActionCreatorEditor.css'
+import { autobind } from 'core-decorators';
+import { TagItemSuggestion } from 'office-ui-fabric-react'
+import { IConditionalTag, getEnumConditionName, convertConditionToConditionalTag, isConditionEqual, getUniqueConditions } from 'src/Utils/actionCondition'
 
 const TEXT_SLOT = '#TEXT_SLOT#'
-const CARD_MATCH_THRESHOLD = 0.25
+
+const addConditionPlaceholder: OF.ITag = {
+    key: 'addConditionPlaceholder',
+    name: 'Add Condition',
+}
+const addConditionPlaceholderButton = (
+    <div className="cl-tag-item-suggestion--add-condition">
+        <OF.PrimaryButton
+            text="Add Condition"
+            iconProps={{ iconName: 'Add' }}
+            data-testid="action-creator-modal-button-add-condition"
+        />
+    </div>
+)
 
 const convertEntityToDropdownOption = (entity: CLM.EntityBase): OF.IDropdownOption =>
     ({
@@ -78,37 +97,6 @@ const convertEntityIdsToTags = (ids: string[], entities: CLM.EntityBase[], expan
         .reduce((a, b) => [...a, ...b], [])
 }
 
-const toConditionName = (entity: CLM.EntityBase, enumValue: CLM.EnumValue): string => {
-    return `${entity.entityName} = ${enumValue.enumValue}`
-}
-
-const convertConditionalsToTags = (conditions: CLM.Condition[], entities: CLM.EntityBase[]): IConditionalTag[] => {
-    const tags: IConditionalTag[] = []
-    conditions.forEach(c => {
-        const entity = entities.find(e => e.entityId === c.entityId)
-        if (!entity) {
-            console.log(`ERROR: Condition refers to non-existent Entity ${c.entityId}`)
-        }
-        else if (!entity.enumValues) {
-            console.log(`ERROR: Condition refers to Entity without Enums ${entity.entityName}`)
-        }
-        else {
-            const enumValue = entity.enumValues.find(e => e.enumValueId === c.valueId)
-            if (!enumValue) {
-                console.log(`ERROR: Condition refers to non-existent EnumValue: ${c.valueId}`)
-            }
-            else {
-                tags.push({
-                    key: c.valueId,
-                    name: toConditionName(entity, enumValue),
-                    condition: c
-                })
-            }
-        }
-    })
-    return tags
-}
-
 /**
  * If entity is ENUM convert each value into EQUAL condition
  * Otherwise convert with no condition
@@ -124,7 +112,7 @@ const convertEntityToConditionalTags = (entity: CLM.EntityBase, expand = true): 
         const conditionalTags = entity.enumValues.map<IConditionalTag>(enumValue =>
             ({
                 key: enumValue.enumValueId!,
-                name: toConditionName(entity, enumValue),
+                name: getEnumConditionName(entity, enumValue),
                 condition: {
                     entityId: entity.entityId,
                     valueId: enumValue.enumValueId!,
@@ -143,13 +131,33 @@ const convertEntityToConditionalTags = (entity: CLM.EntityBase, expand = true): 
 }
 
 // Entities that can be chosen for required / blocking
-const conditionalEntityTags = (entities: CLM.EntityBase[]): IConditionalTag[] => {
-    return entities
+const conditionalEntityTags = (entities: CLM.EntityBase[], actions: CLM.ActionBase[]): IConditionalTag[] => {
+    // Might have duplicates since different actions can have same conditions
+    const actionConditionTags = actions
+        .map(a => [...a.requiredConditions, ...a.negativeConditions])
+        .reduce((a, b) => [...a, ...b], [])
+        .map(c => convertConditionToConditionalTag(c, entities))
+
+    const entityTags = entities
         // Ignore resolvers and negative entities
         .filter(e => !e.doNotMemorize && !e.positiveId)
         // Convert each entity to condition tag
         .map(e => convertEntityToConditionalTags(e))
         .reduce((a, b) => [...a, ...b], [])
+
+    const uniqueConditionTags = [
+        ...entityTags,
+        ...actionConditionTags,
+    ].reduce<IConditionalTag[]>((conditions, condition) => {
+        const isConditionDuplicate = conditions.some(c => c.key === condition.key)
+        if (!isConditionDuplicate) {
+            conditions.push(condition)
+        }
+
+        return conditions
+    }, [])
+
+    return uniqueConditionTags
 }
 
 // Entities that can be picked as expected entity
@@ -182,7 +190,7 @@ const getSuggestedTags = (filterText: string, allTags: OF.ITag[], tagsToExclude:
     let availableTags = allTags
         .filter(tag => !tagsToExclude.some(t => t.key === tag.key))
 
-    // Check for mutually exclusive conditions and remove them 
+    // Check for mutually exclusive conditions and remove them
     availableTags = availableTags
         .filter(tag => !mutuallyExclusive.some(t => isConditionMutuallyExclusive(t, tag)))
 
@@ -226,26 +234,31 @@ const tryCreateSlateValue = (actionType: string, slotName: string, content: obje
     }
 }
 
-const actionTypeOptions = Object.values(CLM.ActionTypes)
+const actionTypeOptions = (Object.values(CLM.ActionTypes) as string[])
     .map<OF.IDropdownOption>(actionTypeString => {
         return {
             key: actionTypeString,
-            text: actionTypeString === 'API_LOCAL'
+            text: actionTypeString === CLM.ActionTypes.API_LOCAL
+                // TODO: Change to "Code" action
                 ? "API"
                 : actionTypeString
         }
     })
 
+interface ModelOption extends OF.IDropdownOption {
+    data: CLM.AppBase
+}
+
+const convertModelToDropdownOption = (model: CLM.AppBase): ModelOption =>
+    ({
+        key: model.appId,
+        text: model.appName,
+        data: model,
+    })
+
 type SlateValueMap = { [slot: string]: ActionPayloadEditor.SlateValue }
 
-interface IConditionalTag extends OF.ITag {
-    condition: CLM.Condition | null
-}
 
-export interface NewActionPreset {
-    text: string,
-    isTerminal: boolean
-}
 
 interface ComponentState {
     entityOptions: OF.IDropdownOption[]
@@ -253,16 +266,20 @@ interface ComponentState {
     apiOptions: OF.IDropdownOption[]
     renderOptions: OF.IDropdownOption[]
     cardOptions: OF.IDropdownOption[]
+    modelOptions: ModelOption[]
+    conditionCreatorType: "required" | "disqualified"
     selectedEntityOptionKey: string | undefined
     selectedEnumValueOptionKey: string | undefined
     selectedApiOptionKey: string | number | undefined
     selectedRenderOptionKey: string | number | undefined
     selectedCardOptionKey: string | number | undefined
+    selectedModelOptionKey: string | number | undefined
     hasPendingChanges: boolean
     initialEditState: ComponentState | null
     isEditing: boolean
     isEntityEditorModalOpen: boolean
     isCardViewerModalOpen: boolean
+    isConditionCreatorModalOpen: boolean
     isConfirmDeleteModalOpen: boolean
     isConfirmDeleteInUseModalOpen: boolean
     isConfirmEditModalOpen: boolean
@@ -277,11 +294,14 @@ interface ComponentState {
     availableConditionalTags: OF.ITag[]
     expectedEntityTags: OF.ITag[]
     requiredEntityTagsFromPayload: OF.ITag[]
-    requiredEntityTags: IConditionalTag[]
-    negativeEntityTags: IConditionalTag[]
+    requiredConditionTags: IConditionalTag[]
+    negativeConditionTags: IConditionalTag[]
     slateValuesMap: SlateValueMap
     secondarySlateValuesMap: SlateValueMap
     isTerminal: boolean
+    reprompt: boolean
+    isEntryNode: boolean
+    selectedCardIndex: number
 }
 
 const initialState: Readonly<ComponentState> = {
@@ -290,16 +310,20 @@ const initialState: Readonly<ComponentState> = {
     apiOptions: [],
     renderOptions: [],
     cardOptions: [],
+    modelOptions: [],
+    conditionCreatorType: "required",
     selectedEntityOptionKey: undefined,
     selectedEnumValueOptionKey: undefined,
     selectedApiOptionKey: undefined,
     selectedRenderOptionKey: undefined,
     selectedCardOptionKey: undefined,
+    selectedModelOptionKey: undefined,
     hasPendingChanges: false,
     initialEditState: null,
     isEditing: false,
     isEntityEditorModalOpen: false,
     isCardViewerModalOpen: false,
+    isConditionCreatorModalOpen: false,
     isConfirmDeleteModalOpen: false,
     isConfirmDeleteInUseModalOpen: false,
     isConfirmEditModalOpen: false,
@@ -314,13 +338,16 @@ const initialState: Readonly<ComponentState> = {
     availableConditionalTags: [],
     expectedEntityTags: [],
     requiredEntityTagsFromPayload: [],
-    requiredEntityTags: [],
-    negativeEntityTags: [],
+    requiredConditionTags: [],
+    negativeConditionTags: [],
     slateValuesMap: {
         [TEXT_SLOT]: Plain.deserialize('')
     },
     secondarySlateValuesMap: {},
-    isTerminal: true
+    isTerminal: true,
+    reprompt: false,
+    isEntryNode: false,
+    selectedCardIndex: 0
 }
 
 class ActionCreatorEditor extends React.Component<Props, ComponentState> {
@@ -332,9 +359,10 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     }
 
     initProps(): ComponentState {
-        const { entities, botInfo } = this.props
+        const { actions, entities, botInfo } = this.props
         const apiOptions = botInfo.callbacks.map<OF.IDropdownOption>(convertCallbackToOption)
         const cardOptions = botInfo.templates.map<OF.IDropdownOption>(convertTemplateToOption)
+        const modelOptions = this.props.models.map(convertModelToDropdownOption)
         const entityOptions = entities
             .filter(e => e.entityType === CLM.EntityType.ENUM)
             .map(e => convertEntityToDropdownOption(e))
@@ -344,87 +372,65 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             entityOptions,
             apiOptions,
             cardOptions,
+            modelOptions,
             availableExpectedEntityTags: availableExpectedEntityTags(entities),
-            availableConditionalTags: conditionalEntityTags(entities),
+            availableConditionalTags: conditionalEntityTags(entities, actions).sort((a, b) => a.name.localeCompare(b.name)),
             isEditing: !!this.props.action
         }
-    }
-
-    presetText(rawText: string | null): string {
-        if (!rawText) {
-            return ""
-        }
-        return rawText
-            .trim()
-            .split('&nbsp;').join(" ") // Switch to actual spaces
-            .split(" </").join("</")  // Markdown can't have space before end
-            .split("\n").join("")
-            .split("<b>").join("**")
-            .split("</b>").join("**")
-            .split("<i>").join("*")
-            .split("</i>").join("*")
-            .split("<strong>").join("**_")
-            .split("</strong>").join("_**")
-            .split("<br>").join("")
-            .split("<br/>").join("")
-            .split("<br />").join("")
-            .split('&gt;').join("")
-            .replace(/[\n\r]+/g, '')  // Adaptive cards can't handle newlines
     }
 
     async componentDidMount() {
         await this.initializeActionPresets(this.props)
     }
 
-    async componentWillReceiveProps(nextProps: Props) {
-        let nextState: Partial<ComponentState> = {}
+    async componentDidUpdate(prevProps: Props, prevState: ComponentState) {
+        let newState: Partial<ComponentState> | undefined
 
-        if (nextProps.open === true) {
+        if (this.props.open === true) {
 
             // Reset state every time dialog was closed and is opened
-            if (this.props.open === false) {
-                nextState = this.initProps();
+            if (prevProps.open === false) {
+                newState = this.initProps();
             }
             // Otherwise reset only if props have changed
             else {
-                if (nextProps.entities !== this.props.entities) {
-                    nextState = {
-                        ...nextState,
-                        availableExpectedEntityTags: availableExpectedEntityTags(nextProps.entities),
-                        availableConditionalTags: conditionalEntityTags(nextProps.entities),
+                if (this.props.entities !== prevProps.entities) {
+                    newState = {
+                        ...newState,
+                        availableExpectedEntityTags: availableExpectedEntityTags(this.props.entities),
+                        availableConditionalTags: conditionalEntityTags(this.props.entities, this.props.actions).sort((a, b) => a.name.localeCompare(b.name)),
                     }
                 }
 
-                if (nextProps.botInfo.callbacks !== this.props.botInfo.callbacks) {
-                    const { botInfo } = nextProps
+                if (this.props.botInfo.callbacks !== prevProps.botInfo.callbacks) {
+                    const { botInfo } = this.props
                     const apiOptions = botInfo.callbacks.map<OF.IDropdownOption>(convertCallbackToOption)
-
-                    nextState = {
-                        ...nextState,
+                    newState = {
+                        ...newState,
                         apiOptions
                     }
                 }
 
-                if (nextProps.botInfo.templates !== this.props.botInfo.templates) {
-                    const { botInfo } = nextProps
+                if (this.props.botInfo.templates !== prevProps.botInfo.templates) {
+                    const { botInfo } = this.props
                     const cardOptions = botInfo.templates.map<OF.IDropdownOption>(convertTemplateToOption)
-
-                    nextState = {
-                        ...nextState,
+                    newState = {
+                        ...newState,
                         cardOptions
                     }
                 }
             }
 
             // If we are given an action, set edit mode and apply properties
-            if (nextProps.action && nextProps.action !== this.props.action) {
-                const action = nextProps.action
+            if (this.props.action && this.props.action !== prevProps.action) {
+                const action = this.props.action
 
-                const payloadOptions = this.props.entities.map(convertEntityToOption)
-                const negativeEntityTags = convertEntityIdsToTags(action.negativeEntities, nextProps.entities, false)
-                const expectedEntityTags = convertEntityIdsToTags((action.suggestedEntity ? [action.suggestedEntity] : []), nextProps.entities)
+                const payloadOptions = prevProps.entities.map(convertEntityToOption)
+                const negativeConditionTags = convertEntityIdsToTags(action.negativeEntities, this.props.entities, false)
+                const expectedEntityTags = convertEntityIdsToTags((action.suggestedEntity ? [action.suggestedEntity] : []), this.props.entities)
                 let selectedApiOptionKey: string | undefined
                 let selectedCardOptionKey: string | undefined
+                let selectedModelOptionKey: string | undefined
                 let entityWarning = false
 
                 const slateValuesMap = {}
@@ -448,7 +454,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 else if (action.actionType === CLM.ActionTypes.API_LOCAL) {
                     const apiAction = new CLM.ApiAction(action)
                     selectedApiOptionKey = apiAction.name
-                    const callback = this.props.botInfo.callbacks.find(t => t.name === selectedApiOptionKey)
+                    const callback = prevProps.botInfo.callbacks.find(t => t.name === selectedApiOptionKey)
                     if (callback) {
                         for (const actionArgumentName of callback.logicArguments) {
                             const argument = apiAction.logicArguments.find(a => a.parameter === actionArgumentName)
@@ -466,7 +472,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 else if (action.actionType === CLM.ActionTypes.CARD) {
                     const cardAction = new CLM.CardAction(action)
                     selectedCardOptionKey = cardAction.templateName
-                    const template = this.props.botInfo.templates.find(t => t.name === selectedCardOptionKey)
+                    const template = prevProps.botInfo.templates.find(t => t.name === selectedCardOptionKey)
                     if (template) {
                         // For each template variable initialize to the associated argument value or default to empty string
                         for (const cardTemplateVariable of template.variables) {
@@ -477,7 +483,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     }
                 }
                 else if (action.actionType === CLM.ActionTypes.SET_ENTITY) {
-                    const entity = this.props.entities.find(e => e.entityId === action.entityId)
+                    const entity = prevProps.entities.find(e => e.entityId === action.entityId)
                     if (!entity) {
                         throw new Error(`The action references an entity by id: ${action.entityId} but it was not found.`)
                     }
@@ -490,12 +496,20 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     }
 
                     const enumValueOptions = entity.enumValues.map(ev => convertEnumValueToDropdownOptions(ev))
-                    nextState = {
-                        ...nextState,
+                    newState = {
+                        ...newState,
                         enumValueOptions,
                         selectedEntityOptionKey: action.entityId,
                         selectedEnumValueOptionKey: action.enumValueId,
                     }
+                }
+                else if (action.actionType === CLM.ActionTypes.DISPATCH) {
+                    const dispatchAction = new CLM.DispatchAction(action)
+                    selectedModelOptionKey = dispatchAction.modelId
+                }
+                else if (action.actionType === CLM.ActionTypes.CHANGE_MODEL) {
+                    const changeModelAction = new CLM.ChangeModelAction(action)
+                    selectedModelOptionKey = changeModelAction.modelId
                 }
 
                 const requiredEntityTagsFromPayload = Object.values(slateValuesMap)
@@ -505,58 +519,105 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                         return [...entities, ...newEntities.filter(ne => !entities.some(e => e.key === ne.key))]
                     }, [])
 
-                const requiredEntityTags = convertEntityIdsToTags(action.requiredEntities, nextProps.entities, false)
+                const requiredConditionTags = convertEntityIdsToTags(action.requiredEntities, this.props.entities, false)
                     .filter(t => !requiredEntityTagsFromPayload.some(tag => tag.key === t.key))
 
                 if (action.requiredConditions) {
-                    requiredEntityTags.push(...convertConditionalsToTags(action.requiredConditions, this.props.entities))
+                    const tags = action.requiredConditions.map(c => convertConditionToConditionalTag(c, prevProps.entities))
+                    requiredConditionTags.push(...tags)
                 }
 
                 if (action.negativeConditions) {
-                    negativeEntityTags.push(...convertConditionalsToTags(action.negativeConditions, this.props.entities))
+                    const tags = action.negativeConditions.map(c => convertConditionToConditionalTag(c, prevProps.entities))
+                    negativeConditionTags.push(...tags)
                 }
 
-                nextState = {
-                    ...nextState,
+                newState = {
+                    ...newState,
                     isPayloadMissing: action.actionType === CLM.ActionTypes.TEXT && action.payload.length === 0,
                     entityWarning,
                     selectedActionTypeOptionKey: action.actionType,
                     selectedApiOptionKey,
                     selectedCardOptionKey,
+                    selectedModelOptionKey,
                     slateValuesMap,
                     secondarySlateValuesMap,
                     expectedEntityTags,
-                    negativeEntityTags,
+                    negativeConditionTags,
                     requiredEntityTagsFromPayload,
-                    requiredEntityTags,
+                    requiredConditionTags,
                     isTerminal: action.isTerminal,
+                    reprompt: action.repromptActionId !== undefined,
+                    isEntryNode: action.isEntryNode,
                     isEditing: true
                 }
 
-                nextState.initialEditState = nextState as ComponentState
+                newState.initialEditState = newState as ComponentState
+            }
+
+            if (newState) {
+                // TODO: Find solution without casting, should be set state merge with partial state
+                this.setState(newState as ComponentState)
             }
         }
 
-        // TODO: Find solution without casting, should be set state merge with partial state
-        this.setState(prevState => nextState as ComponentState)
-
         // Set initial text value (used for dummy import actions)
-        if (nextProps.open === true && this.props.open === false) {
-            await this.initializeActionPresets(nextProps)
+        if (this.props.open === true && prevProps.open === false) {
+            await this.initializeActionPresets(this.props)
+        }
+
+        const initialEditState = this.state.initialEditState
+        if (!initialEditState) {
+            return
+        }
+
+        const isAnyPayloadChanged = this.areSlateValuesChanged(this.state.slateValuesMap, initialEditState.slateValuesMap)
+            || this.areSlateValuesChanged(this.state.secondarySlateValuesMap, initialEditState.secondarySlateValuesMap)
+
+        const expectedEntitiesChanged = !initialEditState || !this.areTagsIdentical(this.state.expectedEntityTags, initialEditState.expectedEntityTags)
+        const requiredEntitiesChanged = !initialEditState || !this.areTagsIdentical(this.state.requiredConditionTags, initialEditState.requiredConditionTags)
+        const disqualifyingEntitiesChanged = !initialEditState || !this.areTagsIdentical(this.state.negativeConditionTags, initialEditState.negativeConditionTags)
+
+        const isTerminalChanged = initialEditState.isTerminal !== this.state.isTerminal
+        const isRepromptChanged = initialEditState.reprompt !== this.state.reprompt
+        const isEntryNodeChanged = initialEditState.isEntryNode !== this.state.isEntryNode
+        const isSelectedApiChanged = initialEditState.selectedApiOptionKey !== this.state.selectedApiOptionKey
+        const isSelectedCardChanged = initialEditState.selectedCardOptionKey !== this.state.selectedCardOptionKey
+        const isSelectedModelChanged = initialEditState.selectedModelOptionKey !== this.state.selectedCardOptionKey
+
+        const hasPendingChanges = isAnyPayloadChanged
+            || isSelectedApiChanged
+            || isSelectedCardChanged
+            || expectedEntitiesChanged
+            || requiredEntitiesChanged
+            || disqualifyingEntitiesChanged
+            || isTerminalChanged
+            || isRepromptChanged
+            || isEntryNodeChanged
+            || isSelectedModelChanged
+
+        if (prevState.hasPendingChanges !== hasPendingChanges) {
+            this.setState({
+                hasPendingChanges
+            })
         }
     }
 
     async initializeActionPresets(props: Props) {
-        if (props.newActionPreset) {
-            let values = Plain.deserialize(this.presetText(props.newActionPreset.text))
+        if (props.importedAction) {
+            let values = Plain.deserialize(DialogUtils.cleanText(props.importedAction.text))
             this.onChangePayloadEditor(values, TEXT_SLOT)
-            this.setState({ isTerminal: props.newActionPreset.isTerminal })
+            await Util.setStateAsync(this, {
+                isTerminal: props.importedAction.isTerminal,
+                reprompt: props.importedAction.reprompt,
+                isEntryNode: props.importedAction.isEntryNode
+            })
 
             // If a good card match exists switch to card view
-            const bestCard = this.bestCardMatch(props.newActionPreset.text, CARD_MATCH_THRESHOLD)
+            const bestCard = this.bestCardMatch(props.importedAction)
             if (bestCard) {
-                let index = actionTypeOptions.findIndex(ao => ao.key === CLM.ActionTypes.CARD)
-                await this.onChangeActionType(actionTypeOptions[index])
+                const actionTypeOption = actionTypeOptions.find(ao => ao.key === CLM.ActionTypes.CARD)
+                await this.onChangeActionType(actionTypeOption)
             }
         }
     }
@@ -579,8 +640,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 current: v,
                 prev: prevValue,
                 // TODO: Should these be be getAllEntitiesFromValue
-                currentEntities: ActionPayloadEditor.Utilities.getNonOptionalEntitiesFromValue(v),
-                prevEntities: ActionPayloadEditor.Utilities.getNonOptionalEntitiesFromValue(prevValue)
+                currentEntities: v ? ActionPayloadEditor.Utilities.getNonOptionalEntitiesFromValue(v) : [],
+                prevEntities: prevValue ? ActionPayloadEditor.Utilities.getNonOptionalEntitiesFromValue(prevValue) : []
             }
         })
 
@@ -597,7 +658,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
     }
 
-    // Return list of any strings that look like they should be attached to 
+    // Return list of any strings that look like they should be attached to
     // entities but aren't
     untaggedEntities(): string[] {
         const primaryEntries = Object.entries(this.state.slateValuesMap)
@@ -630,38 +691,36 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         return unattachedEntities
     }
 
-    componentDidUpdate(prevProps: Props, prevState: ComponentState) {
-        const initialEditState = this.state.initialEditState
-        if (!initialEditState) {
-            return
-        }
-
-        const isAnyPayloadChanged = this.areSlateValuesChanged(this.state.slateValuesMap, initialEditState.slateValuesMap)
-            || this.areSlateValuesChanged(this.state.secondarySlateValuesMap, initialEditState.secondarySlateValuesMap)
-
-        const expectedEntitiesChanged = !initialEditState || !this.areTagsIdentical(this.state.expectedEntityTags, initialEditState.expectedEntityTags)
-        const requiredEntitiesChanged = !initialEditState || !this.areTagsIdentical(this.state.requiredEntityTags, initialEditState.requiredEntityTags)
-        const disqualifyingEntitiesChanged = !initialEditState || !this.areTagsIdentical(this.state.negativeEntityTags, initialEditState.negativeEntityTags)
-
-        const isTerminalChanged = initialEditState!.isTerminal !== this.state.isTerminal
-        const hasPendingChanges = isAnyPayloadChanged
-            || expectedEntitiesChanged
-            || requiredEntitiesChanged
-            || disqualifyingEntitiesChanged
-            || isTerminalChanged
-
-        if (prevState.hasPendingChanges !== hasPendingChanges) {
-            this.setState({
-                hasPendingChanges
-            })
-        }
-    }
-
-    @OF.autobind
+    @autobind
     onChangeWaitCheckbox() {
         this.setState(prevState => ({
             isTerminal: !prevState.isTerminal
         }))
+    }
+
+    @autobind
+    onChangeRepromptCheckbox() {
+        this.setState(prevState => ({
+            reprompt: !prevState.reprompt
+        }))
+    }
+
+    @autobind
+    onChangeIsEntryNodeCheckbox() {
+        this.setState(prevState => ({
+            isEntryNode: !prevState.isEntryNode
+        }))
+    }
+
+    @autobind
+    onChangeModelType(event: React.FormEvent<HTMLDivElement>, option?: OF.IDropdownOption | undefined) {
+        if (!option) {
+            return
+        }
+
+        this.setState({
+            selectedModelOptionKey: option.key,
+        })
     }
 
     onChangeEntityOption = (event: React.FormEvent<HTMLDivElement>, entityOption: OF.IDropdownOption) => {
@@ -717,7 +776,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         })
     }
 
-    @OF.autobind
+    @autobind
     async onChangeCardOption(cardOption: OF.IDropdownOption | undefined) {
         if (!cardOption) {
             return
@@ -740,11 +799,11 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             slateValuesMap: newSlateValues
         })
 
-        // LARS TEMP CCI
-        if (this.props.newActionPreset) {
+        if (this.props.importedAction) {
             if (template.variables.length > 0) {
-                const semiSplit = this.presetText(this.props.newActionPreset.text).split(';')
+                const semiSplit = DialogUtils.cleanText(this.props.importedAction.text).split(';')
 
+                // TEMP CCI parsing to extract title
                 // Assume first value is question followed by first button
                 let firstSplit = semiSplit[0].split('?')
                 // If no question mark, assume is first period
@@ -756,20 +815,30 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 const title = Plain.deserialize(`${rawTitle}?`)
                 this.onChangePayloadEditor(title, template.variables[0].key)
 
-                // Gather button text
-                let rawButtons: string[]
-                if (firstSplit[1]) {
-                    rawButtons = [firstSplit[firstSplit.length - 1], ...semiSplit.slice(1, semiSplit.length)]
+                let buttons: any[]
+                if (this.props.importedAction.buttons.length > 0) {
+                    buttons = this.props.importedAction.buttons.map(t => Plain.deserialize(t))
+
                 }
                 else {
-                    rawButtons = semiSplit.slice(1, semiSplit.length)
-                }
-                const buttons = rawButtons.map(t => Plain.deserialize(t))
-                buttons.forEach((button, index) => {
-                    if ((index + 1) < template.variables.length) {
-                        this.onChangePayloadEditor(button, template.variables[index + 1].key)
+                    // TEMP CCI button extraction
+                    // Gather button text
+                    let rawButtons: string[]
+                    if (firstSplit[1]) {
+                        rawButtons = [firstSplit[firstSplit.length - 1], ...semiSplit.slice(1, semiSplit.length)]
                     }
-                })
+                    else {
+                        rawButtons = semiSplit.slice(1, semiSplit.length)
+                    }
+                    buttons = rawButtons.map(t => Plain.deserialize(t))
+                }
+                if (buttons) {
+                    buttons.forEach((button, index) => {
+                        if ((index + 1) < template.variables.length) {
+                            this.onChangePayloadEditor(button, template.variables[index + 1].key)
+                        }
+                    })
+                }
             }
         }
     }
@@ -793,24 +862,26 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         })
     }
 
-    @OF.autobind
+    @autobind
     async onNextCard() {
-        let index = this.state.cardOptions.findIndex(cd => cd.key === this.state.selectedCardOptionKey)
-        index = index + 1
-        if (index === this.state.cardOptions.length) {
-            index = 0
+        let selectedCardIndex = this.state.cardOptions.findIndex(cd => cd.key === this.state.selectedCardOptionKey)
+        selectedCardIndex = selectedCardIndex + 1
+        if (selectedCardIndex === this.state.cardOptions.length) {
+            selectedCardIndex = 0
         }
-        await this.onChangeCardOption(this.state.cardOptions[index])
+        this.setState({ selectedCardIndex })
+        await this.onChangeCardOption(this.state.cardOptions[selectedCardIndex])
     }
 
-    @OF.autobind
+    @autobind
     async onPreviousCard() {
-        let index = this.state.cardOptions.findIndex(cd => cd.key === this.state.selectedCardOptionKey)
-        index = index - 1
-        if (index < 0) {
-            index = this.state.cardOptions.length - 1
+        let selectedCardIndex = this.state.cardOptions.findIndex(cd => cd.key === this.state.selectedCardOptionKey)
+        selectedCardIndex = selectedCardIndex - 1
+        if (selectedCardIndex < 0) {
+            selectedCardIndex = this.state.cardOptions.length - 1
         }
-        await this.onChangeCardOption(this.state.cardOptions[index])
+        this.setState({ selectedCardIndex })
+        await this.onChangeCardOption(this.state.cardOptions[selectedCardIndex])
     }
 
     getActionArguments(slateValuesMap: { [slot: string]: ActionPayloadEditor.SlateValue }): CLM.IActionArgument[] {
@@ -844,15 +915,15 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         /**
          * If action type if TEXT
          * Then payload map has single value named TEXT_SLOT:
-         * 
+         *
          * E.g.
          * {
          *   [TEXT_SLOT]: {...slate value...}
          * }
-         * 
+         *
          * Otherwise action type is CARD or API and we assume each value in the map is
          * a template variable or argument value respectively
-         * 
+         *
          * E.g.
          * {
          *   [templateVariable1]: { ...slate value...},
@@ -902,14 +973,29 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 }
                 payload = JSON.stringify(setEntityPayload)
                 break;
+            case CLM.ActionTypes.CHANGE_MODEL: {
+                const model = this.props.models.find(m => m.appId === this.state.selectedModelOptionKey)
+                if (!model) {
+                    throw new Error(`Could not construct payload for ${CLM.ActionTypes.CHANGE_MODEL}. Model id ${this.state.selectedModelOptionKey} did not match any available models.`)
+                }
+
+                // TODO: Rename to ModelPayload?
+                const modelPayload: CLM.ModelPayload = {
+                    modelId: model.appId,
+                    modelName: model.appName,
+                }
+
+                payload = JSON.stringify(modelPayload)
+                break;
+            }
             default:
                 throw new Error(`When attempting to submit action, the selected action type: ${this.state.selectedActionTypeOptionKey} did not have matching type`)
         }
 
-        const requiredTags = this.state.requiredEntityTags.filter(t => !t.condition)
-        const negativeTags = this.state.negativeEntityTags.filter(t => !t.condition)
-        const requiredConditions = this.state.requiredEntityTags.filter(t => t.condition).map(t => t.condition!)
-        const negativeConditions = this.state.negativeEntityTags.filter(t => t.condition).map(t => t.condition!)
+        const requiredTags = this.state.requiredConditionTags.filter(t => !t.condition)
+        const negativeTags = this.state.negativeConditionTags.filter(t => !t.condition)
+        const requiredConditions = this.state.requiredConditionTags.filter(t => t.condition).map(t => t.condition!)
+        const negativeConditions = this.state.negativeConditionTags.filter(t => t.condition).map(t => t.condition!)
 
         // TODO: This should be new type such as ActionInput for creation only.
         const action = new CLM.ActionBase({
@@ -917,6 +1003,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             payload,
             createdDateTime: new Date().toJSON(),
             isTerminal: this.state.isTerminal,
+            repromptActionId: this.state.reprompt ? REPROMPT_SELF : undefined,
             requiredEntitiesFromPayload: this.state.requiredEntityTagsFromPayload.map<string>(tag => tag.key),
             requiredEntities: [...this.state.requiredEntityTagsFromPayload, ...requiredTags].map<string>(tag => tag.key),
             negativeEntities: negativeTags.map<string>(tag => tag.key),
@@ -930,8 +1017,11 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             packageDeletionId: 0,
             actionType: CLM.ActionTypes[this.state.selectedActionTypeOptionKey],
             entityId: this.state.selectedEntityOptionKey,
+            isEntryNode: this.state.isEntryNode,
             enumValueId: this.state.selectedEnumValueOptionKey,
-            clientData: this.props.action ? this.props.action.clientData : undefined
+            clientData: this.props.action
+                ? this.props.action.clientData
+                : { actionHashes: [] }
         })
 
         if (this.state.isEditing && this.props.action) {
@@ -940,7 +1030,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         return action
     }
 
-    @OF.autobind
+    @autobind
     async onClickSaveCreate() {
         const newOrEditedAction = this.convertStateToModel()
         const validationWarnings: string[] = []
@@ -991,12 +1081,12 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
     onClickCancel() {
         this.props.handleClose()
     }
 
-    @OF.autobind
+    @autobind
     async onClickDelete() {
         if (!this.props.action) {
             return
@@ -1025,21 +1115,62 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
+    onClickCreateConditionCreator(condition: CLM.Condition) {
+        const conditionalTag = convertConditionToConditionalTag(condition, this.props.entities)
+
+        if (this.state.conditionCreatorType === "required") {
+            const isUnique = !this.state.requiredConditionTags
+                .filter(ct => ct.condition)
+                // condition guaranteed to exist based on filter above
+                .some(ct => isConditionEqual(ct.condition!, condition))
+
+            if (isUnique) {
+                this.setState(prevState => ({
+                    requiredConditionTags: [...prevState.requiredConditionTags, conditionalTag],
+                }))
+            }
+        }
+        else if (this.state.conditionCreatorType === "disqualified") {
+            const isUnique = !this.state.negativeConditionTags
+                .filter(ct => ct.condition)
+                // condition guaranteed to exist based on filter above
+                .some(ct => isConditionEqual(ct.condition!, condition))
+
+            if (isUnique) {
+                this.setState(prevState => ({
+                    negativeConditionTags: [...prevState.negativeConditionTags, conditionalTag],
+                }))
+            }
+        }
+
+        this.setState({
+            isConditionCreatorModalOpen: false,
+        })
+    }
+
+    @autobind
+    onClickCancelConditionCreator() {
+        this.setState({
+            isConditionCreatorModalOpen: false,
+        })
+    }
+
+    @autobind
     onCancelDeleteInUse() {
         this.setState({
             isConfirmDeleteInUseModalOpen: false,
         })
     }
 
-    @OF.autobind
+    @autobind
     onCancelDelete() {
         this.setState({
             isConfirmDeleteModalOpen: false,
         })
     }
 
-    @OF.autobind
+    @autobind
     onCancelEdit() {
         this.setState({
             isConfirmEditModalOpen: false,
@@ -1047,7 +1178,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         })
     }
 
-    @OF.autobind
+    @autobind
     onCancelDuplicate() {
         this.setState({
             isConfirmDuplicateActionModalOpen: false,
@@ -1055,7 +1186,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         })
     }
 
-    @OF.autobind
+    @autobind
     onConfirmEdit() {
         if (!this.state.newOrEditedAction) {
             console.warn(`You clicked to confirm edit, but there is no action to save`)
@@ -1078,7 +1209,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
     onConfirmDelete(option: boolean) {
         if (!this.props.action) {
             console.warn(`You clicked to confirm deletion, but there is no action to delete`)
@@ -1091,21 +1222,21 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         })
     }
 
-    @OF.autobind
+    @autobind
     onClickCreateEntity() {
         this.setState({
             isEntityEditorModalOpen: true
         })
     }
 
-    @OF.autobind
+    @autobind
     onCloseEntityEditor() {
         this.setState({
             isEntityEditorModalOpen: false
         })
     }
 
-    @OF.autobind
+    @autobind
     async onChangeActionType(actionTypeOption: OF.IDropdownOption | undefined) {
         if (!actionTypeOption) {
             return
@@ -1113,15 +1244,25 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
         const textPayload = this.state.slateValuesMap[TEXT_SLOT]
         const isPayloadMissing = (actionTypeOption.key === CLM.ActionTypes.TEXT && textPayload && textPayload.document.text.length === 0)
-        const isTerminal = actionTypeOption.key === CLM.ActionTypes.END_SESSION
+        const isTerminal = [CLM.ActionTypes.END_SESSION, CLM.ActionTypes.DISPATCH, CLM.ActionTypes.CHANGE_MODEL].includes(actionTypeOption.key as CLM.ActionTypes)
             ? true
             : actionTypeOption.key === CLM.ActionTypes.SET_ENTITY
                 ? false
                 : this.state.isTerminal
 
+        // Reprompt and Entry node only allowed on CARD and TEXT actions
+        const reprompt = (actionTypeOption.key === CLM.ActionTypes.CARD || actionTypeOption.key === CLM.ActionTypes.TEXT)
+            ? this.state.reprompt
+            : false
+        const isEntryNode = (actionTypeOption.key === CLM.ActionTypes.CARD || actionTypeOption.key === CLM.ActionTypes.TEXT)
+            ? this.state.isEntryNode
+            : false
+
         await Util.setStateAsync(this, {
             isPayloadMissing,
             isTerminal,
+            reprompt,
+            isEntryNode,
             selectedActionTypeOptionKey: actionTypeOption.key,
             selectedEntityOptionKey: undefined,
             selectedEnumValueOptionKey: undefined,
@@ -1133,13 +1274,13 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             secondarySlateValuesMap: {},
             expectedEntityTags: [],
             requiredEntityTagsFromPayload: [],
-            requiredEntityTags: [],
-            negativeEntityTags: [],
+            requiredConditionTags: [],
+            negativeConditionTags: [],
         })
 
         // If have preset text, pick the best matching card
-        if (this.state.selectedActionTypeOptionKey === CLM.ActionTypes.CARD && this.props.newActionPreset) {
-            const bestCard = this.bestCardMatch(this.props.newActionPreset.text)
+        if (this.state.selectedActionTypeOptionKey === CLM.ActionTypes.CARD && this.props.importedAction) {
+            const bestCard = this.bestCardMatch(this.props.importedAction)
             if (bestCard) {
                 await this.onChangeCardOption(bestCard)
             }
@@ -1147,21 +1288,12 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     }
 
     // Return card that best matches the given text
-    bestCardMatch(text: string, threshold: number = 0): OF.IDropdownOption | null {
-        // Pre-select card that is closest matching to template
-        let bestScore = 0
-        let bestCard: OF.IDropdownOption | null = null
-        for (let cardOption of this.state.cardOptions) {
-            const template = this.props.botInfo.templates.find(t => t.name === cardOption.key)
-            const score = (template && template.body)
-                ? compareTwoStrings(text, template.body)
-                : 0
-            if (score > threshold && score > bestScore) {
-                bestScore = score
-                bestCard = cardOption
-            }
+    bestCardMatch(importedAction: ImportedAction): OF.IDropdownOption | null {
+        const template = DialogUtils.bestTemplateMatch(importedAction, this.props.botInfo.templates)
+        if (template) {
+            return convertTemplateToOption(template)
         }
-        return bestCard
+        return null
     }
 
     onResolveExpectedEntityTags = (filterText: string, selectedTags: OF.ITag[] | undefined): OF.ITag[] => {
@@ -1175,7 +1307,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         return getSuggestedTags(
             filterText,
             this.state.availableExpectedEntityTags,
-            [...selectedTags, ...this.state.requiredEntityTagsFromPayload, ...this.state.requiredEntityTags]
+            [...selectedTags, ...this.state.requiredEntityTagsFromPayload, ...this.state.requiredConditionTags]
         )
     }
 
@@ -1189,28 +1321,43 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         const newExpectedEntityTag = tags[0]
         this.setState(prevState => ({
             expectedEntityTags: tags,
-            negativeEntityTags: (!newExpectedEntityTag || prevState.negativeEntityTags.some(tag => tag.key === newExpectedEntityTag.key))
-                ? prevState.negativeEntityTags
-                : [...prevState.negativeEntityTags, newExpectedEntityTag]
+            negativeConditionTags: (!newExpectedEntityTag || prevState.negativeConditionTags.some(tag => tag.key === newExpectedEntityTag.key))
+                ? prevState.negativeConditionTags
+                : [...prevState.negativeConditionTags, newExpectedEntityTag]
         }))
     }
 
-    onResolveRequiredEntityTags = (filterText: string, selectedTags: OF.ITag[]): OF.ITag[] => {
-        return getSuggestedTags(
+    onResolveRequiredConditionTags = (filterText: string, selectedTags: OF.ITag[]): OF.ITag[] => {
+        const suggestedTags = getSuggestedTags(
             filterText,
             this.state.availableConditionalTags,
-            [...selectedTags, ...this.state.requiredEntityTagsFromPayload, ...this.state.negativeEntityTags, ...this.state.expectedEntityTags],
-            this.state.requiredEntityTags
+            [...selectedTags, ...this.state.requiredEntityTagsFromPayload, ...this.state.negativeConditionTags, ...this.state.expectedEntityTags],
+            this.state.requiredConditionTags
         )
+
+        return [
+            addConditionPlaceholder,
+            ...suggestedTags,
+        ]
     }
 
-    onChangeRequiredEntityTags = (tags: IConditionalTag[]) => {
+    onChangeRequiredConditionTags = (tags: IConditionalTag[]) => {
+        const containsAddConditionPlaceholder = tags.some(t => t.key === addConditionPlaceholder.key)
+        // Assume if list has this item the user clicked the suggestion and intends to add condition
+        if (containsAddConditionPlaceholder) {
+            this.setState({
+                isConditionCreatorModalOpen: true,
+                conditionCreatorType: "required",
+            })
+            return
+        }
+
         this.setState({
-            requiredEntityTags: tags
+            requiredConditionTags: tags
         })
     }
 
-    onRenderRequiredEntityTag = (props: ICLPickerItemProps<OF.ITag>): JSX.Element => {
+    onRenderRequiredConditionTag = (props: ICLPickerItemProps<OF.ITag>): JSX.Element => {
         const renderProps = { ...props }
         const locked = this.state.requiredEntityTagsFromPayload.some(t => t.key === props.key)
 
@@ -1222,21 +1369,43 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         return <CLTagItem key={props.index} {...renderProps}>{props.item.name}</CLTagItem>
     }
 
-    onResolveNegativeEntityTags = (filterText: string, selectedTags: OF.ITag[]): OF.ITag[] => {
-        return getSuggestedTags(
-            filterText,
-            this.state.availableConditionalTags,
-            [...selectedTags, ...this.state.requiredEntityTagsFromPayload, ...this.state.requiredEntityTags]
-        )
+    @autobind
+    onRenderConditionSuggestion(tag: OF.ITag, itemProps: OF.ISuggestionItemProps<OF.ITag>): JSX.Element {
+        return tag.key === addConditionPlaceholder.key
+            ? addConditionPlaceholderButton
+            : <TagItemSuggestion>{tag.name}</TagItemSuggestion>
     }
 
-    onChangeNegativeEntityTags = (tags: IConditionalTag[]) => {
+    onResolveNegativeConditionTags = (filterText: string, selectedTags: OF.ITag[]): OF.ITag[] => {
+        const suggestedTags = getSuggestedTags(
+            filterText,
+            this.state.availableConditionalTags,
+            [...selectedTags, ...this.state.requiredEntityTagsFromPayload, ...this.state.requiredConditionTags]
+        )
+
+        return [
+            addConditionPlaceholder,
+            ...suggestedTags,
+        ]
+    }
+
+    onChangeNegativeConditionTags = (tags: IConditionalTag[]) => {
+        const containsAddConditionPlaceholder = tags.some(t => t.key === addConditionPlaceholder.key)
+        // Assume if list has this item the user clicked the suggestion and intends to add condition
+        if (containsAddConditionPlaceholder) {
+            this.setState({
+                isConditionCreatorModalOpen: true,
+                conditionCreatorType: "disqualified",
+            })
+            return
+        }
+
         this.setState({
-            negativeEntityTags: tags
+            negativeConditionTags: tags
         })
     }
 
-    onRenderNegativeEntityTag = (props: ICLPickerItemProps<OF.ITag>): JSX.Element => {
+    onRenderNegativeConditionTag = (props: ICLPickerItemProps<OF.ITag>): JSX.Element => {
         const renderProps = { ...props }
         const suggestedEntityKey = this.state.expectedEntityTags.length > 0 ? this.state.expectedEntityTags[0].key : null
 
@@ -1246,6 +1415,12 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         renderProps.highlight = suggestedEntityKey === props.key
 
         return <CLTagItem key={props.index} {...renderProps}>{props.item.name}</CLTagItem>
+    }
+
+    onDismissPicker(event: any, selectedItem?: OF.ITag | undefined) {
+        if (event && typeof event.preventDefault === "function") {
+            event.preventDefault()
+        }
     }
 
     // Payload editor is trying to submit action
@@ -1276,7 +1451,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             .sort((a, b) => a.name.localeCompare(b.name))
 
         // If we added entity to a payload which was already in the list of required entities remove it to avoid duplicates.
-        const requiredEntityTags = this.state.requiredEntityTags.filter(tag => !requiredEntityTagsFromPayload.some(t => t.key === tag.key))
+        const requiredConditionTags = this.state.requiredConditionTags.filter(tag => !requiredEntityTagsFromPayload.some(t => t.key === tag.key))
 
         const isPayloadMissing = (this.state.selectedActionTypeOptionKey === CLM.ActionTypes.TEXT && value.document.text.length === 0)
 
@@ -1284,7 +1459,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             entityWarning: false,
             isPayloadMissing,
             requiredEntityTagsFromPayload,
-            requiredEntityTags
+            requiredConditionTags,
         }
 
         if (isSecondary) {
@@ -1308,14 +1483,28 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             case CLM.ActionTypes.SET_ENTITY:
                 return this.state.selectedEntityOptionKey === undefined
                     || this.state.selectedEnumValueOptionKey === undefined
+            case CLM.ActionTypes.CHANGE_MODEL:
+                return this.state.selectedModelOptionKey === undefined
             default:
                 return false
         }
     }
+
     saveDisabled(): boolean {
-        // SET_ENTITY Actions are immutable
-        if (this.props.action && this.props.action.actionType === CLM.ActionTypes.SET_ENTITY) {
-            return true
+        // If editing
+        if (this.props.action) {
+            const actionType = this.props.action.actionType
+            if (actionType === CLM.ActionTypes.SET_ENTITY
+                || actionType === CLM.ActionTypes.DISPATCH) {
+                return true
+            }
+        }
+        // If creating
+        else {
+            const actionType = this.state.selectedActionTypeOptionKey as CLM.ActionTypes
+            if (actionType === CLM.ActionTypes.DISPATCH) {
+                return true
+            }
         }
 
         return this.areInputsInvalid()
@@ -1323,7 +1512,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             || (!this.state.isTerminal && (this.state.expectedEntityTags.length > 0))
     }
 
-    @OF.autobind
+    @autobind
     onClickTrainDialogs() {
         const { history } = this.props
         history.push(`/home/${this.props.app.appId}/trainDialogs`, { app: this.props.app, actionFilter: this.props.action })
@@ -1337,7 +1526,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         return tdString.indexOf(this.props.action.actionId) > -1
     }
 
-    @OF.autobind
+    @autobind
     validationWarning(): JSX.Element | null {
         if (this.state.validationWarnings.length > 0) {
             return (
@@ -1366,7 +1555,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 && (this.state.cardOptions.length === 0));
 
         // Available Mentions: All entities - expected entity - required entities from payload - disqualified entities
-        const unavailableTags = [...this.state.expectedEntityTags, ...this.state.negativeEntityTags]
+        const unavailableTags = [...this.state.expectedEntityTags, ...this.state.negativeConditionTags]
         const optionsAvailableForPayload = this.props.entities
             .filter(e => !unavailableTags.some(t => t.key === e.entityId))
             // Remove negative entities (Those which have a positiveId)
@@ -1386,6 +1575,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             && this.state.selectedApiOptionKey
             ? this.props.botInfo.callbacks.find(t => t.name === this.state.selectedApiOptionKey)
             : undefined
+
+        const uniqueConditions = getUniqueConditions(this.props.actions)
         return (
             <OF.Modal
                 isOpen={this.props.open}
@@ -1407,6 +1598,13 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                             disabled={disabled}
                             tipType={ToolTip.TipType.ACTION_TYPE}
                         />
+
+                        {this.state.selectedActionTypeOptionKey === CLM.ActionTypes.DISPATCH
+                            && <div data-testid="action-dispatch-warning" className="cl-text--warning">
+                                <OF.Icon iconName="Warning" className="cl-icon" /> Warning:&nbsp;
+                                <span>{Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_WARNING_DISPATCH_EDIT, { actionType: CLM.ActionTypes.DISPATCH })}</span>
+                            </div>}
+
                         {this.state.selectedActionTypeOptionKey === CLM.ActionTypes.SET_ENTITY
                             && <div data-testid="action-set-entity-warning" className="cl-text--warning">
                                 <OF.Icon iconName="Warning" className="cl-icon" /> Warning:&nbsp;
@@ -1483,8 +1681,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                         </div>
                                         : <div className="cl-errorpanel" data-testid="action-creator-editor-error-callback">
                                             <div>
-                                                {this.props.action && CLM.ActionBase.isStubbedAPI(this.props.action)
-                                                    ? `Stub API: ${this.state.selectedApiOptionKey}`
+                                                {this.props.action && CLM.ActionBase.isPlaceholderAPI(this.props.action)
+                                                    ? `Placeholder API: ${this.state.selectedApiOptionKey}`
                                                     : `ERROR: Bot Missing Callback: ${this.state.selectedApiOptionKey}`}
                                             </div>
                                         </div>)
@@ -1525,7 +1723,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                             .map(cardTemplateVariable => {
                                                 return (
                                                     <React.Fragment key={cardTemplateVariable.key}>
-                                                        <OF.Label className="cl-label">{cardTemplateVariable.key} <HelpIcon tipType={ToolTip.TipType.ACTION_ARGUMENTS} /></OF.Label>
+                                                        <OF.Label className="cl-label">{cardTemplateVariable.key} <HelpIcon tipType={ToolTip.TipType.ACTION_CARD} /></OF.Label>
                                                         <ActionPayloadEditor.Editor
                                                             options={optionsAvailableForPayload}
                                                             value={this.state.slateValuesMap[cardTemplateVariable.key]}
@@ -1624,16 +1822,29 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                 </>
                             )}
 
+                        {(this.state.selectedActionTypeOptionKey === CLM.ActionTypes.DISPATCH
+                            || this.state.selectedActionTypeOptionKey === CLM.ActionTypes.CHANGE_MODEL)
+                            && <TC.Dropdown
+                                data-testid="action-creator-dropdown-model-name"
+                                label="Model"
+                                options={this.state.modelOptions.filter(mo => mo.data.appId !== this.props.app.appId)}
+                                onChange={this.onChangeModelType}
+                                selectedKey={this.state.selectedModelOptionKey}
+                                tipType={ToolTip.TipType.ACTION_CHANGE_MODEL}
+                                disabled={this.state.selectedActionTypeOptionKey === CLM.ActionTypes.DISPATCH}
+                            />}
+
                         {this.state.selectedActionTypeOptionKey !== CLM.ActionTypes.CARD
                             && this.state.selectedActionTypeOptionKey !== CLM.ActionTypes.END_SESSION
                             && this.state.selectedActionTypeOptionKey !== CLM.ActionTypes.SET_ENTITY
+                            && this.state.selectedActionTypeOptionKey !== CLM.ActionTypes.DISPATCH
+                            && this.state.selectedActionTypeOptionKey !== CLM.ActionTypes.CHANGE_MODEL
                             && (<div className="cl-action-creator--expected-entity">
                                 <TC.TagPicker
                                     data-testid="action-expected-entity"
                                     label="Expected Entity in User reply..."
                                     onResolveSuggestions={this.onResolveExpectedEntityTags}
                                     onRenderItem={this.onRenderExpectedTag}
-                                    getTextFromItem={item => item.name}
                                     onChange={this.onChangeExpectedEntityTags}
                                     pickerSuggestionsProps={
                                         {
@@ -1647,64 +1858,91 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                             </div>
                             )}
 
-                        <div className="cl-action-creator--required-entities">
-                            <CLTagPicker
-                                data-testid="action-required-entities"
-                                nonRemovableTags={this.state.requiredEntityTagsFromPayload}
-                                nonRemoveableStrikethrough={false}
-                                label="Required Entities"
-                                onResolveSuggestions={this.onResolveRequiredEntityTags}
-                                onRenderItem={this.onRenderRequiredEntityTag}
-                                getTextFromItem={item => item.name}
-                                onChange={this.onChangeRequiredEntityTags}
-                                pickerSuggestionsProps={
-                                    {
-                                        suggestionsHeaderText: 'Entities',
-                                        noResultsFoundText: 'No Entities Found'
-                                    }
-                                }
-                                selectedItems={this.state.requiredEntityTags}
-                                tipType={ToolTip.TipType.ACTION_REQUIRED}
-                            />
-                        </div>
+                        {this.state.selectedActionTypeOptionKey !== CLM.ActionTypes.DISPATCH
+                            && <>
+                                <div className="cl-action-creator--required-entities">
+                                    <CLTagPicker
+                                        data-testid="action-required-entities"
+                                        nonRemovableTags={this.state.requiredEntityTagsFromPayload}
+                                        nonRemoveableStrikethrough={false}
+                                        label="Required Conditions"
+                                        onResolveSuggestions={this.onResolveRequiredConditionTags}
+                                        onRenderItem={this.onRenderRequiredConditionTag}
+                                        onRenderSuggestionsItem={this.onRenderConditionSuggestion}
+                                        onChange={this.onChangeRequiredConditionTags}
+                                        pickerSuggestionsProps={
+                                            {
+                                                suggestionsHeaderText: 'Conditions',
+                                                noResultsFoundText: 'No Conditions Found'
+                                            }
+                                        }
+                                        selectedItems={this.state.requiredConditionTags}
+                                        tipType={ToolTip.TipType.ACTION_REQUIRED}
+                                    />
+                                </div>
 
-                        <div className="cl-action-creator--disqualifying-entities">
-                            <TC.TagPicker
-                                data-testid="action-disqualifying-entities"
-                                label="Disqualifying Entities"
-                                onResolveSuggestions={this.onResolveNegativeEntityTags}
-                                onRenderItem={this.onRenderNegativeEntityTag}
-                                getTextFromItem={item => item.name}
-                                onChange={this.onChangeNegativeEntityTags}
-                                pickerSuggestionsProps={
-                                    {
-                                        suggestionsHeaderText: 'Entities',
-                                        noResultsFoundText: 'No Entities Found'
-                                    }
-                                }
-                                selectedItems={this.state.negativeEntityTags}
-                                tipType={ToolTip.TipType.ACTION_NEGATIVE}
-                            />
-                        </div>
+                                <div className="cl-action-creator--disqualifying-entities">
+                                    <TC.TagPicker
+                                        data-testid="action-disqualifying-entities"
+                                        label="Disqualifying Conditions"
+                                        onResolveSuggestions={this.onResolveNegativeConditionTags}
+                                        onRenderItem={this.onRenderNegativeConditionTag}
+                                        onRenderSuggestionsItem={this.onRenderConditionSuggestion}
+                                        onChange={this.onChangeNegativeConditionTags}
+                                        pickerSuggestionsProps={
+                                            {
+                                                suggestionsHeaderText: 'Conditions',
+                                                noResultsFoundText: 'No Conditions Found'
+                                            }
+                                        }
+                                        selectedItems={this.state.negativeConditionTags}
+                                        tipType={ToolTip.TipType.ACTION_NEGATIVE}
+                                    />
+                                </div>
+                            </>}
 
-                        <div className="cl-action-creator-form-section">
+                        <div>
+                            <OF.Label>Options</OF.Label>
                             <TC.Checkbox
                                 data-testid="action-creator-wait-checkbox"
-                                label="Wait for Response?"
+                                label={Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_CHECKBOX_TERMINAL_LABEL)}
                                 checked={this.state.isTerminal}
                                 onChange={this.onChangeWaitCheckbox}
-                                style={{ marginTop: '1em', display: 'inline-block' }}
-                                disabled={[CLM.ActionTypes.END_SESSION, CLM.ActionTypes.SET_ENTITY].includes(this.state.selectedActionTypeOptionKey as CLM.ActionTypes)}
+
+                                disabled={this.state.reprompt || [CLM.ActionTypes.END_SESSION, CLM.ActionTypes.SET_ENTITY, CLM.ActionTypes.DISPATCH, CLM.ActionTypes.CHANGE_MODEL].includes(this.state.selectedActionTypeOptionKey as CLM.ActionTypes)}
                                 tipType={ToolTip.TipType.ACTION_WAIT}
                             />
                         </div>
-                        <div
-                            data-testid="action-warning-nowait-expected"
-                            className="cl-error-message-label"
-                            style={{ display: !this.state.isTerminal && this.state.expectedEntityTags.length ? "block" : "none", gridGap: "0" }}
-                        >
-                            {Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_WARNING_NONEMPTYFIELD)}
-                        </div>
+
+                        {this.state.selectedActionTypeOptionKey !== CLM.ActionTypes.CHANGE_MODEL
+                            && <>
+                                <TC.Checkbox
+                                    data-testid="action-creator-reprompt-checkbox"
+                                    label={Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_CHECKBOX_REPROMPT_LABEL)}
+                                    checked={this.state.reprompt}
+                                    onChange={this.onChangeRepromptCheckbox}
+                                    disabled={!this.state.isTerminal || [CLM.ActionTypes.END_SESSION, CLM.ActionTypes.SET_ENTITY, CLM.ActionTypes.DISPATCH].includes(this.state.selectedActionTypeOptionKey as CLM.ActionTypes)}
+                                    tipType={ToolTip.TipType.ACTION_REPROMPT}
+                                />
+                                {Util.isFeatureEnabled(this.props.settings.features, FeatureStrings.CCI) &&
+                                    <TC.Checkbox
+                                        data-testid="action-creator-entry-node-checkbox"
+                                        label={Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_CHECKBOX_ENTRY_NODE_LABEL)}
+                                        checked={this.state.isEntryNode}
+                                        onChange={this.onChangeIsEntryNodeCheckbox}
+                                        disabled={[CLM.ActionTypes.END_SESSION, CLM.ActionTypes.SET_ENTITY, CLM.ActionTypes.DISPATCH].includes(this.state.selectedActionTypeOptionKey as CLM.ActionTypes)}
+                                        tipType={ToolTip.TipType.ACTION_IS_ENTRY_NODE}
+                                    />
+                                }
+                                <div
+                                    data-testid="action-warning-nowait-expected"
+                                    className="cl-error-message-label"
+                                    style={{ display: !this.state.isTerminal && this.state.expectedEntityTags.length ? "block" : "none", gridGap: "0" }}
+                                >
+                                    {Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_WARNING_NON_WAIT_HAS_EXPECTED_ENTITY)}
+                                </div>
+                            </>
+                        }
                     </div>
                 </div>
 
@@ -1734,10 +1972,10 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                             onClick={this.onClickSaveCreate}
                             ariaDescription={this.state.isEditing ?
                                 Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_SAVEBUTTON_ARIADESCRIPTION) :
-                                Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_CREATEBUTTON_ARIADESCRIPTION)}
+                                Util.formatMessageId(intl, FM.BUTTON_CREATE)}
                             text={this.state.isEditing ?
                                 Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_SAVEBUTTON_TEXT) :
-                                Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_CREATEBUTTON_TEXT)}
+                                Util.formatMessageId(intl, FM.BUTTON_CREATE)}
                             iconProps={{ iconName: 'Accept' }}
                         />
 
@@ -1798,6 +2036,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 />
                 <AdaptiveCardViewer
                     open={this.state.isCardViewerModalOpen && this.state.selectedCardOptionKey !== null}
+                    curIndex={this.state.selectedCardIndex}
+                    totalCards={this.state.cardOptions.length}
                     onDismiss={() => this.onCloseCardViewer()}
                     onNext={() => this.onNextCard()}
                     onPrevious={() => this.onPreviousCard()}
@@ -1808,6 +2048,13 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                         ? this.getRenderedActionArguments(this.state.slateValuesMap, this.props.entities)
                         : []}
                     hideUndefined={false}
+                />
+                <ConditionModal
+                    entities={this.props.entities}
+                    conditions={uniqueConditions}
+                    isOpen={this.state.isConditionCreatorModalOpen}
+                    onClickCreate={this.onClickCreateConditionCreator}
+                    onClickCancel={this.onClickCancelConditionCreator}
                 />
             </OF.Modal>
         );
@@ -1826,11 +2073,13 @@ const mapStateToProps = (state: State, ownProps: any) => {
     }
 
     return {
+        models: state.apps.all,
         entities: state.entities,
         actions: state.actions,
         trainDialogs: state.trainDialogs,
         botInfo: state.bot.botInfo,
-        browserId: state.bot.browserId
+        browserId: state.bot.browserId,
+        settings: state.settings
     }
 }
 
@@ -1840,7 +2089,7 @@ export interface ReceiveProps {
     open: boolean
     action: CLM.ActionBase | null
     actions: CLM.ActionBase[]
-    newActionPreset?: NewActionPreset
+    importedAction?: ImportedAction
     handleEdit: (action: CLM.ActionBase) => void
     handleClose: () => void
     handleDelete: (action: CLM.ActionBase, removeFromDialogs: boolean) => void

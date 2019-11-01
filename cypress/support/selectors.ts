@@ -2,6 +2,7 @@ const selectors = {
     common: {
         spinner: '.cl-spinner',
         dropDownOptions: 'button.ms-Dropdown-item',
+        gridRow: '[data-automationid="DetailsRowFields"]',
     },
     homePage: {
         link: '#uiLink',
@@ -33,26 +34,33 @@ const selectors = {
     },
     trainingStatus: {
         completed: '[data-testid="training-status-completed"]',
+        running: '[data-testid="training-status-running"]',
     },
     entities: {
         buttonCreate: '[data-testid="entities-button-create"]',
         name: '[data-testid="entities-name"]',
     },
     entity: {
+        checkboxResolutionRequired: '[data-testid="entity-creator-resolution-required"] .ms-Checkbox',
+        dropDownResolverType: '[data-testid="entity-creator-resolver-type-dropdown"]',
         dropDownType: '[data-testid="entity-creator-entity-type-dropdown"]',
         modal: '[data-testid="entity-creator-modal"]',
         name: '[data-testid="entity-creator-entity-name-text"]',
         enumValue: '[data-testid="entity-enum-value"]',
         enumValueName: '[data-testid="entity-enum-value-value-name"][value=""]',
         enumValueButtonDelete: '[data-testid="entity-enum-value-button-delete"]',
+        existingConditions: '[data-testid="entity-creator-existing-conditions"]',
+        existingCondition: (index: number) => `[data-testid="entity-creator-existing-condition-${index}"]`,
         buttonDelete: '[data-testid="entity-button-delete"]',
         buttonCancel: '[data-testid="entity-button-cancel"]',
         buttonSave: '[data-testid="entity-creator-button-save"]',
+        buttonUseCondition: (index: number) => `[data-testid="entity-creator-button-use-condition-${index}"]`,
     },
     actions: {
         buttonNewAction: '[data-testid="actions-button-create"]',
         setEntityResponseText: '[data-testid="actions-list-set-entity"]',
         textResponse: '[data-testid="action-scorer-text-response"]',
+        requiredConditions: '[data-testid="action-details-required-entities"]',
     },
     action: {
         dropDownType: '[data-testid="dropdown-action-type"]',
@@ -64,6 +72,7 @@ const selectors = {
         buttonCreateEntity: '[data-testid="action-button-create-entity"]',
         buttonCancel: '[data-testid="action-creator-cancel-button"]',
         buttonDelete: '[data-testid="action-creator-delete-button"]',
+        buttonAddCondition: '[data-testid="action-creator-modal-button-add-condition"]',
         inputResponse: '[data-testid="action-text-response"] [contenteditable="true"]',
         inputRequiredConditions: '[data-testid="action-required-entities"] input',
         inputDisqualifiedConditions: '[data-testid="action-disqualifying-entities"] input',
@@ -71,6 +80,7 @@ const selectors = {
         tagPickerRequired: '[data-testid="action-required-entities"]',
         tagPickerExpected: '[data-testid="action-expected-entity"]',
         tagPickerDisqualified: '[data-testid="action-disqualifying-entities"]',
+        tag: '[data-testid="tag-item"]',
         setEntityWarning: '[data-testid="action-set-entity-warning"]',
         nonRemovableTags: '[data-testid="picker-tag-nonRemovable"]',
         checkBoxWaitForResponse: '[data-testid="action-creator-wait-checkbox"] .ms-Checkbox',
@@ -85,12 +95,27 @@ const selectors = {
         buttonConfirm: '[data-testid="action-delete-confirm"]',
         buttonCancel: '[data-testid="confirm-cancel-modal-cancel"]',
     },
+    addConditionModal: {
+        modal: '[data-testid="condition-creator-modal-title"]',
+        warning: '[data-testid="condition-creator-modal-warning"]',
+        buttonCreate: '[data-testid="condition-creator-button-create"]',
+        buttonCancel: '[data-testid="condition-creator-button-cancel"]',
+        buttonUseCondition: '[data-testid="condition-creator-modal-button-use-condition"]',
+        dropdownEntity: '[data-testid="condition-creator-modal-dropdown-entity"]',
+        dropdownOperator: '[data-testid="condition-creator-modal-dropdown-operator"]',
+        dropdownEnumValue: '[data-testid="condition-creator-modal-dropdown-enumvalue"]',
+        inputNumberValue: '[data-testid="condition-creator-modal-dropdown-numbervalue"] input',
+        existingConditions: '[data-testid="condition-creator-existing-conditions"]',
+        existingCondition: '[data-testid="condition-creator-modal-existing-condition"]',
+        existingConditionMatch: '[data-testid="condition-creator-modal-existing-condition-match"]',
+    },
     confirmCancelModal: {
         buttonCancel: '[data-testid="confirm-cancel-modal-cancel"]',
         buttonConfirm: '[data-testid="confirm-cancel-modal-accept"]',
         buttonOk: '[data-testid="confirm-cancel-modal-ok"]',
     },
     trainDialogs: {
+        validityIndicator: '[data-testid="train-dialogs-validity-indicator"]',
         descriptions: '[data-testid="train-dialogs-description"]',
         tags: '[data-testid="train-dialogs-tags"] .cl-tags-readonly__tag',
         buttonNew: '[data-testid="button-new-train-dialog"]',
@@ -99,13 +124,18 @@ const selectors = {
         inputWebChat: 'input[placeholder="Type your message..."]',
         buttonScoreActions: '[data-testid="score-actions-button"]',
         buttonAbandon: '[data-testid="edit-dialog-modal-abandon-delete-button"]',
+        // TODO: Shouldn't have different test ids for enabled / disabled
         buttonSelectAction: '[data-testid="action-scorer-button-clickable"]',
+        buttonSelectActionDisabled: '[data-testid="action-scorer-button-no-click"]',
         buttonSave: '[data-testid="edit-teach-dialog-close-save-button"]',
         actionScorerSetEntityActions: '[data-testid="action-scorer-action-set-entity"]',
         actionScorerTextActions: '[data-testid="action-scorer-text-response"]',
         actionScorer: {
+            enumActions: '[data-testid="action-scorer-action-set-entity"]',
             rowField: '[data-automationid="DetailsRowFields"]',
             buttonCreate: '[data-testid="action-scorer-add-action-button"]',
+            buttonSelected: '[data-testid="action-scorer-button-selected"]',
+            condition: '[data-testid="action-scorer-entities"]',
         },
     },
     mergeModal: {
@@ -129,6 +159,7 @@ const selectors = {
         webChatUtterances: 'div[data-testid="web-chat-utterances"] > div.wc-message-content > div > div.format-markdown > p',
         entityConflictModal: {
             modal: '[data-testid="extract-conflict-modal-conflicting-labels"]',
+            attempted: '[data-testid="extract-conflict-modal-attempted"]',
             buttonAccept: '[data-testid="entity-conflict-accept"]',
             buttonCancel: '[data-testid="entity-conflict-cancel"]',
         },
@@ -142,6 +173,7 @@ const selectors = {
     logDialog: {
         buttonDone: '[data-testid="chat-session-modal-done-testing-button"]',
         inputMessage: 'input[placeholder="Type your message..."]',
+        modal: '.cl-modal--log',
     },
     logConversionConflictsModal: {
         modal: '[data-testid="log-conversion-conflicts-modal"]',
@@ -181,6 +213,7 @@ const selectors = {
         messageFromMeException: '.wc-border-error-from-me',
         messageColorException: '.wc-message-color-exception',
         messageDownArrow: '.wc-message-downarrow',
+        activities: '[data-testid="web-chat-utterances"]',
         buttonAddAction: '[data-testid="chat-edit-add-bot-response-button"]',
         buttonAddInput: '[data-testid="chat-edit-add-user-input-button"]',
         buttonBranch: '[data-testid="edit-dialog-modal-branch-button"]',

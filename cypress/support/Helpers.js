@@ -1,3 +1,5 @@
+import { func } from "prop-types";
+
 /**
 * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
@@ -25,10 +27,24 @@ export function SkipRemainingTestsOfSuiteIfFailed() {
 // NOTE: the '-+-' is a signature for filtering console output
 export function ConLog(funcName, message) { console.log(`-+- ${Cypress.moment().format("HH:mm:ss..SSS")} - ${funcName} - ${message}`) }
 
-export function Dump(funcName, object) {
+export function DumpObject(funcName, object) {
   let propertyList = ''
   for (let property in object) propertyList += `${(propertyList.length == 0 ? '' : ', ')}${property}: ${object[property]}`
   ConLog(funcName, propertyList)
+}
+
+export function NumberToStringWithLeadingZeros(number, length) {
+  let string = String(number)
+  if (string.length < length) { string = '0'.repeat(length - string.length) + string }
+  return string
+}
+
+export function DumpElements(funcName, elements) {
+  let elementList = `Dump of ${elements.length} elements:\n`
+  for (let i = 0; i < elements.length; i++) { 
+    elementList += `${NumberToStringWithLeadingZeros(i,3)}: ${elements[i].outerHTML.replace(/\n/g, '\n     ')}\n` 
+  }
+  ConLog(funcName, elementList)
 }
 
 export function RemoveDuplicates(inputArray) {
@@ -41,13 +57,14 @@ export function RemoveDuplicates(inputArray) {
 }
 
 export function StringArrayFromElementText(selector, retainMarkup = false) {
+  let funcName = `StringArrayFromElementText(${selector})`
   let elements = Cypress.$(selector)
-  ConLog(`StringArrayFromElementText(${selector})`, elements.length)
+  ConLog(funcName, `Number of Elements Found: ${elements.length}`)
   let returnValues = []
   for (let i = 0; i < elements.length; i++)  {
     let text = retainMarkup ? elements[i].innerHTML : TextContentWithoutNewlines(elements[i])
     returnValues.push(text)
-    ConLog(`StringArrayFromElementText(${selector})`, text)
+    ConLog(funcName, text)
   }
   return returnValues
 }
@@ -69,10 +86,47 @@ export function Moment(dateTime) {
   return undefined
 }
 
-// This will return the Inner Text of an element without markup nor newline characters.
+// This will return only the printable Inner Text of an element without markup nor newline characters.
 // Needed because each browser handles this functionality differently.
+// This trims the string and...
+// ...also converts the ‘ and ’ to a ' and...
+// ...also converts the “ and ” to a " and...
+// ...also keeps the '◾️' and '…' charcters and throws away anything else outside of the typical printable set.
 export function TextContentWithoutNewlines(element) {
-  return element.textContent.replace(/(\r\n|\n|\r)/gm, '')
+  if (element === undefined) { 
+    ConLog('TextContentWithoutNewlines', 'undefined element has been passed in.')
+    return undefined
+  }
+
+  const textContent = element.textContent
+  if (!textContent) {
+    ConLog('TextContentWithoutNewlines', `textContent is undefined, which typically means there is no text. Here is the element that was passed in: ${element.outerHTML}`)
+    return ''
+  }
+
+  // See the Cheat Sheet on https://www.regextester.com/15 for help with this 'NOT ^' regex string
+  const returnValue = textContent.trim()
+                                 .replace(/‘|’/g, "'")
+                                 .replace(/“|”/g, '"')
+                                 .replace(/([^◾️…\x20-\x7E])/gm, '')
+  ConLog('TextContentWithoutNewlines', returnValue)
+  return returnValue
+}
+
+// This will return an array of the Inner Text (with New Lines removed) of an array of elements.
+// Pass in either an array of elements or the selector to get the array of elements with.
+export function ArrayOfTextContentWithoutNewlines(elementsOrSelector) {
+  if (elementsOrSelector === undefined || elementsOrSelector.length == 0) { return undefined }
+
+  let elements
+  if (typeof elementsOrSelector == 'string') { elements = Cypress.$(elementsOrSelector) }
+  else { elements = elementsOrSelector }
+
+  let arrayOfTextContent = []
+  for (let i = 0; i < elements.length; i++) {
+    arrayOfTextContent.push(TextContentWithoutNewlines(elements[i]))
+  }
+  return arrayOfTextContent
 }
 
 // Model names have a suffix which will end with a single character representing the 
@@ -82,10 +136,10 @@ let buildKey = undefined
 export function GetBuildKey() {
   if (!buildKey) {
     buildKey = Cypress.env('BUILD_NUM')
-ConLog('GetBuildKey', `BUILD_NUM: ${Cypress.env('BUILD_NUM')} -- ${buildKey}`)
+    ConLog('GetBuildKey', `BUILD_NUM: ${Cypress.env('BUILD_NUM')} -- ${buildKey}`)
     if (buildKey) {
       buildKey = String.fromCharCode('a'.charCodeAt() + buildKey % 26)
-ConLog('GetBuildKey', `buildKey: ${buildKey}`)
+      ConLog('GetBuildKey', `buildKey: ${buildKey}`)
     } else {
       // There is no BUILD_NUM environment variable so this is a local test run.
       // For local test runs always using the same build key works.
@@ -93,4 +147,32 @@ ConLog('GetBuildKey', `buildKey: ${buildKey}`)
     }
   }
   return buildKey
+}
+
+export function VerifyErrorMessageContains(expectedMessage) { cy.Get('div.cl-errorpanel').contains(expectedMessage) }
+export function VerifyErrorMessageExactMatch(expectedMessage) { cy.Get('div.cl-errorpanel').ExactMatch(expectedMessage) }
+export function VerifyNoErrorMessages() { cy.DoesNotContain('div.cl-errorpanel') }
+export function HasErrorMessage() { return Cypress.$('div.cl-errorpanel').length > 0 }
+
+export function ExactMatch(elements, expectedText) {
+  const funcName = `ExactMatch('${expectedText}')`
+  ConLog(funcName, `Start`)
+  for (let i = 0; i < elements.length; i++) {
+    const elementText = TextContentWithoutNewlines(elements[i])
+    ConLog(funcName, `elementText: '${elementText}'`)
+    if (elementText === expectedText) return elements[i]
+  }
+  return []
+}
+
+export function ExactMatches(elements, expectedText) {
+  const funcName = `ExactMatches('${expectedText}')`
+  ConLog(funcName, `Start`)
+  let returnElements = []
+  for (let i = 0; i < elements.length; i++) {
+    const elementText = helpers.TextContentWithoutNewlines(elements[i])
+    ConLog(funcName, `elementText: '${elementText}'`)
+    if (elementText === expectedText) returnElements.push(elements[i])
+  }
+  return returnElements
 }

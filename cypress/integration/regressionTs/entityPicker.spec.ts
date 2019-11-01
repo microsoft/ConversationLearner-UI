@@ -151,7 +151,7 @@ describe('EntityPicker', () => {
     describe('existing model', () => {
         const testData = {
             highlightClass: 'custom-toolbar__result--highlight',
-            modelName: `z-entityPicker2-${Cypress.moment().format('MM-d-mm-ss')}`,
+            modelName: util.generateUniqueModelName('entityPicker2'),
             modelFile: 'entityPicker.cl',
             entity1: 'myEntity',
             word1: 'word1',

@@ -38,7 +38,7 @@ describe('Missing Action - ErrorHandling', () => {
   context('Action', () => {
     it('Should delete the action we just used in the Train Dialog', () => {
       modelPage.NavigateToActions()
-      actions.DeleteAction(common.whatsYourName)
+      actions.DeleteActionThatIsUsedByATrainDialog(common.whatsYourName)
     })
   })
 
@@ -55,7 +55,7 @@ describe('Missing Action - ErrorHandling', () => {
       train.EditTraining(common.gonnaDeleteAnAction, common.gonnaDeleteAnAction, '')
       train.VerifyErrorMessage(common.trainDialogHasErrorsMessage)
 
-      train.SelectChatTurnStartsWith('ERROR: Can’t find Action Id')
+      train.SelectChatTurnStartsWith("ERROR: Can't find Action Id")
       train.VerifyErrorMessage('Action does not exist')
       scorerModal.VerifyMissingActionNotice()
     })

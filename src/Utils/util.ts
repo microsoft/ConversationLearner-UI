@@ -4,6 +4,7 @@
  */
 import * as CLM from '@conversationlearner/models'
 import * as IntlMessages from '../react-intl-messages'
+import * as Const from '../types/const'
 import { MessageValue } from 'react-intl'
 import * as moment from 'moment'
 import * as stringify from 'fast-json-stable-stringify'
@@ -16,6 +17,25 @@ export function equal<T extends number | string | boolean>(as: T[], bs: T[]): bo
     return as.length === bs.length
         && as.every((a, i) => a === bs[i])
 }
+
+// Return random number between min and max
+export function randomInt(min: number, max: number): number {
+    return Math.floor(Math.random() * (max - min + 1) + min)
+}
+
+export function percentOf(count: number, total: number): string {
+    if (total === 0) {
+        return "-"
+    }
+    return `${(count / total * 100).toFixed(1)}%`
+}
+
+// Convert rgb to hex allowing for non-whole numbers
+export function rgbToHex(r: number, g: number, b: number) {
+    // tslint:disable:prefer-template
+    // tslint:disable:no-bitwise
+    return "#" + ((1 << 24) + (Math.trunc(r) << 16) + (Math.trunc(g) << 8) + Math.trunc(b)).toString(16).slice(1);
+  }
 
 export function replace<T>(xs: T[], updatedX: T, getId: (x: T) => object | number | string): T[] {
     const index = xs.findIndex(x => getId(x) === getId(updatedX))
@@ -54,6 +74,10 @@ export function packageReferences(app: CLM.AppBase): CLM.PackageReference[] {
     ]
 }
 
+/**
+ * Create map of [entityId, memoryValue]
+ * Assumes memory value's are associated with entity by entityName (NOT entityId)
+ */
 export function createEntityMapFromMemories(entities: CLM.EntityBase[], memories: CLM.Memory[]): Map<string, string> {
     return memories.reduce((map, m) => {
         const entity = entities.find(e => e.entityName === m.entityName)
@@ -62,6 +86,28 @@ export function createEntityMapFromMemories(entities: CLM.EntityBase[], memories
         }
         return map
     }, new Map<string, string>())
+}
+
+export type EntityMapEntry = {
+    name: string,
+    value?: string,
+}
+
+export function createEntityMapWithNamesAndValues(entities: CLM.EntityBase[], memories?: CLM.Memory[]): Record<string, EntityMapEntry> {
+    return entities.reduce<Record<string, EntityMapEntry>>((map, e) => {
+        const entry: EntityMapEntry = {
+            name: e.entityName,
+        }
+
+        const memory = memories && memories.find(m => m.entityName === e.entityName)
+        if (memory) {
+            entry.value = CLM.memoryValuesAsString(memory.entityValues)
+        }
+
+        map[e.entityId] = entry
+
+        return map
+    }, {})
 }
 
 export const CL_DEMO_ID = '4433d65080bc95c0f2bddd26b5a0c816d09619cd4f8be0fec99fd2944e536888'
@@ -75,9 +121,14 @@ export function getDefaultEntityMap(entities: CLM.EntityBase[]): Map<string, str
 }
 
 export function setStateAsync(that: any, newState: any) {
+    Object.keys(newState).forEach(key => {
+        if (!that.state.hasOwnProperty(key)) {
+            throw new Error(`Object state does not contain property ${key}`)
+        }
+    })
     return new Promise((resolve) => {
         that.setState(newState, () => {
-            resolve();
+            resolve()
         });
     });
 }
@@ -114,7 +165,7 @@ function normalizeActionAndStringify(newAction: CLM.ActionBase) {
 }
 
 export function deepCopy<T>(obj: T): T {
-    let copy: any;
+    let copy: any
 
     // Simple types, null or undefined
     if (obj === null || typeof obj !== "object") {
@@ -125,25 +176,30 @@ export function deepCopy<T>(obj: T): T {
     if (obj instanceof Date) {
         copy = new Date();
         copy.setTime(obj.getTime());
-        return copy as T;
+        return copy as T
+    }
+
+    // Map
+    if (obj instanceof Map) {
+        return new Map(obj) as unknown as T
     }
 
     // Array
     if (obj instanceof Array) {
-        copy = [];
+        copy = []
         obj.forEach((item, index) => copy[index] = deepCopy(obj[index]))
-        return copy as T;
+        return copy as T
     }
 
     // Handle Object
     if (obj instanceof Object) {
-        copy = {};
+        copy = {}
         Object.keys(obj).forEach(attr => {
             if ((obj as Object).hasOwnProperty(attr)) {
                 copy[attr] = deepCopy(obj[attr])
             }
         })
-        return copy as T;
+        return copy as T
     }
 
     throw new Error("Unknown Type");
@@ -228,18 +284,83 @@ export const getSetEntityActionsFromEnumEntity = (entity: CLM.EntityBase): CLM.A
     })
 }
 
-// Calculate a 32 bit FNV-1a hash
-// Ref.: http://isthe.com/chongo/tech/comp/fnv/
-export function hashText(text: string) {
-    // tslint:disable:no-bitwise 
-    let l = text.length
-    let hval = 0x811C9DC5  // seed
+export function readFileAsync(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
 
-    for (let i = 0; i < l; i = i + 1) {
-        hval ^= text.charCodeAt(i)
-        hval += (hval << 1) + (hval << 4) + (hval << 7) + (hval << 8) + (hval << 24)
+        reader.onload = (e: Event) => {
+            resolve(reader.result as any);
+        };
+
+        reader.onerror = reject;
+
+        reader.readAsText(file);
+    })
+}
+
+// Returns true is primary template body is variable substitution
+export function isTemplateTitleGeneric(template: CLM.Template): boolean {
+    const titleVariable = template.variables.find(v => v.key === "title" && (v.type === "TextBlock" || v.type === "TextBody"))
+    return (titleVariable !== undefined)
+}
+
+// Create recursive partial of an object
+export type RecursivePartial<T> = {
+    [P in keyof T]?: RecursivePartial<T[P]>;
+}
+
+export function isFeatureEnabled(featureString: string | undefined, feature: Const.FeatureStrings) {
+    if (featureString && featureString.toUpperCase().includes(feature.toUpperCase())) {
+        return true
+    }
+    return false
+}
+
+// Generate colors that scale with number from red (neg) to green (pos)
+export function scaledColor(rating?: number): string {
+        if (rating === undefined) {
+            return "#ffffff"
+        }
+        if (rating === 0) {
+            // Yellow at zero
+            return '#ffec8c'
+        }
+        if (rating > 0) {
+            const scale = Math.pow(0.9, rating - 1)
+            const r = scale * 224
+            const g = 255
+            const b = scale * 224
+            return rgbToHex(r, g, b)
+        }
+        else {
+            const scale = Math.pow(0.8, (-rating) - 1)
+            const r = 255
+            const g = scale * 224
+            const b = scale * 224
+            return rgbToHex(r, g, b)
+        }
     }
 
-    // Return 8 digit hex string
-    return `0000000${(hval >>> 0).toString(16)}`.substr(-8)
+// Can be used by JSON.stringify to serialize Map type objects
+// i.e. JSON.stringify({object with map}, mapReplacer)
+export function mapReplacer(key: any, value: any) {
+    if (value instanceof Map) {
+        return {
+            dataType: 'Map',
+            value: [...value]
+        }
+    } else {
+        return value
+    }
+}
+
+// Can be used JSON.stringify to de-serialize Map type objects
+// i.e. JSON.parse({object with map}, mapReviver)
+export function mapReviver(key: any, value: any) {
+    if (typeof value === 'object' && value !== null) {
+        if (value.dataType === 'Map') {
+            return new Map(value.value)
+        }
+    }
+    return value
 }

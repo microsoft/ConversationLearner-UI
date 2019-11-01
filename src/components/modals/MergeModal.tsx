@@ -11,6 +11,7 @@ import DialogMetadata from './DialogMetadata'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import './MergeModal.css'
+import { autobind } from 'core-decorators';
 
 interface ReceivedProps {
     onCancel: Function
@@ -49,21 +50,21 @@ class MergeModal extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
     onAddTag(tag: string) {
         this.setState(prevState => ({
             tags: [...prevState.tags, tag]
         }))
     }
 
-    @OF.autobind
+    @autobind
     onRemoveTag(tag: string) {
         this.setState(prevState => ({
             tags: prevState.tags.filter(t => t !== tag)
         }))
     }
 
-    @OF.autobind
+    @autobind
     onChangeDescription(description: string) {
         this.setState({
             description

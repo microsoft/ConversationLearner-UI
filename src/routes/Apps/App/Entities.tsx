@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 import * as React from 'react'
@@ -17,6 +17,7 @@ import FormattedMessageId from '../../../components/FormattedMessageId'
 import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import * as Util from '../../../Utils/util'
 import * as moment from 'moment'
+import { autobind } from 'core-decorators';
 
 interface IRenderableColumn extends OF.IColumn {
     render: (entity: EntityBase, component: Entities) => JSX.Element | JSX.Element[]
@@ -96,9 +97,9 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             }
         },
         {
-            key: 'isBucketable',
+            key: 'isMultivalue',
             name: intl.formatMessage({
-                id: FM.ENTITIES_COLUMNS_IS_BUCKETABLE,
+                id: FM.ENTITIES_COLUMNS_IS_MULTIVALUE,
                 defaultMessage: 'Multi-Value'
             }),
             fieldName: 'isMultivalue',
@@ -179,7 +180,7 @@ class Entities extends React.Component<Props, ComponentState> {
         this.focusNewEntityButton()
     }
 
-    @OF.autobind
+    @autobind
     handleDelete(entity: EntityBase) {
         this.setState({
             createEditModalOpen: false,
@@ -189,7 +190,7 @@ class Entities extends React.Component<Props, ComponentState> {
         setTimeout(() => this.focusNewEntityButton(), 1000)
     }
 
-    @OF.autobind
+    @autobind
     handleOpenCreateModal() {
         this.setState({
             createEditModalOpen: true,
@@ -197,7 +198,7 @@ class Entities extends React.Component<Props, ComponentState> {
         })
     }
 
-    @OF.autobind
+    @autobind
     handleCloseCreateModal() {
         this.setState({
             createEditModalOpen: false,
@@ -217,24 +218,27 @@ class Entities extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
     onClickColumnHeader(event: any, clickedColumn: IRenderableColumn) {
-        const { columns } = this.state;
-        const sortColumn = columns.find(c => c.key === clickedColumn.key)!
-        const isSortedDescending = !clickedColumn.isSortedDescending;
+        const sortColumn = this.state.columns.find(c => c.key === clickedColumn.key)!
+        const columns = this.state.columns.map(column => {
+            column.isSorted = false
+            column.isSortedDescending = false
+            if (column === sortColumn) {
+                column.isSorted = true
+                column.isSortedDescending = !clickedColumn.isSortedDescending
+            }
+            return column
+        })
 
         // Reset the items and columns to match the state.
         this.setState({
-            columns: columns.map(col => {
-                col.isSorted = (col.key === sortColumn.key);
-                col.isSortedDescending = isSortedDescending;
-                return col;
-            }),
+            columns,
             sortColumn
-        });
+        })
     }
 
-    @OF.autobind
+    @autobind
     getFilteredAndSortedEntities(): EntityBase[] {
         //runs when user changes the text or sort
         const lcString = this.state.searchValue.toLowerCase();
@@ -263,14 +267,24 @@ class Entities extends React.Component<Props, ComponentState> {
         return filteredEntities;
     }
 
-    @OF.autobind
-    onChange(newValue: string) {
-        // runs when user changes the text 
+    @autobind
+    onChangeSearchString(event?: React.ChangeEvent<HTMLInputElement>, newValue?: string) {
+        if (!newValue) {
+            return
+        }
+
+        this.onSearch(newValue)
+    }
+
+    @autobind
+    onSearch(newValue: string) {
+        // runs when user changes the text
         const lcString = newValue.toLowerCase();
         this.setState({
             searchValue: lcString
         })
     }
+
     render() {
         const { entities } = this.props
         const computedEntities = this.getFilteredAndSortedEntities()
@@ -333,8 +347,8 @@ class Entities extends React.Component<Props, ComponentState> {
                             <OF.SearchBox
                                 id="entities-input-search"
                                 className={OF.FontClassNames.mediumPlus}
-                                onChange={(newValue) => this.onChange(newValue)}
-                                onSearch={(newValue) => this.onChange(newValue)}
+                                onChange={this.onChangeSearchString}
+                                onSearch={this.onSearch}
                             />
                         </div>
                         <OF.DetailsList
@@ -342,13 +356,14 @@ class Entities extends React.Component<Props, ComponentState> {
                             items={computedEntities}
                             columns={this.state.columns}
                             checkboxVisibility={OF.CheckboxVisibility.hidden}
+                            onRenderRow={(props, defaultRender) => <div data-selection-invoke={true}>{defaultRender && defaultRender(props)}</div>}
                             onRenderItemColumn={(entity: EntityBase, i, column: IRenderableColumn) =>
                                 column.render(entity, this)}
                             onRenderDetailsHeader={(detailsHeaderProps: OF.IDetailsHeaderProps,
                                 defaultRender: OF.IRenderFunction<OF.IDetailsHeaderProps>) =>
                                 onRenderDetailsHeader(detailsHeaderProps, defaultRender)}
                             onColumnHeaderClick={this.onClickColumnHeader}
-                            onActiveItemChanged={entity => this.onSelectEntity(entity)}
+                            onItemInvoked={entity => this.onSelectEntity(entity)}
                         />
                     </React.Fragment>}
                 <EntityCreatorEditor

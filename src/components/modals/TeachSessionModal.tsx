@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 import * as React from 'react'
@@ -9,6 +9,7 @@ import * as Util from '../../Utils/util'
 import * as DialogUtils from '../../Utils/dialogUtils'
 import * as DialogEditing from '../../Utils/dialogEditing'
 import * as CLM from '@conversationlearner/models'
+import * as BB from 'botbuilder'
 import AddButtonInput from './AddButtonInput'
 import AddButtonScore from './AddButtonScore'
 import actions from '../../actions'
@@ -26,12 +27,11 @@ import { ErrorHandler } from '../../Utils/ErrorHandler'
 import { AT } from '../../types/ActionTypes'
 import { State, TeachSessionState } from '../../types'
 import { renderReplayError } from '../../Utils/RenderReplayError'
-import { Activity } from 'botframework-directlinejs'
 import { FM } from '../../react-intl-messages'
-import { SelectionType } from '../../types/const'
+import { EditDialogType, SelectionType, fromLogTag } from '../../types/const'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
-import { EditDialogType } from '.'
 import './TeachSessionModal.css'
+import { autobind } from 'core-decorators';
 
 interface ComponentState {
     isConfirmDeleteOpen: boolean,
@@ -48,7 +48,7 @@ interface ComponentState {
     // If activity selected its index
     selectedActivityIndex: number | null,
     // If activity was part of existing history, the actual item
-    selectedHistoryActivity: Activity | null,
+    selectedHistoryActivity: BB.Activity | null,
     // For handling button sumbits
     ignoreSelectionCount: number,
     replaceActivityText: string | null
@@ -105,12 +105,12 @@ class TeachModal extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
     onDismissError(errorType: AT): void {
         this.props.onClose(false)
     }
 
-    componentWillReceiveProps(newProps: Props) {
+    UNSAFE_componentWillReceiveProps(newProps: Props) {
 
         let webchatKey = this.state.webchatKey
         let hasTerminalAction = this.state.hasTerminalAction
@@ -198,14 +198,14 @@ class TeachModal extends React.Component<Props, ComponentState> {
     }
 
     //---- INIT STATE ----
-    @OF.autobind
+    @autobind
     onInitStateClicked() {
         this.setState({
             isInitStateOpen: true
         })
     }
 
-    @OF.autobind
+    @autobind
     async onCloseInitState(filledEntityMap: CLM.FilledEntityMap | null) {
         if (filledEntityMap && this.props.onSetInitialEntities) {
             await this.props.onSetInitialEntities(filledEntityMap)
@@ -217,7 +217,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
     }
 
     //---- ABANDON ----
-    @OF.autobind
+    @autobind
     async onClickAbandonTeach() {
         if (this.props.editType === EditDialogType.IMPORT) {
             this.setState({
@@ -233,12 +233,17 @@ class TeachModal extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
     onClickSave() {
-        this.props.onClose(true, this.state.tags, this.state.description, false)
+        const tags = [...this.state.tags]
+        if (this.props.editType === EditDialogType.LOG_EDITED) {
+            tags.push(fromLogTag)
+        }
+
+        this.props.onClose(true, tags, this.state.description, false)
     }
 
-    @OF.autobind
+    @autobind
     async onClickConfirmDelete(stopImport: boolean) {
         await Util.setStateAsync(this, {
             isConfirmDeleteOpen: false,
@@ -247,7 +252,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
         this.props.onClose(false, undefined, undefined, stopImport)
     }
 
-    @OF.autobind
+    @autobind
     onClickCancelDelete() {
         this.setState({
             isConfirmDeleteOpen: false,
@@ -259,7 +264,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
         this.props.toggleAutoTeach(isChecked);
     }
 
-    async onWebChatSelectActivity(activity: Activity) {
+    async onWebChatSelectActivity(activity: BB.Activity) {
 
         // If last action was button submit will generate two calls, ignore the selection
         if (this.state.ignoreSelectionCount > 0) {
@@ -288,8 +293,9 @@ class TeachModal extends React.Component<Props, ComponentState> {
         }
     }
 
-    async onWebChatPostActivity(activity: Activity) {
-        if (activity.type === 'message') {
+    async onWebChatPostActivity(activity: BB.Activity) {
+
+        if (activity.type === 'message' && activity.text && activity.text !== "") {
             if (!this.props.teachSession.teach) {
                 throw new Error(`Current teach session is not defined. This may be due to race condition where you attempted to chat with the bot before the teach session has been created.`)
             }
@@ -300,10 +306,10 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
             if (buttonSubmit) {
                 // For now always add button response to bottom of dialog even
-                // when card is selected.  In future  want to add below the 
+                // when card is selected.  In future  want to add below the
                 // selected card but webchat injects imback at bottom, which causes a jump
                 // Need to update webchat to change behavior when activity is selected to not send message
-                /*            
+                /*
                 // If selected was a selected, insert it
                 if (this.state.selectedActivityIndex) {
                     this.onSubmitAddUserInput(userInput.text)
@@ -355,7 +361,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
     }
 
     // TODO: this is redundant with EditDialogAdmin
-    @OF.autobind
+    @autobind
     getRenderData(): DialogUtils.DialogRenderData {
 
         if (this.state.selectedHistoryActivity === null || !this.props.sourceTrainDialog) {
@@ -370,7 +376,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
         return DialogUtils.getDialogRenderData(this.props.sourceTrainDialog, this.props.entities, this.props.actions, roundIndex, scoreIndex, senderType)
     }
 
-    @OF.autobind
+    @autobind
     onClickAddUserInput() {
         const isLastActivity = this.state.selectedActivityIndex === (this.state.nextActivityIndex - 1)
         const selectionType = isLastActivity ? SelectionType.NONE : SelectionType.NEXT
@@ -380,14 +386,14 @@ class TeachModal extends React.Component<Props, ComponentState> {
         })
     }
 
-    @OF.autobind
+    @autobind
     onCancelAddUserInput() {
         this.setState({
             isUserInputModalOpen: false
         })
     }
 
-    @OF.autobind
+    @autobind
     onClickUndoInput(): void {
         if (this.state.nextActivityIndex > 1) {
             // Replay dialog to get rid of input
@@ -402,7 +408,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
     onCloseBotAPIError(): void {
         // If first turn close the train dialog
         if (this.state.nextActivityIndex === 1) {
@@ -414,7 +420,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
     onSubmitAddUserInput(userInput: string) {
         this.setState({
             isUserInputModalOpen: false
@@ -424,7 +430,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
     onInsertAction() {
         if (this.state.selectedActivityIndex != null) {
             const isLastActivity = this.state.selectedActivityIndex === (this.state.nextActivityIndex - 1)
@@ -433,42 +439,42 @@ class TeachModal extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
     onDeleteTurn() {
         if (this.state.selectedActivityIndex != null) {
             this.props.onEditTeach(this.state.selectedActivityIndex, null, this.state.tags, this.state.description, this.props.onDeleteTurn)
         }
     }
 
-    @OF.autobind
+    @autobind
     onEditExtraction(extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) {
         if (this.state.selectedActivityIndex != null) {
             this.props.onEditTeach(this.state.selectedActivityIndex, { extractResponse, textVariations }, this.state.tags, this.state.description, this.props.onChangeExtraction)
         }
     }
 
-    @OF.autobind
+    @autobind
     onEditScore(trainScorerStep: CLM.TrainScorerStep) {
         if (this.state.selectedActivityIndex != null) {
             this.props.onEditTeach(this.state.selectedActivityIndex, { trainScorerStep }, this.state.tags, this.state.description, this.props.onChangeAction)
         }
     }
 
-    @OF.autobind
+    @autobind
     onAddTag(tag: string) {
         this.setState(prevState => ({
             tags: [...prevState.tags, tag]
         }))
     }
 
-    @OF.autobind
+    @autobind
     onRemoveTag(tag: string) {
         this.setState(prevState => ({
             tags: prevState.tags.filter(t => t !== tag)
         }))
     }
 
-    @OF.autobind
+    @autobind
     onChangeDescription(description: string) {
         this.setState({
             description
@@ -479,8 +485,8 @@ class TeachModal extends React.Component<Props, ComponentState> {
         return renderActivity(activityProps, children, setRef, this.renderSelectedActivity, this.props.editType, this.state.selectedActivityIndex != null)
     }
 
-    @OF.autobind
-    renderSelectedActivity(activity: Activity): (JSX.Element | null) {
+    @autobind
+    renderSelectedActivity(activity: BB.Activity): (JSX.Element | null) {
 
         if (this.state.selectedActivityIndex === null) {
             return null
@@ -584,13 +590,14 @@ class TeachModal extends React.Component<Props, ComponentState> {
         this.props.setWebchatScrollPosition(position)
     }
 
-    @OF.autobind
+    @autobind
     onScoredAction(scoredAction: CLM.ScoredAction) {
         this.setState({
             hasTerminalAction: scoredAction.isTerminal,
             nextActivityIndex: this.state.nextActivityIndex + 1
         })
-        if (scoredAction.actionType === CLM.ActionTypes.END_SESSION) {
+        if (scoredAction.actionType === CLM.ActionTypes.END_SESSION
+            || scoredAction.actionType === CLM.ActionTypes.CHANGE_MODEL) {
             this.props.onEndSessionActivity(this.state.tags, this.state.description)
         }
     }
@@ -612,7 +619,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
             && this.state.selectedActivityIndex !== null)
     }
 
-    @OF.autobind
+    @autobind
     renderWebchatInput(): JSX.Element | null {
         if (this.shouldShowScoreButton() && this.state.selectedActivityIndex != null) {
             return (
@@ -688,6 +695,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                                     selectedActivityIndex={this.state.selectedActivityIndex}
                                     replaceActivityText={this.state.replaceActivityText}
                                     replaceActivityIndex={this.state.replaceActivityIndex}
+                                    disableCardActions={this.props.teachSession.dialogMode === CLM.DialogMode.EndSession}
                                 />
                                 {chatDisable}
                             </div>
@@ -783,7 +791,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                         open={this.state.isImportAbandonOpen}
                         onCancel={this.onClickCancelDelete}
                         onConfirm={this.onClickConfirmDelete}
-                        isLastImport={this.props.importIndex === this.props.importCount}
+                        allowContinue={this.props.importIndex !== this.props.importCount}
                     />
                     <ConfirmCancelModal
                         data-testid="teach-session-confirm-cancel"
@@ -801,6 +809,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                     }
                     <UserInputModal
                         titleFM={FM.USERINPUT_ADD_TITLE}
+                        placeholderFM={FM.USERINPUT_PLACEHOLDER}
                         open={this.state.isUserInputModalOpen}
                         onCancel={() => { this.onCancelAddUserInput() }}
                         onSubmit={this.onSubmitAddUserInput}
@@ -840,12 +849,12 @@ const mapStateToProps = (state: State) => {
 export interface ReceivedProps {
     isOpen: boolean
     onClose: (save: boolean, tags?: string[], description?: string, stopImport?: boolean) => void
-    onEditTeach: (historyIndex: number | null, args: DialogEditing.EditHandlerArgs | null, tags: string[], description: string, editHandler: (trainDialog: CLM.TrainDialog, activity: Activity, args: DialogEditing.EditHandlerArgs) => any) => void
-    onInsertAction: (trainDialog: CLM.TrainDialog, activity: Activity, args: DialogEditing.EditHandlerArgs) => any
-    onInsertInput: (trainDialog: CLM.TrainDialog, activity: Activity, args: DialogEditing.EditHandlerArgs) => any
-    onChangeExtraction: (trainDialog: CLM.TrainDialog, activity: Activity, args: DialogEditing.EditHandlerArgs) => any
-    onChangeAction: (trainDialog: CLM.TrainDialog, activity: Activity, args: DialogEditing.EditHandlerArgs) => any
-    onDeleteTurn: (trainDialog: CLM.TrainDialog, activity: Activity) => any
+    onEditTeach: (historyIndex: number | null, args: DialogEditing.EditHandlerArgs | null, tags: string[], description: string, editHandler: (trainDialog: CLM.TrainDialog, activity: BB.Activity, args: DialogEditing.EditHandlerArgs) => any) => void
+    onInsertAction: (trainDialog: CLM.TrainDialog, activity: BB.Activity, args: DialogEditing.EditHandlerArgs) => any
+    onInsertInput: (trainDialog: CLM.TrainDialog, activity: BB.Activity, args: DialogEditing.EditHandlerArgs) => any
+    onChangeExtraction: (trainDialog: CLM.TrainDialog, activity: BB.Activity, args: DialogEditing.EditHandlerArgs) => any
+    onChangeAction: (trainDialog: CLM.TrainDialog, activity: BB.Activity, args: DialogEditing.EditHandlerArgs) => any
+    onDeleteTurn: (trainDialog: CLM.TrainDialog, activity: BB.Activity) => any
     onEndSessionActivity: (tags: string[], description: string) => any
     onReplayDialog: (trainDialog: CLM.TrainDialog) => any
     onSetInitialEntities: ((initialFilledEntityMap: CLM.FilledEntityMap) => Promise<void>) | null
@@ -859,7 +868,7 @@ export interface ReceivedProps {
     // Train Dialog that this edit originally came from (not same as sourceTrainDialog)
     originalTrainDialogId: string | null,
     // When editing, the initial history before teach starts
-    initialHistory: Activity[]
+    initialHistory: BB.Activity[]
     lastAction: CLM.ActionBase | null
     allUniqueTags: string[]
     importIndex?: number

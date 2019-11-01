@@ -48,7 +48,7 @@ describe('Description and Tags - Train Dialog', () => {
         // Note the tags and description
         // Open it
         // Verify tags and description are the same as shown in the list
-        train.EditTrainingNEW('Test Scenario', 'TagX')
+        train.EditTrainingByDescriptionAndTags('Test Scenario', 'TagX')
         train.VerifyDescription('Test Scenario')
         train.VerifyTags(['TagX'])
       })
@@ -65,7 +65,7 @@ describe('Description and Tags - Train Dialog', () => {
         train.AddTags(['TagY'])
         train.AbandonDialog()
 
-        train.EditTrainingNEW('Test Scenario', 'TagX')
+        train.EditTrainingByDescriptionAndTags('Test Scenario', 'TagX')
         train.VerifyDescription('Test Scenario')
         train.VerifyTags(['TagX'])
       })
@@ -81,7 +81,7 @@ describe('Description and Tags - Train Dialog', () => {
         train.AddTags(['TagY'])
         train.SaveAsIsVerifyInGrid()
 
-        train.EditTrainingNEW('Edited Test Scenario', 'TagXTagY')
+        train.EditTrainingByDescriptionAndTags('Edited Test Scenario', 'TagXTagY')
         train.VerifyDescription('Edited Test Scenario')
         train.VerifyTags(['TagX', 'TagY'])
       })

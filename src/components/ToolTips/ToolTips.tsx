@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 import * as React from 'react'
@@ -19,9 +19,13 @@ export enum TipType {
     ACTION_API3 = 'actionAPI3',
     ACTION_ARGUMENTS = 'actionArguments',
     ACTION_CARD = 'actionCard',
+    ACTION_CHANGE_MODEL = 'actionChangeModel',
+    ACTION_DELETE_INUSE = 'actionDeleteInUse',
     ACTION_END_SESSION = 'actionEndSession',
     ACTION_ENTITIES = 'actionEntities',
+    ACTION_IS_ENTRY_NODE = 'isEntryNode',
     ACTION_NEGATIVE = 'negativeEntities',
+    ACTION_REPROMPT = 'actionReprompt',
     ACTION_REQUIRED = 'requiredEntities',
     ACTION_RESPONSE = 'actionResponse',
     ACTION_RESPONSE_TEXT = 'actionResponseText',
@@ -31,7 +35,8 @@ export enum TipType {
     ACTION_SET_ENTITY_VALUE = 'actionSetEntityValue',
     ACTION_TYPE = 'actionType',
     ACTION_WAIT = 'isTerminal',
-    ACTION_DELETE_INUSE = 'actionDeleteInUse',
+
+    DISPATCHER_CREATOR_ALGORITHM_TYPE = 'dispatcherCreatorAlgorithmType',
 
     EDITDIALOGMODAL_UNKNOWN_NEED_REPLAY = "EDITDIALOGMODAL_UNKNOWN_NEED_REPLAY",
     EDITDIALOGMODAL_WARNING_NEED_REPLAY = "EDITDIALOGMODAL_WARNING_NEED_REPLAY",
@@ -41,13 +46,14 @@ export enum TipType {
     ENTITY_EXTRACTOR_HELP = 'entityExtractorHelp',
     ENTITY_EXTRACTOR_TEXTVARIATION = 'entityExtractorTextVariation',
     ENTITY_EXTRACTOR_WARNING = 'extractorWarning',
-    ENTITY_MULTIVALUE = 'isBucketable',
+    ENTITY_MULTIVALUE = 'isMultivalue',
     ENTITY_NAME = 'entityName',
     ENTITY_NEGATABLE = 'isNegatable',
     ENTITY_PROGAMMATIC = 'isProgrammatic',
     ENTITY_TYPE = 'entityType',
     ENTITY_VALUE = 'entityValues',
     ENTITY_RESOLVER = 'entityResolver',
+    ENTITY_RESOLVER_RESOLUTION_REQUIRED = 'isResolutionRequired',
 
     EXPORT_CHOICE = 'EXPORT_CHOICE',
 
@@ -59,7 +65,7 @@ export enum TipType {
 
     MEMORY_CONVERTER = 'memoryConverter',
     MEMORY_MANAGER = 'memoryManager',
- 
+
     MODEL_VERSION_EDITING = 'modelVersionEditing',
     MODEL_VERSION_LIVE = 'modelVersionLIve',
 
@@ -72,7 +78,7 @@ export enum TipType {
     REPLAYERROR_DESC_API_BADCARD = "REPLAYERROR_DESC_API_BADCARD",
     REPLAYERROR_DESC_API_EXCEPTION = "REPLAYERROR_DESC_API_EXCEPTION",
     REPLAYERROR_DESC_API_MALFORMED = "REPLAYERROR_DESC_API_MALFORMED",
-    REPLAYERROR_DESC_API_STUB = "REPLAYERROR_DESC_API_STUB",
+    REPLAYERROR_DESC_API_PLACEHOLDER = "REPLAYERROR_DESC_API_PLACEHOLDER",
     REPLAYERROR_DESC_API_UNDEFINED = "REPLAYERROR_DESC_API_UNDEFINED",
     REPLAYERROR_DESC_ENTITY_UNDEFINED = "REPLAYERROR_DESC_ENTITY_UNDEFINED",
     REPLAYERROR_DESC_ENTITY_EMPTY = "REPLAYERROR_DESC_ENTITY_EMPTY",
@@ -80,7 +86,7 @@ export enum TipType {
     REPLAYERROR_DESC_ACTION_UNDEFINED = "REPLAYERROR_DESC_ACTION_UNDEFINED",
     REPLAYERROR_DESC_ACTION_STUB = "REPLAYERROR_DESC_ACTION_STUB",
 
-    STUB_API = 'STUB_API',
+    PLACEHOLDER_API = 'PLACEHOLDER_API',
 
     TRANSCRIPT_IMPORTER = 'transcriptImporter'
 }
@@ -146,8 +152,8 @@ const memoryConverterSample =
     `
     AS_VALUE_LIST       returns MemoryValue[]
     AS_STRING           returns string
-    AS_STRING_LIST      returns string[] 
-    AS_NUMBER           returns number 
+    AS_STRING_LIST      returns string[]
+    AS_NUMBER           returns number
     AS_NUMBER_LIST      returns  number[]
     AS_BOOLEAN          returns boolean
     AS_BOOLEAN_LIST     returns boolean[]`
@@ -165,7 +171,7 @@ const memoryManagerSample =
     // SET
     memoryManager.Set(entityName: string, true)
     i.e. memoryManager.Set("toppings", ["cheese", "peppers"])
-   
+
     // DELETE
     memoryManager.Delete(entityName: string, value?: string): void
     memoryManager.DeleteAll(saveEntityNames: string[]): void
@@ -203,6 +209,15 @@ export function getTip(tipType: string) {
             return render(FM.TOOLTIP_ACTION_ARGUMENTS_TITLE, [FM.TOOLTIP_ACTION_ARGUMENTS])
         case TipType.ACTION_CARD:
             return render(FM.TOOLTIP_ACTION_CARD_TITLE, [FM.TOOLTIP_ACTION_CARD])
+        case TipType.ACTION_CHANGE_MODEL:
+            return (
+                <div>
+                    <div className={OF.FontClassNames.mediumPlus}>Change Model</div>
+                    <p>
+                        Forward the user input to another model and make that model the active model to receive all future input in conversation.
+                    </p>
+                </div>
+            )
         case TipType.ACTION_END_SESSION:
             return render(FM.TOOLTIP_ACTION_END_SESSION_TITLE, [FM.TOOLTIP_ACTION_END_SESSION])
         case TipType.ACTION_SET_ENTITY:
@@ -230,7 +245,7 @@ export function getTip(tipType: string) {
                     <p><FormattedMessageId id={FM.TOOLTIP_ACTION_SET_ENTITY} /></p>
                 </div>
             )
-            // return render(FM.TOOLTIP_ACTION_SET_ENTITY_TITLE, [FM.TOOLTIP_ACTION_SET_ENTITY])
+        // return render(FM.TOOLTIP_ACTION_SET_ENTITY_TITLE, [FM.TOOLTIP_ACTION_SET_ENTITY])
         case TipType.ACTION_ENTITIES:
             return (
                 <div>
@@ -286,6 +301,10 @@ export function getTip(tipType: string) {
                     { key: 'Response:', value: FM.TOOLTIP_ACTION_DISQUAL_ROW3 },
                     { key: 'Disqualifying:', value: FM.TOOLTIP_ACTION_DISQUAL_ROW4 }
                 ]);
+        case TipType.ACTION_REPROMPT:
+            return render(FM.TOOLTIP_ACTION_REPROMPT_TITLE, [FM.TOOLTIP_ACTION_REPROMPT]);
+        case TipType.ACTION_IS_ENTRY_NODE:
+            return render(FM.TOOLTIP_ACTION_IS_ENTRY_NODE_TITLE, [FM.TOOLTIP_ACTION_IS_ENTRY_NODE]);
         case TipType.ACTION_REQUIRED:
             return render(
                 FM.TOOLTIP_ACTION_REQUIRED_TITLE,
@@ -399,7 +418,12 @@ export function getTip(tipType: string) {
                     />
                 </div>
             )
-
+        case TipType.DISPATCHER_CREATOR_ALGORITHM_TYPE:
+            return (
+                <div>
+                    <h2>Dispatcher Algorithm Type</h2>
+                </div>
+            )
         case TipType.EDITDIALOGMODAL_UNKNOWN_NEED_REPLAY:
             return (
                 <div>
@@ -533,7 +557,37 @@ export function getTip(tipType: string) {
                     />
                 </div>
             )
+        case TipType.ENTITY_RESOLVER_RESOLUTION_REQUIRED:
+            return (
+                <div>
+                    <h2>Resolution Required</h2>
 
+                    <h3>What does it do?</h3>
+                    <p>This option requires that a resolution is available for the label.</p>
+
+                    <h3>When to use?</h3>
+                    <p>Select this option if the entity only makes sense with concrete resolved value.</p>
+
+                    <h3>Details</h3>
+                    <p>When a <HelpLink label="Resolver Type" tipType={TipType.ENTITY_RESOLVER} /> is added to an entity any matching resolution type predicted within the labels boundaries will be promoted to that entity; however, if no resolution was available the label is still valid and will exist. This is more flexible but means you cannot rely on the resolution and any code must not be dependent on that data.</p>
+
+                    <h3>Example:</h3>
+                    <p>Imagine scenario where all your trainings have labeled numbers such as below.</p>
+                    <img
+                        className="cl-panelimage"
+                        src="https://blisstorage.blob.core.windows.net/uiimages/ToolTip_ENTITY_RESOLVER_RESOLUTION_REQUIRED_01.png"
+                        width="50%"
+                        alt="Entity Labeling"
+                    />
+                    <p>When running dialogs through your bot the entities always have number resolution. This can mislead you into thinking it will work in all cases. However, the entity extraction can learn to label based on word sequence and such as words preceeding 'fruit' or 'vegetable' should be labeled regardless if the label can be resolvable to a number. This can result in phrases from users like 'many' or 'a lot' which are appropriate before 'fruits' or 'vegetables' to be labeled even though they cannot be resolved into a number. You can use this "Resolution Required" option to disallow this case and remove these labels without resolution.</p>
+                    <img
+                        className="cl-panelimage"
+                        src="https://blisstorage.blob.core.windows.net/uiimages/TooTip_ENTITY_RESOLVER_RESOLUTION_REQUIRED_02.png"
+                        width="80%"
+                        alt="Resolution Required"
+                    />
+                </div>
+            )
         case TipType.EXPORT_CHOICE:
             return (
                 <div>
@@ -763,14 +817,14 @@ export function getTip(tipType: string) {
                 </div>
             )
 
-        case TipType.REPLAYERROR_DESC_API_STUB:
+        case TipType.REPLAYERROR_DESC_API_PLACEHOLDER:
             return (
                 <div>
-                    <h2>Error: API call is just a stub</h2>
+                    <h2>Error: API call is just a placeholder</h2>
                     <p>Ways to fix:</p>
                     <ol>
-                        <li>Delete the API stub</li>
-                        <li>Replace Stub will an actual API call</li>
+                        <li>Delete the placeholder</li>
+                        <li>Replace placeholder will an actual API call</li>
                     </ol>
                     <div><br />More about <HelpLink label="API callbacks" tipType={TipType.ACTION_API1} /></div>
                 </div>
@@ -899,14 +953,14 @@ export function getTip(tipType: string) {
                 </div>
             )
 
-        case TipType.STUB_API:
+        case TipType.PLACEHOLDER_API:
             return (
                 <div>
-                    <h2>Stub APIs</h2>
-                    <p>Stub APIs can be used as placeholders for real API calls.  This can be useful if you want to define your conversation flow before writing any code.</p>
-                    <p>In an API Stub you specify what should be in the Bot's memory after the API is called.</p>
-                    <p>For example, you may need an API call to check whether an item is in stock (say for a pizza bot).  Your temporary stub call can move an item from the "Toppings" Entity to the "OutOfStock" Entity </p>
-                    <p>API Stubs must be replaced with actual API callbacks for your Bot to function.</p>
+                    <h2>Placeholder APIs</h2>
+                    <p>Placeholder APIs can be used as placeholders for real API calls.  This can be useful if you want to define your conversation flow before writing any code.</p>
+                    <p>In a placeholder you specify what should be in the Bot's memory after the API is called.</p>
+                    <p>For example, you may need an API call to check whether an item is in stock (say for a pizza bot).  Your temporary placeholder call can move an item from the "Toppings" Entity to the "OutOfStock" Entity </p>
+                    <p>Placeholders must be replaced with actual API callbacks for your Bot to function.</p>
                     <div><br />More about <HelpLink label="API callbacks" tipType={TipType.ACTION_API1} /></div>
                 </div>
             )

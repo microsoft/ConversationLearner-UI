@@ -25,16 +25,16 @@ describe('Bot Missing API - ErrorHandling', () => {
   context('Validation', () => {
     it('Should verify that Home link/panel shows an IncidentTriangle and an error message', () => {
       modelPage.VerifyHomeLinkShowsIncidentTriangle()
-      modelPage.HomePanel_VerifyErrorMessage('Please check that the correct version of your Bot is running.')
+      helpers.VerifyErrorMessageContains('Please check that the correct version of your Bot is running.')
     })
     
     it('Should verify the Action grid shows an IncidentTriangle', () => {
       modelPage.NavigateToActions()
-      new actionsGrid.Row('API', 'RandomGreeting').VerifyIncidentTriangle()
+      new actionsGrid.Row('API', 'RandomGreetinglogic(memoryManager)render(result, memoryManager)').VerifyIncidentTriangle()
     })
     
     it('Should edit the Action and verify it contains the expected error message', () => {
-      actionsGrid.EditApiAction('RandomGreeting')
+      actionsGrid.EditApiAction('RandomGreetinglogic(memoryManager)render(result, memoryManager)')
       actionModal.VerifyErrorMessage('ERROR: Bot Missing Callback: RandomGreeting')
       actionModal.ClickCancelButton()
     })
@@ -46,7 +46,7 @@ describe('Bot Missing API - ErrorHandling', () => {
 
     it('Should verify the Train Dialog shows error and warning messages', () => {
       train.EditTraining('Lets have that greeting.', 'How about some text?', 'Just a simple text action...')
-      train.VerifyChatTurnIsAnExactMatch('ERROR: API callback with name “RandomGreeting” is not defined', 6, 1)
+      train.VerifyChatTurnIsAnExactMatch('ERROR: API callback with name "RandomGreeting" is not defined', 6, 1)
       train.VerifyWarningMessage('Running Bot not compatible with this Model')
     })
     
@@ -73,15 +73,15 @@ describe('Bot Missing API - ErrorHandling', () => {
   })
 
   context('Fix Broken Model - Delete Action with Missing API', () => {
-    it('Should delete the action uses the missing API', () => {
+    it('Should delete the action that uses the missing API', () => {
       modelPage.NavigateToActions()
-      actions.DeleteAction('RandomGreeting', 'API')
+      actions.DeleteActionThatIsUsedByATrainDialog('RandomGreetinglogic(memoryManager)render(result, memoryManager)', 'API')
     })
 
     it('Should verify that Home link/panel no longer shows an IncidentTriangle and nor the error message', () => {
       modelPage.NavigateToHome()
       modelPage.VerifyHomeLinkDoesNotShowIncidentTriangle()
-      modelPage.HomePanel_VerifyNoErrorMessages()
+      helpers.VerifyNoErrorMessages()
     })
     
     it('Should verify that the New Train Dialog button is enabled', () => {

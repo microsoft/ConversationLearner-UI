@@ -1,8 +1,9 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 import * as CLM from '@conversationlearner/models'
+import { OBIImportData } from '../Utils/obiUtils'
 import { PartialTrainDialog } from '../types/models'
 import { TipType } from '../components/ToolTips/ToolTips'
 import { ErrorType } from './const'
@@ -48,6 +49,7 @@ export type UpdateAction = {
     type: AT.EDIT_TRAINDIALOG_MERGE_FULFILLED
 } | {
     type: AT.EDIT_TRAINDIALOG_REPLACE_ASYNC
+    enableSpinner: boolean
 } | {
     type: AT.EDIT_TRAINDIALOG_REPLACE_FULFILLED,
     updatedTrainDialog: CLM.TrainDialog,
@@ -73,6 +75,9 @@ export type UpdateAction = {
 } | {
     type: AT.SETTINGS_UPDATE_PORT,
     port: number
+} | {
+    type: AT.SETTINGS_UPDATE_FEATURES,
+    features: string
 } | {
     type: AT.SETTINGS_RESET
 } | {
@@ -190,22 +195,20 @@ export type FetchAction = {
     type: AT.FETCH_TRAIN_DIALOGS_FULFILLED,
     allTrainDialogs: CLM.TrainDialog[],
 } | {
-    type: AT.FETCH_HISTORY_ASYNC,
-    appId: string,
-    userName: string,
-    userId: string,
-    trainDialog: CLM.TrainDialog
+    type: AT.FETCH_ACTIVITIES_ASYNC,
+    noSpinnerDisplay: boolean
 } | {
-    type: AT.FETCH_HISTORY_FULFILLED,
-    teachWithHistory: CLM.TeachWithHistory,
+    type: AT.FETCH_ACTIVITIES_FULFILLED,
+    teachWithActivities: CLM.TeachWithActivities,
 } | {
     type: AT.FETCH_LOG_DIALOG_ASYNC,
-    appId: string,
-    logDialogId: string
+    noSpinnerDisplay: boolean
 } | {
     type: AT.FETCH_LOG_DIALOG_FULFILLED,
     logDialog: CLM.LogDialog,
     replaceLocal: boolean
+} | {
+    type: AT.FETCH_LOG_DIALOG_NOTFOUND
 } | {
     type: AT.FETCH_LOG_DIALOGS_ASYNC,
     appId: string,
@@ -262,24 +265,24 @@ export type FetchAction = {
 } | {
     type: AT.FETCH_ACTION_EDIT_VALIDATION_FULFILLED
 } | {
-    type: AT.FETCH_SCOREFROMHISTORY_ASYNC,
+    type: AT.FETCH_SCOREFROMTRAINDIALOG_ASYNC,
     appId: string,
     trainDialog: CLM.TrainDialog
 } | {
-    type: AT.FETCH_SCOREFROMHISTORY_FULFILLED,
+    type: AT.FETCH_SCOREFROMTRAINDIALOG_FULFILLED,
     uiScoreResponse: CLM.UIScoreResponse
 } | {
-    type: AT.FETCH_SCOREFROMHISTORY_REJECTED
+    type: AT.FETCH_SCOREFROMTRAINDIALOG_REJECTED
 } | {
-    type: AT.FETCH_EXTRACTFROMHISTORY_ASYNC,
+    type: AT.FETCH_EXTRACTFROMTRAINDIALOG_ASYNC,
     appId: string,
     trainDialog: CLM.TrainDialog,
     userInput: CLM.UserInput
 } | {
-    type: AT.FETCH_EXTRACTFROMHISTORY_FULFILLED,
+    type: AT.FETCH_EXTRACTFROMTRAINDIALOG_FULFILLED,
     extractResponse: CLM.ExtractResponse
 } | {
-    type: AT.FETCH_EXTRACTFROMHISTORY_REJECTED
+    type: AT.FETCH_EXTRACTFROMTRAINDIALOG_REJECTED
 } | {
     type: AT.FETCH_TRAINDIALOGREPLAY_ASYNC,
     appId: string,
@@ -313,6 +316,11 @@ export type FetchAction = {
     type: AT.FETCH_TRANSCRIPT_VALIDATION_ASYNC
 } | {
     type: AT.FETCH_TRANSCRIPT_VALIDATION_FULFILLED
+} | {
+    type: AT.REGENERATE_DISPATCH_DIALOGS_ASYNC,
+} | {
+    type: AT.REGENERATE_DISPATCH_DIALOGS_FULFILLED,
+    trainDialogs: CLM.TrainDialog[]
 }
 
 export type CreateAction = {
@@ -362,7 +370,8 @@ export type CreateAction = {
     logDialog: CLM.LogDialog,
 } | {
     type: AT.CREATE_APPLICATION_FULFILLED,
-    app: CLM.AppBase
+    app: CLM.AppBase,
+    obiImportData?: OBIImportData
 } | {
     type: AT.CREATE_CHAT_SESSION_ASYNC
 } | {
@@ -379,16 +388,16 @@ export type CreateAction = {
     teachSession: CLM.Teach,
     memories: CLM.Memory[]
 } | {
-    type: AT.CREATE_TEACH_SESSION_FROMHISTORY_ASYNC,
+    type: AT.CREATE_TEACH_SESSION_FROMTRAINDIALOG_ASYNC,
     appId: string,
     userName: string,
     userId: string,
     trainDialog: CLM.TrainDialog
 } | {
-    type: AT.CREATE_TEACH_SESSION_FROMHISTORY_FULFILLED,
-    teachWithHistory: CLM.TeachWithHistory
+    type: AT.CREATE_TEACH_SESSION_FROMTRAINDIALOG_FULFILLED,
+    teachWithActivities: CLM.TeachWithActivities
 } | {
-    type: AT.CREATE_TEACH_SESSION_FROMHISTORY_REJECTED
+    type: AT.CREATE_TEACH_SESSION_FROMTRAINDIALOG_REJECTED
 }
 
 export type DeleteAction = {
@@ -530,7 +539,7 @@ export type TeachAction = {
     key: string,
     appId: string,
     sessionId: string,
-    uiScoreResponse: CLM.UIScoreResponse
+    uiScoreResponse: CLM.UIScoreResponse,
 } | {
     type: AT.POST_SCORE_FEEDBACK_ASYNC,
     key: string,

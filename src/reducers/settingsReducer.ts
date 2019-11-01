@@ -16,6 +16,7 @@ export const initialState: SettingsState = {
     useCustomPort,
     botPort,
     customPort: ports.defaultBotPort,
+    features: ""
 }
 
 const settingsReducer: Reducer<SettingsState> = produce((state: SettingsState, action: ActionObject) => {
@@ -32,6 +33,9 @@ const settingsReducer: Reducer<SettingsState> = produce((state: SettingsState, a
                 state.botPort = state.customPort
             }
             return
+        case AT.SETTINGS_UPDATE_FEATURES:
+                state.features = action.features
+                return
         case AT.SETTINGS_TOGGLE_USE_CUSTOM_PORT:
             state.useCustomPort = !state.useCustomPort
             state.botPort = state.useCustomPort

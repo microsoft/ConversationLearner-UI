@@ -1,9 +1,8 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 import * as React from 'react'
-import * as OF from 'office-ui-fabric-react'
 import * as CLM from '@conversationlearner/models'
 import Plain from 'slate-plain-serializer'
 import CustomEntityNode from './CustomEntityNode'
@@ -15,6 +14,7 @@ import { Expando } from '../modals'
 import { IOption, IPosition, IEntityPickerProps, IGenericEntity, NodeType, IGenericEntityData, ExtractorStatus } from './models'
 import { convertEntitiesAndTextToTokenizedEditorValue, convertEntitiesAndTextToEditorValue, getRelativeParent, getEntitiesFromValueUsingTokenData, getSelectedText } from './utilities'
 import './ExtractorResponseEditor.css'
+import { autobind } from 'core-decorators';
 
 // Slate doesn't have type definitions but we still want type consistency and references so we make custom type
 export type SlateValue = any
@@ -63,10 +63,10 @@ const externalChangeOperations = ['insert_node', 'remove_node']
 
 /**
  * The higher level goal behind this component is for consumers to think of it like a normal controlled <input value={value} onChange={this.onChangeValue} />
- * However, instead of editing a simple string of text we are editing an extractorResponse object. Then it becomes easy to understand the 
+ * However, instead of editing a simple string of text we are editing an extractorResponse object. Then it becomes easy to understand the
  * abstractions and encapsulation.  Example: for normal <input /> the user can change cursor position and selection, but only when characters are changed,
  * does the onChange get called.  For the ExtractorResponse allows certain operations to change and only exposes the changes externally
- * 
+ *
  * The other important concept is the translation of state from the external domain to internal domain.  Externally the consumers know extractorResponses / entities
  * however internally it stores as generic options list and a Slate.js value object.
  */
@@ -86,7 +86,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
         }
     }
 
-    componentWillReceiveProps(nextProps: Props) {
+    UNSAFE_componentWillReceiveProps(nextProps: Props) {
         /**
          * This makes assumption that options that are added during the life-cycle of this component are likely
          * added via users clicking the New Entity item in the menu.  We can then simulate a change of custom entities
@@ -144,7 +144,8 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
             this.setState({
                 value: convertEntitiesAndTextToTokenizedEditorValue(nextProps.text, nextProps.customEntities, NodeType.CustomEntityNodeType),
                 preBuiltEditorValues: nextProps.preBuiltEntities.map<any[]>(preBuiltEntity => convertEntitiesAndTextToEditorValue(nextProps.text, [preBuiltEntity], NodeType.PreBuiltEntityNodeType)),
-                isSelectionOverlappingOtherEntities: false
+                isSelectionOverlappingOtherEntities: false,
+                isDeleteButtonVisible: false,
             })
             this.props.onClosePicker()
         }
@@ -207,7 +208,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
          * If the text you select has a prebuilt entity detected within same region
          * it opens the entity creator modal with that prebuilt type pre-selected to help prevent mismatches.
          * This means `entityTypeFilter` and `builtInTypeFilter` do need to remain a string since the pre-built types/names are not EntityTypes
-         * 
+         *
          * TODO: In future look at adding explicit resolver preset parameter and remove casting
          */
         let builtInTypeFilter: string | null = null
@@ -257,7 +258,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
         }
     }
 
-    @OF.autobind
+    @autobind
     onChange(change: any) {
         const { value, operations } = change
 
@@ -364,7 +365,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
         return undefined
     }
 
-    @OF.autobind
+    @autobind
     onDeleteButtonVisible(isDeleteButtonVisible: boolean): void {
         this.setState({ isDeleteButtonVisible })
     }
@@ -403,7 +404,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
         onChange(change)
     }
 
-    @OF.autobind
+    @autobind
     onClickNewEntity(entityTypeFilter: string) {
         if (this.props.isPickerVisible) {
             this.props.onClosePicker()
@@ -413,24 +414,49 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
 
     componentDidMount() {
         // For end 2 end unit testing.
-        document.addEventListener("Test_SelectWord", this.onTestSelectWord)
+        document.addEventListener("Test_SelectWord", this.onTestSelectWord as any)
     }
 
     componentWillUnmount() {
         // For end 2 end unit testing.
-        document.removeEventListener("Test_SelectWord", this.onTestSelectWord)
+        document.removeEventListener("Test_SelectWord", this.onTestSelectWord as any)
     }
 
-    // For end 2 end unit testing.
-    @OF.autobind
-    onTestSelectWord(val: any) {
-        const phrase: string = val.detail
+    /**
+     * For cypress end to end unit testing.  Event selects phrase in entity labeller
+     * The following will select the word "hello" in the second row (index is 0 based)
+     *   var event = new CustomEvent("Test_SelectWord", { detail: { phrase: "hello", index: 1 }})
+     *   event.initEvent("Test_SelectWord", true, true)}
+     *   element.dispatchEvent(event)
+     * 
+     * Or default to the first row:
+     *   var event = new CustomEvent("Test_SelectWord", { detail: "hello"})
+     *   event.initEvent("Test_SelectWord", true, true)}
+     *   element.dispatchEvent(event)
+     */
+    @autobind
+    onTestSelectWord(val: { detail: { phrase: string, index: number } } | { detail: string }) {
+        
+        if (!val.detail) {
+            throw new Error("Test_SelectWord expecting detail phrase")
+        }
+
+        const phrase: string = (typeof val.detail !== "string") ? val.detail.phrase : val.detail
+        const index: number = (typeof val.detail !== "string") ? val.detail.index : 0
+
         const words = phrase.split(" ")
         const firstWord = words[0]
         const lastWord = words[words.length - 1]
 
+        // Get row
+        const rows = Array.from(document.querySelectorAll('[data-testid="extractor-response-editor-entity-labeler"]'))
+        if (index > rows.length || index < 0) {
+            throw new Error("Row index does not exist")
+        }
+
+        const selectedRow = rows[index]
         // Get start div
-        const tokens = Array.from(document.querySelectorAll(".cl-token-node"))
+        const tokens = Array.from(selectedRow.querySelectorAll(".cl-token-node"))
         const firstWordToken = tokens.filter(element => element.children[0].textContent === firstWord)[0]
         const lastWordToken = tokens.filter(element => element.children[0].textContent === lastWord)[0]
 
@@ -506,7 +532,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
             })
 
         return (
-            <div className="entity-labeler">
+            <div className="entity-labeler" data-testid="extractor-response-editor-entity-labeler">
                 {(this.props.isPickerVisible || this.state.isDeleteButtonVisible) &&
                     <div
                         className="entity-labeler-overlay"

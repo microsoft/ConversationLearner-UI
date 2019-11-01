@@ -1,12 +1,11 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 import * as React from 'react'
 import './Picker.css'
 import { IOption } from './APEModels'
-import { MatchedOption } from '../../ExtractorResponseEditor/models'
-import FuseMatch from '../../ExtractorResponseEditor/FuseMatch'
+import { FuseMatch, MatchedOption } from '../../FuseMatch'
 
 interface Props {
     matchedOptions: MatchedOption<IOption>[]

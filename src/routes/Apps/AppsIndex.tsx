@@ -1,22 +1,23 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 import * as React from 'react'
-import {
-    Route,
-    Switch
-} from 'react-router-dom'
+import actions from '../../actions'
+import AppIndex from './App/Index'
+import AppsList from './AppsList'
+import { Route, Switch } from 'react-router-dom'
 import { RouteComponentProps } from 'react-router'
 import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { State } from '../../types'
-import { AppBase, AppDefinition } from '@conversationlearner/models'
-import actions from '../../actions'
-import AppIndex from './App/Index'
-import AppsList from './AppsList'
+import * as CLM from '@conversationlearner/models'
 import { CL_IMPORT_TUTORIALS_USER_ID } from '../../types/const'
+import { OBIImportData } from '../../Utils/obiUtils'
+import * as DispatchUtils from '../../Utils/dispatchUtils'
+import { SourceAndModelPair } from '../../types/models'
+import { DispatcherAlgorithmType } from '../../components/modals/DispatcherCreator';
 
 class AppsIndex extends React.Component<Props> {
     updateAppsAndBot() {
@@ -35,7 +36,7 @@ class AppsIndex extends React.Component<Props> {
         }
 
         const { history, location } = this.props
-        const appFromLocationState: AppBase | null = location.state && location.state.app
+        const appFromLocationState: CLM.AppBase | null = location.state && location.state.app
         if (appFromLocationState && this.props.apps && this.props.apps.length > 0) {
             const app = this.props.apps.find(a => a.appId === appFromLocationState.appId)
             if (!app) {
@@ -49,17 +50,39 @@ class AppsIndex extends React.Component<Props> {
         }
     }
 
-    onClickDeleteApp = (appToDelete: AppBase) => {
+    onClickDeleteApp = (appToDelete: CLM.AppBase) => {
         this.props.deleteApplicationThunkAsync(appToDelete.appId)
     }
 
-    onCreateApp = async (appToCreate: AppBase, source: AppDefinition | null = null) => {
-        const app: AppBase = await (this.props.createApplicationThunkAsync(this.props.user.id, appToCreate, source) as any as Promise<AppBase>)
+    onCreateApp = async (appToCreate: CLM.AppBase, source: CLM.AppDefinition | null = null, obiImportData?: OBIImportData) => {
+        const app = await (this.props.createApplicationThunkAsync(this.props.user.id, appToCreate, source, obiImportData) as any as Promise<CLM.AppBase>)
+        const { match, history } = this.props
+        history.push(`${match.url}/${app.appId}${obiImportData ? "/trainDialogs" : ""}`, { app })
+    }
+
+    onCreateDispatchModel = async (appToCreate: CLM.AppBase, childrenModels: CLM.AppBase[], algorithmType: DispatcherAlgorithmType) => {
+        appToCreate.metadata.markdown = `Dispatcher - Type: ${algorithmType}`
+
+        /**
+         * Fetch source and associate with each model
+         */
+        const childrenSourceModelPairs = await Promise.all(childrenModels.map<Promise<SourceAndModelPair>>(async model => {
+            const source = await (this.props.fetchAppSourceThunkAsync(model.appId, model.devPackageId) as any) as CLM.AppDefinition
+
+            return {
+                source,
+                model,
+                action: undefined
+            }
+        }))
+
+        const source = DispatchUtils.generateDispatcherSource(childrenSourceModelPairs, algorithmType)
+        const app = await (this.props.createApplicationThunkAsync(this.props.user.id, appToCreate, source) as any as Promise<CLM.AppBase>)
         const { match, history } = this.props
         history.push(`${match.url}/${app.appId}`, { app })
     }
 
-    onImportTutorial = (tutorial: AppBase) => {
+    onImportTutorial = (tutorial: CLM.AppBase) => {
         const srcUserId = CL_IMPORT_TUTORIALS_USER_ID;
         const destUserId = this.props.user.id;
 
@@ -79,6 +102,7 @@ class AppsIndex extends React.Component<Props> {
                         <AppsList
                             apps={this.props.apps}
                             onCreateApp={this.onCreateApp}
+                            onCreateDispatchModel={this.onCreateDispatchModel}
                             onClickDeleteApp={this.onClickDeleteApp}
                             onImportTutorial={(tutorial) => this.onImportTutorial(tutorial)}
                         />
@@ -92,10 +116,11 @@ class AppsIndex extends React.Component<Props> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         fetchApplicationsThunkAsync: actions.app.fetchApplicationsThunkAsync,
+        fetchAppSourceThunkAsync: actions.app.fetchAppSourceThunkAsync,
         fetchBotInfoThunkAsync: actions.bot.fetchBotInfoThunkAsync,
         createApplicationThunkAsync: actions.app.createApplicationThunkAsync,
         deleteApplicationThunkAsync: actions.app.deleteApplicationThunkAsync,
-        copyApplicationThunkAsync: actions.app.copyApplicationThunkAsync
+        copyApplicationThunkAsync: actions.app.copyApplicationThunkAsync,
     }, dispatch)
 }
 

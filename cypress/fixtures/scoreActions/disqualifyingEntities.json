@@ -1,0 +1,470 @@
+[
+  [
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "What's your name?",
+      "hasEntityValueNameToggle": false,
+      "type": "TEXT",
+      "score": "100.0%",
+      "entities": [
+        {
+          "name": "name",
+          "qualifierState": "GreenStrikeout"
+        }
+      ],
+      "wait": true
+    },
+    {
+      "buttonTestId": "action-scorer-button-no-click",
+      "response": "Hey $name",
+      "hasEntityValueNameToggle": false,
+      "type": "TEXT",
+      "score": "Disqualified",
+      "entities": [
+        {
+          "name": "name",
+          "qualifierState": "Red"
+        },
+        {
+          "name": "sweets",
+          "qualifierState": "GreenStrikeout"
+        },
+        {
+          "name": "want",
+          "qualifierState": "GreenStrikeout"
+        }
+      ],
+      "wait": true
+    },
+    {
+      "buttonTestId": "action-scorer-button-no-click",
+      "response": "Hey $name, what do you really want?",
+      "hasEntityValueNameToggle": false,
+      "type": "TEXT",
+      "score": "Disqualified",
+      "entities": [
+        {
+          "name": "name",
+          "qualifierState": "Red"
+        },
+        {
+          "name": "want",
+          "qualifierState": "GreenStrikeout"
+        },
+        {
+          "name": "sweets",
+          "qualifierState": "GreenStrikeout"
+        }
+      ],
+      "wait": true
+    },
+    {
+      "buttonTestId": "action-scorer-button-no-click",
+      "response": "Sorry $name, I can't help you get $want",
+      "hasEntityValueNameToggle": false,
+      "type": "TEXT",
+      "score": "Disqualified",
+      "entities": [
+        {
+          "name": "name",
+          "qualifierState": "Red"
+        },
+        {
+          "name": "want",
+          "qualifierState": "Red"
+        }
+      ],
+      "wait": true
+    }
+  ],
+  [
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "Hey Sam, what do you really want?",
+      "hasEntityValueNameToggle": true,
+      "type": "TEXT",
+      "score": "51.8%",
+      "entities": [
+        {
+          "name": "name",
+          "qualifierState": "Green"
+        },
+        {
+          "name": "want",
+          "qualifierState": "GreenStrikeout"
+        },
+        {
+          "name": "sweets",
+          "qualifierState": "GreenStrikeout"
+        }
+      ],
+      "wait": true
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "Hey Sam",
+      "hasEntityValueNameToggle": true,
+      "type": "TEXT",
+      "score": "48.2%",
+      "entities": [
+        {
+          "name": "name",
+          "qualifierState": "Green"
+        },
+        {
+          "name": "sweets",
+          "qualifierState": "GreenStrikeout"
+        },
+        {
+          "name": "want",
+          "qualifierState": "GreenStrikeout"
+        }
+      ],
+      "wait": true
+    },
+    {
+      "buttonTestId": "action-scorer-button-no-click",
+      "response": "What's your name?",
+      "hasEntityValueNameToggle": false,
+      "type": "TEXT",
+      "score": "Disqualified",
+      "entities": [
+        {
+          "name": "name",
+          "qualifierState": "RedStrikeout"
+        }
+      ],
+      "wait": true
+    },
+    {
+      "buttonTestId": "action-scorer-button-no-click",
+      "response": "Sorry Sam, I can't help you get $want",
+      "hasEntityValueNameToggle": true,
+      "type": "TEXT",
+      "score": "Disqualified",
+      "entities": [
+        {
+          "name": "name",
+          "qualifierState": "Green"
+        },
+        {
+          "name": "want",
+          "qualifierState": "Red"
+        }
+      ],
+      "wait": true
+    }
+  ],
+  [
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "Hey Sam, what do you really want?",
+      "hasEntityValueNameToggle": true,
+      "type": "TEXT",
+      "score": "50.9%",
+      "entities": [
+        {
+          "name": "name",
+          "qualifierState": "Green"
+        },
+        {
+          "name": "want",
+          "qualifierState": "GreenStrikeout"
+        },
+        {
+          "name": "sweets",
+          "qualifierState": "GreenStrikeout"
+        }
+      ],
+      "wait": true
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "Hey Sam",
+      "hasEntityValueNameToggle": true,
+      "type": "TEXT",
+      "score": "49.1%",
+      "entities": [
+        {
+          "name": "name",
+          "qualifierState": "Green"
+        },
+        {
+          "name": "sweets",
+          "qualifierState": "GreenStrikeout"
+        },
+        {
+          "name": "want",
+          "qualifierState": "GreenStrikeout"
+        }
+      ],
+      "wait": true
+    },
+    {
+      "buttonTestId": "action-scorer-button-no-click",
+      "response": "What's your name?",
+      "hasEntityValueNameToggle": false,
+      "type": "TEXT",
+      "score": "Disqualified",
+      "entities": [
+        {
+          "name": "name",
+          "qualifierState": "RedStrikeout"
+        }
+      ],
+      "wait": true
+    },
+    {
+      "buttonTestId": "action-scorer-button-no-click",
+      "response": "Sorry Sam, I can't help you get $want",
+      "hasEntityValueNameToggle": true,
+      "type": "TEXT",
+      "score": "Disqualified",
+      "entities": [
+        {
+          "name": "name",
+          "qualifierState": "Green"
+        },
+        {
+          "name": "want",
+          "qualifierState": "Red"
+        }
+      ],
+      "wait": true
+    }
+  ],
+  [
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "Sorry Sam, I can't help you get world peace",
+      "hasEntityValueNameToggle": true,
+      "type": "TEXT",
+      "score": "100.0%",
+      "entities": [
+        {
+          "name": "name",
+          "qualifierState": "Green"
+        },
+        {
+          "name": "want",
+          "qualifierState": "Green"
+        }
+      ],
+      "wait": true
+    },
+    {
+      "buttonTestId": "action-scorer-button-no-click",
+      "response": "Hey Sam",
+      "hasEntityValueNameToggle": true,
+      "type": "TEXT",
+      "score": "Disqualified",
+      "entities": [
+        {
+          "name": "name",
+          "qualifierState": "Green"
+        },
+        {
+          "name": "sweets",
+          "qualifierState": "GreenStrikeout"
+        },
+        {
+          "name": "want",
+          "qualifierState": "RedStrikeout"
+        }
+      ],
+      "wait": true
+    },
+    {
+      "buttonTestId": "action-scorer-button-no-click",
+      "response": "Hey Sam, what do you really want?",
+      "hasEntityValueNameToggle": true,
+      "type": "TEXT",
+      "score": "Disqualified",
+      "entities": [
+        {
+          "name": "name",
+          "qualifierState": "Green"
+        },
+        {
+          "name": "want",
+          "qualifierState": "RedStrikeout"
+        },
+        {
+          "name": "sweets",
+          "qualifierState": "GreenStrikeout"
+        }
+      ],
+      "wait": true
+    },
+    {
+      "buttonTestId": "action-scorer-button-no-click",
+      "response": "What's your name?",
+      "hasEntityValueNameToggle": false,
+      "type": "TEXT",
+      "score": "Disqualified",
+      "entities": [
+        {
+          "name": "name",
+          "qualifierState": "RedStrikeout"
+        }
+      ],
+      "wait": true
+    }
+  ],
+  [
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "What's your name?",
+      "hasEntityValueNameToggle": false,
+      "type": "TEXT",
+      "score": "100.0%",
+      "entities": [
+        {
+          "name": "name",
+          "qualifierState": "GreenStrikeout"
+        }
+      ],
+      "wait": true
+    },
+    {
+      "buttonTestId": "action-scorer-button-no-click",
+      "response": "Hey $name",
+      "hasEntityValueNameToggle": false,
+      "type": "TEXT",
+      "score": "Disqualified",
+      "entities": [
+        {
+          "name": "name",
+          "qualifierState": "Red"
+        },
+        {
+          "name": "sweets",
+          "qualifierState": "GreenStrikeout"
+        },
+        {
+          "name": "want",
+          "qualifierState": "RedStrikeout"
+        }
+      ],
+      "wait": true
+    },
+    {
+      "buttonTestId": "action-scorer-button-no-click",
+      "response": "Hey $name, what do you really want?",
+      "hasEntityValueNameToggle": false,
+      "type": "TEXT",
+      "score": "Disqualified",
+      "entities": [
+        {
+          "name": "name",
+          "qualifierState": "Red"
+        },
+        {
+          "name": "want",
+          "qualifierState": "RedStrikeout"
+        },
+        {
+          "name": "sweets",
+          "qualifierState": "GreenStrikeout"
+        }
+      ],
+      "wait": true
+    },
+    {
+      "buttonTestId": "action-scorer-button-no-click",
+      "response": "Sorry $name, I can't help you get a million dollars",
+      "hasEntityValueNameToggle": true,
+      "type": "TEXT",
+      "score": "Disqualified",
+      "entities": [
+        {
+          "name": "name",
+          "qualifierState": "Red"
+        },
+        {
+          "name": "want",
+          "qualifierState": "Green"
+        }
+      ],
+      "wait": true
+    }
+  ],
+  [
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "Sorry Sandeep, I can't help you get a million dollars",
+      "hasEntityValueNameToggle": true,
+      "type": "TEXT",
+      "score": "100.0%",
+      "entities": [
+        {
+          "name": "name",
+          "qualifierState": "Green"
+        },
+        {
+          "name": "want",
+          "qualifierState": "Green"
+        }
+      ],
+      "wait": true
+    },
+    {
+      "buttonTestId": "action-scorer-button-no-click",
+      "response": "Hey Sandeep",
+      "hasEntityValueNameToggle": true,
+      "type": "TEXT",
+      "score": "Disqualified",
+      "entities": [
+        {
+          "name": "name",
+          "qualifierState": "Green"
+        },
+        {
+          "name": "sweets",
+          "qualifierState": "GreenStrikeout"
+        },
+        {
+          "name": "want",
+          "qualifierState": "RedStrikeout"
+        }
+      ],
+      "wait": true
+    },
+    {
+      "buttonTestId": "action-scorer-button-no-click",
+      "response": "Hey Sandeep, what do you really want?",
+      "hasEntityValueNameToggle": true,
+      "type": "TEXT",
+      "score": "Disqualified",
+      "entities": [
+        {
+          "name": "name",
+          "qualifierState": "Green"
+        },
+        {
+          "name": "want",
+          "qualifierState": "RedStrikeout"
+        },
+        {
+          "name": "sweets",
+          "qualifierState": "GreenStrikeout"
+        }
+      ],
+      "wait": true
+    },
+    {
+      "buttonTestId": "action-scorer-button-no-click",
+      "response": "What's your name?",
+      "hasEntityValueNameToggle": false,
+      "type": "TEXT",
+      "score": "Disqualified",
+      "entities": [
+        {
+          "name": "name",
+          "qualifierState": "RedStrikeout"
+        }
+      ],
+      "wait": true
+    }
+  ]
+]

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 import * as React from 'react'
@@ -11,10 +11,7 @@ import MentionPlugin, { defaultPickerProps } from './MentionPlugin'
 import OptionalPlugin from './OptionalPlugin'
 import Picker from './Picker'
 import * as Utilities from './utilities'
-// TODO: Need to not have dependency outside of the current folder
-// Move these to shared location between the two editors
-import { FuseResult, MatchedOption } from '../../ExtractorResponseEditor/models'
-import { convertMatchedTextIntoMatchedOption } from '../../ExtractorResponseEditor/utilities'
+import { FuseResult, MatchedOption, convertMatchedTextIntoMatchedOption } from '../../FuseMatch'
 import './PayloadEditor.css'
 
 const fuseOptions: Fuse.FuseOptions = {
@@ -79,7 +76,7 @@ export default class PayloadEditor extends React.Component<Props, State> {
         ]
     }
 
-    componentWillReceiveProps(nextProps: Props) {
+    UNSAFE_componentWillReceiveProps(nextProps: Props) {
         if (this.props.options.length !== nextProps.options.length) {
             this.fuse = new Fuse(nextProps.options, fuseOptions)
         }

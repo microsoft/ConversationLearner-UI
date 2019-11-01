@@ -15,6 +15,7 @@
     grid-gap: 0.5em;
 }
 
-.cl-action-creator-form-section {
-    margin-top: 1em;
+.cl-tag-item-suggestion--add-condition {
+    background-color: white;
+    width: 100%;
 }

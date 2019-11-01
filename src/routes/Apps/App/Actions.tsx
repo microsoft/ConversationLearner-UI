@@ -16,6 +16,7 @@ import { ActionCreatorEditor } from '../../../components/modals'
 import { State } from '../../../types'
 import { FM } from '../../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
+import { autobind } from 'core-decorators';
 
 interface ComponentState {
     actionSelected: CLM.ActionBase | null
@@ -64,7 +65,7 @@ class Actions extends React.Component<Props, ComponentState> {
         })
     }
 
-    @OF.autobind
+    @autobind
     onClickCancelActionEditor() {
         this.setState({
             isActionEditorOpen: false,
@@ -74,7 +75,7 @@ class Actions extends React.Component<Props, ComponentState> {
         })
     }
 
-    @OF.autobind
+    @autobind
     async onClickDeleteActionEditor(action: CLM.ActionBase, removeFromDialogs: boolean) {
         await Utils.setStateAsync(this, {
             isActionEditorOpen: false,
@@ -85,7 +86,7 @@ class Actions extends React.Component<Props, ComponentState> {
         setTimeout(() => this.focusNewActionButton(), 1000)
     }
 
-    @OF.autobind
+    @autobind
     async onClickSubmitActionEditor(action: CLM.ActionBase) {
         const wasEditing = this.state.actionSelected
         await Utils.setStateAsync(this, {
@@ -114,7 +115,17 @@ class Actions extends React.Component<Props, ComponentState> {
         })
     }
 
-    onChangeSearchString(searchString: string) {
+    @autobind
+    onChangeSearchString(event?: React.ChangeEvent<HTMLInputElement>, newValue?: string) {
+        if (!newValue) {
+            return
+        }
+
+        this.onSearch(newValue)
+    }
+
+    @autobind
+    onSearch(searchString: string) {
         this.setState({
             searchValue: searchString.toLowerCase()
         })
@@ -182,8 +193,8 @@ class Actions extends React.Component<Props, ComponentState> {
                                 id="actions-input-search"
                                 data-testid="actions-input-search"
                                 className={OF.FontClassNames.mediumPlus}
-                                onChange={searchString => this.onChangeSearchString(searchString)}
-                                onSearch={searchString => this.onChangeSearchString(searchString)}
+                                onChange={this.onChangeSearchString}
+                                onSearch={this.onSearch}
                             />
                         </div>
                         <ActionDetailsList

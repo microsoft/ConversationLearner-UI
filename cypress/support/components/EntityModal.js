@@ -2,16 +2,18 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import * as popupModal from './PopupModal'
- import * as helpers from '../Helpers'
 
-export function ClickEntityType(type) { cy.Get(`button.ms-Dropdown-item`).contains(type).Click() }
+import * as popupModal from './PopupModal'
+import * as helpers from '../Helpers'
+
+export function ClickEntityType(type) { cy.Get(`button.ms-Dropdown-item[title="${type}"]`).Click() }
 export function TypeEntityName(entityName) { cy.Get('[data-testid="entity-creator-entity-name-text"]').type(entityName) }
 export function ClickEntityTypeDropdown() { cy.Get('[data-testid="entity-creator-entity-type-dropdown"]').Click() }
 export function VerifyEntityTypeDisabled() { cy.Get('[aria-disabled="true"][data-testid="entity-creator-entity-type-dropdown"]') }
 export function ClickCreateButton() { cy.Get('[data-testid="entity-creator-button-save"]').Click() }
 export function ClickDeleteButton() { cy.Get('[data-testid="entity-button-delete"]').Click() }
 export function ClickTrainDialogFilterButton() { cy.Get('[data-testid="entity-creator-component-train-dialog-filter-button"]').Click() }
+export function ClickCancelButton() { cy.Get('[data-testid="entity-button-cancel"]').Click() }
 
 export function ClickMultiValueCheckbox() { cy.Get('[data-testid="entity-creator-multi-valued-checkbox"] i[data-icon-name="CheckMark"]').Click() }
 export function ClickNegatableCheckbox() { cy.Get('[data-testid="entity-creator-negatable-checkbox"] i[data-icon-name="CheckMark"]').Click() }
@@ -45,3 +47,12 @@ export function VerifyEmptyGrid() {
     }
   })
 }
+
+export function TypeEnumValues(enumValues) {
+  cy.Get('[data-testid="entity-enum-value-value-name"]').then(elements => {
+    for (let i = 0; i < enumValues.length; i++) {
+      cy.wrap(elements[i]).type(`${enumValues[i]}{enter}`)
+    }
+  })
+}
+

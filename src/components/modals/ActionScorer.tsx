@@ -1,19 +1,20 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 import * as React from 'react';
 import * as ActionPayloadRenderers from '../actionPayloadRenderers'
 import * as CLM from '@conversationlearner/models'
-import * as OF from 'office-ui-fabric-react';
+import * as OF from 'office-ui-fabric-react'
 import * as Util from '../../Utils/util'
 import * as DialogEditing from '../../Utils/dialogEditing'
 import actions from '../../actions'
 import ConfirmCancelModal from './ConfirmCancelModal'
 import actionTypeRenderer from '../ActionTypeRenderer'
-import EditApiStub from '../modals/EditApiStub'
-import ActionCreatorEditor, { NewActionPreset } from './ActionCreatorEditor'
-import AdaptiveCardViewer , { getRawTemplateText } from './AdaptiveCardViewer/AdaptiveCardViewer'
+import EditApiPlaceholder from '../modals/EditApiPlaceholder'
+import ActionCreatorEditor from './ActionCreatorEditor'
+import AdaptiveCardViewer, { getRawTemplateText } from './AdaptiveCardViewer/AdaptiveCardViewer'
+import { ImportedAction } from '../../types/models'
 import { compareTwoStrings } from 'string-similarity'
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -23,6 +24,8 @@ import { onRenderDetailsHeader } from '../ToolTips/ToolTips'
 import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../react-intl-messages'
 import './ActionScorer.css'
+import { autobind } from 'core-decorators';
+import { getValueConditionName, findNumberFromMemory, isValueConditionTrue, isEnumConditionTrue } from '../../Utils/actionCondition'
 
 const MISSING_ACTION = 'missing_action'
 
@@ -30,12 +33,14 @@ interface ActionForRender extends CLM.ScoredBase {
     similarityScore?: number
     score?: number
     reason?: CLM.ScoreReason | null
+    repromptActionId?: string | undefined
 }
 
 interface IRenderableColumn extends OF.IColumn {
     getSortValue: (actionForRender: ActionForRender, component: ActionScorer) => number | string
-    render: (scoreBase: CLM.ScoredBase, component: ActionScorer, index: number) => React.ReactNode
+    render: (actionForRender: ActionForRender, component: ActionScorer, index: number) => React.ReactNode
 }
+
 
 function getColumns(intl: InjectedIntl): IRenderableColumn[] {
     return [
@@ -49,7 +54,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             getSortValue: action => action.actionId,
             render: (action, component, index) => {
 
-                // If I'm not in Teach or clicked on history item, highlight selected
+                // If I'm not in Teach or clicked on activity item, highlight selected
                 let selected = false
                 if (component.props.dialogType !== CLM.DialogType.TEACH || component.props.historyItemSelected) {
                     const score: number | string = (action as CLM.ScoredAction).score
@@ -128,46 +133,58 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                 if (action.actionType === CLM.ActionTypes.TEXT) {
                     const textAction = new CLM.TextAction(action)
                     return (
-                        <ActionPayloadRenderers.TextPayloadRendererContainer
+                        <ActionPayloadRenderers.TextPayloadRendererWithHighlights
                             textAction={textAction}
                             entities={component.props.entities}
                             memories={component.props.memories}
+                            showMissingEntities={true}
                         />)
                 }
                 else if (action.actionType === CLM.ActionTypes.API_LOCAL) {
                     const apiAction = new CLM.ApiAction(action)
                     const callback = component.props.botInfo.callbacks.find(t => t.name === apiAction.name)
                     return (
-                        <ActionPayloadRenderers.ApiPayloadRendererContainer
+                        <ActionPayloadRenderers.ApiPayloadRendererWithHighlights
                             apiAction={apiAction}
                             entities={component.props.entities}
                             memories={component.props.memories}
                             callback={callback}
+                            showMissingEntities={true}
                         />)
                 }
                 else if (action.actionType === CLM.ActionTypes.CARD) {
                     const cardAction = new CLM.CardAction(action)
                     return (
-                        <ActionPayloadRenderers.CardPayloadRendererContainer
+                        <ActionPayloadRenderers.CardPayloadRendererWithHighlights
                             isValidationError={false}
                             cardAction={cardAction}
                             entities={component.props.entities}
                             memories={component.props.memories}
                             onClickViewCard={(_, showOriginal) => component.onClickViewCard(action, showOriginal)}
+                            showMissingEntities={true}
                         />)
                 }
                 else if (action.actionType === CLM.ActionTypes.END_SESSION) {
                     const sessionAction = new CLM.SessionAction(action)
                     return (
-                        <ActionPayloadRenderers.SessionPayloadRendererContainer
+                        <ActionPayloadRenderers.SessionPayloadRendererWithHighlights
                             sessionAction={sessionAction}
                             entities={component.props.entities}
                             memories={component.props.memories}
+                            showMissingEntities={true}
                         />)
                 }
                 else if (action.actionType === CLM.ActionTypes.SET_ENTITY) {
                     const [name, value] = Util.setEntityActionDisplay(action, component.props.entities)
                     return <span data-testid="action-scorer-action-set-entity" className={OF.FontClassNames.mediumPlus}>{name}: {value}</span>
+                }
+                else if (action.actionType === CLM.ActionTypes.DISPATCH) {
+                    const dispatchAction = new CLM.DispatchAction(action)
+                    return <span data-testid="action-scorer-action-dispatch" className={OF.FontClassNames.mediumPlus}>Dispatch to model: {dispatchAction.modelName}</span>
+                }
+                else if (action.actionType === CLM.ActionTypes.CHANGE_MODEL) {
+                    const changeModelAction = new CLM.ChangeModelAction(action)
+                    return <span data-testid="action-scorer-action-change-model" className={OF.FontClassNames.mediumPlus}>Change to model: {changeModelAction.modelName}</span>
                 }
 
                 return <span className={OF.FontClassNames.mediumPlus}>{CLM.ActionBase.GetPayload(action, defaultEntityMap)}</span>
@@ -187,7 +204,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                 let score: number | undefined
 
                 // If an import action, sort by string similarity to existing actions
-                if (component.props.newActionPreset) {
+                if (component.props.importedAction) {
                     score = actionForRender.similarityScore || 0
                 }
                 else {
@@ -225,7 +242,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                         fieldContent = "Disqualified";
                     }
                 }
-                return <span className={OF.FontClassNames.mediumPlus}>{fieldContent}</span>
+                return <span className={OF.FontClassNames.mediumPlus} data-testid="action-scorer-score">{fieldContent}</span>
             }
         },
         {
@@ -249,7 +266,17 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             render: action => <OF.Icon
                 iconName={(action.isTerminal ? "CheckMark" : "Remove")}
                 className={`cl-icon${action.isTerminal ? " checkIcon" : " notFoundIcon"}`}
+                data-testid="action-scorer-wait"
             />
+        },
+        {
+            key: 'actionReprompt',
+            name: Util.formatMessageId(intl, FM.ACTIONDETAILSLIST_COLUMNS_REPROMPT),
+            fieldName: 'actionReprompt',
+            minWidth: 70,
+            isResizable: false,
+            getSortValue: action => action.repromptActionId !== undefined ? 'a' : 'b',
+            render: action => <OF.Icon iconName={action.repromptActionId !== undefined ? 'CheckMark' : 'Remove'} className="cl-icon" data-testid="action-details-wait" />
         },
         {
             key: 'actionType',
@@ -269,8 +296,8 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
 
 interface ComponentState {
     isActionCreatorModalOpen: boolean
-    apiStubName: string | null
-    apiStubCreatorFilledEntityMap: CLM.FilledEntityMap | null
+    apiPlaceholderName: string | null
+    apiPlaceholderCreatorFilledEntityMap: CLM.FilledEntityMap | null
     columns: OF.IColumn[]
     actionForRender: CLM.ScoredBase[]
     sortColumn: IRenderableColumn
@@ -289,8 +316,8 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         const columns = getColumns(this.props.intl)
         this.state = {
             isActionCreatorModalOpen: false,
-            apiStubName: null,
-            apiStubCreatorFilledEntityMap: null,
+            apiPlaceholderName: null,
+            apiPlaceholderCreatorFilledEntityMap: null,
             columns,
             actionForRender: [],
             sortColumn: columns[2], // "score"
@@ -306,6 +333,13 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             await this.autoSelect()
             this.setState({
                 haveEdited: false,
+                actionForRender: this.getActionsForRender()
+            })
+        }
+
+        // If new Entity was added (possibly Enum) recompute to generate new SET_ENTITY actions
+        if (this.props.entities.length > prevProps.entities.length) {
+            this.setState({
                 actionForRender: this.getActionsForRender()
             })
         }
@@ -354,7 +388,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
     focusPrimaryButton(): void {
         if (this.primaryScoreButtonRef.current) {
             this.primaryScoreButtonRef.current.focus();
@@ -374,14 +408,16 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         this.props.onActionCreatorClosed()
     }
 
+    @autobind
     async onClickSubmitActionEditor(action: CLM.ActionBase) {
-        await Util.setStateAsync(this, { actionModalOpen: false })
+        await Util.setStateAsync(this, { isActionCreatorModalOpen: false })
         this.props.onActionCreatorClosed()
 
         const newAction = await ((this.props.createActionThunkAsync(this.props.app.appId, action) as any) as Promise<CLM.ActionBase>)
         if (newAction
             && (
-                newAction.actionType === CLM.ActionTypes.END_SESSION
+                (newAction.actionType === CLM.ActionTypes.END_SESSION
+                    || newAction.actionType === CLM.ActionTypes.CHANGE_MODEL)
                     ? this.props.isEndSessionAvailable
                     : true
             )
@@ -394,7 +430,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
     handleOpenActionModal() {
         this.setState({
             isActionCreatorModalOpen: true
@@ -402,32 +438,32 @@ class ActionScorer extends React.Component<Props, ComponentState> {
     }
 
     //-------------------
-    // API Stub Creator
+    // API Placeholder Creator
     //-------------------
-    @OF.autobind
-    onOpenAPIStubCreator(apiStubName: string | null = null) {
+    @autobind
+    onOpenAPIPlaceholderCreator(placeholder: string | null = null) {
         this.setState({
-            apiStubName,
-            apiStubCreatorFilledEntityMap: CLM.FilledEntityMap.FromFilledEntities(this.props.scoreInput.filledEntities, this.props.entities)
+            apiPlaceholderName: placeholder,
+            apiPlaceholderCreatorFilledEntityMap: CLM.FilledEntityMap.FromFilledEntities(this.props.scoreInput.filledEntities, this.props.entities)
         })
     }
 
-    @OF.autobind
-    async onCloseCreateAPIStub(filledEntityMap: CLM.FilledEntityMap | null, apiName: string, isTerminal: boolean) {
+    @autobind
+    async onCloseCreateAPIPlaceholder(filledEntityMap: CLM.FilledEntityMap | null, apiName: string, isTerminal: boolean) {
         this.setState({
-            apiStubName: null,
-            apiStubCreatorFilledEntityMap: null
+            apiPlaceholderName: null,
+            apiPlaceholderCreatorFilledEntityMap: null
         })
         // If user cancelled
         if (!filledEntityMap) {
             return
         }
-        const trainScorerStep = await DialogEditing.getStubScorerStep(apiName, isTerminal, this.props.app.appId, this.props.actions, filledEntityMap, this.props.createActionThunkAsync as any)
+        const trainScorerStep = await DialogEditing.getAPIPlaceholderScorerStep(apiName, isTerminal, this.props.app.appId, this.props.actions, filledEntityMap, this.props.createActionThunkAsync as any)
         this.setState({ haveEdited: true })
         this.props.onActionSelected(trainScorerStep)
     }
 
-    @OF.autobind
+    @autobind
     onColumnClick(event: any, column: any) {
         const { columns } = this.state;
         let isSortedDescending = column.isSortedDescending;
@@ -452,7 +488,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         });
     }
 
-    @OF.autobind
+    @autobind
     async handleDefaultSelection() {
         // Look for a valid action
         let scoredBase: CLM.ScoredBase | null = null
@@ -472,10 +508,10 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
     async handleReselectAction(scoredBase: CLM.ScoredBase) {
-        // If ApiStub let user reselect memory values
-        if (CLM.ActionBase.isStubbedAPI(scoredBase)) {
+        // If placeholder let user reselect memory values
+        if (CLM.ActionBase.isPlaceholderAPI(scoredBase)) {
             await this.handleActionSelection(scoredBase)
         }
         // Otherwise tell them it has already been selected
@@ -483,14 +519,14 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             this.showAlreadySelectedPopUp()
         }
     }
-    @OF.autobind
+    @autobind
     async handleActionSelection(scoredBase: CLM.ScoredBase) {
 
-        // If apiStub get stub data before selecting
-        if (CLM.ActionBase.isStubbedAPI(scoredBase)) {
+        // If placeholder get data before selecting
+        if (CLM.ActionBase.isPlaceholderAPI(scoredBase)) {
             const action = this.props.actions.find(a => a.actionId === scoredBase.actionId)
             if (action) {
-                this.onOpenAPIStubCreator(new CLM.ApiAction(action).name)
+                this.onOpenAPIPlaceholderCreator(new CLM.ApiAction(action).name)
             }
             return
         }
@@ -531,32 +567,66 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         this.props.onActionSelected(trainScorerStep)
     }
 
-    isConditionMet(condition: CLM.Condition): { match: boolean, name: string } {
-        const entity = this.props.entities.filter(e => e.entityId === condition.entityId)[0];
+    convertToScorerCondition(condition: CLM.Condition): { match: boolean, name: string } {
+        const entity = this.props.entities.find(e => e.entityId === condition.entityId)
 
         // If entity is null - there's a bug somewhere
         if (!entity) {
             return { match: false, name: 'ERROR' };
         }
 
-        const enumValue = entity.enumValues && entity.enumValues.find(ev => ev.enumValueId === condition.valueId)
-        const memory = this.props.memories.filter(m => m.entityName === entity.entityName)[0];
-        const match = memory !== undefined
-            && memory.entityValues[0]
-            && memory.entityValues[0].enumValueId === condition.valueId
-        return { match, name: `${entity.entityName} = ${enumValue ? enumValue.enumValue : "NOT FOUND"}` };
+        const memory = this.props.memories.find(m => m.entityName === entity.entityName)
+
+        // If EnumCondition
+        if (condition.valueId) {
+            const enumValue = entity.enumValues && entity.enumValues.find(ev => ev.enumValueId === condition.valueId)
+            const value = enumValue
+                ? enumValue.enumValue
+                : "NOT FOUND"
+
+            const match = memory !== undefined
+                && isEnumConditionTrue(condition, memory)
+
+            return {
+                match,
+                name: `${entity.entityName} == ${value}`
+            }
+        }
+        // If ValueCondition
+        else if (condition.value) {
+            const name = getValueConditionName(entity, condition)
+            let match = false
+            if (memory) {
+                const numberValue = findNumberFromMemory(memory, entity.isMultivalue)
+                if (numberValue) {
+                    match = isValueConditionTrue(condition, numberValue)
+                }
+            }
+
+            return {
+                match,
+                name
+            }
+        }
+        // Other conditions (StringCondition in future)
+        else {
+            return {
+                match: false,
+                name: `Unknown Condition Type`
+            }
+        }
     }
 
-    // Check if entity is in memory and return it's name 
+    // Check if entity is in memory and return it's name
     entityInMemory(entityId: string): { match: boolean, name: string } {
-        const entity = this.props.entities.filter(e => e.entityId === entityId)[0];
+        const entity = this.props.entities.find(e => e.entityId === entityId);
 
         // If entity is null - there's a bug somewhere
         if (!entity) {
             return { match: false, name: 'ERROR' };
         }
 
-        const memory = this.props.memories.filter(m => m.entityName === entity.entityName)[0];
+        const memory = this.props.memories.find(m => m.entityName === entity.entityName);
         return { match: (memory !== undefined), name: entity.entityName };
     }
 
@@ -565,7 +635,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             return null
         }
 
-        const action = this.props.actions.filter(a => a.actionId === actionId)[0];
+        const action = this.props.actions.find(a => a.actionId === actionId);
 
         // If action is null - there's a bug somewhere
         if (!action) {
@@ -595,7 +665,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         }
         if (action.requiredConditions) {
             for (const condition of action.requiredConditions) {
-                const result = this.isConditionMet(condition)
+                const result = this.convertToScorerCondition(condition)
                 items.push({
                     name: result.name,
                     neg: false,
@@ -607,7 +677,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         }
         if (action.negativeConditions) {
             for (const condition of action.negativeConditions) {
-                const result = this.isConditionMet(condition)
+                const result = this.convertToScorerCondition(condition)
                 items.push({
                     name: result.name,
                     neg: true,
@@ -624,8 +694,8 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                     if (!item) {
                         return null
                     }
-                    
-                    return <span className={item.type}>{item.neg ? (<del>{item.name}</del>) : item.name}</span>
+
+                    return <span className={item.type} data-testid="action-scorer-entities">{item.neg ? (<del>{item.name}</del>) : item.name}</span>
                 }}
             />
         )
@@ -685,7 +755,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         }
         if (action.requiredConditions) {
             for (const condition of action.requiredConditions) {
-                const result = this.isConditionMet(condition)
+                const result = this.convertToScorerCondition(condition)
                 if (!result.match) {
                     return false
                 }
@@ -693,7 +763,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         }
         if (action.negativeConditions) {
             for (const condition of action.negativeConditions) {
-                const result = this.isConditionMet(condition)
+                const result = this.convertToScorerCondition(condition)
                 if (result.match) {
                     return false
                 }
@@ -708,7 +778,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             || !unscoredAction.reason
             || unscoredAction.reason === CLM.ScoreReason.NotCalculated) {
 
-            const action = this.props.actions.filter((a: CLM.ActionBase) => a.actionId === unscoredAction.actionId)[0];
+            const action = this.props.actions.find(a => a.actionId === unscoredAction.actionId)
 
             // If action is null - there's a bug somewhere
             if (!action) {
@@ -725,15 +795,14 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         return (this.props.scoreInput.maskedActions && this.props.scoreInput.maskedActions.indexOf(actionId) > -1);
     }
 
-    @OF.autobind
-    renderItemColumn(action: CLM.ScoredBase, index: number, column: IRenderableColumn) {
+    @autobind
+    renderItemColumn(action: ActionForRender, index: number, column: IRenderableColumn) {
 
         // Handle deleted actions
         if (action.actionId === MISSING_ACTION) {
             if (column.key === 'select') {
-                const score: number | string = (action as CLM.ScoredAction).score
-                    
-                const buttonText = (this.props.dialogType !== CLM.DialogType.TEACH && score === 1) ? "Selected" : "Select";
+
+                const buttonText = (this.props.dialogType !== CLM.DialogType.TEACH && action.score === 1) ? "Selected" : "Select";
                 return (
                     <OF.PrimaryButton
                         disabled={true}
@@ -742,7 +811,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                     />
                 )
             } else if (column.key === 'actionResponse') {
-                if (this.props.newActionPreset) {
+                if (this.props.importedAction) {
                     return <span className="cl-font--warning cl-action-scorer-warning">IMPORTED ACTION</span>;
                 }
                 else {
@@ -773,7 +842,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
 
     // Calculate distance between imported bot action and given action
     calcSimilarity(scoredBase: CLM.ScoredBase): number {
-        if (!this.props.newActionPreset || scoredBase.actionId === MISSING_ACTION) {
+        if (!this.props.importedAction || scoredBase.actionId === MISSING_ACTION) {
             return 0
         }
         const defaultEntityMap = Util.getDefaultEntityMap(this.props.entities)
@@ -789,7 +858,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                 actionText = getRawTemplateText(template, renderedActionArguments)
             }
         }
-        return compareTwoStrings(actionText, this.props.newActionPreset.text)
+        return compareTwoStrings(actionText, this.props.importedAction.text)
     }
 
     getActionsForRender(): ActionForRender[] {
@@ -820,7 +889,8 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             ({
                 ...action,
                 reason: CLM.ScoreReason.NotCalculated,
-                score: 0
+                score: 0,
+                repromptActionId: action.repromptActionId
             }))
 
         scoredItems = [...scoredItems, ...missingItems]
@@ -855,10 +925,10 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         scoredItems = [...scoredItems, ...missingSetEntityItems]
 
         // If imported action selected, pre-calculate sort scores
-        if (this.props.newActionPreset) { 
+        if (this.props.importedAction) {
             scoredItems = scoredItems.map(si => ({
                 ...si,
-                similarityScore: this.calcSimilarity(si), 
+                similarityScore: this.calcSimilarity(si),
             }))
         }
 
@@ -916,13 +986,14 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                         </div>
                         <div>
                             <OF.PrimaryButton
+                                data-testid="action-scorer-add-action-button"
                                 text="Create Action"
                                 iconProps={{ iconName: 'Add' }}
                                 onClick={this.handleOpenActionModal}
                             />
                         </div>
                     </div>
-                    : 
+                    :
                     <div>
                         <div className="cl-modal-buttons_primary">
                             <OF.DefaultButton
@@ -936,39 +1007,41 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                             <OF.DefaultButton
                                 data-testid="action-scorer-add-apistub-button"
                                 disabled={!this.props.canEdit}
-                                onClick={() => this.onOpenAPIStubCreator()}
-                                ariaDescription='Create API Stub'
-                                text='API Stub'
+                                onClick={() => this.onOpenAPIPlaceholderCreator()}
+                                ariaDescription='Create API Placeholder'
+                                text='API Placeholder'
                                 iconProps={{ iconName: 'Handwriting' }}
                             />
                         </div>
-                    <OF.DetailsList
-                        className={OF.FontClassNames.mediumPlus}
-                        items={this.state.actionForRender}
-                        columns={this.state.columns}
-                        checkboxVisibility={OF.CheckboxVisibility.hidden}
-                        onRenderItemColumn={this.renderItemColumn}
-                        onColumnHeaderClick={this.onColumnClick}
-                        onRenderDetailsHeader={(
-                            detailsHeaderProps: OF.IDetailsHeaderProps,
-                            defaultRender: OF.IRenderFunction<OF.IDetailsHeaderProps>) =>
-                            onRenderDetailsHeader(detailsHeaderProps, defaultRender)}
-                    />
+                        <OF.DetailsList
+                            className={OF.FontClassNames.mediumPlus}
+                            items={this.state.actionForRender}
+                            columns={this.state.columns}
+                            checkboxVisibility={OF.CheckboxVisibility.hidden}
+                            onRenderItemColumn={this.renderItemColumn}
+                            onColumnHeaderClick={this.onColumnClick}
+                            onRenderDetailsHeader={(
+                                detailsHeaderProps: OF.IDetailsHeaderProps,
+                                defaultRender: OF.IRenderFunction<OF.IDetailsHeaderProps>) =>
+                                onRenderDetailsHeader(detailsHeaderProps, defaultRender)}
+                        />
                     </div>
                 }
 
-                <ActionCreatorEditor
-                    app={this.props.app}
-                    editingPackageId={this.props.editingPackageId}
-                    open={this.state.isActionCreatorModalOpen}
-                    action={null}
-                    actions={this.props.actions}
-                    newActionPreset={this.props.newActionPreset}
-                    handleClose={() => this.onClickCancelActionEditor()}
-                    // It is not possible to delete from this modal since you cannot select existing action so disregard implementation of delete 
-                    handleDelete={action => { }}
-                    handleEdit={action => this.onClickSubmitActionEditor(action)}
-                />
+                {this.state.isActionCreatorModalOpen &&
+                    <ActionCreatorEditor
+                        app={this.props.app}
+                        editingPackageId={this.props.editingPackageId}
+                        open={true}
+                        action={null}
+                        actions={this.props.actions}
+                        importedAction={this.props.importedAction}
+                        handleClose={() => this.onClickCancelActionEditor()}
+                        // It is not possible to delete from this modal since you cannot select existing action so disregard implementation of delete
+                        handleDelete={action => { }}
+                        handleEdit={action => this.onClickSubmitActionEditor(action)}
+                    />
+                }
                 <AdaptiveCardViewer
                     open={this.state.cardViewerAction != null}
                     onDismiss={() => this.onCloseCardViewer()}
@@ -982,25 +1055,25 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                     onOk={this.onCloseAlreadySelectedPopUp}
                     title={Util.formatMessageId(intl, FM.LOGDIALOGS_ALREADYSELECTED)}
                 />
-                <EditApiStub
-                    isOpen={this.state.apiStubCreatorFilledEntityMap != null}
+                <EditApiPlaceholder
+                    isOpen={this.state.apiPlaceholderCreatorFilledEntityMap != null}
                     app={this.props.app}
                     actions={this.props.actions}
                     editingPackageId={this.props.editingPackageId}
-                    apiStubName={this.state.apiStubName}
-                    initMemories={this.state.apiStubCreatorFilledEntityMap}
-                    handleClose={this.onCloseCreateAPIStub}
+                    placeholderName={this.state.apiPlaceholderName}
+                    initMemories={this.state.apiPlaceholderCreatorFilledEntityMap}
+                    handleClose={this.onCloseCreateAPIPlaceholder}
                 />
             </div>
         )
     }
 
-    @OF.autobind
+    @autobind
     showAlreadySelectedPopUp() {
         this.setState({ isAlreadySelectedOpen: true })
     }
 
-    @OF.autobind
+    @autobind
     onCloseAlreadySelectedPopUp() {
         this.setState({ isAlreadySelectedOpen: false })
     }
@@ -1019,7 +1092,7 @@ export interface ReceivedProps {
     memories: CLM.Memory[],
     canEdit: boolean,
     isEndSessionAvailable: boolean,
-    newActionPreset?: NewActionPreset 
+    importedAction?: ImportedAction
     onActionSelected: (trainScorerStep: CLM.TrainScorerStep) => void,
     onActionCreatorClosed: () => void
 }

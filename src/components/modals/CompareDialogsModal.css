@@ -1,9 +1,18 @@
 .cl-compare-dialogs-modal {
     height: 100%;
-    display: grid;
-    grid-template-columns: 475px 475px;
-    grid-column-gap: 0.5em;
     overflow-y: hidden;
+    overflow-x: auto;
+    width: 100%;
+    white-space: nowrap;
+}
+
+.cl-compare-dialogs-channel {
+    width: 475px;
+    display: inline-block;
+    height: 100%;
+    white-space: normal;
+    margin-left: 2px;
+    margin-right: 2px;
 }
 
 .cl-compare-dialogs-webchat {
@@ -14,12 +23,67 @@
 
 .cl-compare-dialogs-title {
     font-size: 20px;
-    text-align: center;
     height: 50px;
     line-height: 50px;
+    padding-left: 15px;
+}
+
+.cl-compare-dialogs-title-icon-win {
+    color: green;
+    font-size: 30px;
+    padding-right: 10px;
+    float: left;
+}
+
+.cl-compare-dialogs-title-icon-equal {
+    color: var(--color-yellow-darkest);
+    font-size: 30px;
+    padding-right: 10px;
+    float: left;
+}
+
+.cl-compare-dialogs-filename {
+    overflow: hidden;
+    line-height: 30px;
+    max-width: 460px;
+    -o-text-overflow: ellipsis;
+    text-overflow: ellipsis;
+    font-size: 12px;
+    margin-top: -8px;
+    white-space: nowrap;
+    opacity: 0.4;
+    position: absolute;
+    right: 10px;
 }
 
 .cl-modal.cl-modal--compare-dialogs {
-    width: 965px;
     height: 96%;
+}
+
+.cl-compare-dialogs--bodysmall {
+    margin-left: 60px;
+}
+
+.cl-compare-dialogs-small {
+    width: 600px;
+}
+
+.cl-compare-dialogs-med {
+    width: 965px;
+}
+
+.cl-compare-dialogs-large {
+    width: 1437px;
+}
+
+.cl-compare-dialogs-overhang {
+    width: 1537px;
+}
+
+.cl-modal.cl-modal--compare-dialogs > * {
+    grid-template-rows: 1fr min-content;
+}
+
+.cl-modal.cl-modal--compare-dialogs .cl-modal_footer {
+    padding: 1em;
 }

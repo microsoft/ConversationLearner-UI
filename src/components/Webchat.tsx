@@ -3,17 +3,17 @@
  * Licensed under the MIT License.
  */
 import * as React from 'react'
+import * as BotChat from '@conversationlearner/webchat'
+import * as CLM from '@conversationlearner/models'
+import * as BB from 'botbuilder'
+import actions from '../actions'
 import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { State } from '../types'
-import * as BotChat from '@conversationlearner/webchat'
-import * as CLM from '@conversationlearner/models'
 import { BehaviorSubject, Observable, Subscription } from 'rxjs'
-import { Activity, Message } from 'botframework-directlinejs'
-import { EditDialogType } from './modals/.'
-import actions from '../actions'
-import { BOT_HOST_NAME } from '../types/const'
+import { Message } from 'botframework-directlinejs'
+import { BOT_HOST_NAME, EditDialogType } from '../types/const'
 
 const SUBMIT_KEY = 'submit'
 
@@ -21,9 +21,11 @@ export function renderActivity(
     activityProps: BotChat.WrappedActivityProps,
     children: React.ReactNode,
     setRef: (div: HTMLDivElement | null) => void,
-    renderSelected: ((activity: Activity) => JSX.Element | null) | null,
+    renderSelected: ((activity: BB.Activity) => React.ReactNode | null) | null,
     editType: EditDialogType,
     shouldRenderHighlight: boolean,
+    padding?: number,
+    hidden?: boolean,
 ): JSX.Element {
 
     const timeLine = <span> {activityProps.fromMe ? "User" : "Bot"}</span>;
@@ -41,6 +43,7 @@ export function renderActivity(
     let messageColor = `wc-message-color-${activityProps.fromMe ? userFillColor : 'bot'}`
     let messageFillColor = `wc-message-fillcolor-${activityProps.fromMe ? userFillColor : 'bot'}`
     let messageBorder = ''
+
     if (clData) {
         if (clData.replayError) {
             if (clData.replayError.errorLevel === CLM.ReplayErrorLevel.WARNING) {
@@ -60,19 +63,31 @@ export function renderActivity(
         wrapperClassName += ` wc-message-selected`
     }
 
+    const baseStyle = {}
+    if (padding) {
+        // User can pass in padding to align activities
+        baseStyle['paddingBottom'] = padding
+    }
+    if (hidden) {
+        baseStyle['visibility'] = 'hidden'
+    }
+
     return (
         <div
             data-activity-id={activityProps.activity.id}
             className={wrapperClassName}
             onClick={activityProps.onClickActivity}
             role="button"
+            style={baseStyle}
         >
             <div
                 className={`wc-message wc-message-from-${who} ${messageColor} ${messageBorder}`}
                 ref={div => setRef(div)}
                 data-testid="web-chat-utterances"
             >
-                <div className='wc-message-content'>
+                <div 
+                    className='wc-message-content'
+                >
                     <svg className={`wc-message-callout ${messageFillColor}`}>
                         <path className="point-left" d="m0,6 l6 6 v-12 z" />
                         <path className="point-right" d="m6,6 l-6 6 v-12 z" />
@@ -80,7 +95,7 @@ export function renderActivity(
                     {children}
                 </div>
             </div>
-            {activityProps.selected && renderSelected && renderSelected(activityProps.activity)}
+            {activityProps.selected && renderSelected && renderSelected(activityProps.activity as BB.Activity)}
             {clData && clData.validWaitAction !== undefined ?
                 (
                     <svg className="wc-message-downarrow">
@@ -132,7 +147,7 @@ class Webchat extends React.Component<Props> {
         }
     }
 
-    componentWillReceiveProps(nextProps: Props) {
+    UNSAFE_componentWillReceiveProps(nextProps: Props) {
         if (this.props.history !== nextProps.history) {
             if (this.props.history.length > 0 || nextProps.history.length > 0) {
                 this.chatProps = null;
@@ -149,7 +164,7 @@ class Webchat extends React.Component<Props> {
             this.behaviorSubject = new BehaviorSubject<any>({});
             this.subscription = this.behaviorSubject.subscribe((value) => {
                 if (value.activity) {
-                    this.props.onSelectActivity(value.activity as Activity)
+                    this.props.onSelectActivity(value.activity as BB.Activity)
                 }
             })
         }
@@ -190,7 +205,7 @@ class Webchat extends React.Component<Props> {
             }
 
             if (this.props.history.length > 0) {
-                botConnection.activity$ = Observable.from(this.props.history).concat(dl.activity$)
+                botConnection.activity$ = Observable.from(this.props.history).concat(dl.activity$) as any
             }
 
             dl.connectionStatus$.subscribe((status) => this.getConversationId(status));
@@ -228,6 +243,7 @@ class Webchat extends React.Component<Props> {
         chatProps.hideInput = this.props.hideInput
         chatProps.focusInput = this.props.focusInput
         chatProps.onScrollChange = this.props.onScrollChange
+        chatProps.onActivityHeight = this.props.onActivityHeight
         chatProps.initialScrollPosition = this.props.initialScrollPosition
         chatProps.renderActivity = this.props.renderActivity
         chatProps.renderInput = this.props.renderInput
@@ -269,15 +285,17 @@ const mapStateToProps = (state: State, ownProps: any) => {
 export interface ReceivedProps {
     isOpen: boolean,
     app: CLM.AppBase | null,
-    history: Activity[],
+    history: BB.Activity[],
     hideInput: boolean,
     focusInput: boolean,
     // Disable message sent via direct line
     disableDL?: boolean,
-    onSelectActivity: (a: Activity) => void,
-    onPostActivity: (a: Activity) => void,
+    onSelectActivity: (a: BB.Activity) => void,
+    onPostActivity: (a: BB.Activity) => void,
     onScrollChange?: (position: number) => void,
     renderActivity?: (props: BotChat.WrappedActivityProps, children: React.ReactNode, setRef: (div: HTMLDivElement | null) => void) => (JSX.Element | null)
+    // Called when rendered height of an activity changes
+    onActivityHeight?: (index: number, height: number) => void
     renderInput?: () => JSX.Element | null
     // Used to select activity from outside webchat
     selectedActivityIndex?: number | null

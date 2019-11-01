@@ -1,5 +1,5 @@
 import * as helpers from './Helpers.js'
-import * as modelPage from './components/ModelPage'
+import * as trainingStatus from './components/TrainingStatus'
 
 declare global {
   namespace Cypress {
@@ -8,6 +8,7 @@ declare global {
       ConLog: () => Chainable
       WaitForStableDOM: () => Chainable
       WaitForTrainingStatusCompleted: () => Chainable
+      Enqueue: typeof enqueue
     }
   }
 }
@@ -69,39 +70,26 @@ const uploadFile = (fileName: string, selector: string) => {
 
 Cypress.Commands.add('UploadFile', uploadFile)
 
-// This function operates similar to the "cy.contains" command except that it expects
+// These functions operates similar to the "cy.contains" command except that it expects
 // the text content of the elements to contain an EXACT MATCH to the expected text.
-Cypress.Commands.add('ExactMatch', { prevSubject: 'element' }, (elements, expectedText) => {
-  helpers.ConLog(`ExactMatch('${expectedText}')`, `Start`)
-  for (let i = 0; i < elements.length; i++) {
-    const elementText = helpers.TextContentWithoutNewlines(elements[i])
-    helpers.ConLog(`ExactMatch('${expectedText}')`, `elementText: '${elementText}'`)
-    if (elementText === expectedText) return elements[i]
-  }
-  throw new Error(`Exact Match '${expectedText}' NOT Found`)
+Cypress.Commands.add('ExactMatch', { prevSubject: 'element' }, (elements, expectedText) => { 
+  const matchingElements = helpers.ExactMatch(elements, expectedText)
+  if (matchingElements.length == 0) { throw new Error(`Exact Match '${expectedText}' NOT Found`) }
+  return matchingElements
 })
 
-Cypress.Commands.add('ExactMatches', { prevSubject: 'element' }, (elements, expectedText) => {
-  helpers.ConLog(`ExactMatches('${expectedText}')`, `Start`)
-  let returnElements = []
-  for (let i = 0; i < elements.length; i++) {
-    const elementText = helpers.TextContentWithoutNewlines(elements[i])
-    helpers.ConLog(`ExactMatches('${expectedText}')`, `elementText: '${elementText}'`)
-    if (elementText === expectedText) returnElements.push(elements[i])
-  }
-  return returnElements
-})
+Cypress.Commands.add('ExactMatches', { prevSubject: 'element' }, (elements, expectedText) => { return helpers.ExactMatches(elements, expectedText) })
 
 Cypress.Commands.add("WaitForTrainingStatusCompleted", () => {
-  // The cy.get call made within modelPage.WaitForTrainingStatusCompleted() needs
-  // the document object which is why we need to wrap it.
   cy.log('WaitForTrainingStatusCompleted')
-  cy.wrap(cy.document, { timeout: 120000 }).should(() => { return modelPage.WaitForTrainingStatusCompleted() })
+  cy.Enqueue(() => {
+    new trainingStatus.TrainingStatus().WaitForCompleted()
+  })
 })
 
 Cypress.Commands.add("Alert", message => { alert(message) })
 
 // Use this to enqueue regular JavaScript code into the Cypress process queue.
 // This causes your JavaScript code to execute in the same time frame as all of cy.*commands*
-Cypress.Commands.add("Enqueue", functionToRun => { return functionToRun() })
-
+const enqueue = (functionToRun: Function) => { return functionToRun() }
+Cypress.Commands.add("Enqueue", enqueue)

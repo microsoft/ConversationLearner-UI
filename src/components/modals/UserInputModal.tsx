@@ -12,6 +12,7 @@ import { connect } from 'react-redux'
 import { State } from '../../types'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
+import { autobind } from 'core-decorators';
 
 interface ComponentState {
     userInputVal: string
@@ -22,14 +23,20 @@ class UserInputModal extends React.Component<Props, ComponentState> {
         userInputVal: '',
     }
 
-    @OF.autobind
+    componentDidMount() {
+        if (this.props.initialInput) {
+            this.setState({userInputVal: this.props.initialInput})
+        }
+    }
+
+    @autobind
     onChangeUserInputChange(event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, text: string) {
         this.setState({
             userInputVal: text
         })
     }
 
-    @OF.autobind
+    @autobind
     onClickCancel() {
         this.setState({
             userInputVal: ""
@@ -37,7 +44,7 @@ class UserInputModal extends React.Component<Props, ComponentState> {
         this.props.onCancel()
     }
 
-    @OF.autobind
+    @autobind
     onClickSubmit() {
         this.setState({
             userInputVal: ""
@@ -47,7 +54,7 @@ class UserInputModal extends React.Component<Props, ComponentState> {
 
     // TODO: Refactor to use default form submission instead of manually listening for keys
     // Also has benefit of native browser validation for required fields
-    @OF.autobind
+    @autobind
     onKeyDown(event: React.KeyboardEvent<HTMLElement>) {
         // On enter attempt to create the model if required fields are set
         // Not on import as explicit button press is required to pick the file
@@ -89,7 +96,7 @@ class UserInputModal extends React.Component<Props, ComponentState> {
                         data-testid="user-input-modal-new-message-input"
                         onGetErrorMessage={value => this.onGetInputErrorMessage(value)}
                         onChange={this.onChangeUserInputChange}
-                        placeholder={Util.formatMessageId(intl, FM.USERINPUT_PLACEHOLDER)}
+                        placeholder={Util.formatMessageId(intl, this.props.placeholderFM)}
                         onKeyDown={key => this.onKeyDown(key)}
                         value={this.state.userInputVal}
                     />
@@ -103,8 +110,8 @@ class UserInputModal extends React.Component<Props, ComponentState> {
                                 disabled={invalidName}
                                 data-testid="app-create-button-submit"
                                 onClick={this.onClickSubmit}
-                                ariaDescription={Util.formatMessageId(intl, FM.APPCREATOR_CREATEBUTTON_ARIADESCRIPTION)}
-                                text={Util.formatMessageId(intl, FM.APPCREATOR_CREATEBUTTON_TEXT)}
+                                ariaDescription={Util.formatMessageId(intl, this.props.submitButtonFM || FM.BUTTON_CREATE)}
+                                text={Util.formatMessageId(intl, this.props.submitButtonFM || FM.BUTTON_CREATE)}
                                 iconProps={{ iconName: 'Accept' }}
                             />
                             <OF.DefaultButton
@@ -134,6 +141,9 @@ const mapStateToProps = (state: State) => {
 export interface ReceivedProps {
     open: boolean
     titleFM: FM
+    placeholderFM: FM
+    submitButtonFM?: FM
+    initialInput?: string
     onSubmit: (userInput: string) => void
     onCancel: () => void
 }

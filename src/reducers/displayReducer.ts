@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 import { ActionObject, DisplayState } from '../types'
@@ -65,7 +65,7 @@ const displayReducer: Reducer<DisplayState> = produce((state: DisplayState, acti
         case AT.CREATE_APP_TAG_ASYNC:
         case AT.CREATE_APPLICATION_ASYNC:
         case AT.CREATE_TEACH_SESSION_ASYNC:
-        case AT.CREATE_TEACH_SESSION_FROMHISTORY_ASYNC:
+        case AT.CREATE_TEACH_SESSION_FROMTRAINDIALOG_ASYNC:
         case AT.CREATE_TRAIN_DIALOG_ASYNC:
         case AT.CREATE_CHAT_SESSION_ASYNC:
         case AT.CREATE_ENTITY_ASYNC:
@@ -77,7 +77,7 @@ const displayReducer: Reducer<DisplayState> = produce((state: DisplayState, acti
         case AT.DELETE_MEMORY_ASYNC:
         // case AT.DELETE_LOG_DIALOG_ASYNC: Don't block
         // case AT.DELETE_LOG_DIALOGS_ASYNC: Don't block
-        case AT.DELETE_TEACH_SESSION_ASYNC: 
+        case AT.DELETE_TEACH_SESSION_ASYNC:
         // case AT.DELETE_TRAIN_DIALOG_ASYNC: Don't block
 
         case AT.EDIT_ACTION_ASYNC:
@@ -86,11 +86,9 @@ const displayReducer: Reducer<DisplayState> = produce((state: DisplayState, acti
         case AT.EDIT_ENTITY_ASYNC:
         case AT.EDIT_APP_LIVE_TAG_ASYNC:
         case AT.EDIT_APP_EDITING_TAG_ASYNC:
+        case AT.EDIT_TRAINDIALOG_ASYNC:
         case AT.EDIT_TRAINDIALOG_MERGE_ASYNC:
-        case AT.EDIT_TRAINDIALOG_REPLACE_ASYNC:
-
         // case AT.EXPIRE_CHAT_SESSION_AYSNC: Don't block
-
         case AT.FETCH_APPSOURCE_ASYNC:
         case AT.FETCH_ACTIONS_ASYNC:
         case AT.FETCH_ACTION_DELETE_VALIDATION_ASYNC:
@@ -101,11 +99,9 @@ const displayReducer: Reducer<DisplayState> = produce((state: DisplayState, acti
         case AT.FETCH_ENTITY_DELETE_VALIDATION_ASYNC:
         case AT.FETCH_ENTITY_EDIT_VALIDATION_ASYNC:
         case AT.FETCH_ENTITIES_ASYNC:
-        case AT.FETCH_HISTORY_ASYNC:
-        case AT.FETCH_LOG_DIALOG_ASYNC:
         // case AT.FETCH_LOG_DIALOGS_ASYNC: Don't block
-        case AT.FETCH_SCOREFROMHISTORY_ASYNC:
-        case AT.FETCH_EXTRACTFROMHISTORY_ASYNC:
+        case AT.FETCH_SCOREFROMTRAINDIALOG_ASYNC:
+        case AT.FETCH_EXTRACTFROMTRAINDIALOG_ASYNC:
         case AT.FETCH_TRAINDIALOGREPLAY_ASYNC:
         case AT.FETCH_TEXTVARIATION_CONFLICT_ASYNC:
         case AT.FETCH_TRAIN_DIALOG_ASYNC:
@@ -120,6 +116,17 @@ const displayReducer: Reducer<DisplayState> = produce((state: DisplayState, acti
         case AT.SPINNER_ADD:
             state.displaySpinner.push(spinnerName(action.type))
             return
+        case AT.FETCH_ACTIVITIES_ASYNC:
+        case AT.FETCH_LOG_DIALOG_ASYNC:
+            if (!action.noSpinnerDisplay) {
+                state.displaySpinner.push(spinnerName(action.type))
+            }
+            return
+        case AT.EDIT_TRAINDIALOG_REPLACE_ASYNC:
+            if (action.enableSpinner) {
+                state.displaySpinner.push(spinnerName(action.type))
+            }
+            return
         case AT.CREATE_ACTION_FULFILLED:
         case AT.CREATE_APP_TAG_FULFILLED:
         //case AT.CREATE_APPLICATION_FULFILLED: Handled above
@@ -127,8 +134,8 @@ const displayReducer: Reducer<DisplayState> = produce((state: DisplayState, acti
         case AT.CREATE_CHAT_SESSION_FULFILLED:
         case AT.CREATE_TEACH_SESSION_REJECTED:
         case AT.CREATE_TEACH_SESSION_FULFILLED:
-        case AT.CREATE_TEACH_SESSION_FROMHISTORY_FULFILLED:
-        case AT.CREATE_TEACH_SESSION_FROMHISTORY_REJECTED:
+        case AT.CREATE_TEACH_SESSION_FROMTRAINDIALOG_FULFILLED:
+        case AT.CREATE_TEACH_SESSION_FROMTRAINDIALOG_REJECTED:
         case AT.CREATE_TRAIN_DIALOG_FULFILLED:
         case AT.CREATE_TRAIN_DIALOG_REJECTED:
         case AT.CREATE_ENTITY_FULFILLED:
@@ -150,6 +157,7 @@ const displayReducer: Reducer<DisplayState> = produce((state: DisplayState, acti
         case AT.EDIT_ENTITY_FULFILLED:
         case AT.EDIT_APP_LIVE_TAG_FULFILLED:
         case AT.EDIT_APP_EDITING_TAG_FULFILLED:
+        case AT.EDIT_TRAINDIALOG_FULFILLED:
         case AT.EDIT_TRAINDIALOG_MERGE_FULFILLED:
         case AT.EDIT_TRAINDIALOG_REPLACE_FULFILLED:
 
@@ -163,13 +171,14 @@ const displayReducer: Reducer<DisplayState> = produce((state: DisplayState, acti
         case AT.FETCH_ENTITY_DELETE_VALIDATION_FULFILLED:
         case AT.FETCH_ENTITY_EDIT_VALIDATION_FULFILLED:
         case AT.FETCH_ENTITIES_FULFILLED:
-        case AT.FETCH_HISTORY_FULFILLED:
+        case AT.FETCH_ACTIVITIES_FULFILLED:
         case AT.FETCH_LOG_DIALOG_FULFILLED:
+        case AT.FETCH_LOG_DIALOG_NOTFOUND:
         // case AT.FETCH_LOG_DIALOGS_FULFILLED: Doesn't block
-        case AT.FETCH_SCOREFROMHISTORY_FULFILLED:
-        case AT.FETCH_SCOREFROMHISTORY_REJECTED:
-        case AT.FETCH_EXTRACTFROMHISTORY_FULFILLED:
-        case AT.FETCH_EXTRACTFROMHISTORY_REJECTED:
+        case AT.FETCH_SCOREFROMTRAINDIALOG_FULFILLED:
+        case AT.FETCH_SCOREFROMTRAINDIALOG_REJECTED:
+        case AT.FETCH_EXTRACTFROMTRAINDIALOG_FULFILLED:
+        case AT.FETCH_EXTRACTFROMTRAINDIALOG_REJECTED:
         case AT.FETCH_TRAIN_DIALOG_FULFILLED:
         // case AT.FETCH_TRAIN_DIALOGS_FULFILLED: Doesn't block
         case AT.FETCH_TRAINDIALOGREPLAY_FULFILLED:

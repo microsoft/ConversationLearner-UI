@@ -6,10 +6,6 @@
 import * as models from '../../../support/Models'
 import * as modelPage from '../../../support/components/ModelPage'
 import * as train from '../../../support/Train'
-import * as trainDialogsGrid from '../../../support/components/TrainDialogsGrid'
-import * as common from '../../../support/Common'
-import * as actions from '../../../support/Actions'
-import * as scorerModal from '../../../support/components/ScorerModal'
 import * as helpers from '../../../support/Helpers'
 
 describe('API Callbacks - ErrorHandling', () => {
@@ -30,7 +26,7 @@ describe('API Callbacks - ErrorHandling', () => {
     it('Should invoke "BadCard" API Callback and verify it is in the chat pane', () => {
       train.TypeYourMessage('BadCard')
       train.ClickScoreActionsButton()
-      train.SelectApiCardAction('BadCard', 'Malformed API Callback ‘BadCard’', 'Return value in Render function must be a string or BotBuilder Activity')
+      train.SelectApiCardAction('BadCard', 'Malformed API Callback: ‘BadCard’', 'Return value in Render function must be a string or BotBuilder Activity')
     })
 
     it('Should invoke "Malformed" API Callback and verify it is in the chat pane', () => {
@@ -57,7 +53,7 @@ describe('API Callbacks - ErrorHandling', () => {
     })
 
     it('Should verify that all Bot responses persisted correctly', () => {
-      train.VerifyCardChatMessage('Malformed API Callback ‘BadCard’', 'Return value in Render function must be a string or BotBuilder Activity', 1)
+      train.VerifyCardChatMessage('Malformed API Callback: ‘BadCard’', 'Return value in Render function must be a string or BotBuilder Activity', 1)
       train.VerifyCardChatMessage('Malformed API Callback: ‘Malformed’', 'Logic portion of callback returns a value, but no Render portion defined', 3)
     })
     

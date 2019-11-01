@@ -1,13 +1,13 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 import * as React from 'react';
 import * as OF from 'office-ui-fabric-react'
 import * as CLM from '@conversationlearner/models'
 import * as Util from '../../Utils/util'
-import * as OBIUtil from '../../Utils/obiUtil'
 import * as AdmZip from 'adm-zip'
+import * as OBIUtil from '../../Utils/obiUtils'
 import actions from '../../actions'
 import FormattedMessageId from '../FormattedMessageId'
 import HelpIcon from '../HelpIcon'
@@ -19,6 +19,7 @@ import { connect } from 'react-redux'
 import { State } from '../../types'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
+import { autobind } from 'core-decorators';
 
 enum ExportType {
     CL = ".cl",
@@ -34,7 +35,7 @@ class ExportChoice extends React.Component<Props, ComponentState> {
         exportType: ExportType.CL
     }
 
-    @OF.autobind
+    @autobind
     async onClickExport() {
         switch (this.state.exportType) {
             case ExportType.TRANSCRIPT:
@@ -57,9 +58,9 @@ class ExportChoice extends React.Component<Props, ComponentState> {
 
     async onExportTranscripts() {
         const appDefinition = await (this.props.fetchAppSourceThunkAsync(this.props.app.appId, this.props.editingPackageId, false) as any as Promise<CLM.AppDefinition>)
-        
-        const transcripts = await OBIUtil.toTranscripts(appDefinition, this.props.app.appId, this.props.user, this.props.fetchHistoryThunkAsync as any)
-        
+
+        const transcripts = await OBIUtil.toTranscripts(appDefinition, this.props.app.appId, this.props.user, this.props.fetchActivitiesThunkAsync as any)
+
         const zip = new AdmZip()
         transcripts.forEach(t => {
             const content = JSON.stringify(t.activities)
@@ -72,7 +73,7 @@ class ExportChoice extends React.Component<Props, ComponentState> {
         saveAs(zipBlob, `${this.props.app.appName}.zip`);
     }
 
-    @OF.autobind
+    @autobind
     onChoiceChange(ev: React.FormEvent<HTMLInputElement>, option: any) {
         this.setState({exportType: option.key})
     }
@@ -85,7 +86,7 @@ class ExportChoice extends React.Component<Props, ComponentState> {
                 isBlocking={false}
                 containerClassName='cl-modal cl-modal--small'
             >
-                <div className='cl-modal_header'>
+                <div className='cl-modal_header' data-testid="export-choice-title">
                     <span className={OF.FontClassNames.xxLarge}>
                         <FormattedMessageId id={FM.EXPORT_CHOICE_TITLE}/>
                     </span>
@@ -116,7 +117,7 @@ class ExportChoice extends React.Component<Props, ComponentState> {
                     onChange={this.onChoiceChange}
                     required={false}
                 />
-    
+
                 </div>
                 <div className='cl-modal_footer'>
                     <div className="cl-modal-buttons">
@@ -145,7 +146,7 @@ class ExportChoice extends React.Component<Props, ComponentState> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         fetchAppSourceThunkAsync: actions.app.fetchAppSourceThunkAsync,
-        fetchHistoryThunkAsync: actions.train.fetchHistoryThunkAsync
+        fetchActivitiesThunkAsync: actions.train.fetchActivitiesThunkAsync
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {
