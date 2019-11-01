@@ -16,7 +16,6 @@ import { connect } from 'react-redux'
 import { State, AppCreatorType } from '../../../types'
 import { Expando, AppCreator, TextboxRestrictable, PackageCreator, ErrorInjectionEditor, PackageTable } from '../../../components/modals'
 import { bindActionCreators } from 'redux'
-import { returntypeof } from 'react-redux-typescript'
 import { FM } from '../../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import './Settings.css'
@@ -606,8 +605,8 @@ export interface ReceivedProps {
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
-const stateProps = returntypeof(mapStateToProps);
-const dispatchProps = returntypeof(mapDispatchToProps);
-type Props = typeof stateProps & typeof dispatchProps & ReceivedProps & InjectedIntlProps;
+type stateProps = ReturnType<typeof mapStateToProps>;
+type dispatchProps = ReturnType<typeof mapDispatchToProps>;
+type Props = stateProps & dispatchProps & ReceivedProps & InjectedIntlProps;
 
-export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(Settings))
+export default connect<stateProps, dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(Settings))

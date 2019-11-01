@@ -10,7 +10,6 @@ import * as moment from 'moment'
 import * as CLM from '@conversationlearner/models'
 import AdaptiveCardViewer from './modals/AdaptiveCardViewer/AdaptiveCardViewer'
 import actionTypeRenderer from './ActionTypeRenderer'
-import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { State } from '../types'
@@ -222,10 +221,10 @@ export interface ReceivedProps {
 }
 
 // Props types inferred from mapStateToProps
-const stateProps = returntypeof(mapStateToProps);
-type Props = typeof stateProps & ReceivedProps & InjectedIntlProps
+type stateProps = ReturnType<typeof mapStateToProps>
+type Props = stateProps & ReceivedProps & InjectedIntlProps
 
-export default connect<typeof stateProps, {}, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(ActionDetailsList) as any)
+export default connect<stateProps, {}, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(ActionDetailsList) as any)
 
 function getActionPayloadRenderer(action: CLM.ActionBase, component: ActionDetailsList, isValidationError: boolean) {
     if (action.actionType === CLM.ActionTypes.TEXT) {

@@ -9,7 +9,6 @@ import * as Util from '../../Utils/util'
 import EntityCreatorEditor from './EntityCreatorEditor'
 import FormattedMessageId from '../FormattedMessageId'
 import MemorySetter from '../modals/MemorySetter'
-import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { State } from '../../types'
@@ -146,8 +145,8 @@ export interface ReceivedProps {
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
-const stateProps = returntypeof(mapStateToProps);
-const dispatchProps = returntypeof(mapDispatchToProps);
-type Props = typeof stateProps & typeof dispatchProps & ReceivedProps & InjectedIntlProps
+type stateProps = ReturnType<typeof mapStateToProps>;
+type dispatchProps = ReturnType<typeof mapDispatchToProps>;
+type Props = stateProps & dispatchProps & ReceivedProps & InjectedIntlProps
 
-export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(TeachSessionInitState))
+export default connect<stateProps, dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(TeachSessionInitState))

@@ -19,7 +19,6 @@ import actions from '../../../actions'
 import FormattedMessageId from '../../../components/FormattedMessageId'
 import { NavLink, Route, Switch } from 'react-router-dom'
 import { RouteComponentProps } from 'react-router'
-import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
@@ -358,12 +357,12 @@ const mapStateToProps = (state: State) => {
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
-const stateProps = returntypeof(mapStateToProps);
-const dispatchProps = returntypeof(mapDispatchToProps);
+type stateProps = ReturnType<typeof mapStateToProps>;
+type dispatchProps = ReturnType<typeof mapDispatchToProps>;
 
 interface MatchParams {
     appId: string
 }
-type Props = typeof stateProps & typeof dispatchProps & RouteComponentProps<MatchParams> & InjectedIntlProps;
+type Props = stateProps & dispatchProps & RouteComponentProps<MatchParams> & InjectedIntlProps;
 
-export default connect<typeof stateProps, typeof dispatchProps, RouteComponentProps<any>>(mapStateToProps, mapDispatchToProps)(injectIntl(Index));
+export default connect<stateProps, dispatchProps, RouteComponentProps<any>>(mapStateToProps, mapDispatchToProps)(injectIntl(Index));
