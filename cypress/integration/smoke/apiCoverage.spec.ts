@@ -374,7 +374,7 @@ describe('Scenario 01 - API Coverage - Exercise all major use cases', () => {
 
             // remove any / first label
             cy.get(s.extractionEditor.slateEditor)
-                .get('.cl-entity-node--custom')
+                .get(s.extractionEditor.customNode)
                 .click()
                 .find(s.extractionEditor.buttonRemoveLabel)
                 .click()

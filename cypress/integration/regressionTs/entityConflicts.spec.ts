@@ -205,14 +205,7 @@ describe('Entity Conflicts', () => {
                         .click()
 
                     util.inputText(testData.userInput1)
-
-                    cy.get(s.extractionEditor.customNode)
-                        .contains(s.extractionEditor.customNode, testData.entityName)
-                        .contains(s.extractionEditor.customNode, labeledWord1)
-                        .click()
-
-                    cy.get(s.extractionEditor.buttonRemoveLabel)
-                        .click()
+                    util.removeLabel(labeledWord1)
 
                     cy.get('body')
                         .trigger(constants.events.selectWord, { detail: labeledWord2 })
@@ -492,6 +485,7 @@ describe('Entity Conflicts', () => {
 
                         // Get second bot action since there is to be bug with inserting after first
                         cy.get(s.webChat.messageFromBot)
+                            .eq(2)
                             .contains(testData.actionResponse)
                             .click()
 
