@@ -289,6 +289,9 @@ describe('Scenario 01 - API Coverage - Exercise all major use cases', () => {
 
             cy.get(s.logDialogs.buttonCreate)
                 .click()
+
+            cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+                .should('not.exist')
         })
 
         it('should create a log dialog', () => {
