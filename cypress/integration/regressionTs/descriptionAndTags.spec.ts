@@ -389,7 +389,7 @@ describe('Description and Tags', () => {
                 cy.get(s.dialogModal.branchButton)
                     .click()
 
-                cy.get(s.dialogModal.branchInput)
+                cy.get(s.addInputModal.branchInput)
                     .type('New Branched Input')
 
                 cy.get(s.dialogModal.branchSubmit)

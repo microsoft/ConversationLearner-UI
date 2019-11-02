@@ -254,7 +254,7 @@ describe('Scenario 01 - API Coverage - Exercise all major use cases', () => {
             cy.get(s.webChat.buttonAddInput)
                 .click()
 
-            cy.get(s.dialogModal.branchInput)
+            cy.get(s.addInputModal.branchInput)
                 .type(testData.dialog.userInput)
 
             cy.get(s.dialogModal.branchSubmit)
