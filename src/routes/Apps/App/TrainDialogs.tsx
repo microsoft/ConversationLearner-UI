@@ -1140,7 +1140,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             await Util.setStateAsync(this, {
                 transcriptImport: undefined
             })
-            this.props.setErrorDisplay(ErrorType.Error, "Import Failed", error.message, null)
+            const message = error.currentTarget ? error.currentTarget.error.message : error.message
+            this.props.setErrorDisplay(ErrorType.Error, "Import Failed", message, null)
         }
     }
 

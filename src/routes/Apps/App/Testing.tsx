@@ -244,7 +244,7 @@ class Testing extends React.Component<Props, ComponentState> {
                 const logDialogId = await ((this.props.fetchTranscriptValidationThunkAsync(this.props.app.appId, this.props.editingPackageId, testId, transcriptValidationTurns) as any) as Promise<string | null>)
                 let resultTranscript: BB.Activity[] | undefined
 
-                // If log was retr}ieved and I'm not done
+                // If log was retrieved and I'm not done
                 if (logDialogId && this.state.doneCount !== -1) {
 
                     resultTranscript = await OBIUtils.getLogDialogActivities(
@@ -257,6 +257,9 @@ class Testing extends React.Component<Props, ComponentState> {
                         sourceName,
                         this.props.fetchLogDialogThunkAsync as any,
                         this.props.fetchActivitiesThunkAsync as any) as BB.Activity[]
+                }
+                else if (!logDialogId) {
+                    throw new Error(`Transcript is not a valid and can't be replayed`)
                 }
 
                 // Substitute back in any LG refs
@@ -692,6 +695,7 @@ class Testing extends React.Component<Props, ComponentState> {
                         open={true}
                         onOk={() => this.onCloseTestWarning()}
                         title={Util.formatMessageId(this.props.intl, FM.TESTING_WARNING)}
+                        style='ms-Dialog-main--wide'
                         message={() =>
                             <OF.List
                                 className="cl-warning-list"
