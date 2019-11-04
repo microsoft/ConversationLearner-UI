@@ -132,6 +132,9 @@ describe('From Log Tag', () => {
         cy.get(s.trainDialog.buttonScoreActions)
             .click()
 
+        cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+            .should('not.exist')
+
         util.selectAction(s.trainDialog.actionScorerTextActions, testData.actionResponse01)
 
         cy.get(s.webChat.messageFromBot, { timeout: constants.prediction.timeout })

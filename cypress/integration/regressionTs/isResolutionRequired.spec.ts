@@ -13,7 +13,7 @@ describe('Resolution Required', () => {
     before(() => {
         cy.visit('/')
         util.importModel(testData.modelName, testData.modelFile)
-        cy.get(s.trainingStatus.running, { timeout: constants.training.timeout })
+        cy.wait(2000)
         cy.get(s.trainingStatus.completed, { timeout: constants.training.timeout })
     })
 
