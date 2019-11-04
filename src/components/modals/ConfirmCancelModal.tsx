@@ -16,6 +16,7 @@ interface ReceivedProps {
     open: boolean
     title: string
     message?: () => React.ReactNode
+    style?: string
 }
 
 type Props = ReceivedProps & InjectedIntlProps
@@ -45,6 +46,7 @@ const ConfirmCancelModal: React.FC<Props> = (props) => {
             modalProps={{
                 isBlocking: false
             }}
+            containerClassName={`${props.style ? props.style : ''}`}
         >
             {typeof props.message === 'function' && props.message()}
             <OF.DialogFooter>

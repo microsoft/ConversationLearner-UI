@@ -612,6 +612,10 @@ i[data-icon-name="Edit"]:hover {
   background-color: #000000;
 }
 
+.ms-Dialog-main--wide {
+  min-width: 1000px;
+}
+
 .cl-dialog-title {
   margin-right: 1em;
 }
