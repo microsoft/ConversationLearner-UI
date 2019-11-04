@@ -420,3 +420,24 @@ export function GenerateScoreActionsDataFromGrid() {
   
   return generatedData
 }
+
+// To use this function 1st select the chat message whose text you want to capture.
+// This is intended to capture text, with $ entity names, just as it will be seen as "LastResponse" in the TD Grid.
+// For example it would capture: "Hello $name" rather than "Hello David"
+// If there are no entities specified for the action, it still returns the text of the action.
+export function GetTextWithEntityNamesFromSelectedAction() {
+  const elements = FindActionRowElements('[data-testid="action-scorer-button-selected"]', 'SelectedSelected')
+  if (typeof elements == 'string') { 
+    throw new Error(elements) 
+  }
+
+  const toggleElements = Cypress.$(elements).find('[data-testid="action-scorer-entity-toggle"]')
+  if (toggleElements.length == 1) { 
+    toggleElements.click() 
+  }
+
+  return cy.WaitForStableDOM().then(() => {
+    const text = helpers.TextContentWithoutNewlines(Cypress.$(elements).find(SelectorTextResponse)[0])
+    return text
+  })
+}

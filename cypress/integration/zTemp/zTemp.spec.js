@@ -14,22 +14,17 @@ import * as trainDialogsGrid from '../../support/components/TrainDialogsGrid'
 
 describe('zTemp', () => {
   it('Experiment with action-scorer-entity-toggle', () => {
-    const SelectorTextResponse = '[data-testid="action-scorer-text-response"]'
-
     homePage.Visit()
     homePage.LoadModel('expectedEntityLablel')
     modelPage.NavigateToTrainDialogs()
     train.EditTraining('Hello', 'David', 'Hello $name')
 
     chatPanel.SelectChatTurnExactMatch('Hello David')
+    //chatPanel.SelectChatTurnExactMatch("What's your name?")
 
-    cy.Enqueue(() => {
-      const elements = scorerModal.FindActionRowElements(SelectorTextResponse, 'Hello David')
-      Cypress.$(elements).find('[data-testid="action-scorer-entity-toggle"]').click()
-      cy.WaitForStableDOM().then(() => {
-        let newText = helpers.TextContentWithoutNewlines(Cypress.$(elements).find(SelectorTextResponse)[0])
-        if (newText != 'Hello $name') { throw new Error(`Found ZERO elements that exactly matches 'Hello $name'`) }
-      })
+    cy.Enqueue(() => { return scorerModal.GetTextWithEntityNamesFromSelectedAction() }).then(actionText => {
+      if (actionText != 'Hello $name') { throw new Error(`Found ZERO elements that exactly matches 'Hello $name'`) }
+      helpers.ConLog('After waiting for promise', `actionText: ${actionText}`)
     })
   })
 

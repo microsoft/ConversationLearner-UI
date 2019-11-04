@@ -255,3 +255,52 @@ export function VerifyIncidentTriangleFoundInTrainDialogsGrid(firstInput, lastIn
     throw new Error(`Can't Find Training to Verify it contains errors. The grid should, but does not, contain a row with this data in it: FirstInput: ${firstInput} -- LastInput: ${lastInput} -- LastResponse: ${lastResponse}`)
   })
 }
+
+export function VerifyListOfTrainDialogs(expectedTrainDialogs) {
+  const expectedRowCount = expectedTrainDialogs.length
+  helpers.ConLog(`VerifyListOfTrainDialogs(expectedRowCount: ${expectedRowCount})`, 'Start')
+  cy.log('Verify List of Train Dialogs', expectedRowCount)
+
+  let tdGrid
+  cy.wrap(1).should(() => {
+    tdGrid = TdGrid.GetTdGrid(expectedRowCount)
+  }).then(() => {
+    let errors = false
+    expectedTrainDialogs.forEach(trainDialog => {
+      let iRow = tdGrid.FindGridRowByChatInputs(trainDialog.firstInput, trainDialog.lastInput, trainDialog.lastResponse)
+      if (iRow < 0) { errors = true }
+    })
+  
+    if (errors) {
+      throw new Error('Did not find 1 or more of the expected Train Dialogs in the grid. Refer to the log file for details.')
+    }
+  })
+}
+
+export function GetAllTrainDialogGridRows(expectedRowCount = undefined) { 
+  helpers.ConLog('GetAllTrainDialogGridRows', 'start')
+
+  let tdGrid
+  cy.wrap(1).should(() => {
+    tdGrid = TdGrid.GetTdGrid(expectedRowCount)
+  }).then(() => {
+    const firstInputs = GetFirstInputs()
+    const lastInputs = GetLastInputs()
+    const lastResponses = GetLastResponses()
+
+    let allRowData = []
+
+    for (let i = 0; i < firstInputs.length; i++) {
+      allRowData.push({
+        firstInput: firstInputs[i],
+        lastInput: lastInputs[i],
+        lastResponse: lastResponses[i],
+      })
+
+      helpers.ConLog('GetAllTrainDialogGridRows', `${allRowData.firstInput}, ${allRowData.lastInput}, ${allRowData.lastResponse}`)
+    }
+    
+    return allRowData
+  })
+}
+
