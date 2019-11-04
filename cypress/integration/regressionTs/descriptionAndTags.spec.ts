@@ -6,9 +6,10 @@ import * as trainDialog from '../../support/Train'
 import * as logDialogModal from '../../support/components/LogDialogModal'
 import s from '../../support/selectors'
 import constants from '../../support/constants'
+import * as util from '../../support/utilities'
 
 describe('Description and Tags', () => {
-    const modelName = 'z-descriptionTags'
+    const modelName = util.generateUniqueModelName('descriptionTags')
 
     context('Train Dialogs', () => {
         const testData = {
@@ -26,12 +27,41 @@ describe('Description and Tags', () => {
         }
 
         before(() => {
-            // TODO: Find way to preserve Intellisense
-            models.CreateNewModel(testData.modelName)
-            model.NavigateToActions()
-            actionsList.ClickNewAction()
-            actions.CreateNewAction({ responseNameData: testData.actionResponse })
-            model.NavigateToTrainDialogs()
+            cy.visit('/')
+
+            cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+                .should('not.exist')
+
+            // Create model
+            cy.get(s.models.buttonCreate)
+                .click()
+
+            cy.get(s.models.name)
+                .type(testData.modelName)
+
+            cy.get(s.models.submit)
+                .click()
+
+            cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+                .should('not.exist')
+
+            cy.get(s.model.buttonNavActions)
+                .click()
+
+            cy.get(s.actions.buttonNewAction)
+                .click()
+
+            cy.get(s.action.inputResponse)
+                .type(testData.actionResponse)
+
+            cy.get(s.action.buttonCreate)
+                .click()
+
+            cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+                .should('not.exist')
+
+            cy.get(s.model.buttonNavTrainDialogs)
+                .click()
         })
 
         beforeEach(() => {
@@ -40,10 +70,9 @@ describe('Description and Tags', () => {
 
         context('Create', () => {
             it('should have no tags are description when creating new dialog', () => {
-                // Create new train dialog
-                trainDialog.CreateNewTrainDialog()
+                cy.get(s.trainDialogs.buttonNew)
+                    .click()
 
-                // Verify that description and tags are empty
                 cy.get(s.dialogModal.inputDescription)
                     .should('be.empty')
 
@@ -52,26 +81,43 @@ describe('Description and Tags', () => {
             })
 
             it('should save the tags and description on the new dialog', () => {
-                // Set description
+                cy.wait(1500)
+
                 cy.get(s.dialogModal.inputDescription)
                     .type(testData.description)
 
-                // Set tags
                 cy.get(s.dialogModal.buttonAddTag)
                     .click()
 
                 cy.get(s.dialogModal.inputTag)
                     .type(`${testData.tag01}{enter}`)
 
-                trainDialog.TypeYourMessage(testData.userInput)
-                trainDialog.ClickScoreActionsButton()
+                util.inputText(testData.userInput)
+
+                cy.get(s.trainDialog.buttonScoreActions)
+                    .click()
+
+                cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+                    .should('not.exist')
 
                 // Add temporary rounds to be deleted later
-                trainDialog.SelectTextAction(testData.actionResponse)
-                trainDialog.TypeYourMessage('Should be deleted')
-                trainDialog.ClickScoreActionsButton()
-                trainDialog.SelectTextAction(testData.actionResponse)
-                trainDialog.SaveAsIsVerifyInGrid()
+                util.selectAction(s.trainDialog.actionScorerTextActions, testData.actionResponse)
+
+                util.inputText('Should be deleted')
+
+                cy.get(s.trainDialog.buttonScoreActions)
+                    .click()
+
+                cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+                    .should('not.exist')
+
+                util.selectAction(s.trainDialog.actionScorerTextActions, testData.actionResponse)
+
+                cy.get(s.trainDialog.buttonSave)
+                    .click()
+
+                cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+                    .should('not.exist')
 
                 // Verify tags and description in list
                 cy.get(s.trainDialogs.descriptions)
@@ -109,7 +155,11 @@ describe('Description and Tags', () => {
                 cy.get(s.dialogModal.inputDescription)
                     .type(' Abandon Edit')
 
-                trainDialog.AbandonDialog()
+                cy.get(s.trainDialog.buttonAbandon)
+                    .click()
+
+                cy.get(s.confirmCancelModal.buttonConfirm)
+                    .click()
 
                 // Re-open dialog
                 cy.get(s.trainDialogs.descriptions)
@@ -136,11 +186,16 @@ describe('Description and Tags', () => {
                 cy.get(s.dialogModal.inputDescription)
                     .type(testData.descriptionEdit)
 
+                cy.server()
+                cy.route('PUT', '/sdk/app/*/traindialog/*').as('putTrainDialog')
+
                 // Save dialog
                 cy.get(s.dialogModal.buttonCloseSave)
                     .click()
 
-                // Implicitly closes dialog, but stays on train dialogs page
+                cy.wait('@putTrainDialog')
+
+                // stays on train dialogs page
                 // Ensures content is persisted to server instead of only local memory
                 cy.reload()
 
@@ -180,18 +235,16 @@ describe('Description and Tags', () => {
                     .type(testData.descriptionEdit)
 
                 // Delete the last bot response and user input. Affects rounds but doesn't make it invalid
-                cy.server()
-                cy.route('POST', '/sdk/app/*/traindialogreplay').as('postDialogReplay')
-                cy.route('POST', '/sdk/app/*/history*').as('postDialogHistory')
-
-                cy.get('[data-testid="web-chat-utterances"]')
+                cy.get(s.webChat.activities)
                     .last()
                     .click()
 
-                cy.get('[data-testid="chat-edit-delete-turn-button"]')
+                cy.get(s.webChat.buttonDeleteActivity)
                     .click()
 
-                cy.wait(['@postDialogReplay', '@postDialogHistory'])
+                cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+                    .should('not.exist')
+
                 // TODO: Find out why wait is needed here
                 // I think other than waiting for requests there is some other internal processing
                 // such as rebuilding dialog activities we need to wait on
@@ -201,17 +254,18 @@ describe('Description and Tags', () => {
                     .last()
                     .click()
 
-                cy.get('[data-testid="chat-edit-delete-turn-button"]')
+                cy.get(s.webChat.buttonDeleteActivity)
                     .click()
 
-                cy.wait(['@postDialogReplay', '@postDialogHistory'])
+                cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+                    .should('not.exist')
 
+                cy.server()
                 cy.route('PUT', '/sdk/app/*/traindialog/*').as('putTrainDialog')
 
-                cy.get(s.dialogModal.buttonCloseSave)
-                    // .click()
                 // TODO: Find out what is blocking the click?
-                trainDialog.ClickSaveCloseButton()
+                cy.get(s.dialogModal.buttonCloseSave)
+                    .click()
 
                 cy.wait(['@putTrainDialog'])
                 cy.wait(5000)
@@ -248,10 +302,15 @@ describe('Description and Tags', () => {
                     .type(testData.descriptionEdit)
 
                 // Modify dialog to add user input
-                trainDialog.TypeYourMessage(testData.continuedInput)
-                trainDialog.ClickScoreActionsButton()
-                trainDialog.SelectTextAction(testData.actionResponse)
-                trainDialog.ClickSaveCloseButton()
+                util.inputText(testData.continuedInput)
+
+                cy.get(s.trainDialog.buttonScoreActions)
+                    .click()
+
+                cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+                    .should('not.exist')
+
+                util.selectAction(s.trainDialog.actionScorerTextActions, testData.actionResponse)
 
                 // TODO: Should cy.reload() to ensure data was persisted
                 // TODO: Find better alternative than waiting
@@ -260,6 +319,13 @@ describe('Description and Tags', () => {
                 cy.server()
                 cy.route('PUT', '/sdk/app/*/traindialog/*').as('putTrainDialog')
                 cy.route('GET', '/sdk/app/*/traindialogs*').as('getTrainDialogs')
+
+                cy.get(s.trainDialog.buttonSave)
+                    .click()
+
+                cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+                    .should('not.exist')
+
                 // Give time for requests to be sent
                 cy.wait(3000)
                 cy.wait(['@putTrainDialog'/* , '@getTrainDialogs' */])
@@ -287,14 +353,11 @@ describe('Description and Tags', () => {
         context('Branch', () => {
             before(() => {
                 // Reload browser to ensure memory and wait for app to load
-                cy.server()
-                cy.route('GET', '/sdk/app/*/logdialogs*').as('getAppLogDialogs')
-                cy.route('GET', '/sdk/app/*/source*').as('getAppSource')
-
+                cy.wait(1000)
                 cy.reload()
 
-                cy.wait(['@getAppLogDialogs', '@getAppSource'])
-                cy.wait(1000)
+                cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+                    .should('not.exist')
             })
 
             it('should preserve tags and description after branching', () => {
@@ -326,7 +389,7 @@ describe('Description and Tags', () => {
                 cy.get(s.dialogModal.branchButton)
                     .click()
 
-                cy.get(s.dialogModal.branchInput)
+                cy.get(s.addInputModal.branchInput)
                     .type('New Branched Input')
 
                 cy.get(s.dialogModal.branchSubmit)
@@ -336,13 +399,13 @@ describe('Description and Tags', () => {
                     .should('not.exist')
 
                 cy.server()
-                cy.route('POST', '/sdk/app/*/scorefromhistory').as('postScoreFromHistory')
+                cy.route('POST', '/sdk/app/*/scorefromtraindialog').as('postScoreFromTrainDialog')
                 cy.route('POST', '/sdk/app/*/history*').as('postHistory')
 
                 cy.get(s.dialogModal.buttonScoreActionsButton)
                     .click()
 
-                cy.wait(['@postScoreFromHistory', '@postHistory'])
+                cy.wait(['@postScoreFromTrainDialog', '@postHistory'])
 
                 // Verify edited description and tags are preserved after branch
                 cy.get(s.dialogModal.inputDescription)
@@ -367,11 +430,13 @@ describe('Description and Tags', () => {
                 cy.get(s.dialogModal.buttonCloseSave)
                     .click()
 
-                cy.server()
-                cy.route('GET', '/sdk/app/*/logdialogs*').as('getAppLogDialogs')
-                cy.route('GET', '/sdk/app/*/source*').as('getAppSource')
+                cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+                    .should('not.exist')
+
                 cy.reload()
-                cy.wait(['@getAppLogDialogs', '@getAppSource'])
+
+                cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+                    .should('not.exist')
 
                 // Verify old dialog with original tags and description is still in the list
                 cy.get(s.trainDialogs.descriptions)
@@ -386,11 +451,14 @@ describe('Description and Tags', () => {
 
     context('Log Dialogs', () => {
         before(() => {
+            cy.visit('/')
             // Need to import a small model that has a train dialog
-            models.ImportModel(modelName, 'z-expectedEntLabl.cl')
-            model.NavigateToLogDialogs()
+            util.importModel('descTagsLogs', 'z-expectedEntLabl.cl')
+            cy.get(s.model.buttonNavLogDialogs)
+                .click()
 
-            cy.WaitForTrainingStatusCompleted()
+            cy.wait(2000)
+            cy.get(s.trainingStatus.completed, { timeout: constants.training.timeout })
         })
 
         beforeEach(() => {
@@ -399,13 +467,8 @@ describe('Description and Tags', () => {
         })
 
         it('should not show tags or description fields when creating a log dialog', () => {
-            cy.server()
-            cy.route('POST', '/sdk/app/*/session').as('postSession')
-
             cy.get(s.logDialogs.buttonCreate)
                 .click()
-
-            cy.wait('@postSession')
 
             cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
                 .should('not.exist')
@@ -426,31 +489,28 @@ describe('Description and Tags', () => {
             }
 
             // Wait for new log dialog to be created
-            cy.server()
-            cy.route('POST', '/sdk/app/*/session').as('postSession')
-            
             cy.get(s.logDialogs.buttonCreate)
                 .click()
 
-            cy.wait('@postSession')
-            
             cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
                 .should('not.exist')
 
-            logDialogModal.TypeYourMessage(testData.input)
+            cy.get(s.logDialog.inputMessage)
+                .type(`${testData.input}{enter}`)
+
+            cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+                .should('not.exist')
 
             // Wait for prediction and ensure it isn't an error
             cy.get(s.webChat.messageFromBot, { timeout: constants.prediction.timeout })
                 .should('exist')
                 .should('not.have.class', s.webChat.messageColorException)
 
-            cy.server()
-            cy.route('GET', '/sdk/app/*/logdialogs*').as('getLogDialogs')
-
             cy.get(s.chatModal.buttonDone)
                 .click()
 
-            cy.wait(['@getLogDialogs'])
+            cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+                .should('not.exist')
 
             cy.get(s.logDialogs.description)
                 .contains(testData.input)

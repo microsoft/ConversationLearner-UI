@@ -18,7 +18,6 @@ import { ImportedAction } from '../../types/models'
 import { compareTwoStrings } from 'string-similarity'
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { returntypeof } from 'react-redux-typescript';
 import { State } from '../../types'
 import { onRenderDetailsHeader } from '../ToolTips/ToolTips'
 import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
@@ -177,6 +176,14 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                 else if (action.actionType === CLM.ActionTypes.SET_ENTITY) {
                     const [name, value] = Util.setEntityActionDisplay(action, component.props.entities)
                     return <span data-testid="action-scorer-action-set-entity" className={OF.FontClassNames.mediumPlus}>{name}: {value}</span>
+                }
+                else if (action.actionType === CLM.ActionTypes.DISPATCH) {
+                    const dispatchAction = new CLM.DispatchAction(action)
+                    return <span data-testid="action-scorer-action-dispatch" className={OF.FontClassNames.mediumPlus}>Dispatch to model: {dispatchAction.modelName}</span>
+                }
+                else if (action.actionType === CLM.ActionTypes.CHANGE_MODEL) {
+                    const changeModelAction = new CLM.ChangeModelAction(action)
+                    return <span data-testid="action-scorer-action-change-model" className={OF.FontClassNames.mediumPlus}>Change to model: {changeModelAction.modelName}</span>
                 }
 
                 return <span className={OF.FontClassNames.mediumPlus}>{CLM.ActionBase.GetPayload(action, defaultEntityMap)}</span>
@@ -408,7 +415,8 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         const newAction = await ((this.props.createActionThunkAsync(this.props.app.appId, action) as any) as Promise<CLM.ActionBase>)
         if (newAction
             && (
-                newAction.actionType === CLM.ActionTypes.END_SESSION
+                (newAction.actionType === CLM.ActionTypes.END_SESSION
+                    || newAction.actionType === CLM.ActionTypes.CHANGE_MODEL)
                     ? this.props.isEndSessionAvailable
                     : true
             )
@@ -1108,8 +1116,8 @@ const mapStateToProps = (state: State) => {
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
-const stateProps = returntypeof(mapStateToProps);
-const dispatchProps = returntypeof(mapDispatchToProps);
-type Props = typeof stateProps & typeof dispatchProps & ReceivedProps & InjectedIntlProps
+type stateProps = ReturnType<typeof mapStateToProps>
+type dispatchProps = ReturnType<typeof mapDispatchToProps>
+type Props = stateProps & dispatchProps & ReceivedProps & InjectedIntlProps
 
-export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(ActionScorer))
+export default connect<stateProps, dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(ActionScorer))

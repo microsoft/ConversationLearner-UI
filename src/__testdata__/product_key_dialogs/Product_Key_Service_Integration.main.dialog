@@ -1,0 +1,29 @@
+//Product_Key_Service_Integration.main.dialog
+{
+  "$schema": "../../app.schema",
+  "$type": "Microsoft.AdaptiveDialog",
+  "recognizer": "main.lu",
+  "rules": [
+    {
+      "$type": "Microsoft.IntentRule",
+      "intent": "Product_Key_Service_Integration_choice4",
+      "steps": [
+        {
+          "$type": "Microsoft.BeginDialog",
+          "dialog": "Product_Key_Service_Integration.choice4"
+        }
+      ]
+    }
+  ],
+  "steps": [
+    {
+      "$type": "Microsoft.TextInput",
+      "property": "dialog.option14",
+      "prompt": "[option14]",
+      "alwaysPrompt": true
+    },
+    {
+      "$type": "Microsoft.EndDialog"
+    }
+  ]
+}

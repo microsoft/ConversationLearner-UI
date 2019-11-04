@@ -10,7 +10,6 @@ import * as moment from 'moment'
 import * as CLM from '@conversationlearner/models'
 import AdaptiveCardViewer from './modals/AdaptiveCardViewer/AdaptiveCardViewer'
 import actionTypeRenderer from './ActionTypeRenderer'
-import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { State } from '../types'
@@ -89,7 +88,8 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
                     ? true
                     : entity.entityType !== CLM.EntityType.ENUM
             }
-            case CLM.ActionTypes.DISPATCH: {
+            case CLM.ActionTypes.DISPATCH:
+            case CLM.ActionTypes.CHANGE_MODEL: {
                 // TODO: Could validate access to model, but don't have access to it within this model
                 return false
             }
@@ -221,10 +221,10 @@ export interface ReceivedProps {
 }
 
 // Props types inferred from mapStateToProps
-const stateProps = returntypeof(mapStateToProps);
-type Props = typeof stateProps & ReceivedProps & InjectedIntlProps
+type stateProps = ReturnType<typeof mapStateToProps>
+type Props = stateProps & ReceivedProps & InjectedIntlProps
 
-export default connect<typeof stateProps, {}, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(ActionDetailsList) as any)
+export default connect<stateProps, {}, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(ActionDetailsList) as any)
 
 function getActionPayloadRenderer(action: CLM.ActionBase, component: ActionDetailsList, isValidationError: boolean) {
     if (action.actionType === CLM.ActionTypes.TEXT) {
@@ -272,6 +272,10 @@ function getActionPayloadRenderer(action: CLM.ActionBase, component: ActionDetai
         // Need to be able to load model by id to get name but need asynchronous functions etc
         const dispatchAction = new CLM.DispatchAction(action)
         return <span data-testid="actions-list-dispatch" className={OF.FontClassNames.mediumPlus}>Dispatch to model: {dispatchAction.modelName}</span>
+    }
+    else if (action.actionType === CLM.ActionTypes.CHANGE_MODEL) {
+        const changeModelAction = new CLM.ChangeModelAction(action)
+        return <span data-testid="actions-list-change-model" className={OF.FontClassNames.mediumPlus}>Change to model: {changeModelAction.modelName}</span>
     }
 
     return <span className={OF.FontClassNames.mediumPlus}>Unknown Action Type</span>
@@ -367,6 +371,14 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                         }
                         case CLM.ActionTypes.SET_ENTITY: {
                             return `set-${action.entityId}-${action.enumValueId}`
+                        }
+                        case CLM.ActionTypes.DISPATCH: {
+                            const dispatchAction = new CLM.DispatchAction(action)
+                            return dispatchAction.modelName
+                        }
+                        case CLM.ActionTypes.CHANGE_MODEL: {
+                            const changeModelAction = new CLM.ChangeModelAction(action)
+                            return changeModelAction.modelName
                         }
                         default: {
                             console.warn(`Could not get sort value for unknown action type: ${action.actionType}`)

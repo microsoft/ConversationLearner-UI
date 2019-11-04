@@ -126,12 +126,7 @@ describe('EntityPicker', () => {
 
         it('should still list entity even if had been used and removed', () => {
             // remove label
-            cy.get(s.extractionEditor.customNode)
-                .contains(testData.word1)
-                .click()
-
-            cy.get(s.extractionEditor.buttonRemoveLabel)
-                .click()
+            util.removeLabel(testData.word1)
 
             // select word2
             cy.get('body')

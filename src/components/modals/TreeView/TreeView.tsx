@@ -7,7 +7,6 @@ import * as CLM from '@conversationlearner/models'
 import * as OF from 'office-ui-fabric-react'
 import * as Util from '../../../Utils/util'
 import Tree from 'react-d3-tree';
-import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { State } from '../../../types'
@@ -165,6 +164,14 @@ class TreeView extends React.Component<Props, ComponentState> {
         else if (action.actionType === CLM.ActionTypes.SET_ENTITY) {
             const [name, value] = Util.setEntityActionDisplay(action, this.props.entities)
             return `Set Entity - ${name}: ${value}`
+        }
+        else if (action.actionType === CLM.ActionTypes.DISPATCH) {
+            const dispatchAction = new CLM.DispatchAction(action)
+            return `Dispatch to Model: ${dispatchAction.modelName}`
+        }
+        else if (action.actionType === CLM.ActionTypes.CHANGE_MODEL) {
+            const changeModelAction = new CLM.ChangeModelAction(action)
+            return `Change to Model: ${changeModelAction.modelName}`
         }
         else {
             return "UNKNOWN ACTION TYPE"
@@ -478,8 +485,8 @@ export interface ReceivedProps {
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
-const stateProps = returntypeof(mapStateToProps);
-const dispatchProps = returntypeof(mapDispatchToProps);
-type Props = typeof stateProps & typeof dispatchProps & ReceivedProps & InjectedIntlProps
+type stateProps = ReturnType<typeof mapStateToProps>;
+type dispatchProps = ReturnType<typeof mapDispatchToProps>;
+type Props = stateProps & dispatchProps & ReceivedProps & InjectedIntlProps
 
-export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(TreeView))
+export default connect<stateProps, dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(TreeView))

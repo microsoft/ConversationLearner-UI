@@ -143,10 +143,12 @@ const selectors = {
         buttonMerge: '[data-testid="merge-modal-merge-button"]',
         buttonSaveAsIs: '[data-testid="merge-modal-save-as-is-button"]',
     },
+    addInputModal: {
+        branchInput: '[data-testid="user-input-modal-new-message-input"]',
+    },
     dialogModal: {
         container: '.cl-modal',
         branchButton: '[data-testid="edit-dialog-modal-branch-button"]',
-        branchInput: '[data-testid="user-input-modal-new-message-input"]',
         branchSubmit: '[data-testid="app-create-button-submit"]',
         buttonCloseSave: '[data-testid="edit-teach-dialog-close-save-button"]',
         buttonScoreActionsButton: '[data-testid="score-actions-button"]',
@@ -217,6 +219,7 @@ const selectors = {
         buttonAddAction: '[data-testid="chat-edit-add-bot-response-button"]',
         buttonAddInput: '[data-testid="chat-edit-add-user-input-button"]',
         buttonBranch: '[data-testid="edit-dialog-modal-branch-button"]',
+        buttonDeleteActivity: '[data-testid="chat-edit-delete-turn-button"]',
     },
     settings: {
         buttonNewVersion: '[data-testid="settings-button-new-version"]',

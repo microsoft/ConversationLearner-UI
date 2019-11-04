@@ -26,7 +26,6 @@ import { withRouter } from 'react-router-dom'
 import { RouteComponentProps } from 'react-router'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import { returntypeof } from 'react-redux-typescript'
 import { State, ErrorType } from '../../../types'
 import { EditDialogType, EditState, SelectionType, FeatureStrings } from '../../../types/const'
 import { TeachSessionModal, EditDialogModal, MergeModal } from '../../../components/modals'
@@ -1110,7 +1109,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
     async importOBIFiles(obiImportData: OBIUtils.OBIImportData): Promise<void> {
         const obiDialogParser = new OBIDialogParser.ObiDialogParser(
-            this.props.app,
+            this.props.app.appId,
             this.props.actions,
             this.props.entities,
             this.props.createActionThunkAsync as any,
@@ -1278,7 +1277,16 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 importData.lgItems,
                 this.props.actions,
                 importData.conditions,
-                this.props.createActionThunkAsync as any)
+                this.props.createActionThunkAsync as any,
+            )
+
+            // Update memory state, if applicable.
+            OBIUtils.setMemoryStateForImportedTrainDialog(
+                this.props.entities,
+                this.props.actions,
+                newTrainDialog,
+                importData.conditions,
+            )
 
             // Replay to validate
             newTrainDialog = await DialogEditing.onReplayTrainDialog(
@@ -1984,8 +1992,8 @@ export interface ReceivedProps {
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
-const stateProps = returntypeof(mapStateToProps)
-const dispatchProps = returntypeof(mapDispatchToProps)
-type Props = typeof stateProps & typeof dispatchProps & ReceivedProps & InjectedIntlProps & RouteComponentProps<any>
+type stateProps = ReturnType<typeof mapStateToProps>
+type dispatchProps = ReturnType<typeof mapDispatchToProps>
+type Props = stateProps & dispatchProps & ReceivedProps & InjectedIntlProps & RouteComponentProps<any>
 
-export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(withRouter(injectIntl(TrainDialogs)))
+export default connect<stateProps, dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(withRouter(injectIntl(TrainDialogs)))
