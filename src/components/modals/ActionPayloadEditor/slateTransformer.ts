@@ -90,50 +90,51 @@ function replaceEntityNodesWithValues(node: any, entityValuesMap: Record<string,
                 : node.data
             const option = data.option
 
-            if (!option) {
-                throw new Error(`Attempting to get inline node option, but node did not have option`)
-            }
+            if (option) {
+                const entityId = option.id
+                const entityEntry = entityValuesMap[entityId]
 
-            const entityId = option.id
-            const entityEntry = entityValuesMap[entityId]
+                // If entity entry exists, replace children with text node of value
+                if (entityEntry) {
+                    const text = replacerFn(entityEntry)
+                    const textNode = {
+                        "kind": "text",
+                        "leaves": [
+                            {
+                                "kind": "leaf",
+                                "text": text,
+                                "marks": []
+                            }
+                        ]
+                    }
 
-            // If entity entry exists, replace children with text node of value
-            if (entityEntry) {
-                const text = replacerFn(entityEntry)
-                const textNode = {
-                    "kind": "text",
-                    "leaves": [
-                        {
-                            "kind": "leaf",
-                            "text": text,
-                            "marks": []
-                        }
+                    node.nodes = [
+                        textNode
                     ]
-                }
 
-                node.nodes = [
-                    textNode
-                ]
+                    // If entity does not have value, mark as missing
+                    // Otherwise, mark as filled
+                    const entityFilledData: Record<string, boolean> = {}
 
-                // If entity does not have value, mark as missing
-                // Otherwise, mark as filled
-                const entityFilledData: Record<string, boolean> = {}
+                    if (typeof entityEntry.value === "undefined") {
+                        entityFilledData.missing = true
 
-                if (typeof entityEntry.value === "undefined") {
-                    entityFilledData.missing = true
+                        if (entitiesRequired) {
+                            entityFilledData.required = true
+                        }
+                    }
+                    else {
+                        entityFilledData.filled = true
+                    }
 
-                    if (entitiesRequired) {
-                        entityFilledData.required = true
+                    node.data = {
+                        ...data,
+                        ...entityFilledData,
                     }
                 }
-                else {
-                    entityFilledData.filled = true
-                }
-
-                node.data = {
-                    ...data,
-                    ...entityFilledData,
-                }
+            }
+            else {
+                console.warn(`Attempting to get inline node option, but node did not have option`)
             }
         }
 
@@ -143,7 +144,6 @@ function replaceEntityNodesWithValues(node: any, entityValuesMap: Record<string,
                 .filter((n: any) => n)
         }
     }
-
 
     return node
 }
