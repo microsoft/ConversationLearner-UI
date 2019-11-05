@@ -8,7 +8,6 @@ import * as OF from 'office-ui-fabric-react'
 import actions from '../actions'
 import FormattedMessageId from '../components/FormattedMessageId'
 import { RouteComponentProps } from 'react-router'
-import { returntypeof } from 'react-redux-typescript'
 import { connect } from 'react-redux'
 import { State, ports } from '../types'
 import { bindActionCreators } from 'redux'
@@ -114,8 +113,8 @@ const mapStateToProps = (state: State) => {
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
-const stateProps = returntypeof(mapStateToProps)
-const dispatchProps = returntypeof(mapDispatchToProps)
-type Props = typeof stateProps & typeof dispatchProps & RouteComponentProps<any> & InjectedIntlProps
+type stateProps = ReturnType<typeof mapStateToProps>
+type dispatchProps = ReturnType<typeof mapDispatchToProps>
+type Props = stateProps & dispatchProps & RouteComponentProps<any> & InjectedIntlProps
 
-export default connect<typeof stateProps, typeof dispatchProps, RouteComponentProps<any>>(mapStateToProps, mapDispatchToProps)(injectIntl(Settings))
+export default connect<stateProps, dispatchProps, RouteComponentProps<any>>(mapStateToProps, mapDispatchToProps)(injectIntl(Settings))

@@ -19,6 +19,7 @@ export enum TipType {
     ACTION_API3 = 'actionAPI3',
     ACTION_ARGUMENTS = 'actionArguments',
     ACTION_CARD = 'actionCard',
+    ACTION_CHANGE_MODEL = 'actionChangeModel',
     ACTION_DELETE_INUSE = 'actionDeleteInUse',
     ACTION_END_SESSION = 'actionEndSession',
     ACTION_ENTITIES = 'actionEntities',
@@ -208,6 +209,15 @@ export function getTip(tipType: string) {
             return render(FM.TOOLTIP_ACTION_ARGUMENTS_TITLE, [FM.TOOLTIP_ACTION_ARGUMENTS])
         case TipType.ACTION_CARD:
             return render(FM.TOOLTIP_ACTION_CARD_TITLE, [FM.TOOLTIP_ACTION_CARD])
+        case TipType.ACTION_CHANGE_MODEL:
+            return (
+                <div>
+                    <div className={OF.FontClassNames.mediumPlus}>Change Model</div>
+                    <p>
+                        Forward the user input to another model and make that model the active model to receive all future input in conversation.
+                    </p>
+                </div>
+            )
         case TipType.ACTION_END_SESSION:
             return render(FM.TOOLTIP_ACTION_END_SESSION_TITLE, [FM.TOOLTIP_ACTION_END_SESSION])
         case TipType.ACTION_SET_ENTITY:
@@ -569,7 +579,7 @@ export function getTip(tipType: string) {
                         width="50%"
                         alt="Entity Labeling"
                     />
-                    <p>When running dialogs through your bot the entities always have number resolution. This can mislead you into thinking it will work in all cases. However, the entity extraction can learn to label based on word sequence and such as words preceeding 'fruit' or 'vegetable' should be labeled regardless if the label can be resolvable to a number. This can result in phrases from users like 'many' or 'a lot' which are appropriate before 'fruits' or 'vegetables' to be labeled even they cannot be resolved into a number. You can use this "Resolution Required" option to disallow this case and remove these labels without resolution.</p>
+                    <p>When running dialogs through your bot the entities always have number resolution. This can mislead you into thinking it will work in all cases. However, the entity extraction can learn to label based on word sequence and such as words preceeding 'fruit' or 'vegetable' should be labeled regardless if the label can be resolvable to a number. This can result in phrases from users like 'many' or 'a lot' which are appropriate before 'fruits' or 'vegetables' to be labeled even though they cannot be resolved into a number. You can use this "Resolution Required" option to disallow this case and remove these labels without resolution.</p>
                     <img
                         className="cl-panelimage"
                         src="https://blisstorage.blob.core.windows.net/uiimages/TooTip_ENTITY_RESOLVER_RESOLUTION_REQUIRED_02.png"

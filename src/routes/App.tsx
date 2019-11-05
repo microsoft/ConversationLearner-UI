@@ -6,7 +6,6 @@ import * as React from 'react'
 import {
   BrowserRouter as Router, Redirect, Route, NavLink, Switch
 } from 'react-router-dom'
-import { returntypeof } from 'react-redux-typescript'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { State } from '../types'
@@ -208,8 +207,8 @@ const mapStateToProps = (state: State) => {
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
-const stateProps = returntypeof(mapStateToProps)
-const dispatchProps = returntypeof(mapDispatchToProps);
-type Props = typeof stateProps & typeof dispatchProps
+type stateProps = ReturnType<typeof mapStateToProps>
+type dispatchProps = ReturnType<typeof mapDispatchToProps>;
+type Props = stateProps & dispatchProps
 
-export default connect<typeof stateProps, typeof dispatchProps>(mapStateToProps, mapDispatchToProps)(App)
+export default connect<stateProps, dispatchProps>(mapStateToProps, mapDispatchToProps)(App)

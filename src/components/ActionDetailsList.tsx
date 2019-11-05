@@ -10,7 +10,6 @@ import * as moment from 'moment'
 import * as CLM from '@conversationlearner/models'
 import AdaptiveCardViewer from './modals/AdaptiveCardViewer/AdaptiveCardViewer'
 import actionTypeRenderer from './ActionTypeRenderer'
-import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { State } from '../types'
@@ -19,6 +18,7 @@ import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../react-intl-messages'
 import './ActionDetailsList.css'
 import { autobind } from 'core-decorators'
+import { getValueConditionName, getEnumConditionName } from '../Utils/actionCondition'
 
 interface ComponentState {
     columns: IRenderableColumn[]
@@ -88,7 +88,8 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
                     ? true
                     : entity.entityType !== CLM.EntityType.ENUM
             }
-            case CLM.ActionTypes.DISPATCH: {
+            case CLM.ActionTypes.DISPATCH:
+            case CLM.ActionTypes.CHANGE_MODEL: {
                 // TODO: Could validate access to model, but don't have access to it within this model
                 return false
             }
@@ -220,19 +221,19 @@ export interface ReceivedProps {
 }
 
 // Props types inferred from mapStateToProps
-const stateProps = returntypeof(mapStateToProps);
-type Props = typeof stateProps & ReceivedProps & InjectedIntlProps
+type stateProps = ReturnType<typeof mapStateToProps>
+type Props = stateProps & ReceivedProps & InjectedIntlProps
 
-export default connect<typeof stateProps, {}, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(ActionDetailsList) as any)
+export default connect<stateProps, {}, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(ActionDetailsList) as any)
 
 function getActionPayloadRenderer(action: CLM.ActionBase, component: ActionDetailsList, isValidationError: boolean) {
     if (action.actionType === CLM.ActionTypes.TEXT) {
         const textAction = new CLM.TextAction(action)
         return (<ActionPayloadRenderers.TextPayloadRendererWithHighlights
-                textAction={textAction}
-                entities={component.props.entities}
-                showMissingEntities={false}
-            />)
+            textAction={textAction}
+            entities={component.props.entities}
+            showMissingEntities={false}
+        />)
     }
     else if (action.actionType === CLM.ActionTypes.API_LOCAL) {
         const apiAction = new CLM.ApiAction(action)
@@ -272,6 +273,10 @@ function getActionPayloadRenderer(action: CLM.ActionBase, component: ActionDetai
         const dispatchAction = new CLM.DispatchAction(action)
         return <span data-testid="actions-list-dispatch" className={OF.FontClassNames.mediumPlus}>Dispatch to model: {dispatchAction.modelName}</span>
     }
+    else if (action.actionType === CLM.ActionTypes.CHANGE_MODEL) {
+        const changeModelAction = new CLM.ChangeModelAction(action)
+        return <span data-testid="actions-list-change-model" className={OF.FontClassNames.mediumPlus}>Change to model: {changeModelAction.modelName}</span>
+    }
 
     return <span className={OF.FontClassNames.mediumPlus}>Unknown Action Type</span>
 }
@@ -299,34 +304,37 @@ function renderConditions(entityIds: string[], conditions: CLM.Condition[], allE
         ])
     }
 
-    const elements: JSX.Element[] = []
-    entityIds.forEach(entityId => {
+    const elementsForEntityIds = entityIds.map(entityId => {
         const entity = allEntities.find(e => e.entityId === entityId)
-        if (!entity) {
-            elements.push(renderCondition(`Error - Missing Entity ID: ${entityId}`, isRequired))
-        }
-        else {
-            elements.push(renderCondition(entity.entityName, isRequired))
-        }
+        const name = !entity
+            ? `Error - Missing Entity ID: ${entityId}`
+            : entity.entityName
+
+        return renderCondition(name, isRequired)
     })
-    if (conditions) {
-        conditions.forEach(condition => {
+
+    const elementsFromConditions = conditions
+        .map(condition => {
             const entity = allEntities.find(e => e.entityId === condition.entityId)
+
+            let name: string
             if (!entity) {
-                elements.push(renderCondition(`Error - Missing Entity ID: ${condition.entityId}`, isRequired))
+                name = `Error - Missing Entity ID: ${condition.entityId}`
+            }
+            else if (condition.valueId) {
+                const enumValue = entity.enumValues ? entity.enumValues.find(eid => eid.enumValueId === condition.valueId) : undefined
+                name = !enumValue
+                    ? `Error - Missing Enum: ${condition.valueId}`
+                    : getEnumConditionName(entity, enumValue)
             }
             else {
-                const enumValue = entity.enumValues ? entity.enumValues.find(eid => eid.enumValueId === condition.valueId) : undefined
-                if (!enumValue) {
-                    elements.push(renderCondition(`Error - Missing Enum: ${condition.valueId}`, isRequired))
-                }
-                else {
-                    elements.push(renderCondition(`${entity.entityName} = ${enumValue.enumValue}`, isRequired))
-                }
+                name = getValueConditionName(entity, condition)
             }
+
+            return renderCondition(name, isRequired)
         })
-    }
-    return elements
+
+    return [...elementsForEntityIds, ...elementsFromConditions]
 }
 
 function getColumns(intl: InjectedIntl): IRenderableColumn[] {
@@ -363,6 +371,14 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                         }
                         case CLM.ActionTypes.SET_ENTITY: {
                             return `set-${action.entityId}-${action.enumValueId}`
+                        }
+                        case CLM.ActionTypes.DISPATCH: {
+                            const dispatchAction = new CLM.DispatchAction(action)
+                            return dispatchAction.modelName
+                        }
+                        case CLM.ActionTypes.CHANGE_MODEL: {
+                            const changeModelAction = new CLM.ChangeModelAction(action)
+                            return changeModelAction.modelName
                         }
                         default: {
                             console.warn(`Could not get sort value for unknown action type: ${action.actionType}`)
@@ -456,6 +472,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             name: Util.formatMessageId(intl, FM.ACTIONDETAILSLIST_COLUMNS_ISTERMINAL),
             fieldName: 'isTerminal',
             minWidth: 50,
+            maxWidth: 50,
             isResizable: false,
             getSortValue: action => action.isTerminal ? 'a' : 'b',
             render: action => <OF.Icon iconName={action.isTerminal ? 'CheckMark' : 'Remove'} className="cl-icon" data-testid="action-details-wait" />

@@ -12,7 +12,6 @@ import EntityCreatorEditor from './EntityCreatorEditor'
 import FormattedMessageId from '../FormattedMessageId'
 import HelpIcon from '../HelpIcon'
 import MemorySetter from './MemorySetter'
-import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { State } from '../../types'
@@ -164,11 +163,9 @@ class EditApiPlaceholder extends React.Component<Props, ComponentState> {
                         {!this.state.editingExisting &&
                             <div className="cl-actioncreator-form-section">
                                 <TC.Checkbox
-                                    data-testid="action-creator-wait-checkbox"
                                     label="Wait for Response?"
                                     checked={this.state.isTerminal}
                                     onChange={this.onChangeWaitCheckbox}
-                                    style={{ marginTop: '1em', display: 'inline-block' }}
                                     tipType={ToolTip.TipType.ACTION_WAIT}
                                 />
                             </div>
@@ -245,8 +242,8 @@ export interface ReceivedProps {
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
-const stateProps = returntypeof(mapStateToProps);
-const dispatchProps = returntypeof(mapDispatchToProps);
-type Props = typeof stateProps & typeof dispatchProps & ReceivedProps & InjectedIntlProps
+type stateProps = ReturnType<typeof mapStateToProps>;
+type dispatchProps = ReturnType<typeof mapDispatchToProps>;
+type Props = stateProps & dispatchProps & ReceivedProps & InjectedIntlProps
 
-export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(EditApiPlaceholder))
+export default connect<stateProps, dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(EditApiPlaceholder))

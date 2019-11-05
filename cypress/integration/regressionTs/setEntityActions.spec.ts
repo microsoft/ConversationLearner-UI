@@ -358,6 +358,8 @@ describe('Set Entity Actions', () => {
 
             cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
                 .should('not.exist')
+
+            cy.wait(1000)
         })
 
         it('should successful place fast food order using context for instead of labels', () => {

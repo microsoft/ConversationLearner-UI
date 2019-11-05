@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h2>Exercise Training Status</h2>
+
+<div id="p1">
+  <div>x</div>
+</div> 
+
+<button onclick="Queue()">Queue</button>
+<button onclick="Run()">Run</button>
+<button onclick="Complete()">Complete</button>
+<button onclick="Fail()">Fail</button>
+<button onclick="StopPolling()">StopPolling</button>
+<button onclick="Queue()" data-testid="training-status-refresh-button">Refresh</button>
+
+<script>
+Queue()
+
+function Queue() { document.getElementById("p1").innerHTML = '<div><span data-testid="training-status-queued">Training Queued</span></div>' }
+function Run() { document.getElementById("p1").innerHTML = '<div><span data-testid="training-status-running">Training Status Running</span></div>' }
+function Complete() { document.getElementById("p1").innerHTML = '<div><span data-testid="training-status-completed">Training Status Complete</span></div>' }
+function Fail() { document.getElementById("p1").innerHTML = '<div><span data-testid="training-status-failed">Training Status FAILED!</span></div>' }
+function StopPolling() { document.getElementById("p1").innerHTML = '<div><span data-testid="training-status-polling-stopped-warning">Training Polling Stopped</span></div>' }
+</script>
+
+<p>Page for testing the Training Status transitions</p>
+
+</body>
+</html>

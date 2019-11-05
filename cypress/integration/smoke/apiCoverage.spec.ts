@@ -254,7 +254,7 @@ describe('Scenario 01 - API Coverage - Exercise all major use cases', () => {
             cy.get(s.webChat.buttonAddInput)
                 .click()
 
-            cy.get(s.dialogModal.branchInput)
+            cy.get(s.addInputModal.branchInput)
                 .type(testData.dialog.userInput)
 
             cy.get(s.dialogModal.branchSubmit)
@@ -289,6 +289,9 @@ describe('Scenario 01 - API Coverage - Exercise all major use cases', () => {
 
             cy.get(s.logDialogs.buttonCreate)
                 .click()
+
+            cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+                .should('not.exist')
         })
 
         it('should create a log dialog', () => {
@@ -374,7 +377,7 @@ describe('Scenario 01 - API Coverage - Exercise all major use cases', () => {
 
             // remove any / first label
             cy.get(s.extractionEditor.slateEditor)
-                .get('.cl-entity-node--custom')
+                .get(s.extractionEditor.customNode)
                 .click()
                 .find(s.extractionEditor.buttonRemoveLabel)
                 .click()

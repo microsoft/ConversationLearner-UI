@@ -3,7 +3,6 @@
  * Licensed under the MIT License.
  */
 import * as React from 'react'
-import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import * as OF from 'office-ui-fabric-react'
@@ -195,8 +194,8 @@ const mapStateToProps = (state: State) => {
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
-const stateProps = returntypeof(mapStateToProps);
-const dispatchProps = returntypeof(mapDispatchToProps);
-type Props = typeof stateProps & typeof dispatchProps & InjectedIntlProps
+type stateProps = ReturnType<typeof mapStateToProps>;
+type dispatchProps = ReturnType<typeof mapDispatchToProps>;
+type Props = stateProps & dispatchProps & InjectedIntlProps
 
-export default connect<typeof stateProps, typeof dispatchProps>(mapStateToProps, mapDispatchToProps)(injectIntl(ErrorPanel))
+export default connect<stateProps, dispatchProps>(mapStateToProps, mapDispatchToProps)(injectIntl(ErrorPanel))

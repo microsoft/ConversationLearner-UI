@@ -24,7 +24,6 @@ import { connect } from 'react-redux'
 import { saveAs } from 'file-saver'
 import { State, ErrorType } from '../../../types'
 import { bindActionCreators } from 'redux'
-import { returntypeof } from 'react-redux-typescript'
 import { FM } from '../../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import './Testing.css'
@@ -211,7 +210,7 @@ class Testing extends React.Component<Props, ComponentState> {
                             // If API call include API results
                             if (activity.channelData && activity.channelData.type === "ActionCall") {
                                 const actionCall = activity.channelData as OBIUtils.TranscriptActionCall
-                                apiResults = await OBIUtils.importActionOutput(actionCall.actionOutput, this.props.entities, this.props.app)
+                                apiResults = await OBIUtils.importActionOutput(actionCall.actionOutput, this.props.entities, this.props.app.appId)
                                 transcriptValidationTurn.apiResults.push(apiResults)
                             }
                             else {
@@ -245,7 +244,7 @@ class Testing extends React.Component<Props, ComponentState> {
                 const logDialogId = await ((this.props.fetchTranscriptValidationThunkAsync(this.props.app.appId, this.props.editingPackageId, testId, transcriptValidationTurns) as any) as Promise<string | null>)
                 let resultTranscript: BB.Activity[] | undefined
 
-                // If log was retr}ieved and I'm not done
+                // If log was retrieved and I'm not done
                 if (logDialogId && this.state.doneCount !== -1) {
 
                     resultTranscript = await OBIUtils.getLogDialogActivities(
@@ -258,6 +257,9 @@ class Testing extends React.Component<Props, ComponentState> {
                         sourceName,
                         this.props.fetchLogDialogThunkAsync as any,
                         this.props.fetchActivitiesThunkAsync as any) as BB.Activity[]
+                }
+                else if (!logDialogId) {
+                    throw new Error(`Transcript is not a valid and can't be replayed`)
                 }
 
                 // Substitute back in any LG refs
@@ -693,6 +695,7 @@ class Testing extends React.Component<Props, ComponentState> {
                         open={true}
                         onOk={() => this.onCloseTestWarning()}
                         title={Util.formatMessageId(this.props.intl, FM.TESTING_WARNING)}
+                        style='ms-Dialog-main--wide'
                         message={() =>
                             <OF.List
                                 className="cl-warning-list"
@@ -746,8 +749,8 @@ export interface ReceivedProps {
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
-const stateProps = returntypeof(mapStateToProps)
-const dispatchProps = returntypeof(mapDispatchToProps)
-type Props = typeof stateProps & typeof dispatchProps & ReceivedProps & InjectedIntlProps
+type stateProps = ReturnType<typeof mapStateToProps>
+type dispatchProps = ReturnType<typeof mapDispatchToProps>
+type Props = stateProps & dispatchProps & ReceivedProps & InjectedIntlProps
 
-export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(Testing))
+export default connect<stateProps, dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(Testing))

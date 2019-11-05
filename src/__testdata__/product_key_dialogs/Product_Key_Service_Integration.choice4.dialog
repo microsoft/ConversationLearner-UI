@@ -1,0 +1,57 @@
+//Product_Key_Service_Integration.Yes.dialog
+{
+  "$schema": "../../app.schema",
+  "$type": "Microsoft.AdaptiveDialog",
+  "recognizer": "main.lu",
+  "rules": [],
+  "steps": [
+    {
+      "$type": "Microsoft.TextInput",
+      "property": "dialog.option16",
+      "prompt": "[option15]",
+      "alwaysPrompt": true
+    },
+    {
+      "$type": "Microsoft.HttpRequest",
+      "property": "dialog.postResponse17",
+      "url": "Replace Here",
+      "method": "POST",
+      "header": {
+        "accept": "application/json"
+      },
+      "body": {
+        "productKey": "{dialog.option16}"
+      },
+      "responseFields": [
+        "isProductKey"
+      ]
+    },
+    {
+      "$type": "Microsoft.SwitchCondition",
+      "cases": [
+
+        {
+          "value": "isProductKey == Office",
+          "steps": [
+            {
+              "$type": "Microsoft.BeginDialog",
+              "dialog": "Product_Key_Service_Integration.choice4.choice7"
+            }
+          ]
+        },
+        {
+          "value": "isProductKey == Windows",
+          "steps": [
+            {
+              "$type": "Microsoft.BeginDialog",
+              "dialog": "Product_Key_Service_Integration.choice4.choice8"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "$type": "Microsoft.EndDialog"
+    }
+  ]
+}
