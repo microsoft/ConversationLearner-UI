@@ -16,7 +16,7 @@ interface Props extends EntityComponentProps {
 }
 
 export const MentionNode = (props: Props) => {
-    const isCompleted = props.node.data.get('completed')
+    const isCompleted = props.node.data.get('completed') === true
 
     return (
         <span className={`mention-node ${isCompleted ? 'mention-node--completed' : ''}`} {...props.attributes}>

@@ -63,12 +63,13 @@ function getEntityIds(node: any): string[] {
             : node.data
         const option = data.option
 
-        if (!option) {
-            throw new Error(`Attempting to serialize inline node but it did not have option`)
+        if (option) {
+            const entityId = option.id
+            entityIds.push(entityId)
         }
-
-        const entityId = option.id
-        entityIds.push(entityId)
+        else {
+            console.warn(`Attempting to serialize inline node but it did not have option`)
+        }
     }
 
     // Technically this would never get called because inline nodes shouldn't have other children which are inline nodes
