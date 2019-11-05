@@ -5,10 +5,10 @@
 
 import * as models from '../../../support/Models'
 import * as modelPage from '../../../support/components/ModelPage'
-import * as entities from '../../../support/Entities'
 import * as entitiesGrid from '../../../support/components/EntitiesGrid'
 import * as entityModal from '../../../support/components/EntityModal'
 import * as actionsGrid from '../../../support/components/ActionsGrid'
+import * as trainDialogsGrid from '../../../support/components/TrainDialogsGrid'
 import * as train from '../../../support/Train'
 import * as helpers from '../../../support/Helpers'
 
@@ -28,11 +28,11 @@ let trainDialogs
 context('TEMPORARY DIVERGENCE', () => {
   it('Capture Train Dialog Grid data', () => {
     modelPage.NavigateToTrainDialogs()
-    cy.WaitForStableDOM().then(() => { trainDialogs = train.GetAllTrainDialogGridRows() })
+    cy.Enqueue(() => { return trainDialogsGrid.TdGrid.GetAllRows() }).then(returnValue => trainDialogs = returnValue)
   })
 
   it('Verify the list of Train Dialog Grid data', () => {
-    train.VerifyListOfTrainDialogs(trainDialogs)
+    trainDialogsGrid.VerifyListOfTrainDialogs(trainDialogs)
   })
 })
 
@@ -67,7 +67,7 @@ context('TEMPORARY DIVERGENCE', () => {
     it('Should verify that filter Train Dialog on Entity button works', () => {
       entityModal.ClickTrainDialogFilterButton()
       train.VerifyEntityFilter('name')
-      train.VerifyListOfTrainDialogs([
+      trainDialogsGrid.VerifyListOfTrainDialogs([
         {firstInput: 'Hey', lastInput: 'world peace', lastResponse: "Sorry $name, I can't help you get $want"}
       ])
     })
@@ -100,7 +100,7 @@ context('TEMPORARY DIVERGENCE', () => {
     it('Should verify that filter Train Dialog on Entity button works', () => {
       entityModal.ClickTrainDialogFilterButton()
       train.VerifyEntityFilter('sweets')
-      train.VerifyListOfTrainDialogs([
+      trainDialogsGrid.VerifyListOfTrainDialogs([
         {firstInput: 'I love candy!', lastInput: 'I love candy!', lastResponse: "What's your name?"}
       ])
     })
@@ -134,7 +134,7 @@ context('TEMPORARY DIVERGENCE', () => {
     it('Should verify that filter Train Dialog on Entity button works', () => {
       entityModal.ClickTrainDialogFilterButton()
       train.VerifyEntityFilter('want')
-      train.VerifyListOfTrainDialogs([
+      trainDialogsGrid.VerifyListOfTrainDialogs([
         {firstInput: 'Hey', lastInput: 'world peace', lastResponse: "Sorry $name, I can't help you get $want"},
         {firstInput: 'I want a car!', lastInput: 'I want a car!', lastResponse: "What's your name?"}
       ])
@@ -190,7 +190,7 @@ context('TEMPORARY DIVERGENCE', () => {
     it('Should verify that filter Train Dialog on Entity button works', () => {
       entityModal.ClickTrainDialogFilterButton()
       train.VerifyEntityFilter('canBeDeletedToo')
-      train.VerifyListOfTrainDialogs([
+      trainDialogsGrid.VerifyListOfTrainDialogs([
         {firstInput: 'We will delete this entity.', lastInput: 'Will also delete this entity.', lastResponse: "What's your name?"}
       ])
     })

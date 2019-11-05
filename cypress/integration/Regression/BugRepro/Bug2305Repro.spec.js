@@ -5,6 +5,7 @@
 
 import * as models from '../../../support/Models'
 import * as modelPage from '../../../support/components/ModelPage'
+import * as trainDialogsGrid from '../../../support/components/TrainDialogsGrid'
 import * as train from '../../../support/Train'
 import * as helpers from '../../../support/Helpers'
 
@@ -47,7 +48,7 @@ describe('Bug 2305 Repro', () => {
         { firstInput: 'The green frog jumped.', lastInput: 'The green frog jumped.', lastResponse: 'The only response' },
         { firstInput: 'The green frog jumped.', lastInput: 'The brown dog ran.', lastResponse: '' },
       ]
-      train.VerifyListOfTrainDialogs(expectedTrainDialogs)
+      trainDialogsGrid.VerifyListOfTrainDialogs(expectedTrainDialogs)
     })
   })
 })

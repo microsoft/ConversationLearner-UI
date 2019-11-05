@@ -5,7 +5,7 @@
 
 import * as modelPage from './ModelPage'
 import * as helpers from '../Helpers'
-import { func } from 'prop-types'
+import * as chatPanel from './ChatPanel'
 
 // Path to product code: ConversationLearner-UI\src\routes\Apps\App\TrainDialogs.tsx
 export function VerifyPageTitle() { 
@@ -45,7 +45,7 @@ export function GetTurns() { return helpers.NumericArrayFromElementText('[data-t
 export function GetLastModifiedDates() { return helpers.StringArrayFromElementText('[data-testid="train-dialogs-last-modified"]') }
 export function GetCreatedDates() { return helpers.StringArrayFromElementText('[data-testid="train-dialogs-created"]') }
 
-export function GetTags() { return helpers.StringArrayFromElementText('[data-testid="train-dialogs-tags"]') }
+export function GetTagLists() { return helpers.StringArrayFromElementText('[data-testid="train-dialogs-tags"]') }
 export function GetDescriptions() { return helpers.StringArrayFromElementText('[data-testid="train-dialogs-description"]') }
 
 export function VerifyErrorIconForTrainGridRow(rowIndex) { cy.Get(`div.ms-List-cell[data-list-index="${rowIndex}"]`).find('[data-testid="train-dialogs-validity-indicator"]') }
@@ -90,7 +90,8 @@ export class TdGrid {
       if (TdGrid.isStable) {
         helpers.ConLog(funcName, 'The Train Dialog Grid IS STABLE!')
         TdGrid.monitorIsActivated = false
-        return new TdGrid()
+        TdGrid.tdGrid = new TdGrid()
+        return TdGrid.tdGrid
       }
     } 
     catch (error) {
@@ -125,17 +126,21 @@ export class TdGrid {
   // 2) this should be called from an object returned from TdGrid.GetTdGrid
   // Returns the index of the row that was found or -1 if not found
   // You may provide both description and tags or just one of them.
-  FindGridRowByDescriptionAndOrTags(description, tags){
-    const funcName = `TdGrid.FindGridRowByDescriptionAndOrTags("${description}", "${tags}")`
+  FindGridRowByDescriptionAndOrTags(description, tagList){
+    const funcName = `TdGrid.FindGridRowByDescriptionAndOrTags("${description}", "${tagList}")`
     helpers.ConLog(funcName, this.feedback)
 
-    if (this.expectedRowCount >= 0 && ((description && this.expectedRowCount != this.desciptions.length) || (tags && this.expectedRowCount != this.tags.length))) {
+    if (desciption == undefined && tagList == undefined) {
+      throw new Error('Test code flaw: both description and tags cannot be undefined when calling this function.')
+    }
+
+    if (this.expectedRowCount >= 0 && ((description && this.expectedRowCount != this.desciptions.length) || (tagList && this.expectedRowCount != this.tagLists.length))) {
       throw new Error(`Somethings wrong in TdGrid.FindGridRowByDescriptionAndOrTags - ${this.feedback}`)
     }
     
-    const length = description ? this.descriptions.length : (tags ? this.tags : undefined)
+    const length = description ? this.descriptions.length : (tagList ? this.tagLists : undefined)
     for (let i = 0; i < length; i++) {
-      if ((!description || this.descriptions[i] === description) && (!tags || this.tags[i] == tags)) {
+      if ((!description || this.descriptions[i] === description) && (!tagList || this.tagLists[i] == tagList)) {
         helpers.ConLog(funcName, `Found on row ${i}`)
         return i
       }
@@ -177,12 +182,155 @@ export class TdGrid {
     return this._descriptions
   }
 
-  get tags() { 
-    if (!this._tags) { 
-      this._tags = GetTags()
-      this.feedback += ` - Length Tags: ${this._tags.length}`
+  get tagLists() { 
+    if (!this._tagLists) { 
+      this._tagLists = GetTagLists()
+      this.feedback += ` - Length Tags: ${this._tagLists.length}`
     }
-    return this._tags
+    return this._tagLists
+  }
+
+// STATICS:
+// Once one of the two EditTraining* functions are used, the Train Dialog Grid is hidden, it should not change,
+// there is no need to access it again until a change is saved from the Train Dialog Editor and the Model page
+// is once again the top most view.
+//
+// These static methods then allow for expected changes to be made to internal data that can be later used to verify
+// any changes made to Train Dialogs are reflected in the grid once it refreshes.
+
+  static NewTrainDialog() {
+    cy.Enqueue(() => {
+      TdGrid.GetAllRows(expectedRowCount)
+    }).then(() => {
+      TdGrid.iCurrentRow = TdGrid.currentData.length
+    })
+  }
+
+  static EditTrainingByChatInputs(firstInput, lastInput, lastResponse, expectedRowCount = -1)  {
+    const funcName = `EditTrainingByChatInputs(${firstInput}, ${lastInput}, ${lastResponse})`
+    
+    cy.Enqueue(() => {
+      TdGrid.GetAllRows(expectedRowCount)
+    }).then(() => {
+      let iRow = TdGrid.iCurrentRow = TdGrid.tdGrid.FindGridRowByChatInputs(firstInput, lastInput, lastResponse)
+      if (iRow < 0) { 
+        throw new Error(`Can't Find Training to Edit. The grid should, but does not, contain a row with this data in it: FirstInput: ${firstInput} -- LastInput: ${lastInput} -- LastResponse: ${lastResponse}`)
+      }
+
+      helpers.ConLog(funcName, `ClickTraining for Train Dialog Row #${iRow} - ${firstInput}, ${lastInput}, ${lastResponse}`)
+      ClickTraining(iRow)
+    }).then(() => { 
+      EditTrainingValidationPhase(TdGrid.iCurrentRow) 
+    })
+  }
+
+  static EditTrainingByDescriptionAndOrTags(description, tagList, expectedRowCount = -1) {
+    const funcName = `EditTrainingByDescriptionAndOrTags(${description}, ${tagList})`
+    
+    cy.Enqueue(() => {
+      TdGrid.GetAllRows(expectedRowCount)
+    }).then(() => {
+      let iRow = TdGrid.iCurrentRow = TdGrid.tdGrid.FindGridRowByDescriptionAndOrTags(description, tagList)
+      if (iRow < 0) { 
+        throw new Error(`Can't Find Training to Edit. The grid should, but does not, contain a row with this data in it: Description: '${description}' -- Tags: ${tagList}`)
+      }
+      helpers.ConLog(funcName, `ClickTraining for row: ${iRow}`)
+      trainDialogsGrid.ClickTraining(iRow)
+    }).then(() => { 
+      EditTrainingValidationPhase(TdGrid.iCurrentRow) 
+    })
+  }
+
+  // Sometimes the first click on the grid row does not work, so we implemented this logic to watch and see
+  // if it loaded, and if not to re-click on the row. So far we've never seen it require a 3rd click.
+  static EditTrainingValidationPhase(iRow) {
+    cy.WaitForStableDOM()
+
+    const funcName = 'TdGrid.EditTrainingValidationPhase'
+    let retryCount = 0
+
+    helpers.ConLog(funcName, `Row #${iRow}`)
+
+    cy.wrap(1, {timeout: 8000}).should(() => {
+      const allChatMessageElements = chatPanel.GetAllChatMessageElements()
+      if (allChatMessageElements.length > 0) {
+        helpers.ConLog(funcName, `The expected Train Dialog from row #${iRow} has loaded`)
+        return
+      }
+      
+      helpers.ConLog(funcName, `We are still waiting for the Train Dialog to load`)
+      retryCount++
+      if (retryCount % 5 == 0) {
+        helpers.ConLog(funcName, `Going to click on Train Dialog Row #${iRow} again.`)
+        
+        // The problem with calling ClickTraining is that it causes the cy.wrap timeout to be canceled.
+        // CANNOT USE THIS - ClickTraining(iRow)
+        Cypress.$('[data-testid="train-dialogs-description"]')[iRow].click({force: true})
+
+        throw new Error(`Retry - Clicked on Train Dialog Row #${iRow} again - need retry to verify TD loaded this time.`)
+      }
+      throw new Error('Retry - The Train Dialog has not yet loaded')
+    })
+  }
+
+  // Get all Train Dialog Grid Rows
+  static GetAllRows(expectedRowCount = undefined) { 
+    const funcName = 'TdGrid.GetAllRows'
+    helpers.ConLog(funcName, 'start')
+    cy.WaitForStableDOM()
+  
+    cy.wrap(1).should(() => {
+      TdGrid.GetTdGrid(expectedRowCount)
+    }).then(() => {
+      const firstInputs = TdGrid.tdGrid.firstInputs
+      const lastInputs = TdGrid.tdGrid.lastInputs
+      const lastResponses = TdGrid.tdGrid.lastResponses
+      const desciptions = TdGrid.tdGrid.desciptions
+      const tagLists = TdGrid.tdGrid.tagLists
+  
+      let allRowData = []
+      for (let i = 0; i < firstInputs.length; i++) {
+        allRowData.push({
+          firstInput: firstInputs[i],
+          lastInput: lastInputs[i],
+          lastResponse: lastResponses[i],
+          description: desciptions[i],
+          tagList: tagLists[i],
+        })
+  
+        helpers.ConLog(funcName, `${allRowData[i].firstInput}, ${allRowData[i].lastInput}, ${allRowData[i].lastResponse}, ${allRowData[i].description}, ${allRowData[i].tagList}`)
+      }
+      
+      TdGrid.currentData = allRowData
+      return allRowData
+    })
+  }
+
+  // Branching a Train Dialog is nearly the same as creating a new one. The only difference is that it started 
+  // out as an edit, then a new TD was branched off leaving the old one as it was and in effect creating a new
+  // TD that begins in the same way as the one that was edited.
+  static BranchTrainDialog() {
+    TdGrid.iCurrentRow = TdGrid.currentData.length
+  }
+
+  // Used when saving a Train Dialog. The caller won't know if it was an edit or adding a new TD
+  // but we know. This updates our copy of what the Train Dialog Grid should look like once
+  // it is saved in the UI.
+  static SaveTrainDialog(firstInput, lastInput, lastResponse, description, tagList) {
+    const newRowData = {
+      firstInput: firstInput,
+      lastInput: lastInput,
+      lastResponse: lastResponse,
+      description: description,
+      tagList: tagList,
+    }
+
+    if (TdGrid.iCurrentRow == TdGrid.currentData.length) { 
+      TdGrid.currentData.push(newRowData) 
+    }
+    else { 
+      TdGrid.currentData[TdGrid.iCurrentRow] = newRowData 
+    }
   }
 
 // Private:
@@ -192,7 +340,7 @@ export class TdGrid {
     this._lastInputs = undefined
     this._lastResponses = undefined
     this._descriptions = undefined
-    this._tags = undefined
+    this._tagLists = undefined
 
     this.expectedRowCount = TdGrid.expectedRowCount
     this.feedback = `Expected Row Count: ${TdGrid.expectedRowCount}`
@@ -237,7 +385,9 @@ TdGrid.expectedRowCount = undefined
 TdGrid.isStable = false
 TdGrid.monitorIsActivated = false
 TdGrid.noMoreOverlaysExpectedTime = undefined
-
+TdGrid.currentData = undefined  // Data that is or should be in the Train Dialogs Grid
+TdGrid.iCurrentRow = -1         // Index of current row in grid that is being edited
+TdGrid.tdGrid = undefined
 
 export function VerifyIncidentTriangleFoundInTrainDialogsGrid(firstInput, lastInput, lastResponse, expectedRowCount = -1) {
   const funcName = `VerifyIncidentTriangleFoundInTrainDialogsGrid(${firstInput}, ${lastInput}, ${lastResponse})`
@@ -268,7 +418,12 @@ export function VerifyListOfTrainDialogs(expectedTrainDialogs) {
     let errors = false
     expectedTrainDialogs.forEach(trainDialog => {
       let iRow = tdGrid.FindGridRowByChatInputs(trainDialog.firstInput, trainDialog.lastInput, trainDialog.lastResponse)
-      if (iRow < 0) { errors = true }
+      if (iRow < 0) {
+        iRow = tdGrid.FindGridRowByDescriptionAndOrTags(trainDialog.desciptions, trainDialog.tags)
+        if (iRow < 0) {
+          errors = true 
+        }
+      }
     })
   
     if (errors) {
@@ -276,31 +431,3 @@ export function VerifyListOfTrainDialogs(expectedTrainDialogs) {
     }
   })
 }
-
-export function GetAllTrainDialogGridRows(expectedRowCount = undefined) { 
-  helpers.ConLog('GetAllTrainDialogGridRows', 'start')
-
-  let tdGrid
-  cy.wrap(1).should(() => {
-    tdGrid = TdGrid.GetTdGrid(expectedRowCount)
-  }).then(() => {
-    const firstInputs = GetFirstInputs()
-    const lastInputs = GetLastInputs()
-    const lastResponses = GetLastResponses()
-
-    let allRowData = []
-
-    for (let i = 0; i < firstInputs.length; i++) {
-      allRowData.push({
-        firstInput: firstInputs[i],
-        lastInput: lastInputs[i],
-        lastResponse: lastResponses[i],
-      })
-
-      helpers.ConLog('GetAllTrainDialogGridRows', `${allRowData.firstInput}, ${allRowData.lastInput}, ${allRowData.lastResponse}`)
-    }
-    
-    return allRowData
-  })
-}
-

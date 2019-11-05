@@ -8,6 +8,7 @@ import * as models from '../../../../support/Models'
 import * as modelPage from '../../../../support/components/ModelPage'
 import * as entitiesGrid from '../../../../support/components/EntitiesGrid'
 import * as actionsGrid from '../../../../support/components/ActionsGrid'
+import * as trainDialogsGrid from '../../../../support/components/TrainDialogsGrid'
 import * as chatPanel from '../../../support/components/ChatPanel'
 import * as train from '../../../../support/Train'
 import * as settings from '../../../../support/components/Settings'
@@ -29,7 +30,7 @@ describe("Settings - Settings", () => {
 
     it('Capture Train Dialog Grid data', () => {
       modelPage.NavigateToTrainDialogs()
-      cy.WaitForStableDOM().then(() => { trainDialogs = train.GetAllTrainDialogGridRows() })
+      cy.Enqueue(() => { return trainDialogsGrid.TdGrid.GetAllRows() }).then(returnValue => trainDialogs = returnValue)
     })
 
     it('Capture Train Dialog Description, Tags and Chat data for each Train Dialog', () => {
@@ -173,7 +174,7 @@ describe("Settings - Settings", () => {
 
       it('Verify all Train Dialogs data', () => {
         modelPage.NavigateToTrainDialogs()
-        train.VerifyListOfTrainDialogs(trainDialogs)
+        trainDialogsGrid.VerifyListOfTrainDialogs(trainDialogs)
 
         trainDialogs.forEach(trainDialog => {
           train.EditTraining(trainDialog.firstInput, trainDialog.lastInput, trainDialog.lastResponse)

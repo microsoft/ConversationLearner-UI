@@ -127,6 +127,7 @@ export function EditTraining(firstInput, lastInput, lastResponse, expectedRowCou
   cy.wrap(1).should(() => {
     tdGrid = trainDialogsGrid.TdGrid.GetTdGrid(expectedRowCount)
   }).then(() => {
+    
     iRow = tdGrid.FindGridRowByChatInputs(firstInput, lastInput, lastResponse)
     if (iRow >= 0) { 
       const turns = trainDialogsGrid.GetTurns()

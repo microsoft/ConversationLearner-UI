@@ -71,7 +71,7 @@ describe('Experiment with Getting Return Value from Function with Mixed JavaScri
 
   // The 'should' cypress command behaves differently with respect to return values...
   // it does not return them down the chain of commands.
-  it('Test3 - wrap should', () => {
+  it('Test3 - wrap ".should()"', () => {
     function aFunc() { return {data: 123, anArray: ['a', 'b', 'c']} }
     
     let returnedResult
@@ -88,6 +88,25 @@ describe('Experiment with Getting Return Value from Function with Mixed JavaScri
       // if (shouldResult.anArray[0] == 'a' || shouldResult.anArray[1] == 'b' || shouldResult.anArray[2] == 'c') {
       //   throw new Error("THEN shouldResult.anArray SHOULD NOT BE ['a', 'b', 'c']")
       // }
+    })
+  })
+
+  // The 'should' cypress command behaves differently with respect to return values...
+  // it does not return them down the chain of commands.
+  it('Test4 - wrap ".then()" after a call to ".should()"', () => {
+    function aFunc() {   
+    let returnedResult
+      cy.wrap(1).should(() => {
+        return 'Value returned from .should() is lost'
+      }).then(shouldResult => {
+        if (shouldResult != 1) { throw new Error('THEN shouldResult.data SHOULD BE 1') }
+        return 'Value returned from .then() is retained'
+      })
+    }
+
+    cy.Enqueue(() => { return aFunc() }).then(returnedResult => {
+      helpers.ConLog('main', `returnedResult: ${returnedResult}`)
+      if (returnedResult != 'Value returned from .then() is retained') { throw new Error('Unexpected Result. Review the Log File.') }
     })
   })
 })
