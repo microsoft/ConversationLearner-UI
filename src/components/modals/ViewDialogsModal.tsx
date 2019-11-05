@@ -12,11 +12,10 @@ import * as DialogUtils from '../../Utils/dialogUtils'
 import actions from '../../actions'
 import IndexButtons from '../IndexButtons'
 import Webchat, { renderActivity } from '../Webchat'
-import { autobind } from 'core-decorators';
+import { autobind } from 'core-decorators'
 import { withRouter } from 'react-router-dom'
 import { RouteComponentProps } from 'react-router'
 import { State } from '../../types'
-import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
@@ -246,8 +245,8 @@ export interface ReceivedProps {
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
-const stateProps = returntypeof(mapStateToProps)
-const dispatchProps = returntypeof(mapDispatchToProps)
-type Props = typeof stateProps & typeof dispatchProps & ReceivedProps & InjectedIntlProps & RouteComponentProps<any>
+type stateProps = ReturnType<typeof mapStateToProps>;
+type dispatchProps = ReturnType<typeof mapDispatchToProps>;
+type Props = stateProps & dispatchProps & ReceivedProps & InjectedIntlProps & RouteComponentProps<any>
 
-export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(withRouter(injectIntl(ViewDialogsModal)))
+export default connect<stateProps, dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(withRouter(injectIntl(ViewDialogsModal)))
