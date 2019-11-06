@@ -6,6 +6,7 @@
 import * as models from '../../../support/Models'
 import * as modelPage from '../../../support/components/ModelPage'
 import * as chatPanel from '../../../support/components/ChatPanel'
+import * as trainDialogsGrid from '../../../support/components/TrainDialogsGrid'
 import * as train from '../../../support/Train'
 import * as helpers from '../../../support/Helpers'
 
@@ -22,7 +23,7 @@ describe('Last Turn and Undo - Edit and Branching', () => {
 
   context('Last Turn and Undo', () => {
     it('Edit user turn, which ends with a Bot turn, then verify expected UI Elements', () => {
-      train.EditTraining('Hello', 'David', 'Hello $name')
+      trainDialogsGrid.TdGrid.EditTrainingByChatInputs('Hello', 'David', 'Hello $name')
       train.VerifyScoreActionsButtonIsMissing()
       train.VerifyTypeYourMessageIsPresent()
       train.VerifyTurnUndoButtonIsMissing()
@@ -61,7 +62,7 @@ describe('Last Turn and Undo - Edit and Branching', () => {
     })
 
     it('Edit the train dialog and confirm that "Score Acctions" is present and "Type your message" is missing', () => {
-      train.EditTraining('Hello', 'A message to persist', '')
+      trainDialogsGrid.TdGrid.EditTrainingByChatInputs('Hello', 'A message to persist', '')
       train.VerifyScoreActionsButtonIsPresent()
       train.VerifyTypeYourMessageIsMissing()
     })

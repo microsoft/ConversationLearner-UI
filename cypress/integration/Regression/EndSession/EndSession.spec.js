@@ -6,6 +6,7 @@
 import * as models from '../../../support/Models'
 import * as modelPage from '../../../support/components/ModelPage'
 import * as chatPanel from '../../../support/components/ChatPanel'
+import * as trainDialogsGrid from '../../../support/components/TrainDialogsGrid'
 import * as train from '../../../support/Train'
 import * as scorerModal from '../../../support/components/ScorerModal'
 import * as helpers from '../../../support/Helpers'
@@ -23,7 +24,7 @@ describe('End Session', () => {
 
   context('New Train Dialog', () => {
     it('Should create a new Train Dialog with an End Session Action in it', () => {
-      train.CreateNewTrainDialog()
+      trainDialogsGrid.TdGrid.CreateNewTrainDialog()
 
       train.TypeYourMessage('Hi')
       train.ClickScoreActionsButton()
@@ -61,7 +62,7 @@ describe('End Session', () => {
   context('Edit Train Dialog', () => {
     it('Should be able to edit the training that we just saved', () => {
       cy.WaitForTrainingStatusCompleted()
-      train.EditTraining('Hi', 'Bye', "Goodbye")
+      trainDialogsGrid.TdGrid.EditTrainingByChatInputs('Hi', 'Bye', "Goodbye")
     })
 
     it('Should delete EndSession turn', () => {
@@ -93,7 +94,7 @@ describe('End Session', () => {
   context('Edit another Train Dialog', () => {
     it('Should be able to edit a training that came with the model we imported', () => {
       cy.WaitForTrainingStatusCompleted()
-      train.EditTraining('Yo', 'Bye', "Goodbye")
+      trainDialogsGrid.TdGrid.EditTrainingByChatInputs('Yo', 'Bye', "Goodbye")
     })
 
     it('End Session Score Action button should be labeled "Selected" for last Bot turn', () => {

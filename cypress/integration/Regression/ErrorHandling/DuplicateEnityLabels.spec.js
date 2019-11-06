@@ -7,6 +7,7 @@ import * as models from '../../../support/Models'
 import * as modelPage from '../../../support/components/ModelPage'
 import * as entityDetectionPanel from '../../../support/components/EntityDetectionPanel'
 import * as chatPanel from '../../../support/components/ChatPanel'
+import * as trainDialogsGrid from '../../../support/components/TrainDialogsGrid'
 import * as train from '../../../support/Train'
 import * as helpers from '../../../support/Helpers'
 
@@ -22,7 +23,7 @@ describe('Duplicate Entity Labels - ErrorHandling', () => {
 
   context('Create Train Dialog', () => {
     it('Should create a new Train Dialog', () => {
-      train.CreateNewTrainDialog()
+      trainDialogsGrid.TdGrid.CreateNewTrainDialog()
     })
 
     it('Type in a user utterance and label some of the text', () => {
@@ -46,14 +47,14 @@ describe('Duplicate Entity Labels - ErrorHandling', () => {
 
     it('Score Action and save Train Dialog', () => {
       train.ClickScoreActionsButton()
-      train.SelectTextAction('Hello Schmo', 'Hello $name')
+      train.SelectTextAction('Hello Schmo')
       train.SaveAsIsVerifyInGrid()
     })
   })
 
   context('Edit Train Dialog', () => {
     it('Re-edit the same Train Dialog', () => {
-      train.EditTraining('My name is Joe Schmo', 'My name is Joe Schmo', 'Hello $name')
+      trainDialogsGrid.TdGrid.EditTrainingByChatInputs('My name is Joe Schmo', 'My name is Joe Schmo', 'Hello $name')
     })
 
     it('Verify warning message under Chat Panel shows up', () => {

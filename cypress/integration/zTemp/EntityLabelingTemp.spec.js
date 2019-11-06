@@ -6,6 +6,7 @@
 import * as models from '../../support/Models'
 import * as modelPage from '../../support/components/ModelPage'
 import * as chatPanel from '../../../support/components/ChatPanel'
+import * as trainDialogsGrid from '../../support/components/TrainDialogsGrid'
 import * as train from '../../support/Train'
 import * as entityDetectionPanel from '../../../support/components/EntityDetectionPanel'
 import * as helpers from '../../support/Helpers'
@@ -25,7 +26,7 @@ describe('Consistent Entity Labeling', () => {
 
   context('Edit and Preserve Attempted Labels', () => {
     it('Edit the Train Dialog that got changed', () => {
-      train.EditTraining('This is Tag.', 'This is Tag.', 'Hi')
+      trainDialogsGrid.TdGrid.EditTrainingByChatInputs('This is Tag.', 'This is Tag.', 'Hi')
       cy.wait(5000)
     })
 

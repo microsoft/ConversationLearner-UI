@@ -6,8 +6,8 @@
 import * as models from '../../../support/Models'
 import * as modelPage from '../../../support/components/ModelPage'
 import * as chatPanel from '../../../support/components/ChatPanel'
-import * as train from '../../../support/Train'
 import * as trainDialogsGrid from '../../../support/components/TrainDialogsGrid'
+import * as train from '../../../support/Train'
 import * as entityDetectionPanel from '../../../support/components/EntityDetectionPanel'
 import * as common from '../../../support/Common'
 import * as helpers from '../../../support/Helpers'
@@ -26,7 +26,7 @@ describe('Action Unavailable - ErrorHandling', () => {
   context('Train Dialog - Create Errors', () => {
     it('Verify there are no Incident Triangles on the page and should create a new Train Dialog', () => {
       modelPage.VerifyNoErrorTriangleOnPage()
-      train.CreateNewTrainDialog()
+      trainDialogsGrid.TdGrid.CreateNewTrainDialog()
     })
 
     it('Add user turn "Joe" and label it as the "name" entity', () => {
@@ -65,7 +65,7 @@ describe('Action Unavailable - ErrorHandling', () => {
 
   context('Edit Dialog - Validate Errors and Fix Them', () => {
     it('Edit the training and verify it has errors', () => {
-      train.EditTraining(`Joe`, 'Joe', "Hello $name")
+      trainDialogsGrid.TdGrid.EditTrainingByChatInputs(`Joe`, 'Joe', "Hello $name")
       train.VerifyErrorMessage(common.trainDialogHasErrorsMessage)
       chatPanel.SelectChatTurnStartsWith('Hello')
       train.VerifyErrorMessage('Action is unavailable')

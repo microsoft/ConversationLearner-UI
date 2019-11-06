@@ -1,6 +1,7 @@
 import * as models from '../../support/Models'
 import * as model from '../../support/components/ModelPage'
 import * as chatPanel from '../../support/components/ChatPanel'
+import * as trainDialogsGrid from '../../support/components/TrainDialogsGrid'
 import * as trainDialog from '../../support/Train'
 import * as logDialogs from '../../support/components/LogDialogsGrid'
 import * as logDialog from '../../support/components/LogDialogModal'
@@ -191,7 +192,7 @@ describe('Entity Conflicts', () => {
                         .should('not.exist')
 
                     model.NavigateToTrainDialogs()
-                    trainDialog.CreateNewTrainDialog()
+                    trainDialogsGrid.TdGrid.CreateNewTrainDialog()
                     trainDialog.TypeYourMessage(testData.userInput1)
                     entityDetectionPanel.RemoveEntityLabel(labeledWord1, testData.entityName)
                     entityDetectionPanel.LabelTextAsEntity(labeledWord2, testData.entityName)

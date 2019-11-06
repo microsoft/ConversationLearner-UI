@@ -7,6 +7,7 @@ import * as models from '../../../support/Models'
 import * as modelPage from '../../../support/components/ModelPage'
 import * as entities from '../../../support/Entities'
 import * as actions from '../../../support/Actions'
+import * as trainDialogsGrid from '../../../support/components/TrainDialogsGrid'
 import * as train from '../../../support/Train'
 import * as entityDetectionPanel from '../../../support/components/EntityDetectionPanel'
 import * as memoryTableComponent from '../../../support/components/MemoryTableComponent'
@@ -34,7 +35,7 @@ describe('Entity Labeling - Create Model', () => {
     it('Create a new Training Dialog', () => {
       modelPage.NavigateToTrainDialogs()
       cy.WaitForTrainingStatusCompleted()
-      train.CreateNewTrainDialog()
+      trainDialogsGrid.TdGrid.CreateNewTrainDialog()
     })
 
     it('Label single word as an entity.', () => {
@@ -50,7 +51,7 @@ describe('Entity Labeling - Create Model', () => {
     it('Save the training and re-edit it to later verify Entity recognition', () => {
       train.SaveAsIsVerifyInGrid()
       cy.WaitForTrainingStatusCompleted()
-      train.EditTraining('This is Tag.', 'This is Tag.', 'Hello')
+      trainDialogsGrid.TdGrid.EditTrainingByChatInputs('This is Tag.', 'This is Tag.', 'Hello')
     })
 
     it('Label multiple words as the same entity.', () => {
@@ -66,7 +67,7 @@ describe('Entity Labeling - Create Model', () => {
     it('Save the training and re-edit it to later verify Entity recognition', () => {
       train.SaveAsIsVerifyInGrid()
       cy.WaitForTrainingStatusCompleted()
-      train.EditTraining('This is Tag.', 'This is Frog and Tag.', 'Hi')
+      trainDialogsGrid.TdGrid.EditTrainingByChatInputs('This is Tag.', 'This is Frog and Tag.', 'Hi')
     })
 
     it('Reverse the labeled words and once again label them as the same entity.', () => {

@@ -12,6 +12,7 @@ import * as scorerModal from '../../../../support/components/ScorerModal'
 import * as common from '../../../../support/Common'
 import * as entityDetectionPanel from '../../../../support/components/EntityDetectionPanel'
 import * as chatPanel from '../../../../support/components/ChatPanel'
+import * as trainDialogsGrid from '../../../../support/components/TrainDialogsGrid'
 import * as train from '../../../../support/Train'
 import * as common from '../../../../support/Common'
 import * as helpers from '../../../../support/Helpers'
@@ -29,7 +30,7 @@ describe('Comprehensive 1 - Score Actions', () => {
 
   context('Train Dialog', () => {
     it('Create a new Train Dialog', () => {
-      train.CreateNewTrainDialog()
+      trainDialogsGrid.TdGrid.CreateNewTrainDialog()
     })
 
     it('Simple User Turn', () => {

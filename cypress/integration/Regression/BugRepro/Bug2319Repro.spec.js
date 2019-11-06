@@ -6,6 +6,7 @@
 import * as models from '../../../support/Models'
 import * as modelPage from '../../../support/components/ModelPage'
 import * as actions from '../../../support/Actions'
+import * as trainDialogsGrid from '../../../support/components/TrainDialogsGrid'
 import * as train from '../../../support/Train'
 import * as helpers from '../../../support/Helpers'
 
@@ -25,7 +26,7 @@ describe('Bug 2319 Repro', () => {
 
   context('Attempt to reproduce Bug 2319', () => {
     it('New Train Dialog', () => {
-      train.CreateNewTrainDialog()
+      trainDialogsGrid.TdGrid.CreateNewTrainDialog()
     })
 
     it('Add a user turn and Bot response', () => {

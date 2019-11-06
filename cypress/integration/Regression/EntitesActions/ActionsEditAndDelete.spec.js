@@ -50,7 +50,7 @@ describe('Actions Edit and Delete - EntitiesActions', () => {
     })
 
     it('Should edit Train Dialog that caused those Actions to have a disabled Type field and delete it', () => {
-      train.EditTraining('API', 'We are done here.', 'Goodbye')
+      trainDialogsGrid.TdGrid.EditTrainingByChatInputs('API', 'We are done here.', 'Goodbye')
       train.ClickAbandonDeleteButton()
       train.ClickConfirmAbandonDialogButton()
     })

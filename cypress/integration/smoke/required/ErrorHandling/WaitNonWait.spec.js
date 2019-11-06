@@ -24,7 +24,7 @@ describe('Wait Non Wait Error Handling', () => {
   
   context('Create Errors', () => {
     it('Deletes a user turn to create an error, verifies expected (and no other) error messages come up', () => {
-      train.EditTraining('Duck', 'Fish', common.fishJustSwim)
+      trainDialogsGrid.TdGrid.EditTrainingByChatInputs('Duck', 'Fish', common.fishJustSwim)
       chatPanel.SelectChatTurnExactMatch(common.whichAnimalWouldYouLike)
       train.ClickDeleteChatTurn()
       train.VerifyErrorMessage(common.userInputFollowsNonWaitErrorMessage)
@@ -55,7 +55,7 @@ describe('Wait Non Wait Error Handling', () => {
     })
 
     it('Re-opens the Training and validates all error messages remain', () => {
-      train.EditTraining(`Duck`, 'Fish', common.fishJustSwim)
+      trainDialogsGrid.TdGrid.EditTrainingByChatInputs(`Duck`, 'Fish', common.fishJustSwim)
       train.VerifyErrorMessage(common.trainDialogHasErrorsMessage)
 
       Validations(3)

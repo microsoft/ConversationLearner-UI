@@ -6,6 +6,7 @@
 import * as models from '../../../support/Models'
 import * as modelPage from '../../../support/components/ModelPage'
 import * as chatPanel from '../../../support/components/ChatPanel'
+import * as trainDialogsGrid from '../../../support/components/TrainDialogsGrid'
 import * as train from '../../../support/Train'
 import * as helpers from '../../../support/Helpers'
 
@@ -21,7 +22,7 @@ describe('Delete Chat Turns - Edit and Branching', () => {
 
   context('Delete Chat Turns', () => {
     it('Edit existing Train Dialog', () => {
-      train.EditTraining('Hi', 'Mangoes and Peaches', 'Goodbye')
+      trainDialogsGrid.TdGrid.EditTrainingByChatInputs('Hi', 'Mangoes and Peaches', 'Goodbye')
     })
                 
     it('Delete a User turn', () => {

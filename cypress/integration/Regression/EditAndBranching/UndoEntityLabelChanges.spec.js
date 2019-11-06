@@ -9,6 +9,7 @@ import * as entityModal from '../../../support/components/EntityModal'
 import * as entityDetectionPanel from '../../../support/components/EntityDetectionPanel'
 import * as entities from '../../../support/Entities'
 import * as chatPanel from '../../../support/components/ChatPanel'
+import * as trainDialogsGrid from '../../../support/components/TrainDialogsGrid'
 import * as train from '../../../support/Train'
 import * as helpers from '../../../support/Helpers'
 
@@ -24,7 +25,7 @@ describe('Undo Entity Labeling - Edit and Branching', () => {
 
   context('Undo Entity Label Change', () => {
     it('Edit user turn and verify that "Submit Changes" and "Undo" buttons are disabled', () => {
-      train.EditTraining('The user asks a silly question', 'The user asks their final question', 'The Bot responds once again')
+      trainDialogsGrid.TdGrid.EditTrainingByChatInputs('The user asks a silly question', 'The user asks their final question', 'The Bot responds once again')
       chatPanel.SelectChatTurnExactMatch('The user asks a silly question')
       train.VerifySubmitChangesButtonIsDisabled()
       entityDetectionPanel.VerifyEntityLabelUndoButtonIsDisabled()

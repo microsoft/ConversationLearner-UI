@@ -1,5 +1,6 @@
 import * as models from '../../support/Models'
 import * as modelPage from '../../support/components/ModelPage'
+import * as trainDialogsGrid from '../../support/components/TrainDialogsGrid'
 import * as train from '../../support/Train'
 import * as helpers from '../../support/Helpers'
 
@@ -18,7 +19,7 @@ describe('Description and Tags - Train Dialog', () => {
         // Verify that tags and description are empty
         modelPage.NavigateToTrainDialogs()
         //cy.WaitForTrainingStatusCompleted()
-        train.CreateNewTrainDialog()
+        trainDialogsGrid.TdGrid.CreateNewTrainDialog()
         
         train.VerifyDescription('')
         train.VerifyTags([])
@@ -48,7 +49,7 @@ describe('Description and Tags - Train Dialog', () => {
         // Note the tags and description
         // Open it
         // Verify tags and description are the same as shown in the list
-        train.EditTrainingByDescriptionAndOrTags('Test Scenario', 'TagX')
+        trainDialogsGrid.TdGrid.EditTrainingByChatInputsByDescriptionAndOrTags('Test Scenario', 'TagX')
         train.VerifyDescription('Test Scenario')
         train.VerifyTags(['TagX'])
       })
@@ -65,7 +66,7 @@ describe('Description and Tags - Train Dialog', () => {
         train.AddTags(['TagY'])
         train.AbandonDialog()
 
-        train.EditTrainingByDescriptionAndOrTags('Test Scenario', 'TagX')
+        trainDialogsGrid.TdGrid.EditTrainingByChatInputsByDescriptionAndOrTags('Test Scenario', 'TagX')
         train.VerifyDescription('Test Scenario')
         train.VerifyTags(['TagX'])
       })
@@ -81,7 +82,7 @@ describe('Description and Tags - Train Dialog', () => {
         train.AddTags(['TagY'])
         train.SaveAsIsVerifyInGrid()
 
-        train.EditTrainingByDescriptionAndOrTags('Edited Test Scenario', 'TagXTagY')
+        trainDialogsGrid.TdGrid.EditTrainingByChatInputsByDescriptionAndOrTags('Edited Test Scenario', 'TagXTagY')
         train.VerifyDescription('Edited Test Scenario')
         train.VerifyTags(['TagX', 'TagY'])
       })

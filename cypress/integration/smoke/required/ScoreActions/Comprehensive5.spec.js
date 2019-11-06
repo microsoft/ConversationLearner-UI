@@ -8,6 +8,7 @@ import * as modelPage from '../../../../support/components/ModelPage'
 import * as scorerModal from '../../../../support/components/ScorerModal'
 import * as entityDetectionPanel from '../../../../support/components/EntityDetectionPanel'
 import * as chatPanel from '../../../../support/components/ChatPanel'
+import * as trainDialogsGrid from '../../../../support/components/TrainDialogsGrid'
 import * as train from '../../../../support/Train'
 import * as helpers from '../../../../support/Helpers'
 
@@ -25,7 +26,7 @@ describe('Comprehensive 5 - Score Actions', () => {
 
   context('Verify Action Scoring of Imported Training Without Modification', () => {
     it('Edit existing Train Dialog', () => {
-      train.EditTraining('Hi', 'Mangoes and Peaches', 'Goodbye')
+      trainDialogsGrid.TdGrid.EditTrainingByChatInputs('Hi', 'Mangoes and Peaches', 'Goodbye')
     })
 
     it('Select and Verify Each Bot Turn', () => {

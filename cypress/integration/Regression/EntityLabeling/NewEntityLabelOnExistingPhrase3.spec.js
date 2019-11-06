@@ -7,6 +7,7 @@ import * as models from '../../../support/Models'
 import * as modelPage from '../../../support/components/ModelPage'
 import * as entityDetectionPanel from '../../../support/components/EntityDetectionPanel'
 import * as chatPanel from '../../../support/components/ChatPanel'
+import * as trainDialogsGrid from '../../../support/components/TrainDialogsGrid'
 import * as train from '../../../support/Train'
 import * as helpers from '../../../support/Helpers'
 
@@ -23,7 +24,7 @@ describe('New Entity Label on Existing Phrase 2 - Entity Labeling', () => {
 
   context('Change MANY instances of the Phrase', () => {
     it('Create a new Train Dialog and add a description for unique identification', () => {
-      train.CreateNewTrainDialog()
+      trainDialogsGrid.TdGrid.CreateNewTrainDialog()
       train.TypeDescription('Test Generated 3')
     })
 
@@ -50,7 +51,7 @@ describe('New Entity Label on Existing Phrase 2 - Entity Labeling', () => {
     context(`${iTD} - Verify the change in an instances of the Phrase`, () => {
       it('Edit one of the trainings affected by conflict resolution and verify there is a warning', () => {
         modelPage.VerifyWarningTriangleForTrainDialogs()
-        train.EditTrainingByDescriptionAndOrTags(`Train Dialog ${iTD}`)
+        trainDialogsGrid.TdGrid.EditTrainingByChatInputsByDescriptionAndOrTags(`Train Dialog ${iTD}`)
         train.VerifyWarningMessage('Entity or Action changes require replay of the TrainDialog')
       })
 

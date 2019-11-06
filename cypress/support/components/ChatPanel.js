@@ -3,6 +3,7 @@
  * Licensed under the MIT License.
  */
 
+import * as trainDialogsGrid from './TrainDialogsGrid'
 import * as popupModal from './PopupModal'
 import * as scorerModal from './ScorerModal'
 import * as helpers from '../Helpers'
@@ -375,5 +376,109 @@ export function VerifyEachBotChatTurn(verificationFunction) {
       cy.wrap(botChatElements[i]).Click()
       verificationFunction()
     }
+  })
+}
+
+export function PreSaveDataUsedToVerifyTdGrid(description, tagList) {
+  let funcName = `PreSaveDataUsedToVerifyTdGrid(${description}, ${tagList})`
+  helpers.ConLog(funcName, 'start')
+  cy.WaitForStableDOM().then(() => {
+    // When the TD ends with a user turn, the lastResponse needs to be an empty string.
+    let lastResponse = ''
+
+    const elements = GetAllChatMessageElements()
+    const lastBotElement = Cypress.$(elements[elements.length - 1]).parents('div.wc-message-from-bot')
+    if (lastBotElement.length == 1) {
+      // The last chat turn was a Bot response, so capture the text with entity names.
+      cy.wrap(elements[elements.length - 1]).Click()
+      cy.Enqueue(() => { return scorerModal.GetTextWithEntityNamesFromSelectedAction() }).then(actionText => {
+        lastResponse = actionText
+      })
+    }
+
+    // If there is no second user turn, then the first and last user turn are the same.
+    const elements = Cypress.$('div.wc-message-from-me[data-testid="web-chat-utterances"] > div.wc-message-content > div')
+    const firstInput = GetChatTurnText(elements[0])
+    const lastInput = GetChatTurnText(elements[elements.length - 1])
+    
+    trainDialogsGrid.TdGrid.SaveTrainDialog(firstInput, lastInput, lastResponse, description, tagList)
+  })
+}
+
+// To verify the last chat utterance leave expectedIndexOfMessage undefined.
+export function VerifyTextChatMessage(expectedMessage, expectedIndexOfMessage) {
+  cy.Get('[data-testid="web-chat-utterances"]').then(allChatElements => {
+    if (!expectedIndexOfMessage) expectedIndexOfMessage = allChatElements.length - 1
+    let elements = Cypress.$(allChatElements[expectedIndexOfMessage]).find('div.format-markdown > p')
+    if (elements.length == 0) {
+      throw new Error(`Did not find expected Text Chat Message '${expectedMessage}' at index: ${expectedIndexOfMessage}`)
+    }
+    
+    let textContentWithoutNewlines = helpers.TextContentWithoutNewlines(elements[0])
+    helpers.ConLog('VerifyTextChatMessage', textContentWithoutNewlines)
+
+    if (helpers.TextContentWithoutNewlines(elements[0]) !== expectedMessage) {
+      throw new Error(`Expected to find '${expectedMessage}' in the text chat pane, instead we found '${textContentWithoutNewlines}' at index: ${expectedIndexOfMessage}`)
+    }
+  })
+}
+
+// To verify the last chat utterance leave expectedIndexOfMessage undefined.
+// Leave expectedMessage temporarily undefined so that you can copy the text
+// output from the screen or log to paste into your code.
+export function VerifyCardChatMessage(expectedCardTitle, expectedCardText, expectedIndexOfMessage) {
+  cy.Get('[data-testid="web-chat-utterances"]').then(allChatElements => {
+    if (!expectedIndexOfMessage) expectedIndexOfMessage = allChatElements.length - 1
+    let elements = Cypress.$(allChatElements[expectedIndexOfMessage]).find(`div.format-markdown > p:contains('${expectedCardTitle}')`).parent()
+    if (elements.length == 0) {
+      throw new Error(`Did not find expected '${expectedCardTitle}' card with '${expectedCardText}' at index: ${expectedIndexOfMessage}`)
+    }
+    elements = Cypress.$(elements[0]).next('div.wc-list').find('div.wc-adaptive-card > div.ac-container > div.ac-container > div > p')
+    if (elements.length == 0) {
+      throw new Error(`Did not find expected content element for API Call card that should contain '${expectedCardText}' at index: ${expectedIndexOfMessage}`)
+    }
+    
+    // Log the contents of the API Call card so that we can copy the exact string into the .spec.js file.
+    let textContentWithoutNewlines = helpers.TextContentWithoutNewlines(elements[0])
+    helpers.ConLog('VerifyCardChatMessage', textContentWithoutNewlines)
+    
+    if (!textContentWithoutNewlines.includes(expectedCardText)) {
+      throw new Error(`Expected to find '${expectedCardTitle}' card with '${expectedCardText}', instead we found '${textContentWithoutNewlines}' at index: ${expectedIndexOfMessage}`)
+    }
+  })
+}
+
+// To verify the last chat utterance leave expectedIndexOfMessage undefined.
+export function VerifyPhotoCardChatMessage(expectedCardTitle, expectedCardText, expectedCardImage, expectedIndexOfMessage) {
+  const funcName = `VerifyPhotoCardChatMessage("${expectedCardTitle}", "${expectedCardText}", "${expectedCardImage}", ${expectedIndexOfMessage})`
+  cy.Get('[data-testid="web-chat-utterances"]').then(allChatElements => {
+    if (!expectedIndexOfMessage) expectedIndexOfMessage = allChatElements.length - 1
+    let errorMessage = ''
+    
+    if (Cypress.$(allChatElements[expectedIndexOfMessage]).find(`p:contains('${expectedCardTitle}')`).length == 0) {
+      errorMessage += `Did not find expected card title: '${expectedCardTitle}' - `
+    }
+    
+    if (Cypress.$(allChatElements[expectedIndexOfMessage]).find(`p:contains('${expectedCardText}')`).length == 0) {
+      errorMessage += `Did not find expected card text: '${expectedCardText}' - `
+    }
+    
+    if (Cypress.$(allChatElements[expectedIndexOfMessage]).find(`img[src="${expectedCardImage}"]`).length == 0) {
+      errorMessage += `Did not find expected image: '${expectedCardImage}' - `
+    }
+
+    if (errorMessage.length > 0)  {
+      helpers.ConLog(`VerifyPhotoCardChatMessage("${expectedCardTitle}", "${expectedCardText}", "${expectedCardImage}", ${expectedIndexOfMessage})`, `Chat Element at index ${expectedIndexOfMessage}: ${allChatElements[expectedIndexOfMessage].outerHTML}`)
+      throw new Error(`${errorMessage}at chat turn index ${expectedIndexOfMessage}`)
+    }
+  })
+}
+
+export function VerifyEndSessionChatMessage(expectedData, expectedIndexOfMessage) {
+  const expectedUtterance = 'EndSession: ' + expectedData
+  cy.Get('[data-testid="web-chat-utterances"]').then(elements => {
+    if (!expectedIndexOfMessage) expectedIndexOfMessage = elements.length - 1
+    const element = Cypress.$(elements[expectedIndexOfMessage]).find('div.wc-adaptive-card > div > div > p')[0]
+    expect(helpers.TextContentWithoutNewlines(element)).to.equal(expectedUtterance)
   })
 }

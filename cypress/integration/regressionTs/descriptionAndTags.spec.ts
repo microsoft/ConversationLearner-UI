@@ -2,6 +2,7 @@ import * as models from '../../support/Models'
 import * as model from '../../support/components/ModelPage'
 import * as actions from '../../support/Actions'
 import * as actionsList from '../../support/components/ActionsGrid'
+import * as trainDialogsGrid from '../../support/components/TrainDialogsGrid'
 import * as trainDialog from '../../support/Train'
 import * as logDialogModal from '../../support/components/LogDialogModal'
 import s from '../../support/selectors'
@@ -41,7 +42,7 @@ describe('Description and Tags', () => {
         context('Create', () => {
             it('should have no tags are description when creating new dialog', () => {
                 // Create new train dialog
-                trainDialog.CreateNewTrainDialog()
+                trainDialogsGrid.TdGrid.CreateNewTrainDialog()
 
                 // Verify that description and tags are empty
                 cy.get(s.dialogModal.inputDescription)

@@ -196,7 +196,7 @@ context('TEMPORARY DIVERGENCE', () => {
     })
 
     it('Should edit Train Dialog and delete it', () => {
-      train.EditTraining('We will delete this entity.', 'Will also delete this entity.', "What's your name?")
+      trainDialogsGrid.TdGrid.EditTrainingByChatInputs('We will delete this entity.', 'Will also delete this entity.', "What's your name?")
       train.ClickAbandonDeleteButton()
       train.ClickConfirmAbandonDialogButton()
     })

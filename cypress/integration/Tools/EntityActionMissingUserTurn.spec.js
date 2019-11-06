@@ -24,7 +24,7 @@ describe('Entity Action Missing User Turn', () => {
 
   context('Train Dialog', () => {
     it('Create an error in an existing Train Dialog', () => {
-      train.EditTraining('My entity: XXYYZZ', 'My entity: XXYYZZ', 'Your entity contains: $entity')
+      trainDialogsGrid.TdGrid.EditTrainingByChatInputs('My entity: XXYYZZ', 'My entity: XXYYZZ', 'Your entity contains: $entity')
       train.TypeYourMessage('xxx')
       train.ClickScoreActionsButton()
       train.SelectTextAction('Something extra')

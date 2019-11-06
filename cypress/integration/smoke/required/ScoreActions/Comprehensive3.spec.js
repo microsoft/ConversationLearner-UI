@@ -11,6 +11,7 @@ import * as actionModal from '../../../../support/components/ActionModal'
 import * as scorerModal from '../../../../support/components/ScorerModal'
 import * as entityDetectionPanel from '../../../../support/components/EntityDetectionPanel'
 import * as chatPanel from '../../../../support/components/ChatPanel'
+import * as trainDialogsGrid from '../../../../support/components/TrainDialogsGrid'
 import * as train from '../../../../support/Train'
 import * as helpers from '../../../../support/Helpers'
 
@@ -28,7 +29,7 @@ describe('Comprehensive 3 - Score Actions', () => {
 
   context('Continue Training', () => {
     it('Edit existing Train Dialog', () => {
-      train.EditTraining('Hi', 
+      trainDialogsGrid.TdGrid.EditTrainingByChatInputs('Hi', 
                          'Render these API Arguments: OneFromAnEntity, TwoToBeUsedByApiCall - and temporarily disqualify the Api response', 
                          'RenderTheArgs')
     })

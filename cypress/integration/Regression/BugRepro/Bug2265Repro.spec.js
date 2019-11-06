@@ -7,6 +7,7 @@ import * as models from '../../../support/Models'
 import * as modelPage from '../../../support/components/ModelPage'
 import * as entityDetectionPanel from '../../../support/components/EntityDetectionPanel'
 import * as chatPanel from '../../../support/components/ChatPanel'
+import * as trainDialogsGrid from '../../../support/components/TrainDialogsGrid'
 import * as train from '../../../support/Train'
 import * as helpers from '../../../support/Helpers'
 
@@ -22,7 +23,7 @@ describe('Bug 2265 Repro', () => {
 
   context('Attempt to reproduce Bug 2265', () => {
     it('New Train Dialog', () => {
-      train.CreateNewTrainDialog()
+      trainDialogsGrid.TdGrid.CreateNewTrainDialog()
     })
 
     it('Add 1st set of turns', () => {
@@ -41,7 +42,7 @@ describe('Bug 2265 Repro', () => {
     // Uncomment the following code for proof.
     // it('Save training and re-edit it', () => {
     //   train.SaveAsIs()
-    //   train.EditTraining('The user asks a silly question', 'The user asks another question', 'The Bot responds once again')
+    //   trainDialogsGrid.TdGrid.EditTrainingByChatInputs('The user asks a silly question', 'The user asks another question', 'The Bot responds once again')
     // })
 
     it('Select a Bot Turn, + Action + Entity - Create an Enum Entity', () => {

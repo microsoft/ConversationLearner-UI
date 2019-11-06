@@ -9,15 +9,15 @@ import * as modelPage from '../../support/components/ModelPage'
 import * as models from '../../support/Models'
 import * as chatPanel from '../../support/components/ChatPanel'
 import * as scorerModal from '../../support/components/ScorerModal'
-import * as train from '../../support/Train'
 import * as trainDialogsGrid from '../../support/components/TrainDialogsGrid'
+import * as train from '../../support/Train'
 
 describe('zTemp', () => {
   it('Experiment with action-scorer-entity-toggle', () => {
     homePage.Visit()
     homePage.LoadModel('expectedEntityLablel')
     modelPage.NavigateToTrainDialogs()
-    train.EditTraining('Hello', 'David', 'Hello $name')
+    trainDialogsGrid.TdGrid.EditTrainingByChatInputs('Hello', 'David', 'Hello $name')
 
     chatPanel.SelectChatTurnExactMatch('Hello David')
     //chatPanel.SelectChatTurnExactMatch("What's your name?")
@@ -56,7 +56,7 @@ describe('zTemp', () => {
     // Bug 1930: Train Dialog - Tag Editor should prevent user from entering more than 20 tags.
     models.CreateNewModel('z-foods')
     modelPage.NavigateToTrainDialogs()
-    train.CreateNewTrainDialog()
+    trainDialogsGrid.TdGrid.CreateNewTrainDialog()
 
     train.AddTags(['Apple', 'Banana', 'Carrot', 'Duck', 'Egg', 'Food', 'Green Chilli', 'Habanero','Ice Cream', 'Jalapeno', 'Kale', 'Letuce', 'Mango', 'Necterine', 'Orange', 'Plum', 'QQQ', 'Raisin', 'Salt', 'Tangerine', 'UUUuuu', 'VVV', 'WwWwWwW', 'X', 'YYYyy', 'ZzZzZ'])
   })

@@ -191,18 +191,19 @@ export class TdGrid {
   }
 
 // STATICS:
-// Once one of the two EditTraining* functions are used, the Train Dialog Grid is hidden, it should not change,
-// there is no need to access it again until a change is saved from the Train Dialog Editor and the Model page
-// is once again the top most view.
+// Once CreateNewTrainDialog or one of the two EditTraining* functions are used, the Train Dialog Grid is hidden,
+// it should not change, there is no need to access it again until a change is saved from the Train Dialog Editor
+// and the Model page is once again the top most view.
 //
 // These static methods then allow for expected changes to be made to internal data that can be later used to verify
-// any changes made to Train Dialogs are reflected in the grid once it refreshes.
+// that any changes made to Train Dialogs are reflected in the grid once it refreshes.
 
-  static NewTrainDialog() {
+  static CreateNewTrainDialog() {
     cy.Enqueue(() => {
       TdGrid.GetAllRows(expectedRowCount)
     }).then(() => {
       TdGrid.iCurrentRow = TdGrid.currentData.length
+      ClickNewTrainDialogButton()
     })
   }
 
@@ -317,6 +318,7 @@ export class TdGrid {
   // but we know. This updates our copy of what the Train Dialog Grid should look like once
   // it is saved in the UI.
   static SaveTrainDialog(firstInput, lastInput, lastResponse, description, tagList) {
+    helpers.ConLog(`TdGrid.SaveTrainDialog(${firstInput}, ${lastInput}, ${lastResponse}, ${description}, ${tagList})`, 'start')
     const newRowData = {
       firstInput: firstInput,
       lastInput: lastInput,
@@ -331,6 +333,13 @@ export class TdGrid {
     else { 
       TdGrid.currentData[TdGrid.iCurrentRow] = newRowData 
     }
+  }
+
+// TODO: VERIFY THIS WITH Train\DisqualifyingEntities.spec.js
+// TODO: VERIFY THIS WITH Train\DisqualifyingEntities.spec.js
+// TODO: VERIFY THIS WITH Train\DisqualifyingEntities.spec.js
+  static VerifySavedTrainDialogIsInGridAlongWithAllOtherExpectedTDs() {
+    VerifyListOfTrainDialogs(TdGrid.currentData)
   }
 
 // Private:

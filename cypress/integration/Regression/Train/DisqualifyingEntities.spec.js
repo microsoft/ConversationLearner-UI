@@ -8,6 +8,7 @@ import * as modelPage from '../../../support/components/ModelPage'
 import * as memoryTableComponent from '../../../support/components/MemoryTableComponent'
 import * as entityDetectionPanel from '../../../support/components/EntityDetectionPanel'
 import * as scorerModal from '../../../support/components/ScorerModal'
+import * as trainDialogsGrid from '../../../support/components/TrainDialogsGrid'
 import * as train from '../../../support/Train'
 import * as common from '../../../support/Common'
 import * as helpers from '../../../support/Helpers'
@@ -27,7 +28,7 @@ describe('Disqualifying Entities - Train', () => {
   context('1st Train Dialog', () => {
     context('1st Round', () => {
       it('Should create a new Train Dialog', () => {
-        train.CreateNewTrainDialog()
+        trainDialogsGrid.TdGrid.CreateNewTrainDialog()
       })
 
       it('Should type in a user utterance and click Score Actions button', () => {
@@ -56,7 +57,7 @@ describe('Disqualifying Entities - Train', () => {
       generatedScoreActionsData.VerifyScoreActionsList()
 
       it('Should select an action', () => {
-        train.SelectTextAction('Hey Sam', 'Hey $name')
+        train.SelectTextAction('Hey Sam')
       })
     })
 
@@ -73,7 +74,7 @@ describe('Disqualifying Entities - Train', () => {
       generatedScoreActionsData.VerifyScoreActionsList()
 
       it('Should select an action', () => {
-        train.SelectTextAction('Hey Sam, what do you really want?', 'Hey $name, what do you really want?')
+        train.SelectTextAction('Hey Sam, what do you really want?')
       })
     })
 
@@ -94,7 +95,7 @@ describe('Disqualifying Entities - Train', () => {
       generatedScoreActionsData.VerifyScoreActionsList()
 
       it('Should select an action', () => {
-        train.SelectTextAction("Sorry Sam, I can't help you get world peace", "Sorry $name, I can't help you get $want")
+        train.SelectTextAction("Sorry Sam, I can't help you get world peace")
       })
 
       it('Should save the Train Dialog and verify that it shows up in the grid', () => {
@@ -106,7 +107,7 @@ describe('Disqualifying Entities - Train', () => {
   context('2nd Train Dialog', () => {
     context('1st Round', () => {
       it('Should create a new Train Dialog', () => {
-        train.CreateNewTrainDialog()
+        trainDialogsGrid.TdGrid.CreateNewTrainDialog()
       })
 
       it('Should type in a user utterance and click Score Actions button', () => {
@@ -132,7 +133,7 @@ describe('Disqualifying Entities - Train', () => {
       generatedScoreActionsData.VerifyScoreActionsList()
 
       it('Should select an action', () => {
-        train.SelectTextAction("Sorry Sandeep, I can't help you get a million dollars", "Sorry $name, I can't help you get $want")
+        train.SelectTextAction("Sorry Sandeep)
       })
 
       it('Should save the Train Dialog and verify the contents show up in the grid', () => {

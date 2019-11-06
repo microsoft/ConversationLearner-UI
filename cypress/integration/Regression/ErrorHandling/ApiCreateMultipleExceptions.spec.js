@@ -6,8 +6,8 @@
 import * as models from '../../../support/Models'
 import * as modelPage from '../../../support/components/ModelPage'
 import * as chatPanel from '../../../support/components/ChatPanel'
-import * as train from '../../../support/Train'
 import * as trainDialogsGrid from '../../../support/components/TrainDialogsGrid'
+import * as train from '../../../support/Train'
 import * as entityDetectionPanel from '../../../support/components/EntityDetectionPanel'
 import * as helpers from '../../../support/Helpers'
 
@@ -24,7 +24,7 @@ describe('API Create Multiple Exceptions - ErrorHandling', () => {
 
   context('Train Dialog that will be Discarded by an Error', () => {
     it('Should create a new Train Dialog', () => {
-      train.CreateNewTrainDialog()
+      trainDialogsGrid.TdGrid.CreateNewTrainDialog()
     })
 
     it('Should add a user turn to cause an error, dismiss the error and the TD and verify it returns to the TD grid pane view', () => {
@@ -47,7 +47,7 @@ describe('API Create Multiple Exceptions - ErrorHandling', () => {
 
   context('Train Dialog that will be Saved', () => {
     it('Should create a new Train Dialog', () => {
-      train.CreateNewTrainDialog()
+      trainDialogsGrid.TdGrid.CreateNewTrainDialog()
     })
 
     it('Should add a user turn to be used later to cause an EntityDetectionCallback error and verify it is in the chat pane', () => {

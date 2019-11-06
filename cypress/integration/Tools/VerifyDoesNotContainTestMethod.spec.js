@@ -6,6 +6,7 @@
 import * as models from '../../support/Models'
 import * as modelPage from '../../support/components/ModelPage'
 import * as chatPanel from '../../../support/components/ChatPanel'
+import * as trainDialogsGrid from '../../support/components/TrainDialogsGrid'
 import * as train from '../../support/Train'
 
 // This is a test case to test one of our test methods, cy.DoesNotContain.
@@ -17,7 +18,7 @@ describe('Verify the DoesNotContain test function - Tools', () => {
     models.ImportModel('z-editContols', 'z-learnedEntLabel.cl')
     modelPage.NavigateToTrainDialogs()
 
-    train.EditTraining('My name is David.', 'My name is Susan.', 'Hello $name')
+    trainDialogsGrid.TdGrid.EditTrainingByChatInputs('My name is David.', 'My name is Susan.', 'Hello $name')
 
     chatPanel.SelectChatTurnExactMatch('My name is Susan.')
     train.VerifyCyDoesNotContainMethodWorksWithSpecialChatSelector()

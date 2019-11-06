@@ -6,6 +6,7 @@
 import * as models from '../../../support/Models'
 import * as modelPage from '../../../support/components/ModelPage'
 import * as scorerModal from '../../../support/components/ScorerModal'
+import * as trainDialogsGrid from '../../../support/components/TrainDialogsGrid'
 import * as train from '../../../support/Train'
 import * as common from '../../../support/Common'
 import * as helpers from '../../../support/Helpers'
@@ -24,7 +25,7 @@ describe('Wait vs Non Wait Actions - Train', () => {
 
   context('Train - 1st Round', () => {
     it('Should create a new Train Dialog', () => {
-      train.CreateNewTrainDialog()
+      trainDialogsGrid.TdGrid.CreateNewTrainDialog()
     })
 
     it('Should type a user message and click the Score Actions button', () => {

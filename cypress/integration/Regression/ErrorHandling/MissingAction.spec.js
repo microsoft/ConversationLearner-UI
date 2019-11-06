@@ -6,8 +6,8 @@
 import * as models from '../../../support/Models'
 import * as modelPage from '../../../support/components/ModelPage'
 import * as chatPanel from '../../../support/components/ChatPanel'
-import * as train from '../../../support/Train'
 import * as trainDialogsGrid from '../../../support/components/TrainDialogsGrid'
+import * as train from '../../../support/Train'
 import * as common from '../../../support/Common'
 import * as actions from '../../../support/Actions'
 import * as scorerModal from '../../../support/components/ScorerModal'
@@ -28,7 +28,7 @@ describe('Missing Action - ErrorHandling', () => {
     })
 
     it('Should complete and save a simple 1 action Train Dialog', () => {
-      train.CreateNewTrainDialog()
+      trainDialogsGrid.TdGrid.CreateNewTrainDialog()
       train.TypeYourMessage(common.gonnaDeleteAnAction)
       train.ClickScoreActionsButton()
       train.SelectTextAction(common.whatsYourName)
@@ -53,7 +53,7 @@ describe('Missing Action - ErrorHandling', () => {
 
   context('Train', () => {
     it('Should edit the Train Dialog and verify the expected error messages show up', () => {
-      train.EditTraining(common.gonnaDeleteAnAction, common.gonnaDeleteAnAction, '')
+      trainDialogsGrid.TdGrid.EditTrainingByChatInputs(common.gonnaDeleteAnAction, common.gonnaDeleteAnAction, '')
       train.VerifyErrorMessage(common.trainDialogHasErrorsMessage)
 
       chatPanel.SelectChatTurnStartsWith("ERROR: Can't find Action Id")

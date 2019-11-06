@@ -6,8 +6,8 @@
 import * as models from '../../../support/Models'
 import * as modelPage from '../../../support/components/ModelPage'
 import * as chatPanel from '../../../support/components/ChatPanel'
-import * as train from '../../../support/Train'
 import * as trainDialogsGrid from '../../../support/components/TrainDialogsGrid'
+import * as train from '../../../support/Train'
 import * as entityDetectionPanel from '../../../support/components/EntityDetectionPanel'
 import * as helpers from '../../../support/Helpers'
 
@@ -21,7 +21,7 @@ describe('Consistent Entity Labeling', () => {
       models.ImportModel('z-cnstntEntLabel', 'z-entityLabeling.cl')
       modelPage.NavigateToTrainDialogs()
       cy.WaitForTrainingStatusCompleted()
-      train.CreateNewTrainDialog()
+      trainDialogsGrid.TdGrid.CreateNewTrainDialog()
     })
   })
 
@@ -62,7 +62,7 @@ describe('Consistent Entity Labeling', () => {
     it('Abandon Train Dialog, wait for training status to complete and start a new Train Dialog', () => {
       train.AbandonDialog()
       cy.WaitForTrainingStatusCompleted()
-      train.CreateNewTrainDialog()
+      trainDialogsGrid.TdGrid.CreateNewTrainDialog()
     })
   })
 
@@ -97,7 +97,7 @@ describe('Consistent Entity Labeling', () => {
 
   context('Edit and Change to Previous Submited Labels', () => {
     it('Edit the training and verify the entities are labeled', () => {
-      train.EditTraining('This is Tag.', 'This is Tag.', 'Hi')
+      trainDialogsGrid.TdGrid.EditTrainingByChatInputs('This is Tag.', 'This is Tag.', 'Hi')
       chatPanel.SelectChatTurnExactMatch('This is Tag.')
 
       entityDetectionPanel.VerifyEntityLabelWithinSpecificInput([textEntityPairs[0]], 0)
@@ -130,7 +130,7 @@ describe('Consistent Entity Labeling', () => {
 
   context('Edit and Preserve Attempted Labels', () => {
     it('Edit the training', () => {
-      train.EditTrainingByDescriptionAndOrTags('Both Tag & Frog')
+      trainDialogsGrid.TdGrid.EditTrainingByChatInputsByDescriptionAndOrTags('Both Tag & Frog')
     })
 
     it('Remove both Entity labels', () => {
@@ -153,7 +153,7 @@ describe('Consistent Entity Labeling', () => {
     })
     
     it('Edit the Train Dialog that got changed', () => {
-      train.EditTraining('This is Tag.', 'This is Tag.', 'Hi')
+      trainDialogsGrid.TdGrid.EditTrainingByChatInputs('This is Tag.', 'This is Tag.', 'Hi')
     })
 
     // Bug 2327: Typical Error indicators missing from Alternative Text error

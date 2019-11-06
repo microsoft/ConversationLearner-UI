@@ -8,8 +8,8 @@ import * as modelPage from '../../../support/components/ModelPage'
 import * as memoryTableComponent from '../../../support/components/MemoryTableComponent'
 import * as entityDetectionPanel from '../../../support/components/EntityDetectionPanel'
 import * as scorerModal from '../../../support/components/ScorerModal'
+import * as trainDialogsGrid from '../../../support/components/TrainDialogsGrid'
 import * as train from '../../../support/Train'
-import * as common from '../../../support/Common'
 import * as helpers from '../../../support/Helpers'
 
 // The "Expected Entity Labeling" test scenario is Part 1 and
@@ -30,7 +30,7 @@ describe('Learned Entity Labeling', () => {
 
   context('Train Dialog', () => {
     it('Should create a new Train Dialog', () => {
-      train.CreateNewTrainDialog()
+      trainDialogsGrid.TdGrid.CreateNewTrainDialog()
     })
 
     it('Should auto-label Entity in user utterance based existing Train Dialog', () => {
@@ -46,7 +46,7 @@ describe('Learned Entity Labeling', () => {
     generatedScoreActionsData.VerifyScoreActionsList()
 
     it('Should be able to select an Action', () => {
-      train.SelectTextAction('Hello David', 'Hello $name')
+      train.SelectTextAction('Hello David')
       cy.WaitForTrainingStatusCompleted()
     })
 
@@ -64,7 +64,7 @@ describe('Learned Entity Labeling', () => {
     generatedScoreActionsData.VerifyScoreActionsList()
 
     it('Should be able to select an Action and save the training', () => {
-      train.SelectTextAction('Hello Susan', 'Hello $name')
+      train.SelectTextAction('Hello Susan')
       train.SaveAsIsVerifyInGrid()
     })
   })
@@ -72,7 +72,7 @@ describe('Learned Entity Labeling', () => {
   context('Train Dialog Next', () => {
     it('Should wait for Training Status to Complete and then create a new Train Dialog', () => {
       cy.WaitForTrainingStatusCompleted()
-      train.CreateNewTrainDialog()
+      trainDialogsGrid.TdGrid.CreateNewTrainDialog()
     })
 
     it('Should auto-label Entity in user utterance based previous Train Dialog', () => {
@@ -88,7 +88,7 @@ describe('Learned Entity Labeling', () => {
     generatedScoreActionsData.VerifyScoreActionsList()
 
     it('Should be able to select an Action and save the training', () => {
-      train.SelectTextAction('Hello Gabriella', 'Hello $name')
+      train.SelectTextAction('Hello Gabriella')
       train.SaveAsIsVerifyInGrid()
     })
   })

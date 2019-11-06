@@ -7,6 +7,7 @@ import * as models from '../../../support/Models'
 import * as modelPage from '../../../support/components/ModelPage'
 import * as entityDetectionPanel from '../../../support/components/EntityDetectionPanel'
 import * as chatPanel from '../../../support/components/ChatPanel'
+import * as trainDialogsGrid from '../../../support/components/TrainDialogsGrid'
 import * as train from '../../../support/Train'
 import * as helpers from '../../../support/Helpers'
 
@@ -23,7 +24,7 @@ describe('New Phrase Used 2 Times Inconsistently - Entity Labeling', () => {
 
   context('One Instance of the Phrase', () => {
     it('Create a new Train Dialog and add a description for unique identification', () => {
-      train.CreateNewTrainDialog()
+      trainDialogsGrid.TdGrid.CreateNewTrainDialog()
       train.TypeDescription('Test Generated')
     })
 
@@ -56,7 +57,7 @@ describe('New Phrase Used 2 Times Inconsistently - Entity Labeling', () => {
 
     it('Save the Train Dialog and Re-edit the same', () => {
       train.SaveAsIs()
-      train.EditTraining('A totally unique phrase', 'A totally unique phrase', 'The only response')
+      trainDialogsGrid.TdGrid.EditTrainingByChatInputs('A totally unique phrase', 'A totally unique phrase', 'The only response')
     })
   })
 

@@ -8,6 +8,7 @@ import * as modelPage from '../../../support/components/ModelPage'
 import * as memoryTableComponent from '../../../support/components/MemoryTableComponent'
 import * as scorerModal from '../../../support/components/ScorerModal'
 import * as entityDetectionPanel from '../../../support/components/EntityDetectionPanel'
+import * as trainDialogsGrid from '../../../support/components/TrainDialogsGrid'
 import * as train from '../../../support/Train'
 import * as common from '../../../support/Common'
 import * as helpers from '../../../support/Helpers'
@@ -30,7 +31,7 @@ describe('Expected Entity Labeling', () => {
 
   context('Train Dialog - 1st Round', () => {
     it('Should create a new Train Dialog', () => {
-      train.CreateNewTrainDialog()
+      trainDialogsGrid.TdGrid.CreateNewTrainDialog()
     })
 
     it('Should type in a user utterance and click Score Actions button', () => {
@@ -59,7 +60,7 @@ describe('Expected Entity Labeling', () => {
     generatedScoreActionsData.VerifyScoreActionsList()
 
     it('Should select an action', () => {
-      train.SelectTextAction('Hello David', 'Hello $name')
+      train.SelectTextAction('Hello David')
     })
 
     it('Should save the Train Dialog and verify that it shows up in the grid', () => {

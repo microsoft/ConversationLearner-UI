@@ -21,7 +21,7 @@ describe('Bug 2305 Repro', () => {
 
   context('Attempt to reproduce Bug 2305', () => {
     it('Edit Train Dialog', () => {
-      train.EditTraining('The green frog jumped.', 'The green frog jumped.', 'The only response')
+      trainDialogsGrid.TdGrid.EditTrainingByChatInputs('The green frog jumped.', 'The green frog jumped.', 'The only response')
     })
 
     it('Add an additional turn', () => {
