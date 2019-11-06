@@ -116,7 +116,7 @@ class TranscriptList extends React.Component<Props, ComponentState> {
             renderResults.push({
                 sourceName: sourceName,
                 transcriptCount: items.length,
-                usesLG: this.props.testSet.usesLgMap.get(sourceName) || false
+                usesLG: this.props.testSet.usesLgMap.get(sourceName) ?? false
             })
         }
         return renderResults

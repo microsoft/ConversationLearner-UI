@@ -101,7 +101,7 @@ export class TreeNodeLabel extends React.PureComponent<TreeNodeReceivedProps>  {
             })
         }
         const isNodeelected = this.isSelected()
-        let scorerSteps = treeNode.scorerSteps || []
+        let scorerSteps = treeNode.scorerSteps ?? []
         let userInputMore = false
         let scorerStepMore = false
 

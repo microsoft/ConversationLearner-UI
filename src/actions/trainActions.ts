@@ -365,10 +365,10 @@ export const trainDialogMergeThunkAsync = (appId: string, newTrainDialog: CLM.Tr
 
             // Create merged train dialog
             const mergedTrainDialog = DialogUtils.mergeTrainDialogs(newTrainDialog, existingTrainDialog)
-            mergedTrainDialog.description = newDescription || mergedTrainDialog.description
-            mergedTrainDialog.tags = newTags || mergedTrainDialog.tags
+            mergedTrainDialog.description = newDescription ?? mergedTrainDialog.description
+            mergedTrainDialog.tags = newTags ?? mergedTrainDialog.tags
 
-            // If merged into exisiting TrainDialog (as it was longer)
+            // If merged into existing TrainDialog (as it was longer)
             if (mergedTrainDialog.trainDialogId === existingTrainDialog.trainDialogId) {
                 // Update existing train dialog with merged train dialog, and delete other dialogs
                 mergedTrainDialog.lastModifiedDateTime = `${new Date().toISOString().slice(0, 19)}+00:00`

@@ -23,7 +23,7 @@ export async function onInsertAction(
     clearWebChatScrollPosition: () => void,
 ) {
     const clData: CLM.CLChannelData = selectedActivity.channelData.clData
-    const roundIndex = clData.roundIndex || 0
+    const roundIndex = clData.roundIndex ?? 0
     const scoreIndex = clData.scoreIndex
     const definitions = {
         entities,
@@ -123,7 +123,7 @@ export async function onInsertInput(
 
     const clData: CLM.CLChannelData = selectedActivity.channelData.clData
     const roundIndex = clData.roundIndex!
-    const scoreIndex = clData.scoreIndex || 0
+    const scoreIndex = clData.scoreIndex ?? 0
     const senderType = clData.senderType
 
     const definitions = {
@@ -248,7 +248,7 @@ export async function onChangeAction(
                 // Add new hash and lgRef to action and save it
                 const newAction = Util.deepCopy(action)
 
-                if (!newAction.clientData || !newAction.clientData.actionHashes) {
+                if (!newAction.clientData?.actionHashes) {
                     newAction.clientData = { actionHashes: [] }
                 }
                 // Look for lgItem by checking hash

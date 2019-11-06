@@ -263,7 +263,7 @@ class Testing extends React.Component<Props, ComponentState> {
                 }
 
                 // Substitute back in any LG refs
-                const transcript = Util.deepCopy(resultTranscript) || []
+                const transcript = Util.deepCopy(resultTranscript) ?? []
                 OBIUtils.toLG(transcript, this.state.testSet.lgItems, this.props.entities, this.props.actions)
 
                 validationResult = {

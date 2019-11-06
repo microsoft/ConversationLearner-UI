@@ -61,11 +61,11 @@ export async function getLogDialogActivities(
 
     // Return activities
     const teachWithActivities = await fetchActivitiesThunkAsync(appId, trainDialog, user.name, user.id, false, true)
-    const activites = teachWithActivities.activities
+    const activities = teachWithActivities.activities
     if (conversationId || channelId) {
-        addActivityReferences(activites, conversationId, channelId)
+        addActivityReferences(activities, conversationId, channelId)
     }
-    return activites
+    return activities
 }
 
 // Adds channelId and conversationId references to activities
@@ -122,7 +122,7 @@ export function isSameActivity(activity1: BB.Activity, activity2: BB.Activity): 
 
 // Add new LG references from .lg file to Map (creates new one if doesn't already exist)
 export async function lgMapFromLGFiles(lgFiles: File[] | null, lgItemList?: CLM.LGItem[]): Promise<CLM.LGItem[]> {
-    const map = lgItemList || []
+    const map = lgItemList ?? []
     if (lgFiles) {
         for (const lgFile of lgFiles) {
             if (lgFile.name.endsWith('.lg')) {
@@ -137,7 +137,7 @@ export async function lgMapFromLGFiles(lgFiles: File[] | null, lgItemList?: CLM.
     return map
 }
 
-// Returns true is any LG is used by this transcxript
+// Returns true is any LG is used by this transcript
 export function usesLG(transcript: BB.Activity[]): boolean {
 
     for (let activity of transcript) {

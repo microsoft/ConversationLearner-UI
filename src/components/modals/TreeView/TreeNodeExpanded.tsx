@@ -41,7 +41,7 @@ export class TreeNodeExpanded extends React.PureComponent<TreeNodeReceivedProps>
             })
         }
 
-        let scorerSteps = treeNode.scorerSteps || []
+        let scorerSteps = treeNode.scorerSteps ?? []
         this.props.generateActionDescriptions(scorerSteps)
 
         return (

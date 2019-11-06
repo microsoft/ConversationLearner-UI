@@ -164,7 +164,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
             roundIndex: null,
             scoreIndex: null,
             activityIndex: this.props.nextActivityIndex,
-            validWaitAction: !scoredAction.isTerminal || undefined  // Draws carrot under card if a wait action
+            validWaitAction: !scoredAction.isTerminal ?? undefined  // Draws carrot under card if a wait action
         }
 
         // Store selected action in "turn lookup"
@@ -407,7 +407,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                                     roundIndex={renderData.roundIndex}
                                     autoTeach={this.props.teachSession.autoTeach}
                                     dialogMode={renderData.dialogMode}
-                                    extractResponses={renderData.extractResponses || []}
+                                    extractResponses={renderData.extractResponses ?? []}
                                     extractConflict={this.props.teachSession.extractConflict}
                                     originalTextVariations={renderData.textVariations}
                                     onSubmitExtractions={this.onEntityExtractorSubmit}

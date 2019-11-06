@@ -167,7 +167,7 @@ export const fetchAllLogDialogsThunkAsync = (app: CLM.AppBase, packageId: string
     return async (dispatch: Dispatch<any>) => {
         // Note: In future change fetch log dialogs to default to all package if packageId is dev
         const packageIds = (packageId === app.devPackageId)
-            ? (app.packageVersions || []).map(pv => pv.packageId).concat(packageId)
+            ? (app.packageVersions ?? []).map(pv => pv.packageId).concat(packageId)
             : [packageId]
 
         const clClient = ClientFactory.getInstance(AT.FETCH_LOG_DIALOGS_ASYNC)

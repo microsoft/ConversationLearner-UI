@@ -22,7 +22,7 @@ const Component: React.FC<Props> = (props) => {
     const renderPayloadRenderData = useMultiPayloadRenderer(props.apiAction.renderArguments, props.entities, props.showMissingEntities, props.memories)
 
     const showToggle = logicPayloadRenderData.showToggle
-        || renderPayloadRenderData.showToggle
+        ?? renderPayloadRenderData.showToggle
 
     const showLogicFunction = !props.callback
         ? true
@@ -34,10 +34,10 @@ const Component: React.FC<Props> = (props) => {
         : props.callback.isRenderFunctionProvided
     // && callback.renderArguments.length > 0
 
-    const isPlaceholder = (props.apiAction.isPlaceholder || false)
-    const [isOriginalVisible, setIsOriginalVisivilble] = React.useState(false)
+    const isPlaceholder = (props.apiAction.isPlaceholder ?? false)
+    const [isOriginalVisible, setIsOriginalVisible] = React.useState(false)
     const onChangeVisible = () => {
-        setIsOriginalVisivilble(x => !x)
+        setIsOriginalVisible(x => !x)
     }
 
     return (

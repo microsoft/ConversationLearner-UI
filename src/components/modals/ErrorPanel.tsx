@@ -151,8 +151,8 @@ class ErrorPanel extends React.Component<Props, ComponentState> {
                 <div className="cl-errorpanel">
                     {this.props.error.actionType && <div className={OF.FontClassNames.large}>
                         <FormattedMessage
-                            id={this.props.error.actionType || FM.ERROR_ERROR}
-                            defaultMessage={this.props.error.actionType || 'Unknown'}
+                            id={this.props.error.actionType ?? FM.ERROR_ERROR}
+                            defaultMessage={this.props.error.actionType ?? 'Unknown'}
                         /> Failed</div>}
                     <div className={OF.FontClassNames.medium}>{this.props.error.title}</div>
                     {this.state.errorBody}

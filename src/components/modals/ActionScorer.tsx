@@ -204,7 +204,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
 
                 // If an import action, sort by string similarity to existing actions
                 if (component.props.importedAction) {
-                    score = actionForRender.similarityScore || 0
+                    score = actionForRender.similarityScore ?? 0
                 }
                 else {
                     score = actionForRender.score

@@ -87,7 +87,7 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
                     // Get max height for this index
                     const maxHeight = Math.max(...this.state.activityHeights
                         .filter(ah => ah.index === index) 
-                        .map(ah => ah.height || 0))
+                        .map(ah => ah.height ?? 0))
                     
                     const itemHeights = activityHeights.filter(ah => ah.index === index)
                     for (const activityHeight of itemHeights) {
@@ -376,7 +376,7 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
                                         isOpen={rd.activities !== undefined}
                                         key={`${rd.sourceName}-${this.state.webchatKey}`}
                                         app={this.props.app}
-                                        history={rd.activities as any || []}
+                                        history={rd.activities ?? []}
                                         onPostActivity={() => {}}
                                         onSelectActivity={(activity) => this.onSelectActivity(rd.activities as any, activity)}
                                         onScrollChange={this.onScrollChange}

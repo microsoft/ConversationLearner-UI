@@ -41,7 +41,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             isResizable: true,
             render: (entity, component) => {
                 const changeStatus = component.getMemoryChangeStatus(entity.entityName)
-                const changeClass = memoryChangeClassMap[changeStatus] || ''
+                const changeClass = memoryChangeClassMap[changeStatus] ?? ''
 
                 return <span className={`${OF.FontClassNames.mediumPlus} ${changeClass}`} data-testid="entity-memory-name">{entity.entityName}</span>
             },
@@ -59,7 +59,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
 
                 return (<React.Fragment>
                     {entityValues.map((value, i) => {
-                        const changeClass = memoryChangeClassMap[value.changeStatus] || ''
+                        const changeClass = memoryChangeClassMap[value.changeStatus] ?? ''
                         let renderedValue;
 
                         const valuesAsObject = component.valuesAsObject(value.displayText)
@@ -111,11 +111,11 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             maxWidth: 180,
             isResizable: true,
             getSortValue: entity => {
-                const display = entity.resolverType === undefined || entity.resolverType === null ? "none" : entity.resolverType;
+                const display = entity.resolverType ?? "none"
                 return display.toLowerCase();
             },
             render: entity => {
-                const display = entity.resolverType === undefined || entity.resolverType === null ? "none" : entity.resolverType
+                const display = entity.resolverType ?? "none"
                 if (display.toLowerCase() === "none") {
                     return (
                         <OF.Icon iconName="Remove" className="cl-icon" />

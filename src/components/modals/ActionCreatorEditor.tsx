@@ -214,7 +214,7 @@ const createSlateValue = (content: object | string, options: ActionPayloadEditor
         objectContent = JSON.parse(content) as object
     }
 
-    const updatedJson = ActionPayloadEditor.Utilities.updateOptionNames(objectContent || content, options)
+    const updatedJson = ActionPayloadEditor.Utilities.updateOptionNames(objectContent ?? content, options)
     return Value.fromJSON(updatedJson)
 }
 
@@ -756,7 +756,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             .reduce((values, argument) => {
                 // Preserve old values if any transfer
                 const oldValue = this.state.slateValuesMap[argument]
-                values[argument] = oldValue || Plain.deserialize('')
+                values[argument] = oldValue ?? Plain.deserialize('')
                 return values
             }, {})
 
@@ -764,7 +764,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             .reduce((values, argument) => {
                 // Preserve old values if any transfer
                 const oldValue = this.state.secondarySlateValuesMap[argument]
-                values[argument] = oldValue || Plain.deserialize('')
+                values[argument] = oldValue ?? Plain.deserialize('')
                 return values
             }, {})
 

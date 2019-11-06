@@ -232,8 +232,8 @@ class TranscriptRatings extends React.Component<Props, ComponentState> {
                     {Array.from(this.state.sourceRankMap.keys())
                         .map(sourceName => {
                             const rankCount: RankCount[] | undefined = this.state.sourceRankMap.get(sourceName)
-                            const unrankable = this.state.unRatableMap.get(sourceName) || []
-                            const notRated = this.state.notRatedMap.get(sourceName) || []
+                            const unrankable = this.state.unRatableMap.get(sourceName) ?? []
+                            const notRated = this.state.notRatedMap.get(sourceName) ?? []
                             return (
                                 <div 
                                     className="cl-transcriptrating-results"

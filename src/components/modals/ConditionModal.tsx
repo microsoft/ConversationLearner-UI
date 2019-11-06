@@ -53,7 +53,7 @@ const convertConditionTypesToDropdownOptions = (conditionTypes: object): Operato
     return Object.keys(conditionTypes)
         .map((conditionType: string) => {
             let conditionText = `unknown`
-            if (conditionDisplay && conditionDisplay[conditionType]) {
+            if (conditionDisplay?.[conditionType]) {
                 conditionText = conditionDisplay[conditionType]
             }
 

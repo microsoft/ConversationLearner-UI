@@ -34,7 +34,7 @@ export interface DialogRenderData {
 }
 
 export function getReplayError(activity: BB.Activity | null): CLM.ReplayError | null | undefined {
-    if (!activity || !activity.channelData || !activity.channelData.clData) {
+    if (!activity?.channelData?.clData) {
         return null
     }
     const clData: CLM.CLChannelData = activity.channelData.clData
@@ -729,7 +729,7 @@ export function getDialogRenderData(
                 if (!selectedAction) {
                     // Action may have been deleted.  If so create dummy action to render
                     selectedAction = {
-                        actionId: scorerStep.labelAction || 'MISSING ACTION',
+                        actionId: scorerStep.labelAction ?? 'MISSING ACTION',
                         createdDateTime: new Date().toJSON(),
                         payload: 'MISSING ACTION',
                         isTerminal: false,
@@ -822,7 +822,7 @@ export function bestTemplateMatch(importedAction: ImportedAction, templates: CLM
         if (template.body) {
             // Calculate number of buttons on the template
             // TODO: support other button types
-            const templateButtonCount = (template.body.match(/Action.Submit/g) || []).length
+            const templateButtonCount = (template.body.match(/Action.Submit/g) ?? []).length
 
             // If cound is the same, find string similarity in body
             if (templateButtonCount === importedAction.buttons.length) {

@@ -122,7 +122,7 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
             }
         }
 
-        const dialogId = this.props.editingLogDialogId || this.props.trainDialog.trainDialogId
+        const dialogId = this.props.editingLogDialogId ?? this.props.trainDialog.trainDialogId
         // Next against other TrainDialogs
         for (const changedTextVariation of changedTextVariations) {
             const conflict = await this.props.fetchTextVariationConflictThunkAsync(

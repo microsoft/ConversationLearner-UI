@@ -66,7 +66,7 @@ class Index extends React.Component<Props, ComponentState> {
             return
         }
 
-        const editPackageId = this.props.activeApps[app.appId] || app.devPackageId;
+        const editPackageId = this.props.activeApps[app.appId] ?? app.devPackageId;
         if (!editPackageId) {
             throw new Error(`You attempted to load an app, but editPackageId is not defined. This is likely a problem with the code. Please open an issue.`)
         }
@@ -80,7 +80,7 @@ class Index extends React.Component<Props, ComponentState> {
             throw new Error(`App/Index#componentWillReceiveProps: app could not be found in location state. This is likely a problem with the code. Please open an issue.`)
         }
 
-        const editPackageId = newProps.activeApps[app.appId] || app.devPackageId
+        const editPackageId = newProps.activeApps[app.appId] ?? app.devPackageId
         if (!editPackageId) {
             throw new Error(`App/Index#componentWillReceiveProps: editPackageId is not defined. This is likely a problem with the code. Please open an issue.`)
         }

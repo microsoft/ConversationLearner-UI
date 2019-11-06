@@ -165,7 +165,7 @@ class MemorySetter extends React.Component<Props> {
                                             {entity.entityType === CLM.EntityType.ENUM ?
                                                 <OF.Dropdown
                                                     className="cl-input--inline"
-                                                    selectedKey={memoryValue.enumValueId || undefined}
+                                                    selectedKey={memoryValue.enumValueId ?? undefined}
                                                     onChange={(event, item) => this.onEnumChange(item, entity)}
                                                     options={entity.enumValues!.map<OF.IDropdownOption>(ev => {
                                                         return {
@@ -184,7 +184,7 @@ class MemorySetter extends React.Component<Props> {
                                                         id: FM.TEACHSESSIONINIT_INPUT_PLACEHOLDER,
                                                         defaultMessage: "Value..."
                                                     })}
-                                                    value={memoryValue.userText || ''}
+                                                    value={memoryValue.userText ?? ''}
                                                 />
                                             }
                                             {(editableEntities.length > 1) &&
