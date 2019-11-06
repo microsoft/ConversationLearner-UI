@@ -424,7 +424,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         }
         catch (error) {
             if (error instanceof EntityLabelConflictError) {
-                const conflictPairs = LogDialogs.GetConflicts((this.state.currentTrainDialog && this.state.currentTrainDialog.rounds) || [], error.textVariations)
+                const conflictPairs = LogDialogs.GetConflicts(this.state.currentTrainDialog?.rounds ?? [], error.textVariations)
                 this.acceptConflictResolutionFn = (updatedDialog) => this.onInsertAction(updatedDialog, selectedActivity, isLastActivity)
                 this.setState({
                     conflictPairs

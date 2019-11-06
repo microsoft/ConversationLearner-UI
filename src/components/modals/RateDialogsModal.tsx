@@ -80,7 +80,7 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
             const haveHeights = this.state.activityHeights.length > 0 && this.state.activityHeights.filter(ah => ah.height === undefined).length === 0
             
             if (haveHeights && this.state.activities1) {
-                // If I have them calcluate padding to align acitivity horizontally
+                // If I have them calculate padding to align activity horizontally
                 const activityHeights = [...this.state.activityHeights]
                 const numActivities = this.state.activities1.length
                 for (let index = 0; index < numActivities; index = index + 1) {
@@ -115,7 +115,7 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
             // Find height lookup
             const activityHeight = this.state.activityHeights.find(ah => ah.id === activityProps.activity.id)
             
-            if (activityHeight && activityHeight.padding) {
+            if (activityHeight?.padding) {
                 padding = activityHeight.padding
             }
         }

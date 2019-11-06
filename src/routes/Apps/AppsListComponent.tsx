@@ -290,7 +290,7 @@ export class Component extends React.Component<Props, ComponentState> {
                             checkboxVisibility={isDispatcherFeaturesEnabled
                                 ? OF.CheckboxVisibility.onHover
                                 : OF.CheckboxVisibility.hidden}
-                            onRenderRow={(myProps, defaultRender) => <div data-selection-invoke={true}>{defaultRender && defaultRender(myProps)}</div>}
+                            onRenderRow={(myProps, defaultRender) => <div data-selection-invoke={true}>{defaultRender?.(myProps)}</div>}
                             onRenderItemColumn={(app, i, column: ISortableRenderableColumn) => column.render(app, props)}
                             onColumnHeaderClick={this.onClickColumnHeader}
                             onItemInvoked={app => this.props.onClickApp(app)}

@@ -135,7 +135,7 @@ export const fetchLogDialogThunkAsync = (appId: string, logDialogId: string, rep
             return logDialog
         } catch (e) {
             const error = e as AxiosError
-            if (error.response && error.response.status === HttpStatus.NOT_FOUND && nullOnNotFound) {
+            if (error.response?.status === HttpStatus.NOT_FOUND && nullOnNotFound) {
                 dispatch(fetchLogDialogNotFound())
                 return null
             }

@@ -1092,7 +1092,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         }
 
         try {
-            const invalidTrainingDialogIds = await ((this.props.fetchActionDeleteValidationThunkAsync(this.props.app.appId, this.props.editingPackageId, this.props.action.actionId) as any) as Promise<string[]>)
+            const invalidTrainingDialogIds = await ((this.props.fetchActionDeleteValidationThunkAsync(this.props.app.appId, this.props.editingPackageId, this.props.action.actionId) as any) as Promise<string[] | null>)
             if (invalidTrainingDialogIds && invalidTrainingDialogIds.length > 0) {
                 const validationWarnings = [Util.formatMessageId(this.props.intl, FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_WARNING)]
 
@@ -1242,7 +1242,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         }
 
         const textPayload = this.state.slateValuesMap[TEXT_SLOT]
-        const isPayloadMissing = (actionTypeOption.key === CLM.ActionTypes.TEXT && textPayload && textPayload.document.text.length === 0)
+        const isPayloadMissing = (actionTypeOption.key === CLM.ActionTypes.TEXT && textPayload?.document.text.length === 0)
         const isTerminal = [CLM.ActionTypes.END_SESSION, CLM.ActionTypes.DISPATCH, CLM.ActionTypes.CHANGE_MODEL].includes(actionTypeOption.key as CLM.ActionTypes)
             ? true
             : actionTypeOption.key === CLM.ActionTypes.SET_ENTITY

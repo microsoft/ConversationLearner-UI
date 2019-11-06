@@ -54,7 +54,7 @@ export const createTrainDialogThunkAsync = (appId: string, trainDialog: CLM.Trai
             dispatch(createTrainDialogRejected())
 
             const error = e as AxiosError
-            if (error.response && error.response.status === 409) {
+            if (error.response?.status === 409) {
                 const textVariations: CLM.TextVariation[] = error.response.data.reason
                 const conflictError = new EntityLabelConflictError(error.message, textVariations)
                 throw conflictError
@@ -180,7 +180,7 @@ export const scoreFromTrainDialogThunkAsync = (appId: string, trainDialog: CLM.T
             dispatch(scoreFromTrainDialogRejected())
 
             const error = e as AxiosError
-            if (error.response && error.response.status === 409) {
+            if (error.response?.status === 409) {
                 const textVariations: CLM.TextVariation[] = error.response.data.reason
                 const conflictError = new EntityLabelConflictError(error.message, textVariations)
                 throw conflictError
@@ -230,7 +230,7 @@ export const extractFromTrainDialogThunkAsync = (appId: string, trainDialog: CLM
             dispatch(extractFromTrainDialogRejected())
 
             const error = e as AxiosError
-            if (error.response && error.response.status === 409) {
+            if (error.response?.status === 409) {
                 const textVariations: CLM.TextVariation[] = error.response.data.reason
                 const conflictError = new EntityLabelConflictError(error.message, textVariations)
                 throw conflictError

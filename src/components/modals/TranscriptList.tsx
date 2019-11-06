@@ -151,7 +151,7 @@ class TranscriptList extends React.Component<Props, ComponentState> {
                         items={renderResults}
                         columns={this.state.transcriptColumns}
                         checkboxVisibility={OF.CheckboxVisibility.hidden}
-                        onRenderRow={(props, defaultRender) => <div data-selection-invoke={true}>{defaultRender && defaultRender(props)}</div>}
+                        onRenderRow={(props, defaultRender) => <div data-selection-invoke={true}>{defaultRender?.(props)}</div>}
                         onRenderItemColumn={(rr: RenderData, i, column: IRenderableColumn) =>
                             column.render(rr)}
                     />
@@ -165,7 +165,7 @@ class TranscriptList extends React.Component<Props, ComponentState> {
                             {`${this.props.testSet.lgItems.length} ${Util.formatMessageId(this.props.intl, FM.TRANSCRIPTLIST_LGLOADED)}`}
                         </div>
                     }
-                    {this.props.testSet && this.props.testSet.lgItems.length === 0 && this.props.testSet.usesLG() &&
+                    {this.props.testSet?.lgItems.length === 0 && this.props.testSet.usesLG() &&
                         <div className="cl-testing-lglabel cl-text--warning">
                             {Util.formatMessageId(this.props.intl, FM.TRANSCRIPTLIST_NOLG)}
                         </div>

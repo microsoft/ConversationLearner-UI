@@ -238,17 +238,13 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
             if (lookupIndex >= 0) {
 
                 const turnData = this.state.turnLookup[lookupIndex]
-                const memories = (turnData && turnData.uiScoreResponse && turnData.uiScoreResponse.memories) 
-                    ? turnData.uiScoreResponse.memories 
-                    : []
+                const memories = turnData?.uiScoreResponse?.memories ?? []
             
                 // If prev action was user, use prevTurn.memory.  If following a wait action use uiScoreResponse.memories
                 const prevTurn = this.state.turnLookup[lookupIndex - 1] 
-                const prevMemories = (prevTurn && prevTurn.uiScoreResponse && prevTurn.uiScoreResponse.memories) 
-                    ? prevTurn.uiScoreResponse.memories 
-                    : (prevTurn && prevTurn.memories) 
-                    ? prevTurn.memories 
-                    : []
+                const prevMemories = prevTurn?.uiScoreResponse?.memories
+                    ?? prevTurn?.memories
+                    ?? []
 
                 if (turnData.uiScoreResponse) {
                     return {

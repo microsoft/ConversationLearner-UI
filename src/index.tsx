@@ -29,7 +29,7 @@ addLocaleData([...en, ...ko])
 
 console.log(`process.env.NODE_ENV: `, process.env.NODE_ENV)
 
-const locale = (navigator.languages && navigator.languages[0])
+const locale = (navigator.languages?.[0])
   || navigator.language
   || (navigator as any).userLanguage
   || 'en-US'

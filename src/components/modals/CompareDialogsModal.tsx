@@ -119,7 +119,7 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
             // Find height lookup
             const activityHeight = this.state.activityHeights.find(ah => ah.id === activityProps.activity.id)
             
-            if (activityHeight && activityHeight.padding) {
+            if (activityHeight?.padding) {
                 padding = activityHeight.padding
             }
         }

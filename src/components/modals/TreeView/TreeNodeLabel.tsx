@@ -131,7 +131,7 @@ export class TreeNodeLabel extends React.PureComponent<TreeNodeReceivedProps>  {
                 <div 
                     className={`cl-treeview-userBox${isNodeelected ? ` cl-treeview-botBoxSelected` : ''}`}
                 >
-                    {userInputs && userInputs.map((input, index) =>
+                    {userInputs?.map((input, index) =>
                         <div
                             key={`${treeNode.id}${index}`}
                             className="cl-treeview-userInput cl-treeview-ellipse"

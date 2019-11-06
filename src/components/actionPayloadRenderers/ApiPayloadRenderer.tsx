@@ -55,8 +55,7 @@ export default class Component extends React.Component<Props, State> {
                     <div className="cl-api-payload__fn">
                         <div className="cl-api-payload__signature">logic(memoryManager{pairedLogicArguments.argumentPairs.length !== 0 && `, ${pairedLogicArguments.argumentPairs.map(a => a.original.parameter).join(', ')}`})</div>
                         <div className="cl-api-payload__arguments ms-ListItem-primaryText">
-                            {pairedLogicArguments.argumentPairs.length !== 0
-                                && pairedLogicArguments.argumentPairs.map((argument, i) =>
+                            {pairedLogicArguments.argumentPairs.map((argument, i) =>
                                     <React.Fragment key={i}>
                                         <div>{argument.original.parameter}:</div>
                                         <div>"{`${(this.props.substitutedLogicArguments === null || this.state.isOriginalVisible)
@@ -71,8 +70,7 @@ export default class Component extends React.Component<Props, State> {
                     <div className="cl-api-payload__fn">
                         <div className="cl-api-payload__signature">render(result, memoryManager{pairedRenderArguments.argumentPairs.length !== 0 && `, ${pairedRenderArguments.argumentPairs.map(a => a.original.parameter).join(', ')}`})</div>
                         <div className="cl-api-payload__arguments ms-ListItem-primaryText">
-                            {pairedRenderArguments.argumentPairs.length !== 0
-                                && pairedRenderArguments.argumentPairs.map((argument, i) =>
+                            {pairedRenderArguments.argumentPairs.map((argument, i) =>
                                     <React.Fragment key={i}>
                                         <div>{argument.original.parameter}:</div>
                                         <div>"{`${(this.props.substitutedLogicArguments === null || this.state.isOriginalVisible)
@@ -105,7 +103,7 @@ export default class Component extends React.Component<Props, State> {
                 argumentsDiffer: false
             }
             : originalArguments.reduce<ICombinedActionArguments>((combined, originalArgument) => {
-                const matchingSubstitutedArgument = substitutedArguments && substitutedArguments.find(sa => sa.parameter === originalArgument.parameter)
+                const matchingSubstitutedArgument = substitutedArguments.find(sa => sa.parameter === originalArgument.parameter)
                 if (matchingSubstitutedArgument) {
                     combined.argumentPairs.push({
                         original: originalArgument,

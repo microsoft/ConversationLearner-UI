@@ -259,7 +259,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 entityFilter: this.toEntityFilter(this.props.filteredEntity)
             })
         }
-        if (this.props.trainDialogs.length === 0 && this.props.obiImportData && this.props.obiImportData.appId === this.props.app.appId) {
+        if (this.props.trainDialogs.length === 0 && this.props.obiImportData?.appId === this.props.app.appId) {
             await this.importOBIFiles(this.props.obiImportData)
         }
         else {
@@ -271,7 +271,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         // Prevent flash when switching to EditDialogModal by keeping teach session around
         // after teach session has been terminated
         // Will go away once Edit/Teach dialogs are merged
-        if (newProps.teachSession && newProps.teachSession.teach && newProps.teachSession !== this.props.teachSession) {
+        if (newProps.teachSession?.teach && newProps.teachSession !== this.props.teachSession) {
             this.setState({
                 lastTeachSession: { ...this.props.teachSession }
             })
@@ -482,7 +482,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
     @autobind
     async onCloseTeachSession(save: boolean, tags: string[] = [], description: string = '', stopImport: boolean = false) {
-        if (this.props.teachSession && this.props.teachSession.teach) {
+        if (this.props.teachSession?.teach) {
             // Delete the teach session unless it was already closed with and EndSessionAction
             if (this.props.teachSession.dialogMode !== CLM.DialogMode.EndSession) {
 
@@ -559,8 +559,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     async handlePotentialMerge(newTrainDialog: CLM.TrainDialog, matchedTrainDialog: CLM.TrainDialog) {
 
         // If importing and auto merge set, do the merge automatically
-        if (this.state.editType === EditDialogType.IMPORT && this.state.transcriptImport && this.state.transcriptImport.autoMerge) {
-            // Use default merged tages and descriptions by passing in nulls
+        if (this.state.editType === EditDialogType.IMPORT && this.state.transcriptImport?.autoMerge) {
+            // Use default merged tags and descriptions by passing in nulls
             await this.mergeTrainDialogs(newTrainDialog, matchedTrainDialog, null, null)
         }
         // Otherwise ask the user if they want to merge
@@ -787,8 +787,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     }
 
     haveTrainDialogsToImport(): boolean {
-        return (this.state.transcriptImport !== undefined
-            && this.state.transcriptImport.trainDialogs !== undefined
+        return (this.state.transcriptImport?.trainDialogs !== undefined
             && this.state.transcriptImport.trainDialogs.length > 0)
     }
 
@@ -914,7 +913,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             })
 
             // If auto importing and new dialog has matched all actions
-            if (this.state.transcriptImport && this.state.transcriptImport.autoCreate && !DialogUtils.hasImportActions(newTrainDialog)) {
+            if (this.state.transcriptImport?.autoCreate && !DialogUtils.hasImportActions(newTrainDialog)) {
                 // Fetch activityHistory as needed for validation checks
                 await Util.setStateAsync(this, {
                     activityHistory: teachWithActivities.activities,
@@ -932,7 +931,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     async onContinueTrainDialog(newTrainDialog: CLM.TrainDialog, initialUserInput: CLM.UserInput) {
 
         try {
-            if (this.props.teachSession && this.props.teachSession.teach) {
+            if (this.props.teachSession?.teach) {
                 // Delete the teach session w/o saving
                 await ((this.props.deleteTeachSessionThunkAsync(this.props.teachSession.teach, this.props.app) as any) as Promise<void>)
             }
@@ -1095,7 +1094,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
         let algorithmType = DispatcherAlgorithmType.DeterministicSingleTransfer
         const match = (this.props.app.metadata.markdown || '').match(/Type: ([\w ]+)/)
-        if (match && match[1]) {
+        if (match?.[1]) {
             console.log(`Dispatch Algorithm Type: `, { match })
             // TODO: Find way to extract algorithm type
         }
@@ -1148,7 +1147,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     @autobind
     async onCloseImportWarning(cancel: boolean): Promise<void> {
         // Delete app if user chooses to cancel or there are no imported train dialogs
-        if (cancel || this.state.transcriptImport && this.state.transcriptImport.trainDialogs.length === 0) {
+        if (cancel || this.state.transcriptImport?.trainDialogs.length === 0) {
             this.setState({ transcriptImport: undefined })
             this.props.onDeleteApp(this.props.app.appId)
         }
@@ -1353,7 +1352,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
     async onCloseEditDialogModal(reload: boolean = false, stopImport: boolean = false) {
 
-        if (this.props.teachSession && this.props.teachSession.teach) {
+        if (this.props.teachSession?.teach) {
             // Delete the teach session w/o saving
             await ((this.props.deleteTeachSessionThunkAsync(this.props.teachSession.teach, this.props.app) as any) as Promise<void>)
         }
@@ -1382,7 +1381,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         if (this.haveTrainDialogsToImport()) {
             if (stopImport) {
                 // If I was doing an OBI import and abandoned, delete the train dialog
-                if (this.props.obiImportData && this.props.obiImportData.appId === this.props.app.appId) {
+                if (this.props.obiImportData?.appId === this.props.app.appId) {
                     this.props.onDeleteApp(this.props.app.appId)
                 }
                 // Otherwise just clear dialogs to be imported
@@ -1473,13 +1472,13 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
             // Filter out train dialogs that don't match filters (data = negativeId for multivalue)
             const entityFilter = this.state.entityFilter
-            if (entityFilter && entityFilter.key
+            if (entityFilter?.key
                 && !entitiesInTD.find(en => en.entityId === entityFilter.key)
                 && !entitiesInTD.find(en => en.entityId === entityFilter.data)) {
                 return false
             }
             const actionFilter = this.state.actionFilter
-            if (actionFilter && actionFilter.key
+            if (actionFilter?.key
                 && !actionsInTD.find(a => a.actionId === actionFilter.key)) {
                 return false
             }
@@ -1531,7 +1530,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 : EditState.CAN_EDIT
 
         // LastTeachSession used to prevent screen flash when moving between Edit and Teach pages
-        const teachSession = (this.props.teachSession && this.props.teachSession.teach)
+        const teachSession = (this.props.teachSession?.teach)
             ? this.props.teachSession
             : this.state.lastTeachSession
 
@@ -1727,7 +1726,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                                 columns={this.state.columns}
                                 checkboxVisibility={OF.CheckboxVisibility.onHover}
                                 onColumnHeaderClick={this.onClickColumnHeader}
-                                onRenderRow={(props, defaultRender) => <div data-selection-invoke={true}>{defaultRender && defaultRender(props)}</div>}
+                                onRenderRow={(props, defaultRender) => <div data-selection-invoke={true}>{defaultRender?.(props)}</div>}
                                 onRenderItemColumn={(trainDialog, i, column: IRenderableColumn) => returnErrorStringWhenError(() => column.render(trainDialog, this))}
                                 onItemInvoked={trainDialog => this.onClickTrainDialogItem(trainDialog)}
                             />}
@@ -1792,11 +1791,11 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     onReplayDialog={this.onReplayTrainDialog}
                     onCreateDialog={(newTrainDialog) => this.onCreateTrainDialog(newTrainDialog)}
                     allUniqueTags={this.props.allUniqueTags}
-                    importIndex={this.state.transcriptImport ? this.state.transcriptImport.index : undefined}
-                    importCount={(this.state.transcriptImport && this.state.transcriptImport.trainDialogs) ? this.state.transcriptImport.trainDialogs.length : undefined}
-                    importingOBI={this.props.obiImportData && this.props.obiImportData.appId === this.props.app.appId}
+                    importIndex={this.state.transcriptImport?.index}
+                    importCount={this.state.transcriptImport?.trainDialogs.length}
+                    importingOBI={this.props.obiImportData?.appId === this.props.app.appId}
                 />
-                {this.state.transcriptImport && this.state.transcriptImport.warnings && this.state.transcriptImport.warnings.length > 0 &&
+                {this.state.transcriptImport?.warnings && this.state.transcriptImport.warnings.length > 0 &&
                     <ConfirmCancelModal
                         open={true}
                         onCancel={() => this.onCloseImportWarning(true)}
@@ -1826,7 +1825,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         onCancel={this.onCancelImportTranscripts}
                     />
                 }
-                {this.state.isImportWaitModalOpen && this.state.transcriptImport && this.state.transcriptImport.index &&
+                {this.state.isImportWaitModalOpen && this.state.transcriptImport?.index &&
                     <TranscriptImportWaitModal
                         importIndex={this.state.transcriptImport.index}
                         importCount={this.state.transcriptImport.trainDialogs ? this.state.transcriptImport.trainDialogs.length : 0}

@@ -43,7 +43,7 @@ function getProcessedTemplate(template: Template, actionArguments: RenderedActio
 
     // Substitute argument values
     for (const actionArgument of actionArguments) {
-        if (actionArgument && actionArgument.value) {
+        if (actionArgument?.value) {
             templateString = templateString.replace(new RegExp(`{{${actionArgument.parameter}}}`, 'g'), actionArgument.value)
         }
     }

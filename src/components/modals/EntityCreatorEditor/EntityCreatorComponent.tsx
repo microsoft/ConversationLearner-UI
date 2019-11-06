@@ -170,7 +170,7 @@ const EditComponent: React.FC<Props> = (props) => {
                             value={value ? value.enumValue : ""}
                             data-testid="entity-enum-value-value-name"
                         />
-                        {value && value.enumValueId &&
+                        {value?.enumValueId &&
                             <OF.IconButton
                                 data-testid="entity-enum-value-button-delete"
                                 disabled={value ? !value.allowDelete : false}

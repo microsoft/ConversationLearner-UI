@@ -106,7 +106,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
                 if (!newOption.name.startsWith(negativeEntityPrefix)) {
                     const value = this.state.value
                     const selectedNodes: any[] = value.inlines.toJS()
-                    if (selectedNodes.length > 0 && selectedNodes.every(n => n.type === NodeType.TokenNodeType)) {
+                    if (selectedNodes.every(n => n.type === NodeType.TokenNodeType)) {
                         const startIndex = selectedNodes[0].data.startIndex
                         const endIndex = selectedNodes[selectedNodes.length - 1].data.endIndex
                         const selectedText = getSelectedText(value)
@@ -213,7 +213,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
          */
         let builtInTypeFilter: string | null = null
         const selectedNodes: any[] = value.inlines.toJS()
-        if (selectedNodes.length > 0 && selectedNodes.every(n => n.type === NodeType.TokenNodeType)) {
+        if (selectedNodes.every(n => n.type === NodeType.TokenNodeType)) {
             const startIndex = selectedNodes[0].data.startIndex
             const endIndex = selectedNodes[selectedNodes.length - 1].data.endIndex
             // select the builtIn entity that has overlap with current selected tokens as the builtIn entity filter
@@ -240,15 +240,14 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
     onSelectChar = () => {
         // Make selection
         const selection = window.getSelection();
-        const parentNode = selection
-            && selection.anchorNode
-            && selection.anchorNode.parentElement
-            && selection.anchorNode.parentElement.parentNode
+        const parentNode = selection?.anchorNode?.parentElement?.parentNode
 
         if (parentNode && selection) {
-            const sibling = parentNode.nextSibling ? parentNode.nextSibling : parentNode.parentNode && parentNode.parentNode.nextSibling
+            const sibling = parentNode.nextSibling
+                ? parentNode.nextSibling
+                : parentNode.parentNode?.nextSibling
 
-            if (sibling && sibling.firstChild && sibling.firstChild.firstChild && sibling.firstChild.firstChild.firstChild) {
+            if (sibling?.firstChild?.firstChild?.firstChild) {
                 const newSelection = sibling.firstChild.firstChild.firstChild
                 const range = document.createRange();
                 range.selectNode(newSelection)

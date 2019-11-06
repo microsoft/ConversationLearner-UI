@@ -597,7 +597,7 @@ export const convertExtractorResponseToEditorModels = (extractResponse: CLM.Extr
         .filter(ipe => ipe.entity !== null)
 
     const customEntities = internalPredictedEntities
-        .filter(({ entity }) => entity && entity.entityType === CLM.EntityType.LUIS)
+        .filter(({ entity }) => entity?.entityType === CLM.EntityType.LUIS)
         .map(({ entity, predictedEntity }) => convertPredictedEntityToGenericEntity(predictedEntity, entity!.entityName, util.entityDisplayName(entity!)))
 
     const preBuiltEntities = internalPredictedEntities

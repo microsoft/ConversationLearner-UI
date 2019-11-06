@@ -245,11 +245,11 @@ class MemoryTable extends React.Component<Props, ComponentState> {
         return unionMemoryValues.map((memoryValue, index) => {
             let changeStatus = MemoryChangeStatus.Unchanged
             // In old but not new
-            if (prevValues.indexOf(memoryValue.userText) >= 0 && curValues.indexOf(memoryValue.userText) < 0) {
+            if (prevValues.includes(memoryValue.userText) && !curValues.includes(memoryValue.userText)) {
                 changeStatus = MemoryChangeStatus.Removed
             }
             // In new but not old
-            else if (prevValues.indexOf(memoryValue.userText) < 0 && curValues.indexOf(memoryValue.userText) >= 0) {
+            else if (!prevValues.includes(memoryValue.userText) && curValues.includes(memoryValue.userText)) {
                 changeStatus = MemoryChangeStatus.Added
             }
 
