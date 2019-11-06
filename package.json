@@ -112,7 +112,7 @@
     "tslint-config-prettier": "^1.15.0",
     "tslint-config-standard": "^7.1.0",
     "tslint-microsoft-contrib": "^5.2.1",
-    "typescript": "3.5.2",
+    "typescript": "3.7.2",
     "wait-on": "3.2.0"
   },
   "scripts": {
