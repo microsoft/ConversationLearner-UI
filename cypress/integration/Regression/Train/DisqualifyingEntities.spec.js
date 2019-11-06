@@ -133,7 +133,7 @@ describe('Disqualifying Entities - Train', () => {
       generatedScoreActionsData.VerifyScoreActionsList()
 
       it('Should select an action', () => {
-        train.SelectTextAction("Sorry Sandeep)
+        train.SelectTextAction("Sorry Sandeep, I can't help you get a million dollars")
       })
 
       it('Should save the Train Dialog and verify the contents show up in the grid', () => {
