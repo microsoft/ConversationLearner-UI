@@ -67,13 +67,13 @@ export class TdGrid {
   // This was designed to be retried. It will throw an error until we can validate that the Train Dialog Grid is stable
   // and then it will return a TdGrid object. (refer to existing code for usage examples)
   //
-  // If you do not know what the "expectedRowCount" should be, pass in -1...but if you do that this will not wait for
+  // If you do not know what the "expectedRowCount" should be, pass in -1...but if you use -1 this will not wait for
   // the row count to be right. Either the UI or the logs will tell you what this value should be, you can always
   // change it later. It is best if you pass in a value that is >= 0 since it is one more signal that the UI is ready
   // for the next step. This feature was included to allow tests that already existed before this class was created to
   // pass un-modified. If any of test starts failing related to timing of the grid rendering, then fix them to include 
   // the actual row count.
-  static GetTdGrid(expectedRowCount) {
+  static GetTdGrid(expectedRowCount = -1) {
     const funcName = `TdGrid.GetTdGrid(${expectedRowCount})`
     try {
       if (!TdGrid.monitorIsActivated) {
@@ -130,11 +130,11 @@ export class TdGrid {
     const funcName = `TdGrid.FindGridRowByDescriptionAndOrTags("${description}", "${tagList}")`
     helpers.ConLog(funcName, this.feedback)
 
-    if (desciption == undefined && tagList == undefined) {
+    if (description == undefined && tagList == undefined) {
       throw new Error('Test code flaw: both description and tags cannot be undefined when calling this function.')
     }
 
-    if (this.expectedRowCount >= 0 && ((description && this.expectedRowCount != this.desciptions.length) || (tagList && this.expectedRowCount != this.tagLists.length))) {
+    if (this.expectedRowCount >= 0 && ((description && this.expectedRowCount != this.descriptions.length) || (tagList && this.expectedRowCount != this.tagLists.length))) {
       throw new Error(`Somethings wrong in TdGrid.FindGridRowByDescriptionAndOrTags - ${this.feedback}`)
     }
     
@@ -198,7 +198,7 @@ export class TdGrid {
 // These static methods then allow for expected changes to be made to internal data that can be later used to verify
 // that any changes made to Train Dialogs are reflected in the grid once it refreshes.
 
-  static CreateNewTrainDialog() {
+  static CreateNewTrainDialog(expectedRowCount = -1) {
     cy.Enqueue(() => {
       TdGrid.GetAllRows(expectedRowCount)
     }).then(() => {
@@ -275,7 +275,7 @@ export class TdGrid {
   }
 
   // Get all Train Dialog Grid Rows
-  static GetAllRows(expectedRowCount = undefined) { 
+  static GetAllRows(expectedRowCount = -1) { 
     const funcName = 'TdGrid.GetAllRows'
     helpers.ConLog(funcName, 'start')
     cy.WaitForStableDOM()
@@ -286,7 +286,7 @@ export class TdGrid {
       const firstInputs = TdGrid.tdGrid.firstInputs
       const lastInputs = TdGrid.tdGrid.lastInputs
       const lastResponses = TdGrid.tdGrid.lastResponses
-      const desciptions = TdGrid.tdGrid.desciptions
+      const descriptions = TdGrid.tdGrid.descriptions
       const tagLists = TdGrid.tdGrid.tagLists
   
       let allRowData = []
@@ -295,7 +295,7 @@ export class TdGrid {
           firstInput: firstInputs[i],
           lastInput: lastInputs[i],
           lastResponse: lastResponses[i],
-          description: desciptions[i],
+          description: descriptions[i],
           tagList: tagLists[i],
         })
   
@@ -428,7 +428,7 @@ export function VerifyListOfTrainDialogs(expectedTrainDialogs) {
     expectedTrainDialogs.forEach(trainDialog => {
       let iRow = tdGrid.FindGridRowByChatInputs(trainDialog.firstInput, trainDialog.lastInput, trainDialog.lastResponse)
       if (iRow < 0) {
-        iRow = tdGrid.FindGridRowByDescriptionAndOrTags(trainDialog.desciptions, trainDialog.tags)
+        iRow = tdGrid.FindGridRowByDescriptionAndOrTags(trainDialog.descriptions, trainDialog.tags)
         if (iRow < 0) {
           errors = true 
         }

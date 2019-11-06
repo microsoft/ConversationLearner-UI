@@ -339,10 +339,7 @@ export function BranchChatTurn(originalMessage, newMessage, originalIndex = 0) {
     cy.Get('[data-testid="user-input-modal-new-message-input"]').type(`${newMessage}{enter}`)
   
     cy.WaitForStableDOM().then(() => {
-      isBranched = true
-      originalTrainingSummary.TrainGridRowCount++
-      currentTrainingSummary.TrainGridRowCount++
-
+      trainDialogsGrid.TdGrid.BranchTrainDialog()
       VerifyAllChatMessages(branchedChatMessages)
     })
   })
@@ -379,37 +376,11 @@ export function VerifyEachBotChatTurn(verificationFunction) {
   })
 }
 
-export function PreSaveDataUsedToVerifyTdGrid(description, tagList) {
-  let funcName = `PreSaveDataUsedToVerifyTdGrid(${description}, ${tagList})`
-  helpers.ConLog(funcName, 'start')
-  cy.WaitForStableDOM().then(() => {
-    // When the TD ends with a user turn, the lastResponse needs to be an empty string.
-    let lastResponse = ''
-
-    const elements = GetAllChatMessageElements()
-    const lastBotElement = Cypress.$(elements[elements.length - 1]).parents('div.wc-message-from-bot')
-    if (lastBotElement.length == 1) {
-      // The last chat turn was a Bot response, so capture the text with entity names.
-      cy.wrap(elements[elements.length - 1]).Click()
-      cy.Enqueue(() => { return scorerModal.GetTextWithEntityNamesFromSelectedAction() }).then(actionText => {
-        lastResponse = actionText
-      })
-    }
-
-    // If there is no second user turn, then the first and last user turn are the same.
-    const elements = Cypress.$('div.wc-message-from-me[data-testid="web-chat-utterances"] > div.wc-message-content > div')
-    const firstInput = GetChatTurnText(elements[0])
-    const lastInput = GetChatTurnText(elements[elements.length - 1])
-    
-    trainDialogsGrid.TdGrid.SaveTrainDialog(firstInput, lastInput, lastResponse, description, tagList)
-  })
-}
-
 // To verify the last chat utterance leave expectedIndexOfMessage undefined.
 export function VerifyTextChatMessage(expectedMessage, expectedIndexOfMessage) {
   cy.Get('[data-testid="web-chat-utterances"]').then(allChatElements => {
     if (!expectedIndexOfMessage) expectedIndexOfMessage = allChatElements.length - 1
-    let elements = Cypress.$(allChatElements[expectedIndexOfMessage]).find('div.format-markdown > p')
+    const elements = Cypress.$(allChatElements[expectedIndexOfMessage]).find('div.format-markdown > p')
     if (elements.length == 0) {
       throw new Error(`Did not find expected Text Chat Message '${expectedMessage}' at index: ${expectedIndexOfMessage}`)
     }
@@ -482,3 +453,30 @@ export function VerifyEndSessionChatMessage(expectedData, expectedIndexOfMessage
     expect(helpers.TextContentWithoutNewlines(element)).to.equal(expectedUtterance)
   })
 }
+
+export function PreSaveDataUsedToVerifyTdGrid(description, tagList) {
+  let funcName = `PreSaveDataUsedToVerifyTdGrid(${description}, ${tagList})`
+  helpers.ConLog(funcName, 'start')
+  cy.WaitForStableDOM().then(() => {
+    // When the TD ends with a user turn, the lastResponse needs to be an empty string.
+    let lastResponse = ''
+    
+    let elements = GetAllChatMessageElements()
+    const lastBotElement = Cypress.$(elements[elements.length - 1]).parents('div.wc-message-from-bot')
+    if (lastBotElement.length == 1) {
+      // The last chat turn was a Bot response, so capture the text with entity names.
+      cy.wrap(elements[elements.length - 1]).Click()
+      cy.Enqueue(() => { return scorerModal.GetTextWithEntityNamesFromSelectedAction() }).then(actionText => {
+        lastResponse = actionText
+      })
+    }
+
+    // If there is no second user turn, then the first and last user turn are the same.
+    elements = Cypress.$('div.wc-message-from-me[data-testid="web-chat-utterances"] > div.wc-message-content > div')
+    const firstInput = GetChatTurnText(elements[0])
+    const lastInput = GetChatTurnText(elements[elements.length - 1])
+    
+    cy.Enqueue(() => { trainDialogsGrid.TdGrid.SaveTrainDialog(firstInput, lastInput, lastResponse, description, tagList) })
+  })
+}
+
