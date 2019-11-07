@@ -171,7 +171,7 @@ class Index extends React.Component<Props, ComponentState> {
             return null
         }
 
-        const app: CLM.AppBase = location.state.app
+        const app: CLM.AppBase = location.state.app!
         // TODO: There is an assumption that by the time render is called, componentWillMount has called loadApp and set the packageId
         const editPackageId = this.state.packageId!
 
@@ -363,7 +363,9 @@ interface MatchParams {
     appId: string
 }
 type LocationState = {
-    app: CLM.AppBase | undefined
+    app?: CLM.AppBase
+    actionFilter?: CLM.ActionBase
+    entityFilter?: CLM.EntityBase
 }
 type Props = stateProps & dispatchProps & RouteComponentProps<MatchParams, StaticContext, LocationState> & InjectedIntlProps;
 
