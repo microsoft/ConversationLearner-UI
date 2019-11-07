@@ -58,7 +58,7 @@
     color: var(--color-neutralSecondary);
 }
 
-.cl-nav-link i[role="presentation"] {
+.cl-nav-link i[data-icon-name] {
     margin-top: 3px;
 }
 

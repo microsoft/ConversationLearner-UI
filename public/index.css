@@ -620,20 +620,20 @@ i[data-icon-name="Edit"]:hover {
   margin-right: 1em;
 }
 
-.cl-dialog-title i[role="presentation"] {
+.cl-dialog-title i[data-icon-name] {
   margin: -0.4em 0.5em -0.4em 0;
   padding: 0.4em 0.3em 0.4em 0.5em;
   border-radius: 50%;
   color: white;
   vertical-align: sub;
 }
-.cl-dialog-title.cl-dialog-title--log i[role="presentation"] {
+.cl-dialog-title.cl-dialog-title--log i[data-icon-name] {
   background-color: var(--cl-color-user-log);
 }
-.cl-dialog-title.cl-dialog-title--train i[role="presentation"] {
+.cl-dialog-title.cl-dialog-title--train i[data-icon-name] {
   background-color: var(--cl-color-user-train);
 }
-.cl-dialog-title.cl-dialog-title--import i[role="presentation"] {
+.cl-dialog-title.cl-dialog-title--import i[data-icon-name] {
   background-color: var(--cl-color-user-import);
 }
 
