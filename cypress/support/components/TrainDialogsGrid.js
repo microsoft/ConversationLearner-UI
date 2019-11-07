@@ -221,7 +221,7 @@ export class TdGrid {
       helpers.ConLog(funcName, `ClickTraining for Train Dialog Row #${iRow} - ${firstInput}, ${lastInput}, ${lastResponse}`)
       ClickTraining(iRow)
     }).then(() => { 
-      EditTrainingValidationPhase(TdGrid.iCurrentRow) 
+      TdGrid.EditTrainingValidationPhase(TdGrid.iCurrentRow) 
     })
   }
 
@@ -238,7 +238,7 @@ export class TdGrid {
       helpers.ConLog(funcName, `ClickTraining for row: ${iRow}`)
       trainDialogsGrid.ClickTraining(iRow)
     }).then(() => { 
-      EditTrainingValidationPhase(TdGrid.iCurrentRow) 
+      TdGrid.EditTrainingValidationPhase(TdGrid.iCurrentRow) 
     })
   }
 
@@ -426,13 +426,7 @@ export function VerifyListOfTrainDialogs(expectedTrainDialogs) {
   }).then(() => {
     let errors = false
     expectedTrainDialogs.forEach(trainDialog => {
-      let iRow = tdGrid.FindGridRowByChatInputs(trainDialog.firstInput, trainDialog.lastInput, trainDialog.lastResponse)
-      if (iRow < 0) {
-        iRow = tdGrid.FindGridRowByDescriptionAndOrTags(trainDialog.descriptions, trainDialog.tags)
-        if (iRow < 0) {
-          errors = true 
-        }
-      }
+      errors = errors || tdGrid.FindGridRowByChatInputs(trainDialog.firstInput, trainDialog.lastInput, trainDialog.lastResponse) < 0
     })
   
     if (errors) {

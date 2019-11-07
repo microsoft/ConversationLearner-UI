@@ -59,7 +59,7 @@ describe('Comprehensive 1 - Score Actions', () => {
       scorerModal.ClickAddActionButton()
       actions.CreateNewAction({ responseNameData: 'Hello', uncheckWaitForResponse: true })
       train.ClickScoreActionsButton()
-      train.VerifyChatTurnIsAnExactMatch(common.whatsYourName, 3, 2)
+      chatPanel.VerifyChatTurnIsAnExactMatch(common.whatsYourName, 3, 2)
       chatPanel.SelectLastChatTurn()
     })
 

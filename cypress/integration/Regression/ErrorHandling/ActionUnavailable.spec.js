@@ -53,7 +53,7 @@ describe('Action Unavailable - ErrorHandling', () => {
     it('Verify the specifics of the error on the turn', () => {
       chatPanel.SelectChatTurnStartsWith('Hello')
       train.VerifyErrorMessage('Action is unavailable')
-      train.VerifyChatTurnIsAnExactMatch('Hello [$name]', 2, 1)
+      chatPanel.VerifyChatTurnIsAnExactMatch('Hello [$name]', 2, 1)
     })
 
     it('Save the training with errors', () => {
@@ -69,7 +69,7 @@ describe('Action Unavailable - ErrorHandling', () => {
       train.VerifyErrorMessage(common.trainDialogHasErrorsMessage)
       chatPanel.SelectChatTurnStartsWith('Hello')
       train.VerifyErrorMessage('Action is unavailable')
-      train.VerifyChatTurnIsAnExactMatch('Hello [$name]', 2, 1)
+      chatPanel.VerifyChatTurnIsAnExactMatch('Hello [$name]', 2, 1)
     })
 
     it('Fix the user turn that caused the error', () => {

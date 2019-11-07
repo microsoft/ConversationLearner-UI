@@ -437,7 +437,12 @@ export function GetTextWithEntityNamesFromSelectedAction() {
   }
 
   return cy.WaitForStableDOM().then(() => {
-    const text = helpers.TextContentWithoutNewlines(Cypress.$(elements).find(SelectorTextResponse)[0])
+    const responseElement = Cypress.$(elements).find('[data-testid="action-scorer-text-response"], [data-testid="action-scorer-api-name"], [data-testid="action-scorer-session-response-user"], [data-testid="action-scorer-card-name"]')
+    if (responseElement.length != 1) {
+      // Won't work for [data-testid="action-scorer-action-set-entity"] - need to ask devs to change lastResponse in grid to get this working.
+      throw new Error('in scorerModal.GetTextWithEntityNamesFromSelectedAction() - The last Bot response of this Train Dialog uses an action type that is NOT supported by this function, the test code needs to be fixed.')
+    }
+    const text = helpers.TextContentWithoutNewlines(responseElement[0])
     return text
   })
 }

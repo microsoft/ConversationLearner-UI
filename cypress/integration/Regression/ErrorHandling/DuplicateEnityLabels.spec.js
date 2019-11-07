@@ -97,7 +97,7 @@ describe('Duplicate Entity Labels - ErrorHandling', () => {
     })
     
     it('Verify the Action uses the corrected value in the name Entity', () => {
-      train.VerifyChatTurnIsAnExactMatch('Hello Joe', 2, 1) 
+      chatPanel.VerifyChatTurnIsAnExactMatch('Hello Joe', 2, 1) 
     })
   })
 })

@@ -50,7 +50,7 @@ describe('Bug 2319 Repro', () => {
     // Bug 2319: Undo causes Score Actions to happen at the wrong time and errors out
     // Once this bug is fixed comment out this block of code and uncomment the next block
     // it('Verify that Bug 2319 reproduced', () => {
-    //   train.VerifyChatTurnIsAnExactMatch('ERROR: Score Actions: No Action can be chosen based on current constraints. All Actions are disqualified.', 4, 3)
+    //   chatPanel.VerifyChatTurnIsAnExactMatch('ERROR: Score Actions: No Action can be chosen based on current constraints. All Actions are disqualified.', 4, 3)
     // })
     
     // Bug 2319: Undo causes Score Actions to happen at the wrong time and errors out
@@ -61,7 +61,7 @@ describe('Bug 2319 Repro', () => {
       cy.wait(1400)
       train.SelectTextAction("X")
       cy.wait(1400)
-      train.VerifyChatTurnIsAnExactMatch('X', 4, 3)
+      chatPanel.VerifyChatTurnIsAnExactMatch('X', 4, 3)
     })
   })
 })
