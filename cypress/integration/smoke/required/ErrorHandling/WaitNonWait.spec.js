@@ -33,14 +33,14 @@ describe('Wait Non Wait Error Handling', () => {
     })
 
     it('Inserts an extra Bot response, verifies new error message and other error message remain', () => {
-      train.InsertBotResponseAfter('Duck', common.whichAnimalWouldYouLike)
+      chatPanel.InsertBotResponseAfter('Duck', common.whichAnimalWouldYouLike)
       train.VerifyErrorMessage(common.trainDialogHasErrorsMessage)
 
       Validations(2)
     })
 
     it('Inserts another Bot response, verifies new error message and other error messages remain', () => {
-      train.InsertBotResponseAfter('Fish', common.whichAnimalWouldYouLike)
+      chatPanel.InsertBotResponseAfter('Fish', common.whichAnimalWouldYouLike)
       train.VerifyErrorMessage(common.trainDialogHasErrorsMessage)
 
       Validations(3)
@@ -83,7 +83,7 @@ describe('Wait Non Wait Error Handling', () => {
       chatPanel.SelectChatTurnExactMatch('Fish')
       train.VerifyErrorMessage(common.userInputFollowsNonWaitErrorMessage)
 
-      train.InsertBotResponseAfter(common.ducksSayQuack, common.whichAnimalWouldYouLike)
+      chatPanel.InsertBotResponseAfter(common.ducksSayQuack, common.whichAnimalWouldYouLike)
       train.VerifyNoErrorMessage()
 
       train.ClickSaveCloseButton()

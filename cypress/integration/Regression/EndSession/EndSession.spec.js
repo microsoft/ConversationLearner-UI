@@ -51,7 +51,7 @@ describe('End Session', () => {
     })
 
     it('End Session chat turn should only contain a delete turn button.', () => {
-      train.VerifyEndSessionChatTurnControls()
+      chatPanel.VerifyEndSessionChatTurnControls()
     })
 
     it('Should save the training', () => {
@@ -103,7 +103,7 @@ describe('End Session', () => {
     })
 
     it('End Session chat turn should only contain a delete turn button.', () => {
-      train.VerifyEndSessionChatTurnControls()
+      chatPanel.VerifyEndSessionChatTurnControls()
     })
 
     it('End Session Score Action should be disabled for 1st Bot turn', () => {
@@ -112,11 +112,11 @@ describe('End Session', () => {
     })
 
     it('Should insert a new Bot turn whose Action is automatically selected', () => {
-      train.InsertBotResponseAfter('Okay')
+      chatPanel.InsertBotResponseAfter('Okay')
     })
 
     it('Verify that the automatically selected Bot turn is NOT our EndSession Action', () => {
-      train.VerifyChatTurnIsNotAnExactMatch('EndSession: Goodbye', 5, 2)
+      chatPanel.VerifyChatTurnIsNotAnExactMatch('EndSession: Goodbye', 5, 2)
     })
   })
 })

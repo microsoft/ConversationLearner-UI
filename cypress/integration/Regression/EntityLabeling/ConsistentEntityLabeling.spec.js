@@ -130,7 +130,7 @@ describe('Consistent Entity Labeling', () => {
 
   context('Edit and Preserve Attempted Labels', () => {
     it('Edit the training', () => {
-      trainDialogsGrid.TdGrid.EditTrainingByChatInputsByDescriptionAndOrTags('Both Tag & Frog')
+      trainDialogsGrid.TdGrid.EditTrainingByDescriptionAndOrTags('Both Tag & Frog')
     })
 
     it('Remove both Entity labels', () => {

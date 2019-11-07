@@ -70,6 +70,11 @@ export function GetAllTags() { return helpers.ArrayOfTextContentWithoutNewlines(
 export function ClickAddTagButton() { cy.Get('[data-testid="tags-input-add-tag-button"]').Click() }
 export function VerifyNoTags() { cy.Get('[data-testid="train-dialog-tags"] > div.cl-tags__tag > button > i [data-icon-name="Clear"]').should('have.length', 0) }
 
+export function AbandonBranchChanges() {
+  ClickAbandonDeleteButton()
+  popupModal.VerifyExactTitleNoContentClickButton('Are you sure you want to abandon this Training Dialog?', '[data-testid="confirm-cancel-modal-accept"]')
+}
+
 export function VerifyTags(tags) { 
   cy.Enqueue(() => {
     helpers.ConLog('VerifyTags', 'Start')

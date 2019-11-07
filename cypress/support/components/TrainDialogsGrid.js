@@ -236,7 +236,7 @@ export class TdGrid {
         throw new Error(`Can't Find Training to Edit. The grid should, but does not, contain a row with this data in it: Description: '${description}' -- Tags: ${tagList}`)
       }
       helpers.ConLog(funcName, `ClickTraining for row: ${iRow}`)
-      trainDialogsGrid.ClickTraining(iRow)
+      ClickTraining(iRow)
     }).then(() => { 
       TdGrid.EditTrainingValidationPhase(TdGrid.iCurrentRow) 
     })

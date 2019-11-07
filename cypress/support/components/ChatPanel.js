@@ -286,11 +286,6 @@ export function VerifyBranchButtonGroupContainsMessage(message) {
     .parents('div.wc-message-selected').contains('p', message)
 }
 
-export function AbandonBranchChanges() {
-  ClickAbandonDeleteButton()
-  popupModal.VerifyExactTitleNoContentClickButton('Are you sure you want to abandon this Training Dialog?', '[data-testid="confirm-cancel-modal-accept"]')
-}
-
 export function VerifyAllChatMessages(chatMessagesToBeVerified) {
   cy.WaitForStableDOM().then(() => {
     let errorMessage = ''
