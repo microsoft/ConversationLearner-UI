@@ -215,27 +215,27 @@ export class ObiDialogParser {
                     // supplying the input to the HTTP request.
                     // To do this, we split apart both the dialog tree and the steps within the OBI dialog.
                     // The HTTP request goes in a new node with a GUID representing the user utterance.
-                    // This new node becomes a child of the current node.
-                    // Everything following the HTTP request becomes a child of the HTTP request node.
 
                     // Build a node containing just the HTTP request.
-                    // TODO(thpar) : this logic would be incorrect if the HTTP request is in a SwitchCondition branch, handle that case.
+                    // TODO(thpar) : consider handling the case where the HTTP request is in a SwitchCondition branch (this is probably unusual).
+                    // In the SwitchCondition case, the step is in the switch's branch, not the node's dialog.
                     const httpStep = node.dialog.steps![i]
                     const httpDialog = Util.deepCopy(node.dialog)
                     httpDialog.steps = [httpStep]
                     const httpNode = new ObiDialogNode(httpDialog)
                     httpNode.intent = CLM.ModelUtils.generateGUID()
+                    // This new node becomes a child of the current node.
                     node.children = [httpNode]
 
-                    // Build a node containing everything after the HTTP request.
+                    // Everything following the HTTP request becomes a child of the HTTP request node.
                     const childSteps = Util.deepCopy(node.dialog.steps!.slice(i + 1))
                     const childDialog = Util.deepCopy(node.dialog)
                     childDialog.steps = childSteps
-
-                    const newChildDialog = await this.collectDialogNodes(childDialog, conditionalEntities)
-                    httpNode.children = [newChildDialog]
+                    const childNode = await this.collectDialogNodes(childDialog, conditionalEntities)
+                    httpNode.children = [childNode]
                     node.dialog.steps = node.dialog.steps!.slice(0, i)
-                    // We just recursively expanded the new structure, so return here.
+
+                    // We just recursively expanded the rest of the child steps above, so we short-circuit the loop here.
                     return
                 }
                 case OBIStepType.BEGIN_DIALOG: {
