@@ -353,9 +353,7 @@ export async function onDeleteTurn(
     }
 
     // Replay logic functions on train dialog
-    const replayedDialog = await trainDialogReplay(appId, newTrainDialog)
-
-    return replayedDialog
+    return trainDialogReplay(appId, newTrainDialog)
 }
 
 export async function onReplayTrainDialog(

@@ -5,6 +5,12 @@ import * as Util from './util'
 import { DispatcherAlgorithmType } from '../components/modals/DispatcherCreator'
 
 /**
+ * Is currently the same implementation as third algorithm, but could be different
+ * Test data should be different that the data it's testing and also consistent across algorithms
+ */
+const generateTestData = generateRandomMultiTransferDispatcherSource
+
+/**
  * Generations new source based on child sources and given algorithm
  * @param sourceModelPairs Model Sources and Model Definitions Paired with each other.
  * @param algorithmType Type of generation Algorithm
@@ -23,6 +29,8 @@ export function generateDispatcherSource(
             return generateRandomMultiTransferDispatcherSource(sourceModelPairs, 20, 10)
         case DispatcherAlgorithmType.TestData:
             return generateTestData(sourceModelPairs, 20, 10)
+        default:
+            throw new Error(`Unhandled algorithm type ${algorithmType}`)
     }
 
     throw new Error(`Could not associate Dispatcher Algorithm Type with algorithm. You passed: ${algorithmType}`)
@@ -55,13 +63,11 @@ function generaterministicDispatcherSource(
     generateDispatchActions(sourceModelPairs);
     const modelsTrainDialogs = associateModelDialogsWithDispatchActionsAndClean(sourceModelPairs)
     const trainDialogs = determisticSingleTransfer(modelsTrainDialogs, transitionAtFirstNRounds);
-    const source: CLM.AppDefinition = {
+    return {
         trainDialogs,
         actions: sourceModelPairs.map(sm => sm.action),
         entities: [],
     }
-
-    return source
 }
 
 /**
@@ -78,13 +84,11 @@ function generateRandomTransitonDispatcherSource(
     generateDispatchActions(sourceModelPairs);
     const modelsTrainDialogs = associateModelDialogsWithDispatchActionsAndClean(sourceModelPairs)
     const trainDialogs = randomSingleTransfer(modelsTrainDialogs, getPercentageOfRoundsToTransferAt)
-    const source: CLM.AppDefinition = {
+    return {
         trainDialogs,
         actions: sourceModelPairs.map(sm => sm.action),
         entities: [],
     }
-
-    return source
 }
 
 function generateRandomMultiTransferDispatcherSource(
@@ -99,20 +103,12 @@ function generateRandomMultiTransferDispatcherSource(
         numberOfTransitionsPerDialog,
         numberOfDialogs)
 
-    const source: CLM.AppDefinition = {
+    return {
         trainDialogs,
         actions: sourceModelPairs.map(sm => sm.action),
         entities: [],
     }
-
-    return source
 }
-
-/**
- * Is currently the same implementation as third algorithm, but could be different
- * Test data should be different that the data it's testing and also consistent across algorithms
- */
-const generateTestData = generateRandomMultiTransferDispatcherSource
 
 /**
  * Generate 1 Dispatch Action per model and associate with source + model pair
@@ -198,6 +194,22 @@ function associateModelDialogsWithDispatchActionsAndClean(sourceModelPairs: Sour
     })
 }
 
+const generateDispatchDialog = (rounds: CLM.TrainRound[]) => (
+    {
+        tags: [`generated`],
+        description: "",
+        trainDialogId: uuid(),
+        rounds,
+
+        // Ignored fields (Irrelevant for Dispatch function)
+        clientData: {
+            importHashes: []
+        },
+        initialFilledEntities: [],
+        createdDateTime: new Date().toJSON(),
+        lastModifiedDateTime: new Date().toJSON(),
+    } as unknown as CLM.TrainDialog)
+
 /**
  * Intermix rounds from different dialogs to implicitly demonstrate dispatching/context switching to other model
  *
@@ -250,7 +262,6 @@ function determisticSingleTransfer(
         ...dialogsWithModelTransition
     ]
 }
-
 
 /**
  * Similar to deterministic transfer except try to transition and random N positions within dialog
@@ -337,22 +348,6 @@ function randomMultiTransfer(
 
     return trainDialogs
 }
-
-const generateDispatchDialog = (rounds: CLM.TrainRound[]) => (
-    {
-        tags: [`generated`],
-        description: "",
-        trainDialogId: uuid(),
-        rounds,
-
-        // Ignored fields (Irrelevant for Dispatch function)
-        clientData: {
-            importHashes: []
-        },
-        initialFilledEntities: [],
-        createdDateTime: new Date().toJSON(),
-        lastModifiedDateTime: new Date().toJSON(),
-    } as unknown as CLM.TrainDialog)
 
 type DialogTransitionGroup = {
     trainDialogsToTransitionFrom: CLM.TrainDialog[]
@@ -469,4 +464,3 @@ function generateDeterministicDialogTransitionGroups(
             }
         })
 }
-
