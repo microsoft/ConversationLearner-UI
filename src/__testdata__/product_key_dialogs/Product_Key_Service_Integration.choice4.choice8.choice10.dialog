@@ -1,0 +1,16 @@
+//Product_Key_Service_Integration.Yes.Windows.I_prefer_to_talk_to_a_Microsoft_Customer_Service_representative.dialog
+{
+  "$schema": "../../app.schema",
+  "$type": "Microsoft.AdaptiveDialog",
+  "recognizer": "main.lu",
+  "rules": [],
+  "steps": [
+    {
+      "$type": "Microsoft.SendActivity",
+      "activity": "[option25]"
+    },
+    {
+      "$type": "Microsoft.EndDialog"
+    }
+  ]
+}

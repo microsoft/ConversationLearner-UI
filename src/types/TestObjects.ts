@@ -172,7 +172,7 @@ export class TestSet {
     addTestItem(item: TestItem): void {
         // Check that is a valid transcript
         if (!item.transcript || item.transcript.length === 0) {
-            throw new Error("Transcript has no rounds")
+            throw new Error(`Transcript has no rounds. ConversationID = ${item.conversationId}`)
         }
         if (!item.transcript[0].conversation || !item.transcript[0].conversation.id) {
             throw new Error("Transcript does not have a conversationId")
@@ -496,7 +496,7 @@ export class TestSet {
     // Get sourceName for a transcript
     sourceName(transcript: BB.Activity[]): string {
         if (transcript.length === 0 || !transcript[0].channelId) {
-            throw new Error("Transcript does not have a channelId")
+            throw new Error(`Transcript ${this.conversationId(transcript)} does not have a channelId`)
         }
         return transcript[0].channelId
     }

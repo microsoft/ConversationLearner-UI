@@ -15,7 +15,6 @@ import actions from '../../../actions'
 import produce from 'immer'
 import { withRouter } from 'react-router-dom'
 import { RouteComponentProps } from 'react-router'
-import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { State } from '../../../types'
@@ -425,7 +424,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         }
         catch (error) {
             if (error instanceof EntityLabelConflictError) {
-                const conflictPairs = LogDialogs.GetConflicts((this.state.currentTrainDialog && this.state.currentTrainDialog.rounds) || [], error.textVariations)
+                const conflictPairs = LogDialogs.GetConflicts(this.state.currentTrainDialog?.rounds ?? [], error.textVariations)
                 this.acceptConflictResolutionFn = (updatedDialog) => this.onInsertAction(updatedDialog, selectedActivity, isLastActivity)
                 this.setState({
                     conflictPairs
@@ -544,7 +543,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         }
         catch (error) {
             if (error instanceof EntityLabelConflictError) {
-                const conflictPairs = LogDialogs.GetConflicts((this.state.currentTrainDialog && this.state.currentTrainDialog.rounds) || [], error.textVariations)
+                const conflictPairs = LogDialogs.GetConflicts(this.state.currentTrainDialog?.rounds ?? [], error.textVariations)
                 this.acceptConflictResolutionFn = (updatedDialog) => this.onInsertInput(updatedDialog, selectedActivity, inputText)
                 this.setState({
                     conflictPairs
@@ -585,7 +584,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         }
         catch (error) {
             if (error instanceof EntityLabelConflictError) {
-                const conflictPairs = LogDialogs.GetConflicts((this.state.currentTrainDialog && this.state.currentTrainDialog.rounds) || [], error.textVariations)
+                const conflictPairs = LogDialogs.GetConflicts(this.state.currentTrainDialog?.rounds ?? [], error.textVariations)
                 this.acceptConflictResolutionFn = (updatedDialog) => this.onContinueTrainDialog(updatedDialog, initialUserInput)
                 this.setState({
                     conflictPairs
@@ -796,7 +795,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         }
         catch (error) {
             if (error instanceof EntityLabelConflictError) {
-                const conflictPairs = LogDialogs.GetConflicts((this.state.currentTrainDialog && this.state.currentTrainDialog.rounds) || [], error.textVariations)
+                const conflictPairs = LogDialogs.GetConflicts(this.state.currentTrainDialog?.rounds ?? [], error.textVariations)
                 this.acceptConflictResolutionFn = this.onSaveTrainDialog
                 this.setState({
                     conflictPairs
@@ -1280,8 +1279,8 @@ export interface ReceivedProps {
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
-const stateProps = returntypeof(mapStateToProps)
-const dispatchProps = returntypeof(mapDispatchToProps)
-type Props = typeof stateProps & typeof dispatchProps & ReceivedProps & InjectedIntlProps & RouteComponentProps<any>
+type stateProps = ReturnType<typeof mapStateToProps>
+type dispatchProps = ReturnType<typeof mapDispatchToProps>
+type Props = stateProps & dispatchProps & ReceivedProps & InjectedIntlProps & RouteComponentProps<any>
 
-export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(withRouter(injectIntl(LogDialogs)))
+export default connect<stateProps, dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(withRouter(injectIntl(LogDialogs)))

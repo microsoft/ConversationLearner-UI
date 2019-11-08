@@ -20,7 +20,6 @@ import TeachSessionInitState from './TeachSessionInitState'
 import FormattedMessageId from '../FormattedMessageId'
 import TranscriptImportCancelModal from './TranscriptImportCancelModal';
 import Webchat, { renderActivity } from '../Webchat'
-import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { ErrorHandler } from '../../Utils/ErrorHandler'
@@ -212,7 +211,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
         }
         this.setState({
             isInitStateOpen: false,
-            initialEntities: filledEntityMap || null
+            initialEntities: filledEntityMap ?? null
         })
     }
 
@@ -596,7 +595,8 @@ class TeachModal extends React.Component<Props, ComponentState> {
             hasTerminalAction: scoredAction.isTerminal,
             nextActivityIndex: this.state.nextActivityIndex + 1
         })
-        if (scoredAction.actionType === CLM.ActionTypes.END_SESSION) {
+        if (scoredAction.actionType === CLM.ActionTypes.END_SESSION
+            || scoredAction.actionType === CLM.ActionTypes.CHANGE_MODEL) {
             this.props.onEndSessionActivity(this.state.tags, this.state.description)
         }
     }
@@ -875,8 +875,8 @@ export interface ReceivedProps {
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
-const stateProps = returntypeof(mapStateToProps);
-const dispatchProps = returntypeof(mapDispatchToProps);
-type Props = typeof stateProps & typeof dispatchProps & ReceivedProps & InjectedIntlProps
+type stateProps = ReturnType<typeof mapStateToProps>;
+type dispatchProps = ReturnType<typeof mapDispatchToProps>;
+type Props = stateProps & dispatchProps & ReceivedProps & InjectedIntlProps
 
-export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(TeachModal))
+export default connect<stateProps, dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(TeachModal))

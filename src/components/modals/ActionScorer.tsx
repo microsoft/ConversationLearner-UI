@@ -18,7 +18,6 @@ import { ImportedAction } from '../../types/models'
 import { compareTwoStrings } from 'string-similarity'
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { returntypeof } from 'react-redux-typescript';
 import { State } from '../../types'
 import { onRenderDetailsHeader } from '../ToolTips/ToolTips'
 import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
@@ -178,6 +177,14 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                     const [name, value] = Util.setEntityActionDisplay(action, component.props.entities)
                     return <span data-testid="action-scorer-action-set-entity" className={OF.FontClassNames.mediumPlus}>{name}: {value}</span>
                 }
+                else if (action.actionType === CLM.ActionTypes.DISPATCH) {
+                    const dispatchAction = new CLM.DispatchAction(action)
+                    return <span data-testid="action-scorer-action-dispatch" className={OF.FontClassNames.mediumPlus}>Dispatch to model: {dispatchAction.modelName}</span>
+                }
+                else if (action.actionType === CLM.ActionTypes.CHANGE_MODEL) {
+                    const changeModelAction = new CLM.ChangeModelAction(action)
+                    return <span data-testid="action-scorer-action-change-model" className={OF.FontClassNames.mediumPlus}>Change to model: {changeModelAction.modelName}</span>
+                }
 
                 return <span className={OF.FontClassNames.mediumPlus}>{CLM.ActionBase.GetPayload(action, defaultEntityMap)}</span>
             }
@@ -197,7 +204,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
 
                 // If an import action, sort by string similarity to existing actions
                 if (component.props.importedAction) {
-                    score = actionForRender.similarityScore || 0
+                    score = actionForRender.similarityScore ?? 0
                 }
                 else {
                     score = actionForRender.score
@@ -409,7 +416,8 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         const newAction = await ((this.props.createActionThunkAsync(this.props.app.appId, action) as any) as Promise<CLM.ActionBase>)
         if (newAction
             && (
-                newAction.actionType === CLM.ActionTypes.END_SESSION
+                (newAction.actionType === CLM.ActionTypes.END_SESSION
+                    || newAction.actionType === CLM.ActionTypes.CHANGE_MODEL)
                     ? this.props.isEndSessionAvailable
                     : true
             )
@@ -485,7 +493,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         // Look for a valid action
         let scoredBase: CLM.ScoredBase | null = null
         const scoreResponse = this.props.scoreResponse
-        if (scoreResponse.scoredActions && scoreResponse.scoredActions.length > 0) {
+        if (scoreResponse.scoredActions?.length > 0) {
             scoredBase = scoreResponse.scoredActions[0];
         } else if (scoreResponse.unscoredActions) {
             for (const unscoredAction of scoreResponse.unscoredActions) {
@@ -571,7 +579,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
 
         // If EnumCondition
         if (condition.valueId) {
-            const enumValue = entity.enumValues && entity.enumValues.find(ev => ev.enumValueId === condition.valueId)
+            const enumValue = entity.enumValues?.find(ev => ev.enumValueId === condition.valueId)
             const value = enumValue
                 ? enumValue.enumValue
                 : "NOT FOUND"
@@ -702,7 +710,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             const selectedActionId = this.props.selectedActionId || (this.state.actionForRender.length > 0 ? this.state.actionForRender[0].actionId : null)
             if (selectedActionId) {
                 let selectedAction = this.props.actions.find(a => a.actionId === selectedActionId)
-                if (selectedAction && selectedAction.actionType === CLM.ActionTypes.END_SESSION) {
+                if (selectedAction?.actionType === CLM.ActionTypes.END_SESSION) {
                     return true
                 }
 
@@ -784,7 +792,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
     }
 
     isMasked(actionId: string): boolean {
-        return (this.props.scoreInput.maskedActions && this.props.scoreInput.maskedActions.indexOf(actionId) > -1);
+        return this.props.scoreInput.maskedActions.includes(actionId)
     }
 
     @autobind
@@ -1109,8 +1117,8 @@ const mapStateToProps = (state: State) => {
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
-const stateProps = returntypeof(mapStateToProps);
-const dispatchProps = returntypeof(mapDispatchToProps);
-type Props = typeof stateProps & typeof dispatchProps & ReceivedProps & InjectedIntlProps
+type stateProps = ReturnType<typeof mapStateToProps>
+type dispatchProps = ReturnType<typeof mapDispatchToProps>
+type Props = stateProps & dispatchProps & ReceivedProps & InjectedIntlProps
 
-export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(ActionScorer))
+export default connect<stateProps, dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(ActionScorer))

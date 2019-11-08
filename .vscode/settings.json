@@ -5,7 +5,7 @@
         "**/bower_components": true,
         "dist": true
     },
-    "typescript.tsdk": "/node_modules/typescript/lib",
+    "typescript.tsdk": "node_modules/typescript/lib",
     "cSpell.words": [
         "adaptivecards",
         "autobind",
@@ -13,7 +13,6 @@
         "conversationlearner",
         "deserialize",
         "inlines",
-        "returntypeof",
         "segoe",
         "selectable",
         "to",

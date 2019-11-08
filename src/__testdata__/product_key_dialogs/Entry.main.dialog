@@ -1,0 +1,17 @@
+{
+  "$schema": "../../app.schema",
+  "$type": "Microsoft.AdaptiveDialog",
+  "recognizer": "main.lu",
+  "rules": [
+    {
+      "$type": "Microsoft.IntentRule",
+      "intent": "Product_Key_Service_Integration_main",
+      "steps": [
+        {
+          "$type": "Microsoft.BeginDialog",
+          "dialog": "Product_Key_Service_Integration.main"
+        }
+      ]
+    }
+  ]
+}

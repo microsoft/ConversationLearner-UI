@@ -170,7 +170,7 @@ const EditComponent: React.FC<Props> = (props) => {
                             value={value ? value.enumValue : ""}
                             data-testid="entity-enum-value-value-name"
                         />
-                        {value && value.enumValueId &&
+                        {value?.enumValueId &&
                             <OF.IconButton
                                 data-testid="entity-enum-value-button-delete"
                                 disabled={value ? !value.allowDelete : false}
@@ -369,7 +369,7 @@ const Component: React.SFC<Props> = (props) => {
         <ConfirmCancelModal
             open={props.needPrebuiltWarning != null && !props.isConfirmEditModalOpen}
             onOk={props.onClosePrebuiltWarning}
-            title={props.needPrebuiltWarning || ""}
+            title={props.needPrebuiltWarning ?? ""}
             message={() => <FormattedMessageId id={FM.ENTITYCREATOREDITOR_PREBUILT_WARNING} />}
         />
         <ConfirmCancelModal

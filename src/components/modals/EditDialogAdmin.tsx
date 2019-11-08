@@ -14,7 +14,6 @@ import ActionScorer from './ActionScorer'
 import MemoryTable from './MemoryTable'
 import FormattedMessageId from '../FormattedMessageId'
 import { ImportedAction } from '../../types/models'
-import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { State } from '../../types'
@@ -123,15 +122,15 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
             }
         }
 
-        const dialogId = this.props.editingLogDialogId || this.props.trainDialog.trainDialogId
+        const dialogId = this.props.editingLogDialogId ?? this.props.trainDialog.trainDialogId
         // Next against other TrainDialogs
         for (const changedTextVariation of changedTextVariations) {
-            const conflict = await this.props.fetchTextVariationConflictThunkAsync(
+            const conflict = await ((this.props.fetchTextVariationConflictThunkAsync(
                 this.props.app.appId,
                 dialogId,
                 changedTextVariation,
                 // Exclude the originalTrain dialog from check
-                this.props.originalTrainDialogId)
+                this.props.originalTrainDialogId) as any) as Promise<CLM.ExtractResponse | null>)
             if (conflict) {
                 return true
             }
@@ -399,8 +398,8 @@ export interface ReceivedProps {
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
-const stateProps = returntypeof(mapStateToProps);
-const dispatchProps = returntypeof(mapDispatchToProps);
-type Props = typeof stateProps & typeof dispatchProps & ReceivedProps & InjectedIntlProps
+type stateProps = ReturnType<typeof mapStateToProps>;
+type dispatchProps = ReturnType<typeof mapDispatchToProps>;
+type Props = stateProps & dispatchProps & ReceivedProps & InjectedIntlProps
 
-export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(EditDialogAdmin))
+export default connect<stateProps, dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(EditDialogAdmin))

@@ -61,11 +61,11 @@ export async function getLogDialogActivities(
 
     // Return activities
     const teachWithActivities = await fetchActivitiesThunkAsync(appId, trainDialog, user.name, user.id, false, true)
-    const activites = teachWithActivities.activities
+    const activities = teachWithActivities.activities
     if (conversationId || channelId) {
-        addActivityReferences(activites, conversationId, channelId)
+        addActivityReferences(activities, conversationId, channelId)
     }
-    return activites
+    return activities
 }
 
 // Adds channelId and conversationId references to activities
@@ -122,7 +122,7 @@ export function isSameActivity(activity1: BB.Activity, activity2: BB.Activity): 
 
 // Add new LG references from .lg file to Map (creates new one if doesn't already exist)
 export async function lgMapFromLGFiles(lgFiles: File[] | null, lgItemList?: CLM.LGItem[]): Promise<CLM.LGItem[]> {
-    const map = lgItemList || []
+    const map = lgItemList ?? []
     if (lgFiles) {
         for (const lgFile of lgFiles) {
             if (lgFile.name.endsWith('.lg')) {
@@ -137,12 +137,11 @@ export async function lgMapFromLGFiles(lgFiles: File[] | null, lgItemList?: CLM.
     return map
 }
 
-// Returns true is any LG is used by this transcxript
+// Returns true is any LG is used by this transcript
 export function usesLG(transcript: BB.Activity[]): boolean {
 
     for (let activity of transcript) {
-        if (activity.type && activity.type === 'message' && activity.from.role === 'bot') {
-
+        if (activity.type === 'message' && activity.from.role === 'bot') {
             let lgName = lgNameFromImportText(activity.text)
             if (lgName) {
                 return true
@@ -158,8 +157,7 @@ export function fromLG(transcript: BB.Activity[], lgItemList: CLM.LGItem[]): boo
 
     let usedLG = false
     for (let activity of transcript) {
-        if (activity.type && activity.type === 'message' && activity.from.role === 'bot') {
-
+        if (activity.type === 'message' && activity.from.role === 'bot') {
             let lgName = lgNameFromImportText(activity.text)
             if (lgName) {
                 usedLG = true
@@ -180,7 +178,7 @@ export function fromLG(transcript: BB.Activity[], lgItemList: CLM.LGItem[]): boo
 export function toLG(transcript: BB.Activity[], lgItemList: CLM.LGItem[], entities: CLM.EntityBase[], actions: CLM.ActionBase[]): void {
 
     for (let activity of transcript) {
-        if (activity.channelData && activity.channelData.clData && activity.channelData.clData.actionId) {
+        if (activity.channelData?.clData?.actionId) {
             const lgItem = lgItemList.find(lg => lg.actionId === activity.channelData.clData.actionId)
             if (lgItem) {
                 activity.text = `[${lgItem.lgName}]`
@@ -242,7 +240,7 @@ export async function trainDialogFromTranscriptImport(
                     text: activity.text,
                     labelEntities: []
                 }]
-                if (activity.channelData && activity.channelData.textVariations) {
+                if (activity.channelData?.textVariations) {
                     activity.channelData.textVariations.forEach((tv: any) => {
                         // Currently system is limited to 20 text variations
                         if (textVariations.length < CLM.MAX_TEXT_VARIATIONS && activity.text !== tv.text) {
@@ -271,7 +269,7 @@ export async function trainDialogFromTranscriptImport(
                 let filledEntities = Util.deepCopy(nextFilledEntities)
 
                 // If I didn't find an action and is API, create API placeholder
-                if (activity.channelData && activity.channelData.type === "ActionCall") {
+                if (activity.channelData?.type === "ActionCall") {
                     const actionCall = activity.channelData as TranscriptActionCall
                     const isTerminal = !nextActivity || nextActivity.from.role === "user"
 
@@ -293,7 +291,7 @@ export async function trainDialogFromTranscriptImport(
                             score: 1
                         }
 
-                        const actionFilledEntities = await importActionOutput(actionCall.actionOutput, entities, app, createEntityThunkAsync)
+                        const actionFilledEntities = await importActionOutput(actionCall.actionOutput, entities, app.appId, createEntityThunkAsync)
                         // Store placeholder output in LogicResult
                         logicResult = {
                             logicValue: undefined,
@@ -334,7 +332,7 @@ export async function trainDialogFromTranscriptImport(
 // Given an Activity try to find a matching action
 function findMatchedAction(activity: BB.Activity, entities: CLM.EntityBase[], actions: CLM.ActionBase[], filledEntities: CLM.FilledEntity[]): CLM.ActionBase | undefined {
     // If actionId provided return the action
-    if (activity.channelData && activity.channelData) {
+    if (activity.channelData) {
         const clData: CLM.CLChannelData = activity.channelData.clData
         if (clData.actionId) {
             const action = actions.find(a => a.actionId === clData.actionId)
@@ -349,7 +347,7 @@ function findMatchedAction(activity: BB.Activity, entities: CLM.EntityBase[], ac
     // If importText is an lgName try to look it up in existing actions
     const lgName = lgNameFromImportText(activity.text)
     if (lgName) {
-        const action = actions.find(a => a.clientData && a.clientData.lgName === lgName)
+        const action = actions.find(a => a.clientData?.lgName === lgName)
         if (action) {
             return action
         }
@@ -414,11 +412,11 @@ export function parseEntityConditionFromDialogCase(branch: Case, entityCondition
 export function hashTextFromActivity(activity: BB.Activity, entities: CLM.EntityBase[], filledEntities: CLM.FilledEntity[] | undefined): string {
 
     // If an API placeholder user the action name
-    if (activity.channelData && activity.channelData.type === "ActionCall") {
+    if (activity.channelData?.type === "ActionCall") {
         const actionCall = activity.channelData as TranscriptActionCall
         return actionCall.actionName
     }
-    // If entites have been set, substitute entityIDs in before hashing
+    // If entities have been set, substitute entityIDs in before hashing
     else if (filledEntities && filledEntities.length > 0) {
         const filledEntityMap = DialogUtils.filledEntityIdMap(filledEntities, entities)
         return importTextWithEntityIds(activity.text, filledEntityMap)
@@ -442,7 +440,7 @@ export function importTextWithEntityIds(importText: string, valueMap: Map<string
 export function replaceImportActions(trainDialog: CLM.TrainDialog, actions: CLM.ActionBase[], entities: CLM.EntityBase[]): boolean {
 
     // Filter out actions that have no hash lookups. If there are none, terminate early
-    const actionsWithHash = actions.filter(a => a.clientData != null && a.clientData.actionHashes && a.clientData.actionHashes.length > 0)
+    const actionsWithHash = actions.filter(a => a.clientData?.actionHashes && a.clientData.actionHashes.length > 0)
     if (actionsWithHash.length === 0) {
         return false
     }
@@ -493,7 +491,7 @@ function findActionFromScorerStep(scorerStep: CLM.TrainScorerStep, actions: CLM.
         // If importText is an lgName try to look it up in existing actions
         const lgName = lgNameFromImportText(scorerStep.importText)
         if (lgName) {
-            const action = actions.find(a => a.clientData && a.clientData.lgName === lgName)
+            const action = actions.find(a => a.clientData?.lgName === lgName)
             if (action) {
                 return action
             }
@@ -516,6 +514,16 @@ function findActionFromScorerStep(scorerStep: CLM.TrainScorerStep, actions: CLM.
 }
 
 /**
+ * Holds information about enum entities that should be set in a TrainDialog after a round containing
+ * an API action with known output values.
+ */
+interface EnumDataFromCondition {
+    enumEntityId: string
+    enumValueId: string
+    enumValueText: string
+}
+
+/**
  * Creates actions for the input `TrainDialog`.
  * Imports happen in 2 stages : in the first, TrainDialogs are created with placeholder actions that
  * are only stored in UI component state memory.  In the second, real actions are created either
@@ -533,61 +541,160 @@ export async function createImportedActions(
     scorerStepConditions: { [key: string]: CLM.Condition[] } | undefined,
     createActionThunkAsync: (appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null>,
 ): Promise<void> {
-
     const newActions: CLM.ActionBase[] = []
     for (const round of trainDialog.rounds) {
-        for (let scoreIndex = 0; scoreIndex < round.scorerSteps.length; scoreIndex = scoreIndex + 1) {
-            const scorerStep = round.scorerSteps[scoreIndex]
-
-            if (scorerStep.importText) {
-                let action: CLM.ActionBase | undefined
-
-                // First check to see if matching action already exists
-                action = findActionFromScorerStep(scorerStep, [...newActions, ...actions], [])
-
-                // Otherwise create a new one
-                if (!action) {
-                    const isTerminal = round.scorerSteps.length === scoreIndex + 1
-                    let importedAction: ImportedAction | undefined
-                    if (lgItems) {
-                        const lgName = lgNameFromImportText(scorerStep.importText)
-                        if (lgName) {
-                            let lgItem = lgItems.find(lg => lg.lgName === lgName)
-                            if (lgItem) {
-                                importedAction = {
-                                    text: lgItem.text,
-                                    buttons: lgItem.suggestions,
-                                    isTerminal,
-                                    reprompt: lgItem.suggestions.length > 0,
-                                    lgName
-                                }
-                            }
-                            else {
-                                // LARS thow error once CCI .dialog transformer has been fixed
-                                lgItem = { lgName: "", text: "Can't Parse LG", suggestions: [] }
-                                //throw new Error(`LG name ${prompt} undefined`)
-                            }
-                        }
-                    }
-                    if (!importedAction) {
-                        importedAction = {
-                            text: scorerStep.importText,
-                            buttons: [],
-                            isTerminal,
-                            reprompt: false,
-                            actionHash: CLM.hashText(scorerStep.importText)
-                        }
-                    }
-
-                    action = await createActionFromImport(appId, importedAction, templates, scorerStep, scorerStepConditions, createActionThunkAsync)
-                    newActions.push(action)
-                }
-
-                // Update scorer step
-                scorerStep.labelAction = action.actionId
-                delete scorerStep.importText
+        for (const [scoreIndex, scorerStep] of round.scorerSteps.entries()) {
+            if (!scorerStep.importText) {
+                continue
             }
+            // First check to see if matching action already exists.
+            let action = findActionFromScorerStep(scorerStep, [...newActions, ...actions], [])
+
+            // If not, create a new one.
+            if (!action) {
+                const isTerminal = round.scorerSteps.length === scoreIndex + 1
+                let importedAction: ImportedAction | undefined
+                if (lgItems) {
+                    const lgName = lgNameFromImportText(scorerStep.importText)
+                    if (lgName) {
+                        let lgItem = lgItems.find(lg => lg.lgName === lgName)
+                        if (lgItem) {
+                            importedAction = {
+                                text: lgItem.text,
+                                buttons: lgItem.suggestions,
+                                isTerminal,
+                                reprompt: lgItem.suggestions.length > 0,
+                                lgName
+                            }
+                        }
+                        else {
+                            // LARS thow error once CCI .dialog transformer has been fixed
+                            lgItem = { lgName: "", text: "Can't Parse LG", suggestions: [] }
+                            //throw new Error(`LG name ${prompt} undefined`)
+                        }
+                    }
+                }
+                if (!importedAction) {
+                    importedAction = {
+                        text: scorerStep.importText,
+                        buttons: [],
+                        isTerminal,
+                        reprompt: false,
+                        actionHash: CLM.hashText(scorerStep.importText)
+                    }
+                }
+                action = await createActionFromImport(appId, importedAction, templates, scorerStep, scorerStepConditions, createActionThunkAsync)
+                newActions.push(action)
+            }
+
+            // Update scorer step
+            scorerStep.labelAction = action.actionId
+            delete scorerStep.importText
         }
+    }
+}
+
+/**
+ * Updates memory state by setting `logicResult` in the `TrainDialog` `TrainScorerSteps` for cases where
+ * the dialog produces a deterministic output from an API call.
+ */
+export function setMemoryStateForImportedTrainDialog(
+    entities: CLM.EntityBase[],
+    actions: CLM.ActionBase[],
+    trainDialog: CLM.TrainDialog,
+    scorerStepConditions: { [key: string]: CLM.Condition[] } | undefined) {
+    if (!scorerStepConditions) {
+        // If this is undefined, then there were no SwithCondition nodes in our imported dialog, so nothing to do.
+        return
+    }
+    for (const round of trainDialog.rounds) {
+        setMemoryStateForApiActionWithSwitch(entities, actions, round.scorerSteps, scorerStepConditions)
+    }
+}
+
+/**
+ * Updates memory state for a single `TrainRound`.  Specifically, if we have an API action followed by
+ * a `SwitchCondition` node that consumes the output of that API, we know that each branch of the dialog
+ * should represent a scenario where the API has returned the given conditional value.  This code sets
+ * that conditional value in bot memory. 
+ */
+function setMemoryStateForApiActionWithSwitch(
+    entities: CLM.EntityBase[],
+    actions: CLM.ActionBase[],
+    scorerSteps: CLM.TrainScorerStep[],
+    scorerStepConditions: { [key: string]: CLM.Condition[] }) {
+    for (let i = 0; i < scorerSteps.length - 1; i = i + 1) {
+        if (!scorerSteps[i].labelAction) {
+            // Need a labelAction to figure out which action is associated with the scorer step.
+            continue
+        }
+        const j = i + 1
+        if (j >= scorerSteps.length) {
+            // There is no next action; we're done.
+            break
+        }
+        const actionId1 = scorerSteps[i].labelAction
+        const action1 = actions.find(a => a.actionId === actionId1)
+        if (!action1 || action1.actionType !== CLM.ActionTypes.API_LOCAL) {
+            // We only care about API actions followed by SwitchCondition-gated nodes.
+            continue
+        }
+        const scorerStep = scorerSteps[i]
+        const nextScorerStep = scorerSteps[j]
+        if (!nextScorerStep.importId || !scorerStepConditions[nextScorerStep.importId]) {
+            // The next action is not a SwitchCondition-gated node.
+            continue
+        }
+        // Set the logic result on the *current* scorer step.
+        if (!scorerStep.logicResult) {
+            scorerStep.logicResult = { logicValue: undefined, changedFilledEntities: [] }
+        }
+        // Get conditions from the SwitchCondition-gated node.
+        const conditions = scorerStepConditions[nextScorerStep.importId]
+        const enumConditionData = conditions.map(condition => getEnumConditionData(entities, condition))
+        for (const conditionEntity of enumConditionData) {
+            const filledEntity: CLM.FilledEntity = {
+                entityId: conditionEntity.enumEntityId,
+                values: [{
+                    userText: conditionEntity.enumValueText,
+                    displayText: conditionEntity.enumValueText,
+                    builtinType: null,
+                    resolution: null,
+                    enumValueId: conditionEntity.enumValueId
+                }]
+            }
+            scorerStep.logicResult.changedFilledEntities.push(filledEntity)
+        }
+    }
+}
+
+/**
+ * Gets the enum entity and enum value associated with the given conditions.
+ * @throws if the entity referenced in any `Condition` is not a valid enum.
+ */
+function getEnumConditionData(entities: CLM.EntityBase[], condition: CLM.Condition): EnumDataFromCondition {
+    if (!condition.valueId) {
+        // This should not happen; conditions created from conditions in .dialog import should always reference enum entities.
+        throw new Error(`Action condition doesn't reference an entity`)
+    }
+    // Find the entity.
+    const conditionEntity = entities.find(e => e.entityId === condition.entityId)
+    if (!conditionEntity) {
+        throw new Error(`Couldn't find entity with id ${condition.entityId}`)
+    }
+    if (conditionEntity.entityType !== CLM.EntityType.ENUM || !conditionEntity.enumValues) {
+        // This should not happen; entities created from conditions in .dialog import should always be enum.
+        throw new Error(`Entity ${conditionEntity.entityId} is not a valid enum`)
+    }
+    // Find the specific enum value referenced by the condition.
+    const enumValue = conditionEntity.enumValues.find(val => val.enumValueId === condition.valueId)
+    if (!enumValue) {
+        throw new Error(`Enum entity ${conditionEntity.entityName} missing enum value ${condition.valueId}`)
+    }
+    return {
+        enumEntityId: condition.entityId,
+        enumValueId: condition.valueId,
+        enumValueText: enumValue.enumValue,
     }
 }
 
@@ -669,7 +776,7 @@ async function createActionFromImport(
             lgName: importedAction.lgName
         }
     })
-    if (scorerStep.importId && scorerStepConditions && scorerStepConditions[scorerStep.importId]) {
+    if (scorerStep.importId && scorerStepConditions?.[scorerStep.importId]) {
         action.requiredConditions = scorerStepConditions[scorerStep.importId]
     }
 
@@ -701,7 +808,7 @@ export function findActionFromHashText(hashText: string, actions: CLM.ActionBase
 
     // Try to find matching action with same hash
     let matchedActions = actions.filter(a => {
-        return a.clientData && a.clientData.actionHashes && a.clientData.actionHashes.indexOf(importHash) > -1
+        return a.clientData?.actionHashes?.includes(importHash)
     })
 
     // If more than one, prefer the one that isn't a placeholder
@@ -763,7 +870,7 @@ export function areTranscriptsEqual(transcript1: Util.RecursivePartial<BB.Activi
 export async function importActionOutput(
     actionResults: OBIActionOutput[],
     entities: CLM.EntityBase[],
-    app: CLM.AppBase,
+    appId: string,
     createEntityThunkAsync?: ((appId: string, entity: CLM.EntityBase) => Promise<CLM.EntityBase | null>)
 ): Promise<CLM.FilledEntity[]> {
 
@@ -797,7 +904,7 @@ export async function importActionOutput(
                 doNotMemorize: false
             }
 
-            entityId = await ((createEntityThunkAsync(app.appId, newEntity) as any) as Promise<string>)
+            entityId = await ((createEntityThunkAsync(appId, newEntity) as any) as Promise<string>)
             if (!entityId) {
                 throw new Error("Invalid Entity Definition")
             }

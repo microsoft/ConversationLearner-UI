@@ -10,7 +10,6 @@ import * as moment from 'moment'
 import * as CLM from '@conversationlearner/models'
 import AdaptiveCardViewer from './modals/AdaptiveCardViewer/AdaptiveCardViewer'
 import actionTypeRenderer from './ActionTypeRenderer'
-import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { State } from '../types'
@@ -29,7 +28,7 @@ interface ComponentState {
 
 class ActionDetailsList extends React.Component<Props, ComponentState> {
     constructor(p: any) {
-        super(p);
+        super(p)
         const columns = getColumns(this.props.intl)
         const defaultSortColumnName = "actionResponse"
         const defaultSortColumn = columns.find(c => c.key === defaultSortColumnName)
@@ -89,7 +88,8 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
                     ? true
                     : entity.entityType !== CLM.EntityType.ENUM
             }
-            case CLM.ActionTypes.DISPATCH: {
+            case CLM.ActionTypes.DISPATCH:
+            case CLM.ActionTypes.CHANGE_MODEL: {
                 // TODO: Could validate access to model, but don't have access to it within this model
                 return false
             }
@@ -101,7 +101,7 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
     }
 
     sortActions(): CLM.ActionBase[] {
-        const actions = [...this.props.actions];
+        const actions = [...this.props.actions]
         // If column header selected sort the items
         if (this.state.sortColumn) {
             actions
@@ -115,7 +115,7 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
                 })
         }
 
-        return actions;
+        return actions
     }
 
     @autobind
@@ -135,7 +135,7 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
         this.setState({
             columns,
             sortColumn
-        });
+        })
     }
 
     onClickViewCard(action: CLM.ActionBase) {
@@ -146,10 +146,12 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
 
     onClickRow(item: any, index: number | undefined, event: Event | undefined) {
         // Don't response to row click if it's button that was clicked
-        if (event && (event.target as any).type !== 'button') {
-            const action = item as CLM.ActionBase
-            this.props.onSelectAction(action)
+        if ((event?.target as any).type === 'button') {
+            return
         }
+
+        const action = item as CLM.ActionBase
+        this.props.onSelectAction(action)
     }
 
     onCloseCardViewer = () => {
@@ -159,7 +161,7 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
     }
 
     render() {
-        const sortedActions = this.sortActions();
+        const sortedActions = this.sortActions()
 
         let template: CLM.Template | undefined
         let renderedActionArguments: CLM.RenderedActionArgument[] = []
@@ -179,7 +181,7 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
                     items={sortedActions}
                     columns={this.state.columns}
                     checkboxVisibility={OF.CheckboxVisibility.hidden}
-                    onRenderRow={(props, defaultRender) => <div data-selection-invoke={true}>{defaultRender && defaultRender(props)}</div>}
+                    onRenderRow={(props, defaultRender) => <div data-selection-invoke={true}>{defaultRender?.(props)}</div>}
                     onRenderItemColumn={(action: CLM.ActionBase, i, column: IRenderableColumn) => column.render(action, this)}
                     onItemInvoked={(item, index, ev) => this.onClickRow(item, index, ev)}
                     onColumnHeaderClick={this.onClickColumnHeader}
@@ -201,7 +203,7 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
 
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-    }, dispatch);
+    }, dispatch)
 }
 
 const mapStateToProps = (state: State) => {
@@ -221,10 +223,10 @@ export interface ReceivedProps {
 }
 
 // Props types inferred from mapStateToProps
-const stateProps = returntypeof(mapStateToProps);
-type Props = typeof stateProps & ReceivedProps & InjectedIntlProps
+type stateProps = ReturnType<typeof mapStateToProps>
+type Props = stateProps & ReceivedProps & InjectedIntlProps
 
-export default connect<typeof stateProps, {}, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(ActionDetailsList) as any)
+export default connect<stateProps, {}, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(ActionDetailsList) as any)
 
 function getActionPayloadRenderer(action: CLM.ActionBase, component: ActionDetailsList, isValidationError: boolean) {
     if (action.actionType === CLM.ActionTypes.TEXT) {
@@ -272,6 +274,10 @@ function getActionPayloadRenderer(action: CLM.ActionBase, component: ActionDetai
         // Need to be able to load model by id to get name but need asynchronous functions etc
         const dispatchAction = new CLM.DispatchAction(action)
         return <span data-testid="actions-list-dispatch" className={OF.FontClassNames.mediumPlus}>Dispatch to model: {dispatchAction.modelName}</span>
+    }
+    else if (action.actionType === CLM.ActionTypes.CHANGE_MODEL) {
+        const changeModelAction = new CLM.ChangeModelAction(action)
+        return <span data-testid="actions-list-change-model" className={OF.FontClassNames.mediumPlus}>Change to model: {changeModelAction.modelName}</span>
     }
 
     return <span className={OF.FontClassNames.mediumPlus}>Unknown Action Type</span>
@@ -367,6 +373,14 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                         }
                         case CLM.ActionTypes.SET_ENTITY: {
                             return `set-${action.entityId}-${action.enumValueId}`
+                        }
+                        case CLM.ActionTypes.DISPATCH: {
+                            const dispatchAction = new CLM.DispatchAction(action)
+                            return dispatchAction.modelName
+                        }
+                        case CLM.ActionTypes.CHANGE_MODEL: {
+                            const changeModelAction = new CLM.ChangeModelAction(action)
+                            return changeModelAction.modelName
                         }
                         default: {
                             console.warn(`Could not get sort value for unknown action type: ${action.actionType}`)

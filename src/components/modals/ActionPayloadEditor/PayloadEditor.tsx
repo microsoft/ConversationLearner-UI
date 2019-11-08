@@ -12,6 +12,7 @@ import OptionalPlugin from './OptionalPlugin'
 import Picker from './Picker'
 import * as Utilities from './utilities'
 import { FuseResult, MatchedOption, convertMatchedTextIntoMatchedOption } from '../../FuseMatch'
+import classnames from 'classnames'
 import './PayloadEditor.css'
 
 const fuseOptions: Fuse.FuseOptions = {
@@ -298,6 +299,12 @@ export default class PayloadEditor extends React.Component<Props, State> {
             highlighted: i === this.state.highlightIndex
         }))
 
+        const editorClassnames = classnames({
+            'editor': true,
+            'editor--disabled': this.props.disabled,
+            'editor--active': this.props.value?.isFocused,
+        })
+
         return <div className="editor-container" data-testid={this.props[testAttribute]}>
             <Picker
                 ref={this.menuRef}
@@ -306,7 +313,7 @@ export default class PayloadEditor extends React.Component<Props, State> {
                 onClickOption={this.onClickOption}
             />
             <Editor
-                className={`editor ${this.props.disabled ? 'editor--disabled' : ''} ${(this.props.value && this.props.value.isFocused) ? 'editor--active' : ''}`}
+                className={editorClassnames}
                 placeholder={this.props.placeholder}
                 value={this.props.value}
                 onChange={this.onChangeValue}
@@ -326,7 +333,7 @@ export default class PayloadEditor extends React.Component<Props, State> {
         // When invoked on key events we have an event; however, on click from the Picker menu we do not
         // The alternative is moving this event logic into the key handlers but that also moves the above logic
         // and consolidating here seemed better for consistent maintenance
-        event && event.preventDefault()
+        event?.preventDefault()
 
         const textNode = change.value.texts.last()
         if (textNode) {

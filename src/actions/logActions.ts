@@ -135,7 +135,7 @@ export const fetchLogDialogThunkAsync = (appId: string, logDialogId: string, rep
             return logDialog
         } catch (e) {
             const error = e as AxiosError
-            if (error.response && error.response.status === HttpStatus.NOT_FOUND && nullOnNotFound) {
+            if (error.response?.status === HttpStatus.NOT_FOUND && nullOnNotFound) {
                 dispatch(fetchLogDialogNotFound())
                 return null
             }
@@ -167,7 +167,7 @@ export const fetchAllLogDialogsThunkAsync = (app: CLM.AppBase, packageId: string
     return async (dispatch: Dispatch<any>) => {
         // Note: In future change fetch log dialogs to default to all package if packageId is dev
         const packageIds = (packageId === app.devPackageId)
-            ? (app.packageVersions || []).map(pv => pv.packageId).concat(packageId)
+            ? (app.packageVersions ?? []).map(pv => pv.packageId).concat(packageId)
             : [packageId]
 
         const clClient = ClientFactory.getInstance(AT.FETCH_LOG_DIALOGS_ASYNC)

@@ -48,7 +48,7 @@ const teachSessionReducer: Reducer<TeachSessionState> = produce((state: TeachSes
                 uiScoreInput: action.teachWithActivities.uiScoreInput
             }
         case AT.DELETE_TEACH_SESSION_FULFILLED:
-            if (state.teach && state.teach.teachId !== action.teachSessionGUID) {
+            if (state.teach?.teachId !== action.teachSessionGUID) {
                 console.warn("Deleting Teach session that isn't the active one")
             }
             return { ...initialState }

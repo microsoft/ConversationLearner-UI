@@ -86,10 +86,7 @@ export const findNumberFromMemory = (memory: CLM.Memory, isMultivalue: boolean):
         return memory.entityValues.length
     }
 
-    const valueString: string | undefined = memory
-        && memory.entityValues[0]
-        && (memory.entityValues[0].resolution ? true : undefined)
-        && (memory.entityValues[0].resolution as any).value as string
+    const valueString: string | undefined = (memory?.entityValues?.[0]?.resolution as any).value
 
     return valueString
         ? parseInt(valueString, 10)
@@ -112,9 +109,7 @@ export const isValueConditionTrue = (condition: CLM.Condition, numberValue: numb
 }
 
 export const isEnumConditionTrue = (condition: CLM.Condition, memory: CLM.Memory): boolean => {
-    const enumValueId = memory
-        && memory.entityValues[0]
-        && memory.entityValues[0].enumValueId
+    const enumValueId = memory?.entityValues[0]?.enumValueId
 
     return condition.valueId !== undefined
         && condition.valueId === enumValueId

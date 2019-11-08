@@ -41,7 +41,8 @@ export default class Component extends React.Component<Props, State> {
     }
 
     render() {
-        const pairedArguments = this.props.substitutedArguments === null
+        const substitutedArguments = this.props.substitutedArguments
+        const pairedArguments = substitutedArguments === null
             ? {
                 argumentPairs: this.props.originalArguments.map(oa => ({
                     original: oa,
@@ -50,7 +51,7 @@ export default class Component extends React.Component<Props, State> {
                 argumentsDiffer: false
             }
             : this.props.originalArguments.reduce<ICombinedActionArguments>((combined, originalArgument) => {
-                const matchingSubstitutedArgument = this.props.substitutedArguments && this.props.substitutedArguments.find(sa => sa.parameter === originalArgument.parameter)
+                const matchingSubstitutedArgument = substitutedArguments.find(sa => sa.parameter === originalArgument.parameter)
                 if (matchingSubstitutedArgument) {
                     combined.argumentPairs.push({
                         original: originalArgument,
@@ -73,8 +74,7 @@ export default class Component extends React.Component<Props, State> {
             <div data-testid="action-scorer-card">
                 <div className={OF.FontClassNames.mediumPlus} data-testid="action-scorer-card-name">{this.props.name}</div>
                 <div className="cl-card-payload__arguments ms-ListItem-primaryText">
-                    {pairedArguments.argumentPairs.length !== 0
-                        && pairedArguments.argumentPairs.map((argument, i) =>
+                    {pairedArguments.argumentPairs.map((argument, i) =>
                             <React.Fragment key={i}>
                                 <div>{argument.original.parameter}:</div>
                                 <div>{`${(this.props.substitutedArguments === null || this.state.isOriginalVisible)

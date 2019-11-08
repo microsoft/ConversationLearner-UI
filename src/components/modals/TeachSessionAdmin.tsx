@@ -12,7 +12,6 @@ import ActionScorer from './ActionScorer'
 import EntityExtractor from './EntityExtractor'
 import MemoryTable from './MemoryTable'
 import FormattedMessageId from '../FormattedMessageId'
-import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { State } from '../../types'
@@ -165,7 +164,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
             roundIndex: null,
             scoreIndex: null,
             activityIndex: this.props.nextActivityIndex,
-            validWaitAction: !scoredAction.isTerminal || undefined  // Draws carrot under card if a wait action
+            validWaitAction: !scoredAction.isTerminal ?? undefined  // Draws carrot under card if a wait action
         }
 
         // Store selected action in "turn lookup"
@@ -239,17 +238,13 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
             if (lookupIndex >= 0) {
 
                 const turnData = this.state.turnLookup[lookupIndex]
-                const memories = (turnData && turnData.uiScoreResponse && turnData.uiScoreResponse.memories) 
-                    ? turnData.uiScoreResponse.memories 
-                    : []
+                const memories = turnData?.uiScoreResponse?.memories ?? []
             
                 // If prev action was user, use prevTurn.memory.  If following a wait action use uiScoreResponse.memories
                 const prevTurn = this.state.turnLookup[lookupIndex - 1] 
-                const prevMemories = (prevTurn && prevTurn.uiScoreResponse && prevTurn.uiScoreResponse.memories) 
-                    ? prevTurn.uiScoreResponse.memories 
-                    : (prevTurn && prevTurn.memories) 
-                    ? prevTurn.memories 
-                    : []
+                const prevMemories = prevTurn?.uiScoreResponse?.memories
+                    ?? prevTurn?.memories
+                    ?? []
 
                 if (turnData.uiScoreResponse) {
                     return {
@@ -412,7 +407,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                                     roundIndex={renderData.roundIndex}
                                     autoTeach={this.props.teachSession.autoTeach}
                                     dialogMode={renderData.dialogMode}
-                                    extractResponses={renderData.extractResponses || []}
+                                    extractResponses={renderData.extractResponses ?? []}
                                     extractConflict={this.props.teachSession.extractConflict}
                                     originalTextVariations={renderData.textVariations}
                                     onSubmitExtractions={this.onEntityExtractorSubmit}
@@ -506,8 +501,8 @@ export interface ReceivedProps {
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
-const stateProps = returntypeof(mapStateToProps);
-const dispatchProps = returntypeof(mapDispatchToProps);
-type Props = typeof stateProps & typeof dispatchProps & ReceivedProps & InjectedIntlProps
+type stateProps = ReturnType<typeof mapStateToProps>;
+type dispatchProps = ReturnType<typeof mapDispatchToProps>;
+type Props = stateProps & dispatchProps & ReceivedProps & InjectedIntlProps
 
-export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(TeachSessionAdmin))
+export default connect<stateProps, dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(TeachSessionAdmin))

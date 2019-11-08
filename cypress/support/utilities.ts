@@ -77,7 +77,7 @@ export function removeLabel(tokenText: string) {
         .get(s.extractionEditor.tokenNode)
         .contains(tokenText)
         .click()
-        .parents('.cl-entity-node--custom')
+        .parents(s.extractionEditor.customNode)
         .find(s.extractionEditor.buttonRemoveLabel)
         .click()
 }
