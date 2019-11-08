@@ -106,7 +106,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
                 if (!newOption.name.startsWith(negativeEntityPrefix)) {
                     const value = this.state.value
                     const selectedNodes: any[] = value.inlines.toJS()
-                    if (selectedNodes.every(n => n.type === NodeType.TokenNodeType)) {
+                    if (selectedNodes.length > 0 && selectedNodes.every(n => n.type === NodeType.TokenNodeType)) {
                         const startIndex = selectedNodes[0].data.startIndex
                         const endIndex = selectedNodes[selectedNodes.length - 1].data.endIndex
                         const selectedText = getSelectedText(value)
@@ -213,7 +213,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
          */
         let builtInTypeFilter: string | null = null
         const selectedNodes: any[] = value.inlines.toJS()
-        if (selectedNodes.every(n => n.type === NodeType.TokenNodeType)) {
+        if (selectedNodes.length > 0 && selectedNodes.every(n => n.type === NodeType.TokenNodeType)) {
             const startIndex = selectedNodes[0].data.startIndex
             const endIndex = selectedNodes[selectedNodes.length - 1].data.endIndex
             // select the builtIn entity that has overlap with current selected tokens as the builtIn entity filter
@@ -245,7 +245,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
         if (parentNode && selection) {
             const sibling = parentNode.nextSibling
                 ? parentNode.nextSibling
-                : parentNode.parentNode?.nextSibling
+                : parentNode.parentNode && parentNode.parentNode.nextSibling
 
             if (sibling?.firstChild?.firstChild?.firstChild) {
                 const newSelection = sibling.firstChild.firstChild.firstChild

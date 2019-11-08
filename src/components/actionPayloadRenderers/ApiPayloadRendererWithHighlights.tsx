@@ -22,7 +22,7 @@ const Component: React.FC<Props> = (props) => {
     const renderPayloadRenderData = useMultiPayloadRenderer(props.apiAction.renderArguments, props.entities, props.showMissingEntities, props.memories)
 
     const showToggle = logicPayloadRenderData.showToggle
-        ?? renderPayloadRenderData.showToggle
+        || renderPayloadRenderData.showToggle
 
     const showLogicFunction = !props.callback
         ? true

@@ -111,7 +111,7 @@ export default class Component extends React.Component<Props, State> {
                     })
 
                     // If any of the arguments are different, set to true
-                    combined.argumentsDiffer = combined.argumentsDiffer ?? (originalArgument.value !== matchingSubstitutedArgument.value)
+                    combined.argumentsDiffer = combined.argumentsDiffer || (originalArgument.value !== matchingSubstitutedArgument.value)
                 }
 
                 return combined

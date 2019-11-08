@@ -91,7 +91,7 @@ class Testing extends React.Component<Props, ComponentState> {
             .filter(a => a.clientData?.lgName)
             .map(a => {
                 return {
-                    lgName: a.clientData?.lgName ? a.clientData.lgName : "",
+                    lgName: a.clientData?.lgName ?? "",
                     actionId: a.actionId,
                     text: "",
                     suggestions: []
