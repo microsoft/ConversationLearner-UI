@@ -1037,19 +1037,14 @@ class Review extends React.Component<Props, ComponentState> {
             <div className="cl-page">
                 <div data-testid="log-dialogs-title" className={`cl-dialog-title cl-dialog-title--log ${OF.FontClassNames.xxLarge}`}>
                     <OF.Icon iconName="UserFollowed" />
-                    <FormattedMessageId id={FM.LOGDIALOGS_TITLE} />
+                    <FormattedMessageId id={FM.REVIEW_TITLE} />
                 </div>
                 {this.props.editingPackageId === this.props.app.devPackageId ?
                     <span className={OF.FontClassNames.mediumPlus}>
-                        <FormattedMessageId id={FM.LOGDIALOGS_SUBTITLE} />
+                        <FormattedMessageId id={FM.REVIEW_SUBTITLE} />
                     </span>
                     :
                     <span className="cl-errorpanel">Editing is only allowed in Master Tag</span>
-                }
-                {this.props.app.metadata.isLoggingOn === false &&
-                    <span className="ms-TextField-errorMessage label-error">
-                        <FormattedMessageId id={FM.LOGDIALOGS_LOGDISABLED} />
-                    </span>
                 }
                 <div className="cl-buttons-row">
                     <OF.PrimaryButton

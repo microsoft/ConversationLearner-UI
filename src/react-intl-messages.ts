@@ -413,6 +413,10 @@ export enum FM {
     REPLAYERROR_DESC_CHANGED_ENTITIES = 'ReplayError.Desc.changedEntities',
     REPLAYERROR_DESC_EXCEPTION = 'ReplayError.Desc.exception',
 
+    // Review
+    REVIEW_TITLE = 'Review.title',
+    REVIEW_SUBTITLE = 'Review.subtitle',
+
     // Settings
     SETTINGS_TITLE = 'Settings.title',
     SETTINGS_SUBTITLE = 'Settings.subtitle',
@@ -901,6 +905,10 @@ export default {
         [FM.REPLAYERROR_DESC_CHANGED_ENTITIES]: 'Entities inconsistent after user input',
         [FM.REPLAYERROR_DESC_EXCEPTION]: `Encountered an error in Bot's API callback`,
 
+        // LogDialogs
+        [FM.REVIEW_TITLE]: 'Review Suspect Log Dialogs',
+        [FM.REVIEW_SUBTITLE]: 'Stuff that will improve your bot LARS.',
+        
         // Settings
         [FM.SETTINGS_TITLE]: 'Settings',
         [FM.SETTINGS_SUBTITLE]: 'Control your model version tags and other model configuration',
