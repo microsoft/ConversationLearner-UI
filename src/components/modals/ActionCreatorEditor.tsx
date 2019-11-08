@@ -1869,6 +1869,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                         onRenderItem={this.onRenderRequiredConditionTag}
                                         onRenderSuggestionsItem={this.onRenderConditionSuggestion}
                                         onChange={this.onChangeRequiredConditionTags}
+                                        onEmptyResolveSuggestions={selectedItems => this.onResolveRequiredConditionTags('', selectedItems ?? [])}
                                         pickerSuggestionsProps={
                                             {
                                                 suggestionsHeaderText: 'Conditions',
