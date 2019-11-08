@@ -75,7 +75,7 @@ class Dashboard extends React.Component<Props, ComponentState> {
                 <span className={OF.FontClassNames.mediumPlus}>
                     <FormattedMessageId id={FM.DASHBOARD_SUBTITLE} />
                 </span>
-                {this.props.modelLoaded && appDefinitionChange && appDefinitionChange.isChanged
+                {this.props.modelLoaded && appDefinitionChange?.isChanged
                     && <div>
                         <h2 className={OF.FontClassNames.large}>Upgrade Notice:</h2>
                         <p>You are running a version of the SDK that requires a newer version of the model than the one you have attempted to load.  The local copy of the model was upgraded to allow viewing.</p>
@@ -124,10 +124,10 @@ class Dashboard extends React.Component<Props, ComponentState> {
                         </div>
                     )}
 
-                {this.props.app.metadata && this.props.app.metadata.markdown &&
+                {this.props.app.metadata?.markdown &&
                     <ReactMarkdown source={this.props.app.metadata.markdown} />
                 }
-                {this.props.app.metadata && this.props.app.metadata.video &&
+                {this.props.app.metadata?.video &&
                     <ReactPlayer
                         url={this.props.app.metadata.video}
                         controls={true}

@@ -107,7 +107,7 @@ describe('Multiple Pickers and Labels', () => {
 
         it('should be able to label entities in multiple entity extractions', () => {
             cy.get('body')
-                .trigger(constants.events.selectWord, { detail: testData.dialog.word })
+                .trigger(constants.events.selectWord, { detail: { phrase: testData.dialog.word, inex: 0 } })
 
             cy.get(s.entityPicker.inputSearch)
                 .first()
@@ -117,7 +117,7 @@ describe('Multiple Pickers and Labels', () => {
                 .type(`${testData.entity1}{enter}`)
 
             cy.get('body')
-                .trigger(constants.events.selectWord, { detail: `alternate` })
+                .trigger(constants.events.selectWord, { detail: { phrase: `alternate`, index: 1 } })
 
             cy.get(s.entityPicker.inputSearch)
                 .eq(1)

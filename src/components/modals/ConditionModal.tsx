@@ -53,7 +53,7 @@ const convertConditionTypesToDropdownOptions = (conditionTypes: object): Operato
     return Object.keys(conditionTypes)
         .map((conditionType: string) => {
             let conditionText = `unknown`
-            if (conditionDisplay && conditionDisplay[conditionType]) {
+            if (conditionDisplay?.[conditionType]) {
                 conditionText = conditionDisplay[conditionType]
             }
 
@@ -261,7 +261,7 @@ const Component: React.FC<Props> = (props) => {
         props.onClickCreate(condition)
     }
 
-    const isOperatorDisabled = selectedEntityOption && selectedEntityOption.data.entityType === CLM.EntityType.ENUM
+    const isOperatorDisabled = selectedEntityOption?.data.entityType === CLM.EntityType.ENUM
     const conditionsUsingEntity = props.conditions.filter(c => c.entityId === selectedEntityOption.key)
     const currentCondition = createConditionFromState()
 
@@ -287,7 +287,7 @@ const Component: React.FC<Props> = (props) => {
                             <OF.Dropdown
                                 label="Entity"
                                 data-testid="condition-creator-modal-dropdown-entity"
-                                selectedKey={selectedEntityOption && selectedEntityOption.key}
+                                selectedKey={selectedEntityOption?.key}
                                 disabled={props.condition !== undefined}
                                 options={entityOptions}
                                 onChange={onChangeEntity}

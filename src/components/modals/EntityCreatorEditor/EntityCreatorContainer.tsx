@@ -254,7 +254,7 @@ class Container extends React.Component<Props, ComponentState> {
         let hasPendingEnumChanges = false
         if (entity.entityType === CLM.EntityType.ENUM) {
             const newEnums = this.state.enumValues.filter(v => v !== null) as CLM.EnumValue[]
-            const oldEnums = entity.enumValues || []
+            const oldEnums = entity.enumValues ?? []
             hasPendingEnumChanges = !this.areEnumsIdentical(newEnums, oldEnums)
         }
         const hasPendingChanges = isNameChanged

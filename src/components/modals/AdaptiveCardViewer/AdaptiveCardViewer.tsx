@@ -39,11 +39,11 @@ export function getRawTemplateText(template: Template, actionArguments: Rendered
 }
 
 function getProcessedTemplate(template: Template, actionArguments: RenderedActionArgument[], hideUndefined: boolean): any {
-    let templateString = template.body || ''
+    let templateString = template.body ?? ''
 
     // Substitute argument values
     for (const actionArgument of actionArguments) {
-        if (actionArgument && actionArgument.value) {
+        if (actionArgument?.value) {
             templateString = templateString.replace(new RegExp(`{{${actionArgument.parameter}}}`, 'g'), actionArgument.value)
         }
     }

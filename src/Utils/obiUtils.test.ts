@@ -71,7 +71,7 @@ describe('obiUtils', () => {
             }
         ]
 
-        const makeTransript = (channelName: string) => {
+        const makeTranscript = (channelName: string) => {
             const transcript = deepCopy(baseTranscript)
             transcript.forEach(activity => {
                 activity.channelId = channelName
@@ -80,15 +80,15 @@ describe('obiUtils', () => {
         }
 
         test('validMatch', () => {
-            const t1 = makeTransript("channel1")
-            const t2 = makeTransript("channel2")
+            const t1 = makeTranscript("channel1")
+            const t2 = makeTranscript("channel2")
 
             expect(ObiUtils.areTranscriptsEqual(t1 , t2)).toEqual(true)
         })
 
         test('typeMismatch', () => {
-            const t1 = makeTransript("channel1")
-            const t2 = makeTransript("channel2")
+            const t1 = makeTranscript("channel1")
+            const t2 = makeTranscript("channel2")
             t2[2].from = {
                 "name": "bot",
                 "role": "bot"
@@ -97,15 +97,15 @@ describe('obiUtils', () => {
         })
 
         test('botResponseMismatch', () => {
-            const t1 = makeTransript("channel1")
-            const t2 = makeTransript("channel2")
+            const t1 = makeTranscript("channel1")
+            const t2 = makeTranscript("channel2")
             t2[1].text = "CHANGED BOT RESPONSE"
             expect(ObiUtils.areTranscriptsEqual(t1 , t2)).toEqual(false)
         })
 
         test('sameChannel', () => {
-            const t1 = makeTransript("channel1")
-            const t2 = makeTransript("channel1")
+            const t1 = makeTranscript("channel1")
+            const t2 = makeTranscript("channel1")
 
             expect(() => ObiUtils.areTranscriptsEqual(t1 , t2)).toThrow()
         })
@@ -118,30 +118,30 @@ describe('obiUtils', () => {
         })
 
         test('missingFrom', () => {
-            const t1 = makeTransript("channel1")
-            const t2 = makeTransript("channel2")
+            const t1 = makeTranscript("channel1")
+            const t2 = makeTranscript("channel2")
             delete t2[3].from
             expect(() => ObiUtils.areTranscriptsEqual(t1 , t2)).toThrow()
         })
 
         test('missingConversation', () => {
-            const t1 = makeTransript("channel1")
-            const t2 = makeTransript("channel2")
+            const t1 = makeTranscript("channel1")
+            const t2 = makeTranscript("channel2")
             delete t1[0].conversation
             expect(() => ObiUtils.areTranscriptsEqual(t1 , t2)).toThrow()
         })
 
         test('differentLength', () => {
-            const t1 = makeTransript("channel1")
-            const t2 = makeTransript("channel2")
+            const t1 = makeTranscript("channel1")
+            const t2 = makeTranscript("channel2")
             t2.pop()
 
             expect(ObiUtils.areTranscriptsEqual(t1 , t2)).toEqual(false)
         })
 
         test('differentUserText', () => {
-            const t1 = makeTransript("channel1")
-            const t2 = makeTransript("channel2")
+            const t1 = makeTranscript("channel1")
+            const t2 = makeTranscript("channel2")
             t2[2] = {
                 "type": "message",
                 "from": {

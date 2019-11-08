@@ -61,11 +61,11 @@ export async function getLogDialogActivities(
 
     // Return activities
     const teachWithActivities = await fetchActivitiesThunkAsync(appId, trainDialog, user.name, user.id, false, true)
-    const activites = teachWithActivities.activities
+    const activities = teachWithActivities.activities
     if (conversationId || channelId) {
-        addActivityReferences(activites, conversationId, channelId)
+        addActivityReferences(activities, conversationId, channelId)
     }
-    return activites
+    return activities
 }
 
 // Adds channelId and conversationId references to activities
@@ -122,7 +122,7 @@ export function isSameActivity(activity1: BB.Activity, activity2: BB.Activity): 
 
 // Add new LG references from .lg file to Map (creates new one if doesn't already exist)
 export async function lgMapFromLGFiles(lgFiles: File[] | null, lgItemList?: CLM.LGItem[]): Promise<CLM.LGItem[]> {
-    const map = lgItemList || []
+    const map = lgItemList ?? []
     if (lgFiles) {
         for (const lgFile of lgFiles) {
             if (lgFile.name.endsWith('.lg')) {
@@ -137,12 +137,11 @@ export async function lgMapFromLGFiles(lgFiles: File[] | null, lgItemList?: CLM.
     return map
 }
 
-// Returns true is any LG is used by this transcxript
+// Returns true is any LG is used by this transcript
 export function usesLG(transcript: BB.Activity[]): boolean {
 
     for (let activity of transcript) {
-        if (activity.type && activity.type === 'message' && activity.from.role === 'bot') {
-
+        if (activity.type === 'message' && activity.from.role === 'bot') {
             let lgName = lgNameFromImportText(activity.text)
             if (lgName) {
                 return true
@@ -158,8 +157,7 @@ export function fromLG(transcript: BB.Activity[], lgItemList: CLM.LGItem[]): boo
 
     let usedLG = false
     for (let activity of transcript) {
-        if (activity.type && activity.type === 'message' && activity.from.role === 'bot') {
-
+        if (activity.type === 'message' && activity.from.role === 'bot') {
             let lgName = lgNameFromImportText(activity.text)
             if (lgName) {
                 usedLG = true
@@ -180,7 +178,7 @@ export function fromLG(transcript: BB.Activity[], lgItemList: CLM.LGItem[]): boo
 export function toLG(transcript: BB.Activity[], lgItemList: CLM.LGItem[], entities: CLM.EntityBase[], actions: CLM.ActionBase[]): void {
 
     for (let activity of transcript) {
-        if (activity.channelData && activity.channelData.clData && activity.channelData.clData.actionId) {
+        if (activity.channelData?.clData?.actionId) {
             const lgItem = lgItemList.find(lg => lg.actionId === activity.channelData.clData.actionId)
             if (lgItem) {
                 activity.text = `[${lgItem.lgName}]`
@@ -242,7 +240,7 @@ export async function trainDialogFromTranscriptImport(
                     text: activity.text,
                     labelEntities: []
                 }]
-                if (activity.channelData && activity.channelData.textVariations) {
+                if (activity.channelData?.textVariations) {
                     activity.channelData.textVariations.forEach((tv: any) => {
                         // Currently system is limited to 20 text variations
                         if (textVariations.length < CLM.MAX_TEXT_VARIATIONS && activity.text !== tv.text) {
@@ -271,7 +269,7 @@ export async function trainDialogFromTranscriptImport(
                 let filledEntities = Util.deepCopy(nextFilledEntities)
 
                 // If I didn't find an action and is API, create API placeholder
-                if (activity.channelData && activity.channelData.type === "ActionCall") {
+                if (activity.channelData?.type === "ActionCall") {
                     const actionCall = activity.channelData as TranscriptActionCall
                     const isTerminal = !nextActivity || nextActivity.from.role === "user"
 
@@ -334,7 +332,7 @@ export async function trainDialogFromTranscriptImport(
 // Given an Activity try to find a matching action
 function findMatchedAction(activity: BB.Activity, entities: CLM.EntityBase[], actions: CLM.ActionBase[], filledEntities: CLM.FilledEntity[]): CLM.ActionBase | undefined {
     // If actionId provided return the action
-    if (activity.channelData && activity.channelData) {
+    if (activity.channelData) {
         const clData: CLM.CLChannelData = activity.channelData.clData
         if (clData.actionId) {
             const action = actions.find(a => a.actionId === clData.actionId)
@@ -349,7 +347,7 @@ function findMatchedAction(activity: BB.Activity, entities: CLM.EntityBase[], ac
     // If importText is an lgName try to look it up in existing actions
     const lgName = lgNameFromImportText(activity.text)
     if (lgName) {
-        const action = actions.find(a => a.clientData && a.clientData.lgName === lgName)
+        const action = actions.find(a => a.clientData?.lgName === lgName)
         if (action) {
             return action
         }
@@ -414,11 +412,11 @@ export function parseEntityConditionFromDialogCase(branch: Case, entityCondition
 export function hashTextFromActivity(activity: BB.Activity, entities: CLM.EntityBase[], filledEntities: CLM.FilledEntity[] | undefined): string {
 
     // If an API placeholder user the action name
-    if (activity.channelData && activity.channelData.type === "ActionCall") {
+    if (activity.channelData?.type === "ActionCall") {
         const actionCall = activity.channelData as TranscriptActionCall
         return actionCall.actionName
     }
-    // If entites have been set, substitute entityIDs in before hashing
+    // If entities have been set, substitute entityIDs in before hashing
     else if (filledEntities && filledEntities.length > 0) {
         const filledEntityMap = DialogUtils.filledEntityIdMap(filledEntities, entities)
         return importTextWithEntityIds(activity.text, filledEntityMap)
@@ -442,7 +440,7 @@ export function importTextWithEntityIds(importText: string, valueMap: Map<string
 export function replaceImportActions(trainDialog: CLM.TrainDialog, actions: CLM.ActionBase[], entities: CLM.EntityBase[]): boolean {
 
     // Filter out actions that have no hash lookups. If there are none, terminate early
-    const actionsWithHash = actions.filter(a => a.clientData != null && a.clientData.actionHashes && a.clientData.actionHashes.length > 0)
+    const actionsWithHash = actions.filter(a => a.clientData?.actionHashes && a.clientData.actionHashes.length > 0)
     if (actionsWithHash.length === 0) {
         return false
     }
@@ -493,7 +491,7 @@ function findActionFromScorerStep(scorerStep: CLM.TrainScorerStep, actions: CLM.
         // If importText is an lgName try to look it up in existing actions
         const lgName = lgNameFromImportText(scorerStep.importText)
         if (lgName) {
-            const action = actions.find(a => a.clientData && a.clientData.lgName === lgName)
+            const action = actions.find(a => a.clientData?.lgName === lgName)
             if (action) {
                 return action
             }
@@ -778,7 +776,7 @@ async function createActionFromImport(
             lgName: importedAction.lgName
         }
     })
-    if (scorerStep.importId && scorerStepConditions && scorerStepConditions[scorerStep.importId]) {
+    if (scorerStep.importId && scorerStepConditions?.[scorerStep.importId]) {
         action.requiredConditions = scorerStepConditions[scorerStep.importId]
     }
 
@@ -810,7 +808,7 @@ export function findActionFromHashText(hashText: string, actions: CLM.ActionBase
 
     // Try to find matching action with same hash
     let matchedActions = actions.filter(a => {
-        return a.clientData && a.clientData.actionHashes && a.clientData.actionHashes.indexOf(importHash) > -1
+        return a.clientData?.actionHashes?.includes(importHash)
     })
 
     // If more than one, prefer the one that isn't a placeholder

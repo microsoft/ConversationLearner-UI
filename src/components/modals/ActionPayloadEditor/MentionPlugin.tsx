@@ -99,7 +99,7 @@ export default function mentionPlugin(inputOptions: Partial<IOptions> = {}) {
 
                 // TODO: Generalize between previousSibling method, and node paths method
                 const previousSibling = value.document.getPreviousSibling(startKey)
-                if (previousSibling && previousSibling.type === NodeTypes.Optional) {
+                if (previousSibling?.type === NodeTypes.Optional) {
                     if (startOffset === 0) {
                         const removeTextOperation = removeTextOperations.first()
                         const nodes = getNodesByPath(removeTextOperation.toJS().path, value.document)

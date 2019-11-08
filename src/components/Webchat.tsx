@@ -94,8 +94,8 @@ export function renderActivity(
                     {children}
                 </div>
             </div>
-            {activityProps.selected && renderSelected && renderSelected(activityProps.activity as BB.Activity)}
-            {clData && clData.validWaitAction !== undefined ?
+            {activityProps.selected && renderSelected?.(activityProps.activity as BB.Activity)}
+            {clData?.validWaitAction !== undefined ?
                 (
                     <svg className="wc-message-downarrow">
                         <polygon
@@ -196,7 +196,7 @@ class Webchat extends React.Component<Props> {
                 ...dl,
                 postActivity: (activity: any) => {
                     this.props.onPostActivity(activity)
-                    if (this.props.disableDL && (activity.value && activity.value[SUBMIT_KEY])) {
+                    if (this.props.disableDL && activity.value?.[SUBMIT_KEY]) {
                         return Observable.empty()
                     }
                     return dl.postActivity(activity)

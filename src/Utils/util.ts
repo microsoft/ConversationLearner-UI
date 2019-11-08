@@ -99,7 +99,7 @@ export function createEntityMapWithNamesAndValues(entities: CLM.EntityBase[], me
             name: e.entityName,
         }
 
-        const memory = memories && memories.find(m => m.entityName === e.entityName)
+        const memory = memories?.find(m => m.entityName === e.entityName)
         if (memory) {
             entry.value = CLM.memoryValuesAsString(memory.entityValues)
         }
@@ -310,7 +310,7 @@ export type RecursivePartial<T> = {
 }
 
 export function isFeatureEnabled(featureString: string | undefined, feature: Const.FeatureStrings) {
-    if (featureString && featureString.toUpperCase().includes(feature.toUpperCase())) {
+    if (featureString?.toUpperCase().includes(feature.toUpperCase())) {
         return true
     }
     return false

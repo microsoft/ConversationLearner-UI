@@ -40,7 +40,7 @@ export default class Component extends React.Component<Props> {
 
         return <ApiPayloadRenderer
             name={apiAction.name}
-            isPlaceholder={apiAction.isPlaceholder || false}
+            isPlaceholder={apiAction.isPlaceholder ?? false}
             showLogicFunction={showLogicFunction}
             originalLogicArguments={logicArgumentsUsingEntityNames}
             substitutedLogicArguments={logicArgumentsUsingCurrentMemory}
