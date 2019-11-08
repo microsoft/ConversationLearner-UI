@@ -66,7 +66,6 @@ describe('Action Conditions', () => {
 
                 cy.get(s.action.inputRequiredConditions)
                     .click()
-                    .type(' ')
 
                 cy.get(s.action.buttonAddCondition)
                     .click()
@@ -155,7 +154,6 @@ describe('Action Conditions', () => {
             it(`clicking "Create" should add the ValueCondition in the action's "required conditions" list`, () => {
                 cy.get(s.action.inputRequiredConditions)
                     .click()
-                    .type(' ')
 
                 cy.get(s.action.buttonAddCondition)
                     .click()
@@ -170,7 +168,6 @@ describe('Action Conditions', () => {
             it(`clicking "Use Condition" should also close and add the associated ValueCondition to the "required conditions" list`, () => {
                 cy.get(s.action.inputRequiredConditions)
                     .click()
-                    .type(' ')
 
                 cy.get(s.action.buttonAddCondition)
                     .click()
@@ -186,7 +183,6 @@ describe('Action Conditions', () => {
             it(`clicking "Cancel" should close the model and NOT add the condition`, () => {
                 cy.get(s.action.inputRequiredConditions)
                     .click()
-                    .type(' ')
 
                 cy.get(s.action.buttonAddCondition)
                     .click()
