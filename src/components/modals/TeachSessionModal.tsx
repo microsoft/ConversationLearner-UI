@@ -211,7 +211,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
         }
         this.setState({
             isInitStateOpen: false,
-            initialEntities: filledEntityMap || null
+            initialEntities: filledEntityMap ?? null
         })
     }
 

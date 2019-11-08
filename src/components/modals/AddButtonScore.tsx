@@ -19,7 +19,7 @@ class AddButtonScore extends React.Component<Props> {
         return (
             <div
                 role="button"
-                className={this.props.className || `cl-addbutton-add cl-addbutton-addscore`}
+                className={this.props.className ?? `cl-addbutton-add cl-addbutton-addscore`}
                 onClick={this.props.onClick}
                 data-testid="chat-edit-add-bot-response-button"
             >

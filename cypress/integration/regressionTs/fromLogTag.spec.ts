@@ -27,6 +27,9 @@ describe('From Log Tag', () => {
                 cy.get(s.logDialogs.buttonCreate)
                     .click()
 
+                cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+                    .should('not.exist')
+
                 cy.get(s.logDialog.inputMessage)
                     .type(`${testData.userInput} ${i}{enter}`)
 
@@ -47,7 +50,7 @@ describe('From Log Tag', () => {
             .click()
     })
 
-    it('when stardard open and save, should have tag on resulting dialog', () => {
+    it('when standard open and save, should have tag on resulting dialog', () => {
         const description = `${testData.userInput} 0`
         cy.get(s.logDialogs.description)
             .contains(description)

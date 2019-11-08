@@ -41,7 +41,7 @@ export class TreeNodeExpanded extends React.PureComponent<TreeNodeReceivedProps>
             })
         }
 
-        let scorerSteps = treeNode.scorerSteps || []
+        let scorerSteps = treeNode.scorerSteps ?? []
         this.props.generateActionDescriptions(scorerSteps)
 
         return (
@@ -49,7 +49,7 @@ export class TreeNodeExpanded extends React.PureComponent<TreeNodeReceivedProps>
                 <div 
                     className="cl-treeview-userBox"
                 >
-                    {userInputs && userInputs.map((input, index) =>
+                    {userInputs?.map((input, index) =>
                         <div
                             key={`${treeNode.id}${index}`}
                             className="cl-treeview-userInput"

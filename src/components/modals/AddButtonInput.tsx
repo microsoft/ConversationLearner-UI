@@ -26,7 +26,7 @@ class AddButtonInput extends React.Component<Props> {
         return (
             <div
                 role="button"
-                className={this.props.className || `cl-addbutton-add cl-addbutton-addinput`}
+                className={this.props.className ?? `cl-addbutton-add cl-addbutton-addinput`}
                 onClick={this.props.onClick}
                 data-testid="chat-edit-add-user-input-button"
             >

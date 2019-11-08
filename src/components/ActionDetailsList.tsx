@@ -28,7 +28,7 @@ interface ComponentState {
 
 class ActionDetailsList extends React.Component<Props, ComponentState> {
     constructor(p: any) {
-        super(p);
+        super(p)
         const columns = getColumns(this.props.intl)
         const defaultSortColumnName = "actionResponse"
         const defaultSortColumn = columns.find(c => c.key === defaultSortColumnName)
@@ -101,7 +101,7 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
     }
 
     sortActions(): CLM.ActionBase[] {
-        const actions = [...this.props.actions];
+        const actions = [...this.props.actions]
         // If column header selected sort the items
         if (this.state.sortColumn) {
             actions
@@ -115,7 +115,7 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
                 })
         }
 
-        return actions;
+        return actions
     }
 
     @autobind
@@ -135,7 +135,7 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
         this.setState({
             columns,
             sortColumn
-        });
+        })
     }
 
     onClickViewCard(action: CLM.ActionBase) {
@@ -146,10 +146,12 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
 
     onClickRow(item: any, index: number | undefined, event: Event | undefined) {
         // Don't response to row click if it's button that was clicked
-        if (event && (event.target as any).type !== 'button') {
-            const action = item as CLM.ActionBase
-            this.props.onSelectAction(action)
+        if ((event?.target as any).type === 'button') {
+            return
         }
+
+        const action = item as CLM.ActionBase
+        this.props.onSelectAction(action)
     }
 
     onCloseCardViewer = () => {
@@ -159,7 +161,7 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
     }
 
     render() {
-        const sortedActions = this.sortActions();
+        const sortedActions = this.sortActions()
 
         let template: CLM.Template | undefined
         let renderedActionArguments: CLM.RenderedActionArgument[] = []
@@ -179,7 +181,7 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
                     items={sortedActions}
                     columns={this.state.columns}
                     checkboxVisibility={OF.CheckboxVisibility.hidden}
-                    onRenderRow={(props, defaultRender) => <div data-selection-invoke={true}>{defaultRender && defaultRender(props)}</div>}
+                    onRenderRow={(props, defaultRender) => <div data-selection-invoke={true}>{defaultRender?.(props)}</div>}
                     onRenderItemColumn={(action: CLM.ActionBase, i, column: IRenderableColumn) => column.render(action, this)}
                     onItemInvoked={(item, index, ev) => this.onClickRow(item, index, ev)}
                     onColumnHeaderClick={this.onClickColumnHeader}
@@ -201,7 +203,7 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
 
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-    }, dispatch);
+    }, dispatch)
 }
 
 const mapStateToProps = (state: State) => {

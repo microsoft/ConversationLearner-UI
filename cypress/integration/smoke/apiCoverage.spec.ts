@@ -96,7 +96,7 @@ describe('Scenario 01 - API Coverage - Exercise all major use cases', () => {
             util.inputText(testData.dialog.input01)
 
             cy.get('body')
-                .trigger(constants.events.selectWord, { detail: testData.dialog.word01 })
+                .trigger(constants.events.selectWord, { detail: { phrase: testData.dialog.word01, inex: 0 } })
 
             cy.get(s.entityPicker.inputSearch)
                 // TODO: Why?  Sometimes there is a glitch in what it types.
@@ -118,7 +118,7 @@ describe('Scenario 01 - API Coverage - Exercise all major use cases', () => {
             util.inputText(testData.dialog.input02)
 
             cy.get('body')
-                .trigger(constants.events.selectWord, { detail: testData.dialog.word02 })
+                .trigger(constants.events.selectWord, { detail: { phrase: testData.dialog.word02, inex: 0 } })
 
             cy.get(s.entityPicker.buttonNew)
                 .click()
@@ -346,7 +346,7 @@ describe('Scenario 01 - API Coverage - Exercise all major use cases', () => {
 
             // This assumes the extraction from last edit was trained and 'one' will be labeled
             cy.get('body')
-                .trigger(constants.events.selectWord, { detail: 'prefix' })
+                .trigger(constants.events.selectWord, { detail: { phrase: 'prefix', inex: 0 } })
 
             cy.get(s.entityPicker.inputSearch)
                 .wait(100)

@@ -54,7 +54,7 @@ export const createTrainDialogThunkAsync = (appId: string, trainDialog: CLM.Trai
             dispatch(createTrainDialogRejected())
 
             const error = e as AxiosError
-            if (error.response && error.response.status === 409) {
+            if (error.response?.status === 409) {
                 const textVariations: CLM.TextVariation[] = error.response.data.reason
                 const conflictError = new EntityLabelConflictError(error.message, textVariations)
                 throw conflictError
@@ -180,7 +180,7 @@ export const scoreFromTrainDialogThunkAsync = (appId: string, trainDialog: CLM.T
             dispatch(scoreFromTrainDialogRejected())
 
             const error = e as AxiosError
-            if (error.response && error.response.status === 409) {
+            if (error.response?.status === 409) {
                 const textVariations: CLM.TextVariation[] = error.response.data.reason
                 const conflictError = new EntityLabelConflictError(error.message, textVariations)
                 throw conflictError
@@ -230,7 +230,7 @@ export const extractFromTrainDialogThunkAsync = (appId: string, trainDialog: CLM
             dispatch(extractFromTrainDialogRejected())
 
             const error = e as AxiosError
-            if (error.response && error.response.status === 409) {
+            if (error.response?.status === 409) {
                 const textVariations: CLM.TextVariation[] = error.response.data.reason
                 const conflictError = new EntityLabelConflictError(error.message, textVariations)
                 throw conflictError
@@ -365,10 +365,10 @@ export const trainDialogMergeThunkAsync = (appId: string, newTrainDialog: CLM.Tr
 
             // Create merged train dialog
             const mergedTrainDialog = DialogUtils.mergeTrainDialogs(newTrainDialog, existingTrainDialog)
-            mergedTrainDialog.description = newDescription || mergedTrainDialog.description
-            mergedTrainDialog.tags = newTags || mergedTrainDialog.tags
+            mergedTrainDialog.description = newDescription ?? mergedTrainDialog.description
+            mergedTrainDialog.tags = newTags ?? mergedTrainDialog.tags
 
-            // If merged into exisiting TrainDialog (as it was longer)
+            // If merged into existing TrainDialog (as it was longer)
             if (mergedTrainDialog.trainDialogId === existingTrainDialog.trainDialogId) {
                 // Update existing train dialog with merged train dialog, and delete other dialogs
                 mergedTrainDialog.lastModifiedDateTime = `${new Date().toISOString().slice(0, 19)}+00:00`

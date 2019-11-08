@@ -5,14 +5,14 @@
     color: var(--color-neutralSecondaryAlt);
     margin-bottom: 0.3em;
 }
-.cl-training-status__icon-row i[role="presentation"] {
+.cl-training-status__icon-row i[data-icon-name] {
     vertical-align: text-bottom;
     padding: 0.125em 0;
 }
-.cl-training-status__icon-row--success i[role="presentation"] {
+.cl-training-status__icon-row--success i[data-icon-name] {
     color: var(--color-success);
 }
-.cl-training-status__icon-row--error i[role="presentation"] {
+.cl-training-status__icon-row--error i[data-icon-name] {
     color: var(--color-error);
 }
 .cl-training-status__icon-row--expired i[data-icon-name="Warning"] {

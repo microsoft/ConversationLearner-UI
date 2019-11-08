@@ -10,7 +10,8 @@
         "types": [
             "cypress"
         ],
-        "keyofStringsOnly": true
+        "keyofStringsOnly": true,
+        "skipLibCheck": true
     },
     "include": [
         "**/*.ts"

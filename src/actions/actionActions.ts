@@ -69,7 +69,7 @@ export const editActionThunkAsync = (appId: string, action: ActionBase) => {
             dispatch(editActionFulfilled(action))
 
             // Fetch train dialogs if any train dialogs were impacted
-            if (deleteEditResponse.trainDialogIds && deleteEditResponse.trainDialogIds.length > 0) {
+            if (deleteEditResponse.trainDialogIds?.length > 0) {
                 dispatch(fetchAllTrainDialogsThunkAsync(appId))
             }
 
@@ -109,7 +109,7 @@ export const deleteActionThunkAsync = (appId: string, actionId: string, removeFr
             dispatch(deleteActionFulfilled(actionId));
 
             // Fetch train dialogs if any train dialogs were impacted
-            if (deleteEditResponse.trainDialogIds && deleteEditResponse.trainDialogIds.length > 0) {
+            if (deleteEditResponse.trainDialogIds?.length > 0) {
                 dispatch(fetchAllTrainDialogsThunkAsync(appId));
             }
 

@@ -437,7 +437,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
     getImportedAction(activity: BB.Activity): ImportedAction | undefined {
         const clData: CLM.CLChannelData = activity.channelData.clData
         const senderType = clData.senderType
-        const scoreIndex = clData.scoreIndex || 0
+        const scoreIndex = clData.scoreIndex ?? 0
         const roundIndex = clData.roundIndex
 
         const curRound = this.props.trainDialog.rounds[roundIndex!]

@@ -543,7 +543,7 @@ export const convertGenericEntityToPredictedEntity = (entities: CLM.EntityBase[]
     // If predicted entity doesn't exist, re-construct predicted entity object using the option/entity chosen by the user and the selected text
     // Such as the case where we're editing the extract response and adding a new entity
     const option = ge.data.option
-    const text = ge.data.text || ''
+    const text = ge.data.text ?? ''
 
     if (option.type !== CLM.EntityType.LUIS) {
         console.warn(`convertGenericEntityToPredictedEntity option selected as option type other than LUIS, this will most likely cause an error`)
@@ -597,7 +597,7 @@ export const convertExtractorResponseToEditorModels = (extractResponse: CLM.Extr
         .filter(ipe => ipe.entity !== null)
 
     const customEntities = internalPredictedEntities
-        .filter(({ entity }) => entity && entity.entityType === CLM.EntityType.LUIS)
+        .filter(({ entity }) => entity?.entityType === CLM.EntityType.LUIS)
         .map(({ entity, predictedEntity }) => convertPredictedEntityToGenericEntity(predictedEntity, entity!.entityName, util.entityDisplayName(entity!)))
 
     const preBuiltEntities = internalPredictedEntities

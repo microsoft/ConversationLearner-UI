@@ -119,7 +119,7 @@ export const editEntityThunkAsync = (appId: string, entity: CLM.EntityBase, prev
             }
 
             // If any train dialogs were modified fetch train dialogs
-            if (changedEntityResponse.trainDialogIds && changedEntityResponse.trainDialogIds.length > 0) {
+            if (changedEntityResponse.trainDialogIds?.length > 0) {
                 dispatch(fetchAllTrainDialogsThunkAsync(appId));
             }
 
@@ -174,12 +174,12 @@ export const deleteEntityThunkAsync = (appId: string, entity: CLM.EntityBase) =>
             }
 
             // If any actions were modified, reload them
-            if (deleteEditResponse.actionIds && deleteEditResponse.actionIds.length > 0) {
+            if (deleteEditResponse.actionIds?.length > 0) {
                 dispatch(fetchAllActionsThunkAsync(appId))
             }
 
             // If any train dialogs were modified fetch train dialogs
-            if (deleteEditResponse.trainDialogIds && deleteEditResponse.trainDialogIds.length > 0) {
+            if (deleteEditResponse.trainDialogIds?.length > 0) {
                 dispatch(fetchAllTrainDialogsThunkAsync(appId));
             }
 

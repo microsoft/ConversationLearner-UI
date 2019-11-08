@@ -34,10 +34,10 @@ const Component: React.FC<Props> = (props) => {
         : props.callback.isRenderFunctionProvided
     // && callback.renderArguments.length > 0
 
-    const isPlaceholder = (props.apiAction.isPlaceholder || false)
-    const [isOriginalVisible, setIsOriginalVisivilble] = React.useState(false)
+    const isPlaceholder = (props.apiAction.isPlaceholder ?? false)
+    const [isOriginalVisible, setIsOriginalVisible] = React.useState(false)
     const onChangeVisible = () => {
-        setIsOriginalVisivilble(x => !x)
+        setIsOriginalVisible(x => !x)
     }
 
     return (
@@ -48,8 +48,7 @@ const Component: React.FC<Props> = (props) => {
                     <div className="cl-api-payload__fn">
                         <div className="cl-api-payload__signature">logic(memoryManager{logicPayloadRenderData.renderedArguments.length !== 0 && `, ${logicPayloadRenderData.renderedArguments.map(a => a.parameter).join(', ')}`})</div>
                         <div className="cl-api-payload__arguments ms-ListItem-primaryText">
-                            {logicPayloadRenderData.renderedArguments.length !== 0
-                                && logicPayloadRenderData.renderedArguments.map((argument, i) => {
+                            {logicPayloadRenderData.renderedArguments.map((argument, i) => {
                                     const visibleSlateValue = isOriginalVisible
                                         ? argument.valueShowingEntityNames
                                         : argument.valueShowingCurrentMemory
@@ -71,8 +70,7 @@ const Component: React.FC<Props> = (props) => {
                     <div className="cl-api-payload__fn">
                         <div className="cl-api-payload__signature">render(result, memoryManager{renderPayloadRenderData.renderedArguments.length !== 0 && `, ${renderPayloadRenderData.renderedArguments.map(a => a.parameter).join(', ')}`})</div>
                         <div className="cl-api-payload__arguments ms-ListItem-primaryText">
-                            {renderPayloadRenderData.renderedArguments.length !== 0
-                                && renderPayloadRenderData.renderedArguments.map((argument, i) => {
+                            {renderPayloadRenderData.renderedArguments.map((argument, i) => {
                                     const visibleSlateValue = isOriginalVisible
                                         ? argument.valueShowingEntityNames
                                         : argument.valueShowingCurrentMemory

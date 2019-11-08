@@ -14,8 +14,8 @@ class HelpIcon extends React.Component<Props> {
     render() {
         return (
             <IconButton
-                className={`cl-icon cl-icon--short ${this.props.customClass || 'cl-icon-whitebackground'}`}
-                iconProps={{ iconName: this.props.iconName || 'Info' }}
+                className={`cl-icon cl-icon--short ${this.props.customClass ?? 'cl-icon-whitebackground'}`}
+                iconProps={{ iconName: this.props.iconName ?? 'Info' }}
                 onClick={() => { this.props.setTipType(this.props.tipType) }}
                 title="More Information"
             />

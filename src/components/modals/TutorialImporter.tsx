@@ -146,10 +146,10 @@ class TutorialImporter extends React.Component<Props, ComponentState> {
                         />
                         :
                         <div>
-                            {this.state.moreInfoApp && this.state.moreInfoApp.metadata && this.state.moreInfoApp.metadata.markdown &&
+                            {this.state.moreInfoApp?.metadata?.markdown &&
                                 <ReactMarkdown source={this.state.moreInfoApp.metadata.markdown} />
                             }
-                            {this.state.moreInfoApp && this.state.moreInfoApp.metadata && this.state.moreInfoApp.metadata.video &&
+                            {this.state.moreInfoApp?.metadata?.video &&
                                 <ReactPlayer
                                     url={this.state.moreInfoApp.metadata.video}
                                     controls={true}

@@ -94,7 +94,7 @@ export const createTeachSessionFromTrainDialogThunkAsync = (app: CLM.AppBase, tr
             dispatch(createTeachSessionFromTrainDialogRejected())
 
             const error = e as AxiosError
-            if (error.response && error.response.status === 409) {
+            if (error.response?.status === 409) {
                 const textVariations: CLM.TextVariation[] = error.response.data.reason
                 const conflictError = new EntityLabelConflictError(error.message, textVariations)
                 throw conflictError

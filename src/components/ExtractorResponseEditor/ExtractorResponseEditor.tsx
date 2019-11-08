@@ -240,15 +240,14 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
     onSelectChar = () => {
         // Make selection
         const selection = window.getSelection();
-        const parentNode = selection
-            && selection.anchorNode
-            && selection.anchorNode.parentElement
-            && selection.anchorNode.parentElement.parentNode
+        const parentNode = selection?.anchorNode?.parentElement?.parentNode
 
         if (parentNode && selection) {
-            const sibling = parentNode.nextSibling ? parentNode.nextSibling : parentNode.parentNode && parentNode.parentNode.nextSibling
+            const sibling = parentNode.nextSibling
+                ? parentNode.nextSibling
+                : parentNode.parentNode && parentNode.parentNode.nextSibling
 
-            if (sibling && sibling.firstChild && sibling.firstChild.firstChild && sibling.firstChild.firstChild.firstChild) {
+            if (sibling?.firstChild?.firstChild?.firstChild) {
                 const newSelection = sibling.firstChild.firstChild.firstChild
                 const range = document.createRange();
                 range.selectNode(newSelection)
@@ -450,7 +449,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
 
         // Get row
         const rows = Array.from(document.querySelectorAll('[data-testid="extractor-response-editor-entity-labeler"]'))
-        if (index > rows.length || index < 0) {
+        if (index >= rows.length || index < 0) {
             throw new Error("Row index does not exist")
         }
 

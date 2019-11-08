@@ -88,10 +88,10 @@ class Testing extends React.Component<Props, ComponentState> {
     newTestSet(): Test.TestSet {
         // Generate LGItems for actions with LG refs
         const lgItems: CLM.LGItem[] = this.props.actions
-            .filter(a => a.clientData && a.clientData.lgName)
+            .filter(a => a.clientData?.lgName)
             .map(a => {
                 return {
-                    lgName: (a.clientData && a.clientData.lgName) ? a.clientData.lgName : "",
+                    lgName: a.clientData?.lgName ?? "",
                     actionId: a.actionId,
                     text: "",
                     suggestions: []
@@ -208,7 +208,7 @@ class Testing extends React.Component<Props, ComponentState> {
                     else if (activity.from.role === "bot") {
                         if (transcriptValidationTurn) {
                             // If API call include API results
-                            if (activity.channelData && activity.channelData.type === "ActionCall") {
+                            if (activity.channelData?.type === "ActionCall") {
                                 const actionCall = activity.channelData as OBIUtils.TranscriptActionCall
                                 apiResults = await OBIUtils.importActionOutput(actionCall.actionOutput, this.props.entities, this.props.app.appId)
                                 transcriptValidationTurn.apiResults.push(apiResults)
@@ -263,7 +263,7 @@ class Testing extends React.Component<Props, ComponentState> {
                 }
 
                 // Substitute back in any LG refs
-                const transcript = Util.deepCopy(resultTranscript) || []
+                const transcript = Util.deepCopy(resultTranscript) ?? []
                 OBIUtils.toLG(transcript, this.state.testSet.lgItems, this.props.entities, this.props.actions)
 
                 validationResult = {
@@ -690,7 +690,7 @@ class Testing extends React.Component<Props, ComponentState> {
                         onSubmit={this.onPickTestSubmit}
                     />
                 }
-                {this.state.doneCount === -1 && this.state.warnings && this.state.warnings.length > 0 &&
+                {this.state.doneCount === -1 && this.state.warnings.length > 0 &&
                     <ConfirmCancelModal
                         open={true}
                         onOk={() => this.onCloseTestWarning()}
@@ -710,9 +710,8 @@ class Testing extends React.Component<Props, ComponentState> {
     }
 
     private onGetNameErrorMessage(value: string): string {
-
         // If not results skip check
-        if (this.state && this.state.testSet && this.state.testSet.items.length === 0) {
+        if (this.state?.testSet?.items.length === 0) {
             return ''
         }
 

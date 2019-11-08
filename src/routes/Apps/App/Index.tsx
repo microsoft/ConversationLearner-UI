@@ -18,7 +18,7 @@ import TrainingStatus from '../../../components/TrainingStatusContainer'
 import actions from '../../../actions'
 import FormattedMessageId from '../../../components/FormattedMessageId'
 import { NavLink, Route, Switch } from 'react-router-dom'
-import { RouteComponentProps } from 'react-router'
+import { RouteComponentProps, StaticContext } from 'react-router'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
@@ -57,7 +57,7 @@ class Index extends React.Component<Props, ComponentState> {
 
     UNSAFE_componentWillMount() {
         const { match, location, history } = this.props
-        const app: CLM.AppBase | null = location.state && location.state.app
+        const app = location.state?.app
         if (!app) {
             // TODO: Is there a way to recover getting appId from URL instead of router state
             const appId = match.params.appId
@@ -66,7 +66,7 @@ class Index extends React.Component<Props, ComponentState> {
             return
         }
 
-        const editPackageId = this.props.activeApps[app.appId] || app.devPackageId;
+        const editPackageId = this.props.activeApps[app.appId] ?? app.devPackageId;
         if (!editPackageId) {
             throw new Error(`You attempted to load an app, but editPackageId is not defined. This is likely a problem with the code. Please open an issue.`)
         }
@@ -75,12 +75,12 @@ class Index extends React.Component<Props, ComponentState> {
     }
 
     componentWillReceiveProps(newProps: Props) {
-        const app: CLM.AppBase | null = newProps.location.state && newProps.location.state.app
+        const app = newProps.location.state?.app
         if (!app) {
             throw new Error(`App/Index#componentWillReceiveProps: app could not be found in location state. This is likely a problem with the code. Please open an issue.`)
         }
 
-        const editPackageId = newProps.activeApps[app.appId] || app.devPackageId
+        const editPackageId = newProps.activeApps[app.appId] ?? app.devPackageId
         if (!editPackageId) {
             throw new Error(`App/Index#componentWillReceiveProps: editPackageId is not defined. This is likely a problem with the code. Please open an issue.`)
         }
@@ -171,7 +171,7 @@ class Index extends React.Component<Props, ComponentState> {
             return null
         }
 
-        const app: CLM.AppBase = location.state.app
+        const app: CLM.AppBase = location.state.app!
         // TODO: There is an assumption that by the time render is called, componentWillMount has called loadApp and set the packageId
         const editPackageId = this.state.packageId!
 
@@ -359,10 +359,14 @@ const mapStateToProps = (state: State) => {
 // Props types inferred from mapStateToProps & dispatchToProps
 type stateProps = ReturnType<typeof mapStateToProps>;
 type dispatchProps = ReturnType<typeof mapDispatchToProps>;
-
 interface MatchParams {
     appId: string
 }
-type Props = stateProps & dispatchProps & RouteComponentProps<MatchParams> & InjectedIntlProps;
+type LocationState = {
+    app?: CLM.AppBase
+    actionFilter?: CLM.ActionBase
+    entityFilter?: CLM.EntityBase
+}
+type Props = stateProps & dispatchProps & RouteComponentProps<MatchParams, StaticContext, LocationState> & InjectedIntlProps;
 
-export default connect<stateProps, dispatchProps, RouteComponentProps<any>>(mapStateToProps, mapDispatchToProps)(injectIntl(Index));
+export default connect<stateProps, dispatchProps, RouteComponentProps<MatchParams, StaticContext, LocationState>>(mapStateToProps, mapDispatchToProps)(injectIntl(Index));
