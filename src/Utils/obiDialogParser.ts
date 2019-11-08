@@ -217,7 +217,7 @@ export class ObiDialogParser {
                     // The HTTP request goes in a new node with a GUID representing the user utterance.
 
                     // Build a node containing just the HTTP request.
-                    // TODO(thpar) : consider handling the case where the HTTP request is in a SwitchCondition branch (this is probably unusual).
+                    // TODO(thpar) : consider handling the case where the HTTP request is in a SwitchCondition branch (this may be unusual).
                     // In the SwitchCondition case, the step is in the switch's branch, not the node's dialog.
                     const httpStep = node.dialog.steps![i]
                     const httpDialog = Util.deepCopy(node.dialog)
@@ -232,6 +232,8 @@ export class ObiDialogParser {
                     const childDialog = Util.deepCopy(node.dialog)
                     childDialog.steps = childSteps
                     const childNode = await this.collectDialogNodes(childDialog, conditionalEntities)
+                    // Make sure that the child node doesn't have an intent set.
+                    childNode.intent = undefined
                     httpNode.children = [childNode]
                     node.dialog.steps = node.dialog.steps!.slice(0, i)
 
