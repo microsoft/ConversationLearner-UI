@@ -45,7 +45,7 @@ class Index extends React.Component<Props, ComponentState> {
     async loadApp(app: CLM.AppBase, packageId: string): Promise<void> {
         this.setState({ packageId })
 
-        const thunk1 = await this.props.fetchBotInfoThunkAsync(this.props.browserId, app.appId)
+        const thunk1 = this.props.fetchBotInfoThunkAsync(this.props.browserId, app.appId)
         const thunk2 = this.props.setCurrentAppThunkAsync(this.props.user.id, app)
         // Note: We load log dialogs in a separate call as eventually we want to page
         const thunk3 = this.props.fetchAllLogDialogsThunkAsync(app, packageId)
