@@ -598,8 +598,7 @@ export function mergeTrainDialogTags(trainDialog1: CLM.TrainDialog, trainDialog2
         dialog1Tags.splice(fromTagIndex, 1)
     }
 
-    const uniqueCombinedTags = [...new Set([...dialog1Tags, ...trainDialog2.tags])]
-    return uniqueCombinedTags
+    return [...new Set([...dialog1Tags, ...trainDialog2.tags])]
 }
 
 export function mergeTrainDialogDescription(trainDialog1: CLM.TrainDialog, trainDialog2: CLM.TrainDialog): string {
