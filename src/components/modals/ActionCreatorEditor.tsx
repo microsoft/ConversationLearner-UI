@@ -1843,6 +1843,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                     data-testid="action-expected-entity"
                                     label="Expected Entity in User reply..."
                                     onResolveSuggestions={this.onResolveExpectedEntityTags}
+                                    onEmptyResolveSuggestions={selectedItems => this.onResolveExpectedEntityTags('', selectedItems ?? [])}
                                     onRenderItem={this.onRenderExpectedTag}
                                     onChange={this.onChangeExpectedEntityTags}
                                     pickerSuggestionsProps={
@@ -1866,10 +1867,10 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                         nonRemoveableStrikethrough={false}
                                         label="Required Conditions"
                                         onResolveSuggestions={this.onResolveRequiredConditionTags}
+                                        onEmptyResolveSuggestions={selectedItems => this.onResolveRequiredConditionTags('', selectedItems ?? [])}
                                         onRenderItem={this.onRenderRequiredConditionTag}
                                         onRenderSuggestionsItem={this.onRenderConditionSuggestion}
                                         onChange={this.onChangeRequiredConditionTags}
-                                        onEmptyResolveSuggestions={selectedItems => this.onResolveRequiredConditionTags('', selectedItems ?? [])}
                                         pickerSuggestionsProps={
                                             {
                                                 suggestionsHeaderText: 'Conditions',
@@ -1886,6 +1887,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                         data-testid="action-disqualifying-entities"
                                         label="Disqualifying Conditions"
                                         onResolveSuggestions={this.onResolveNegativeConditionTags}
+                                        onEmptyResolveSuggestions={selectedItems => this.onResolveNegativeConditionTags('', selectedItems ?? [])}
                                         onRenderItem={this.onRenderNegativeConditionTag}
                                         onRenderSuggestionsItem={this.onRenderConditionSuggestion}
                                         onChange={this.onChangeNegativeConditionTags}
