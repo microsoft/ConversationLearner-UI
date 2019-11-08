@@ -66,6 +66,7 @@ describe('Action Conditions', () => {
 
                 cy.get(s.action.inputRequiredConditions)
                     .click()
+                    .type(' ')
 
                 cy.get(s.action.buttonAddCondition)
                     .click()
@@ -154,6 +155,7 @@ describe('Action Conditions', () => {
             it(`clicking "Create" should add the ValueCondition in the action's "required conditions" list`, () => {
                 cy.get(s.action.inputRequiredConditions)
                     .click()
+                    .type(' ')
 
                 cy.get(s.action.buttonAddCondition)
                     .click()
@@ -168,6 +170,7 @@ describe('Action Conditions', () => {
             it(`clicking "Use Condition" should also close and add the associated ValueCondition to the "required conditions" list`, () => {
                 cy.get(s.action.inputRequiredConditions)
                     .click()
+                    .type(' ')
 
                 cy.get(s.action.buttonAddCondition)
                     .click()
@@ -183,6 +186,7 @@ describe('Action Conditions', () => {
             it(`clicking "Cancel" should close the model and NOT add the condition`, () => {
                 cy.get(s.action.inputRequiredConditions)
                     .click()
+                    .type(' ')
 
                 cy.get(s.action.buttonAddCondition)
                     .click()
@@ -604,7 +608,7 @@ describe('Action Conditions', () => {
                         util.removeLabel('4')
 
                         cy.get('body')
-                            .trigger(constants.events.selectWord, { detail: '21' })
+                            .trigger(constants.events.selectWord, { detail: { phrase: '21', inex: 0 } })
 
                         cy.get(s.entityPicker.inputSearch)
                             .type(testData.entities.number)
@@ -772,6 +776,7 @@ describe('Action Conditions', () => {
             it('should not crash when there are no entities', () => {
                 cy.get(s.action.inputRequiredConditions)
                     .click()
+                    .type(' ')
 
                 cy.get(s.action.buttonAddCondition)
                     .click()

@@ -42,7 +42,7 @@ describe('Entity Conflicts', () => {
             util.removeLabel(testData.dialog.word1)
 
             cy.get('body')
-                .trigger(constants.events.selectWord, { detail: wordToLabel })
+                .trigger(constants.events.selectWord, { detail: { phrase: wordToLabel, inex: 0 } })
 
             cy.get(s.entityPicker.options)
                 .contains(entityName)
@@ -208,7 +208,7 @@ describe('Entity Conflicts', () => {
                     util.removeLabel(labeledWord1)
 
                     cy.get('body')
-                        .trigger(constants.events.selectWord, { detail: labeledWord2 })
+                        .trigger(constants.events.selectWord, { detail: { phrase: labeledWord2, inex: 0 } })
 
                     cy.get(s.entityPicker.inputSearch)
                         .wait(100)
@@ -326,7 +326,7 @@ describe('Entity Conflicts', () => {
                 util.removeLabel(labeledWord1)
 
                 cy.get('body')
-                    .trigger(constants.events.selectWord, { detail: labeledWord2 })
+                    .trigger(constants.events.selectWord, { detail: { phrase: labeledWord2, inex: 0 } })
 
                 cy.get(s.entityPicker.inputSearch)
                     .wait(100)
@@ -347,7 +347,7 @@ describe('Entity Conflicts', () => {
                 util.removeLabel(labeledWord1)
 
                 cy.get('body')
-                    .trigger(constants.events.selectWord, { detail: labeledWord2 })
+                    .trigger(constants.events.selectWord, { detail: { phrase: labeledWord2, inex: 0 } })
 
                 cy.get(s.entityPicker.inputSearch)
                     .wait(100)

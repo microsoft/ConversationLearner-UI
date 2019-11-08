@@ -449,7 +449,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
 
         // Get row
         const rows = Array.from(document.querySelectorAll('[data-testid="extractor-response-editor-entity-labeler"]'))
-        if (index > rows.length || index < 0) {
+        if (index >= rows.length || index < 0) {
             throw new Error("Row index does not exist")
         }
 
