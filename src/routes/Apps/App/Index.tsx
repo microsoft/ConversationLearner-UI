@@ -13,6 +13,7 @@ import Actions from './Actions'
 import Dashboard from './Dashboard'
 import Settings from './Settings'
 import Testing from './Testing'
+import Review from './Review'
 import LogDialogs from './LogDialogs'
 import TrainingStatus from '../../../components/TrainingStatusContainer'
 import actions from '../../../actions'
@@ -278,6 +279,11 @@ class Index extends React.Component<Props, ComponentState> {
                                                 <OF.Icon iconName="TestPlan" /><span>Testing</span>
                                             </NavLink>
                                         }
+                                        {Util.isFeatureEnabled(this.props.settings.features, FeatureStrings.CCI) &&
+                                            <NavLink className="cl-nav-link" data-testid="app-index-nav-link-review" to={{ pathname: `${match.url}/review`, state: { app } }}>
+                                                <OF.Icon iconName="D365TalentLearn" /><span>Review</span>
+                                            </NavLink>
+                                        }
                                         <NavLink className="cl-nav-link" data-testid="app-index-nav-link-settings" to={{ pathname: `${match.url}/settings`, state: { app } }}>
                                             <OF.Icon iconName="Settings" /><span>Settings</span>
                                         </NavLink>
@@ -313,6 +319,10 @@ class Index extends React.Component<Props, ComponentState> {
                                 <Route
                                     path={`${match.url}/testing`}
                                     render={props => <Testing {...props} app={app} editingPackageId={editPackageId}/>}
+                                />
+                                <Route
+                                    path={`${match.url}/review`}
+                                    render={props => <Review {...props} app={app} editingPackageId={editPackageId} invalidBot={invalidBot}/>}
                                 />
                                 <Route
                                     exact={true}
