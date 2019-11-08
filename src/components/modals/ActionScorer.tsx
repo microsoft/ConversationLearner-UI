@@ -204,7 +204,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
 
                 // If an import action, sort by string similarity to existing actions
                 if (component.props.importedAction) {
-                    score = actionForRender.similarityScore || 0
+                    score = actionForRender.similarityScore ?? 0
                 }
                 else {
                     score = actionForRender.score
@@ -492,7 +492,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         // Look for a valid action
         let scoredBase: CLM.ScoredBase | null = null
         const scoreResponse = this.props.scoreResponse
-        if (scoreResponse.scoredActions && scoreResponse.scoredActions.length > 0) {
+        if (scoreResponse.scoredActions?.length > 0) {
             scoredBase = scoreResponse.scoredActions[0];
         } else if (scoreResponse.unscoredActions) {
             for (const unscoredAction of scoreResponse.unscoredActions) {
@@ -578,7 +578,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
 
         // If EnumCondition
         if (condition.valueId) {
-            const enumValue = entity.enumValues && entity.enumValues.find(ev => ev.enumValueId === condition.valueId)
+            const enumValue = entity.enumValues?.find(ev => ev.enumValueId === condition.valueId)
             const value = enumValue
                 ? enumValue.enumValue
                 : "NOT FOUND"
@@ -709,7 +709,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             const selectedActionId = this.props.selectedActionId || (this.state.actionForRender.length > 0 ? this.state.actionForRender[0].actionId : null)
             if (selectedActionId) {
                 let selectedAction = this.props.actions.find(a => a.actionId === selectedActionId)
-                if (selectedAction && selectedAction.actionType === CLM.ActionTypes.END_SESSION) {
+                if (selectedAction?.actionType === CLM.ActionTypes.END_SESSION) {
                     return true
                 }
 
@@ -791,7 +791,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
     }
 
     isMasked(actionId: string): boolean {
-        return (this.props.scoreInput.maskedActions && this.props.scoreInput.maskedActions.indexOf(actionId) > -1);
+        return this.props.scoreInput.maskedActions.includes(actionId)
     }
 
     @autobind

@@ -604,7 +604,7 @@ describe('Action Conditions', () => {
                         util.removeLabel('4')
 
                         cy.get('body')
-                            .trigger(constants.events.selectWord, { detail: '21' })
+                            .trigger(constants.events.selectWord, { detail: { phrase: '21', inex: 0 } })
 
                         cy.get(s.entityPicker.inputSearch)
                             .type(testData.entities.number)
@@ -772,6 +772,7 @@ describe('Action Conditions', () => {
             it('should not crash when there are no entities', () => {
                 cy.get(s.action.inputRequiredConditions)
                     .click()
+                    .type(' ')
 
                 cy.get(s.action.buttonAddCondition)
                     .click()

@@ -214,7 +214,7 @@ const createSlateValue = (content: object | string, options: ActionPayloadEditor
         objectContent = JSON.parse(content) as object
     }
 
-    const updatedJson = ActionPayloadEditor.Utilities.updateOptionNames(objectContent || content, options)
+    const updatedJson = ActionPayloadEditor.Utilities.updateOptionNames(objectContent ?? content, options)
     return Value.fromJSON(updatedJson)
 }
 
@@ -756,7 +756,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             .reduce((values, argument) => {
                 // Preserve old values if any transfer
                 const oldValue = this.state.slateValuesMap[argument]
-                values[argument] = oldValue || Plain.deserialize('')
+                values[argument] = oldValue ?? Plain.deserialize('')
                 return values
             }, {})
 
@@ -764,7 +764,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             .reduce((values, argument) => {
                 // Preserve old values if any transfer
                 const oldValue = this.state.secondarySlateValuesMap[argument]
-                values[argument] = oldValue || Plain.deserialize('')
+                values[argument] = oldValue ?? Plain.deserialize('')
                 return values
             }, {})
 
@@ -1092,7 +1092,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         }
 
         try {
-            const invalidTrainingDialogIds = await ((this.props.fetchActionDeleteValidationThunkAsync(this.props.app.appId, this.props.editingPackageId, this.props.action.actionId) as any) as Promise<string[]>)
+            const invalidTrainingDialogIds = await ((this.props.fetchActionDeleteValidationThunkAsync(this.props.app.appId, this.props.editingPackageId, this.props.action.actionId) as any) as Promise<string[] | null>)
             if (invalidTrainingDialogIds && invalidTrainingDialogIds.length > 0) {
                 const validationWarnings = [Util.formatMessageId(this.props.intl, FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_WARNING)]
 
@@ -1242,7 +1242,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         }
 
         const textPayload = this.state.slateValuesMap[TEXT_SLOT]
-        const isPayloadMissing = (actionTypeOption.key === CLM.ActionTypes.TEXT && textPayload && textPayload.document.text.length === 0)
+        const isPayloadMissing = (actionTypeOption.key === CLM.ActionTypes.TEXT && textPayload?.document.text.length === 0)
         const isTerminal = [CLM.ActionTypes.END_SESSION, CLM.ActionTypes.DISPATCH, CLM.ActionTypes.CHANGE_MODEL].includes(actionTypeOption.key as CLM.ActionTypes)
             ? true
             : actionTypeOption.key === CLM.ActionTypes.SET_ENTITY
@@ -1843,6 +1843,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                     data-testid="action-expected-entity"
                                     label="Expected Entity in User reply..."
                                     onResolveSuggestions={this.onResolveExpectedEntityTags}
+                                    onEmptyResolveSuggestions={selectedItems => this.onResolveExpectedEntityTags('', selectedItems ?? [])}
                                     onRenderItem={this.onRenderExpectedTag}
                                     onChange={this.onChangeExpectedEntityTags}
                                     pickerSuggestionsProps={
@@ -1866,6 +1867,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                         nonRemoveableStrikethrough={false}
                                         label="Required Conditions"
                                         onResolveSuggestions={this.onResolveRequiredConditionTags}
+                                        onEmptyResolveSuggestions={selectedItems => this.onResolveRequiredConditionTags('', selectedItems ?? [])}
                                         onRenderItem={this.onRenderRequiredConditionTag}
                                         onRenderSuggestionsItem={this.onRenderConditionSuggestion}
                                         onChange={this.onChangeRequiredConditionTags}
@@ -1885,6 +1887,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                         data-testid="action-disqualifying-entities"
                                         label="Disqualifying Conditions"
                                         onResolveSuggestions={this.onResolveNegativeConditionTags}
+                                        onEmptyResolveSuggestions={selectedItems => this.onResolveNegativeConditionTags('', selectedItems ?? [])}
                                         onRenderItem={this.onRenderNegativeConditionTag}
                                         onRenderSuggestionsItem={this.onRenderConditionSuggestion}
                                         onChange={this.onChangeNegativeConditionTags}

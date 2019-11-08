@@ -111,14 +111,14 @@ class TranscriptRatings extends React.Component<Props, ComponentState> {
         for (const conversationId of conversationIds) {
             // Get ranking of pivot item
             const baseItem = this.props.testSet.getTestItem(ratePivot, conversationId)
-            if (baseItem && baseItem.ranking !== undefined) {
+            if (baseItem?.ranking !== undefined) {
                 for (const sourceName of this.props.testSet.sourceNames) {
                     // Skip the source being pivoted on
                     if (sourceName !== ratePivot) {
                         const rating = this.props.testSet.getRating(ratePivot, sourceName, conversationId)
                         if (rating !== Test.RatingResult.UNKNOWN) {
                             const sourceItem = this.props.testSet.getTestItem(sourceName, conversationId)
-                            if (sourceItem && sourceItem.ranking !== undefined) {
+                            if (sourceItem?.ranking !== undefined) {
                                 // Adjust rank relative to pivot
                                 const rank = sourceItem.ranking - baseItem.ranking
                                 const rankCount = sourceRankMap.get(sourceName)!.find(r => r.rank === rank)!
@@ -177,7 +177,7 @@ class TranscriptRatings extends React.Component<Props, ComponentState> {
                     />
                 </div>
                 <div>
-                    {this.props.testSet && this.props.testSet.sourceNames.length > 1 &&
+                    {this.props.testSet?.sourceNames.length > 1 &&
                         <div className="cl-transcriptrating-ranktitles">
                             <div className="cl-testing-result-title">{'\u00A0'}</div>
                             <div>
@@ -232,8 +232,8 @@ class TranscriptRatings extends React.Component<Props, ComponentState> {
                     {Array.from(this.state.sourceRankMap.keys())
                         .map(sourceName => {
                             const rankCount: RankCount[] | undefined = this.state.sourceRankMap.get(sourceName)
-                            const unrankable = this.state.unRatableMap.get(sourceName) || []
-                            const notRated = this.state.notRatedMap.get(sourceName) || []
+                            const unrankable = this.state.unRatableMap.get(sourceName) ?? []
+                            const notRated = this.state.notRatedMap.get(sourceName) ?? []
                             return (
                                 <div 
                                     className="cl-transcriptrating-results"
@@ -243,7 +243,7 @@ class TranscriptRatings extends React.Component<Props, ComponentState> {
                                         {sourceName}
                                     </div>
                                     <div>
-                                        {rankCount && rankCount.map(rc => {
+                                        {rankCount?.map(rc => {
                                             return (
                                                 <div  
                                                     className="cl-transcriptrating-result"

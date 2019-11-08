@@ -259,12 +259,12 @@ describe('dialogUtils', () => {
         test('found', () => {
             const trainDialog1C = copyTrainDialog()
             let result = findMatchingTrainDialog(trainDialog1C, [trainDialog1, trainDialog2, trainDialog3])
-            expect(result && result.trainDialogId).toEqual(trainDialog1.trainDialogId)
+            expect(result?.trainDialogId).toEqual(trainDialog1.trainDialogId)
 
             const trainDialog2C = deepCopy(trainDialog2)
             trainDialog2C.trainDialogId = "trainDialog2C"
             result = findMatchingTrainDialog(trainDialog2C, [trainDialog1, trainDialog2, trainDialog3])
-            expect(result && result.trainDialogId).toEqual(trainDialog2.trainDialogId)
+            expect(result?.trainDialogId).toEqual(trainDialog2.trainDialogId)
         })
 
         test('notFound', () => {

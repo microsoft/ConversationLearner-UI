@@ -7,7 +7,7 @@ import actions from '../../actions'
 import AppIndex from './App/Index'
 import AppsList from './AppsList'
 import { Route, Switch } from 'react-router-dom'
-import { RouteComponentProps } from 'react-router'
+import { RouteComponentProps, StaticContext } from 'react-router'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { State } from '../../types'
@@ -35,8 +35,8 @@ class AppsIndex extends React.Component<Props> {
         }
 
         const { history, location } = this.props
-        const appFromLocationState: CLM.AppBase | null = location.state && location.state.app
-        if (appFromLocationState && this.props.apps && this.props.apps.length > 0) {
+        const appFromLocationState = location.state?.app
+        if (appFromLocationState && this.props.apps?.length > 0) {
             const app = this.props.apps.find(a => a.appId === appFromLocationState.appId)
             if (!app) {
                 console.warn(`Attempted to find selected model in list of models: ${appFromLocationState.appId} but it could not be found. This should not be possible. Contact Support.`)
@@ -139,6 +139,9 @@ const mapStateToProps = (state: State) => {
 // Props types inferred from mapStateToProps & dispatchToProps
 type stateProps = ReturnType<typeof mapStateToProps>
 type dispatchProps = ReturnType<typeof mapDispatchToProps>
-type Props = stateProps & dispatchProps & RouteComponentProps<any>
+type LocationProps = {
+    app: CLM.AppBase | undefined
+}
+type Props = stateProps & dispatchProps & RouteComponentProps<{}, StaticContext, LocationProps>
 
-export default connect<stateProps, dispatchProps, RouteComponentProps<any>>(mapStateToProps, mapDispatchToProps)(AppsIndex)
+export default connect<stateProps, dispatchProps, RouteComponentProps<{}, StaticContext, LocationProps>>(mapStateToProps, mapDispatchToProps)(AppsIndex)

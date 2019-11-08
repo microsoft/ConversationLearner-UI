@@ -35,7 +35,7 @@ export function makeScorerStep(labelAction?: string, filledEntityIds?: string[])
         input: makeScoreInput(filledEntityIds),
         logicResult: undefined,
         scoredAction: undefined,
-        labelAction: labelAction || CLM.ModelUtils.generateGUID()
+        labelAction: labelAction ?? CLM.ModelUtils.generateGUID()
     }
 }
 
@@ -47,10 +47,10 @@ export function makeScorerSteps(scorerSteps?: {[labelAction: string]: string[] |
 
 export function makeLabelEntity(entityId?: string, entityValue?: string): CLM.LabeledEntity {
     return {
-        "entityId": entityId || CLM.ModelUtils.generateGUID(),
+        "entityId": entityId ?? CLM.ModelUtils.generateGUID(),
         "startCharIndex": 0,
         "endCharIndex": 5,
-        "entityText": entityValue || "hello",
+        "entityText": entityValue ?? "hello",
         "resolution": {}, 
         "builtinType": ""
     }
@@ -97,7 +97,7 @@ export function makeTrainDialog(rounds: RoundData[], id?: string): CLM.TrainDial
         rounds: rounds.map(round => makeRound(round)),
         "createdDateTime": "",
         "lastModifiedDateTime": "",
-        "trainDialogId": id || CLM.ModelUtils.generateGUID(),
+        "trainDialogId": id ?? CLM.ModelUtils.generateGUID(),
         "version": 0,
         "packageCreationId": 0,
         "packageDeletionId": 0,

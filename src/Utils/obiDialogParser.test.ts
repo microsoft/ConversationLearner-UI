@@ -36,7 +36,7 @@ describe('obiDialogParser', () => {
         test('Test product key example', async () => {
             // TODO(thpar) : investigate why this test fails on CircleCI.
             const envOS: string | undefined = process.env.OS
-            if (!envOS || !envOS.toLocaleLowerCase().startsWith("win")) {
+            if (!envOS?.toLocaleLowerCase().startsWith("win")) {
                 console.log("Skipping Dialog reconstruction test due to incompatible OS type")
                 return
             }

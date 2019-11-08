@@ -74,7 +74,7 @@ describe('EntityPicker', () => {
         it('should open with 0 entities in the list', () => {
             // select word
             cy.get('body')
-                .trigger(constants.events.selectWord, { detail: testData.word1 })
+                .trigger(constants.events.selectWord, { detail: { phrase: testData.word1, inex: 0 } })
 
             // verify empty search text
             cy.get(s.entityPicker.inputSearch)
@@ -91,7 +91,7 @@ describe('EntityPicker', () => {
         it('should auto labeled the newly created entity', () => {
             // select word
             cy.get('body')
-                .trigger(constants.events.selectWord, { detail: testData.word1 })
+                .trigger(constants.events.selectWord, { detail: { phrase: testData.word1, inex: 0 } })
 
             // click create new entity
             cy.get(s.entityPicker.buttonNew)
@@ -110,7 +110,7 @@ describe('EntityPicker', () => {
         it('should open with previously created entity in options', () => {
             // select word2
             cy.get('body')
-                .trigger(constants.events.selectWord, { detail: testData.word2 })
+                .trigger(constants.events.selectWord, { detail: { phrase: testData.word2, inex: 0 } })
 
             // verify list has entity
             cy.get(s.entityPicker.options)
@@ -130,7 +130,7 @@ describe('EntityPicker', () => {
 
             // select word2
             cy.get('body')
-                .trigger(constants.events.selectWord, { detail: testData.word2 })
+                .trigger(constants.events.selectWord, { detail: { phrase: testData.word2, inex: 0 } })
 
             // verify list has entity
             cy.get(s.entityPicker.options)
@@ -217,12 +217,12 @@ describe('EntityPicker', () => {
         describe('controls', () => {
             before(() => {
                 cy.get('body')
-                    .trigger(constants.events.selectWord, { detail: testData.word1 })
+                    .trigger(constants.events.selectWord, { detail: { phrase: testData.word1, inex: 0 } })
             })
 
             it('when pressing tab it should select the highlighted entity', () => {
                 cy.get('body')
-                    .trigger(constants.events.selectWord, { detail: testData.word1 })
+                    .trigger(constants.events.selectWord, { detail: { phrase: testData.word1, inex: 0 } })
 
                 // Tab works if user, but doesn't here because we never selected the text, only used custom event to simulate selection
                 cy.get(s.entityPicker.inputSearch)
@@ -234,7 +234,7 @@ describe('EntityPicker', () => {
 
             it('when pressing enter it should select the highlighted entity', () => {
                 cy.get('body')
-                    .trigger(constants.events.selectWord, { detail: testData.word2 })
+                    .trigger(constants.events.selectWord, { detail: { phrase: testData.word2, inex: 0 } })
 
                 // Tab works if user, but doesn't here because we never selected the text, only used custom event to simulate selection
                 cy.get(s.entityPicker.inputSearch)
@@ -244,7 +244,7 @@ describe('EntityPicker', () => {
             describe('highlight', () => {
                 before(() => {
                     cy.get('body')
-                        .trigger(constants.events.selectWord, { detail: testData.word3 })
+                        .trigger(constants.events.selectWord, { detail: { phrase: testData.word3, inex: 0 } })
                 })
 
                 it('should list all the entities in the model', () => {
@@ -274,7 +274,7 @@ describe('EntityPicker', () => {
                         .click()
 
                     cy.get('body')
-                        .trigger(constants.events.selectWord, { detail: testData.word3 })
+                        .trigger(constants.events.selectWord, { detail: { phrase: testData.word3, inex: 0 } })
 
                     cy.get(s.entityPicker.inputSearch)
                         .should('have.text', '')
@@ -289,7 +289,7 @@ describe('EntityPicker', () => {
                 describe('arrow keys', () => {
                     before(() => {
                         cy.get('body')
-                            .trigger(constants.events.selectWord, { detail: testData.word3 })
+                            .trigger(constants.events.selectWord, { detail: { phrase: testData.word3, inex: 0 } })
                     })
 
                     it('when pressing down arrow it should move the highlight down', () => {
@@ -360,7 +360,7 @@ describe('EntityPicker', () => {
                     .should('not.exist')
 
                 cy.get('body')
-                    .trigger(constants.events.selectWord, { detail: testData.word3 })
+                    .trigger(constants.events.selectWord, { detail: { phrase: testData.word3, inex: 0 } })
 
                 cy.get(s.entityPicker.inputSearch)
                     .wait(50)

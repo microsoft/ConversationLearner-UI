@@ -34,7 +34,7 @@ export interface DialogRenderData {
 }
 
 export function getReplayError(activity: BB.Activity | null): CLM.ReplayError | null | undefined {
-    if (!activity || !activity.channelData || !activity.channelData.clData) {
+    if (!activity?.channelData?.clData) {
         return null
     }
     const clData: CLM.CLChannelData = activity.channelData.clData
@@ -304,14 +304,14 @@ export function dialogSampleInput(dialog: CLM.TrainDialog | CLM.LogDialog): stri
 }
 
 export function trainDialogFirstInput(trainDialog: CLM.TrainDialog): string {
-    if (trainDialog.rounds && trainDialog.rounds.length > 0) {
+    if (trainDialog.rounds?.length > 0) {
         return trainDialog.rounds[0].extractorStep.textVariations[0].text
     }
     return ""
 }
 
 export function trainDialogLastInput(trainDialog: CLM.TrainDialog): string | void {
-    if (trainDialog.rounds && trainDialog.rounds.length > 0) {
+    if (trainDialog.rounds?.length > 0) {
         return trainDialog.rounds[trainDialog.rounds.length - 1].extractorStep.textVariations[0].text;
     }
 }
@@ -319,7 +319,7 @@ export function trainDialogLastInput(trainDialog: CLM.TrainDialog): string | voi
 export function trainDialogLastResponse(trainDialog: CLM.TrainDialog, actions: CLM.ActionBase[], entities: CLM.EntityBase[]): string | void {
     // Find last action of last scorer step of last round
     // If found, return payload, otherwise return not found icon
-    if (trainDialog.rounds && trainDialog.rounds.length > 0) {
+    if (trainDialog.rounds?.length > 0) {
         const scorerSteps = trainDialog.rounds[trainDialog.rounds.length - 1].scorerSteps;
         if (scorerSteps.length > 0) {
             const actionId = scorerSteps[scorerSteps.length - 1].labelAction;
@@ -363,7 +363,7 @@ export function getMostSevereReplayError(activities: BB.Activity[]): CLM.ReplayE
     let worstReplayError: CLM.ReplayError | null = null
     for (const a of activities) {
         const clData: CLM.CLChannelData = a.channelData.clData
-        if (clData && clData.replayError) {
+        if (clData?.replayError) {
             if (clData.replayError.errorLevel === CLM.ReplayErrorLevel.BLOCKING) {
                 return clData.replayError
             }
@@ -629,7 +629,7 @@ export function mergeTrainDialogs(trainDialog1: CLM.TrainDialog, trainDialog2: C
 
     // Copy text variations from small dialog onto large one
     let roundIndex = 0
-    while (roundIndex < primaryTrainDialog.rounds.length && roundIndex < mergedTrainDialog.rounds.length) {
+    while ((roundIndex < primaryTrainDialog.rounds.length) && (roundIndex < mergedTrainDialog.rounds.length)) {
         const roundSmall = primaryTrainDialog.rounds[roundIndex]
         const roundLarge = mergedTrainDialog.rounds[roundIndex]
         const extractorStepSmall = roundSmall.extractorStep
@@ -729,7 +729,7 @@ export function getDialogRenderData(
                 if (!selectedAction) {
                     // Action may have been deleted.  If so create dummy action to render
                     selectedAction = {
-                        actionId: scorerStep.labelAction || 'MISSING ACTION',
+                        actionId: scorerStep.labelAction ?? 'MISSING ACTION',
                         createdDateTime: new Date().toJSON(),
                         payload: 'MISSING ACTION',
                         isTerminal: false,
@@ -822,11 +822,11 @@ export function bestTemplateMatch(importedAction: ImportedAction, templates: CLM
         if (template.body) {
             // Calculate number of buttons on the template
             // TODO: support other button types
-            const templateButtonCount = (template.body.match(/Action.Submit/g) || []).length
+            const templateButtonCount = (template.body.match(/Action.Submit/g) ?? []).length
 
             // If cound is the same, find string similarity in body
             if (templateButtonCount === importedAction.buttons.length) {
-                const score = (template && template.body)
+                const score = (template?.body)
                     ? compareTwoStrings(importedAction.text, template.body)
                     : 0
                 if (score > CARD_MATCH_THRESHOLD && score > bestScore) {

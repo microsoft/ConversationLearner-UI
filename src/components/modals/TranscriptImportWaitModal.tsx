@@ -38,4 +38,4 @@ export interface ReceivedProps {
 
 type Props = ReceivedProps 
 
-export default connect<null, null, ReceivedProps>(null, null)(TranscriptImportWaitModal)
+export default connect<{}, {}, ReceivedProps>(null)(TranscriptImportWaitModal)

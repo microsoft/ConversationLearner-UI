@@ -26,26 +26,7 @@ describe('Set Entity Actions', () => {
     describe('model behavior', () => {
         before(() => {
             cy.visit('/')
-
-            cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
-                .should('not.exist')
-
-            cy.get(s.models.buttonImport)
-                .click()
-
-            cy.get(s.models.name)
-                .type(util.generateUniqueModelName(testData.modelName))
-
-            cy.get(s.models.buttonLocalFile)
-                .click()
-
-            cy.UploadFile(testData.modelFile, s.models.inputFile)
-
-            cy.get(s.models.submit)
-                .click()
-
-            cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
-                .should('not.exist')
+            util.importModel(testData.modelName, testData.modelFile)
         })
 
         describe('enum entity deletion', () => {
@@ -338,28 +319,9 @@ describe('Set Entity Actions', () => {
     describe('scenario using set entity actions', () => {
         before(() => {
             cy.visit('/')
-
-            cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
-                .should('not.exist')
-
-            cy.get(s.models.buttonImport)
-                .click()
-
-            cy.get(s.models.name)
-                .type(util.generateUniqueModelName(testData.modelName))
-
-            cy.get(s.models.buttonLocalFile)
-                .click()
-
-            cy.UploadFile(testData.modelFile, s.models.inputFile)
-
-            cy.get(s.models.submit)
-                .click()
-
-            cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
-                .should('not.exist')
-
-            cy.wait(1000)
+            util.importModel(testData.modelName, testData.modelFile)
+            cy.wait(3000)
+            cy.get(s.trainingStatus.completed, { timeout: constants.training.timeout })
         })
 
         it('should successful place fast food order using context for instead of labels', () => {

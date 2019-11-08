@@ -36,7 +36,7 @@ const DialogMetadata: React.SFC<Props> = (props: Props) => {
                         <OF.Icon iconName="Chat" className="cl-icon" />
                         <span><FormattedMessageId id={FM.DIALOGMETADATA_USERINPUT_LABEL} />:</span>
                     </label>
-                    <div className="cl-dialog-metadata__user-input">{props.userInput || ''}</div>
+                    <div className="cl-dialog-metadata__user-input">{props.userInput ?? ''}</div>
                 </>
             }
             {!props.altInput ? null :
@@ -45,7 +45,7 @@ const DialogMetadata: React.SFC<Props> = (props: Props) => {
                         <OF.Icon iconName="Chat" className="cl-icon" />
                         <span><FormattedMessageId id={FM.DIALOGMETADATA_ALTINPUT_LABEL} />:</span>
                     </label>
-                    <div className="cl-dialog-metadata__user-input">{props.altInput || ''}</div>
+                    <div className="cl-dialog-metadata__user-input">{props.altInput ?? ''}</div>
                 </>
             }
             <label htmlFor="description">

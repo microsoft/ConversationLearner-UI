@@ -9,7 +9,7 @@ import * as DialogUtils from './dialogUtils'
 import * as OBIUtils from './obiUtils'
 import * as BB from 'botbuilder'
 import { SelectionType, User } from '../types'
-import { EditDialogType } from '../types/const';
+import { EditDialogType } from '../types/const'
 
 export async function onInsertAction(
     trainDialog: CLM.TrainDialog,
@@ -23,7 +23,7 @@ export async function onInsertAction(
     clearWebChatScrollPosition: () => void,
 ) {
     const clData: CLM.CLChannelData = selectedActivity.channelData.clData
-    const roundIndex = clData.roundIndex || 0
+    const roundIndex = clData.roundIndex ?? 0
     const scoreIndex = clData.scoreIndex
     const definitions = {
         entities,
@@ -46,7 +46,7 @@ export async function onInsertAction(
     }
     // Or remove following scorer steps
     else {
-        trainDialogCopy.rounds[roundIndex].scorerSteps = trainDialogCopy.rounds[roundIndex].scorerSteps.slice(0, scoreIndex + 1);
+        trainDialogCopy.rounds[roundIndex].scorerSteps = trainDialogCopy.rounds[roundIndex].scorerSteps.slice(0, scoreIndex + 1)
     }
 
     // Get a score for this step
@@ -123,7 +123,7 @@ export async function onInsertInput(
 
     const clData: CLM.CLChannelData = selectedActivity.channelData.clData
     const roundIndex = clData.roundIndex!
-    const scoreIndex = clData.scoreIndex || 0
+    const scoreIndex = clData.scoreIndex ?? 0
     const senderType = clData.senderType
 
     const definitions = {
@@ -217,7 +217,7 @@ export async function onChangeAction(
 
     const oldTrainScorerStep = newTrainDialog.rounds[roundIndex].scorerSteps[scoreIndex]
     newTrainDialog.rounds[roundIndex].scorerSteps[scoreIndex] = trainScorerStep
-    newTrainDialog.definitions = definitions;
+    newTrainDialog.definitions = definitions
 
     // Replay logic functions on train dialog
     const replayedDialog = await trainDialogReplay(appId, newTrainDialog)
@@ -248,8 +248,8 @@ export async function onChangeAction(
                 // Add new hash and lgRef to action and save it
                 const newAction = Util.deepCopy(action)
 
-                if (!newAction.clientData || !newAction.clientData.actionHashes) {
-                    newAction.clientData = { actionHashes: []}
+                if (!newAction.clientData?.actionHashes) {
+                    newAction.clientData = { actionHashes: [] }
                 }
                 // Look for lgItem by checking hash
                 if (oldTrainScorerStep.importText && lgItems) {
@@ -294,8 +294,8 @@ export async function onChangeExtraction(
     }
 
     const newTrainDialog = Util.deepCopy(trainDialog)
-    newTrainDialog.definitions = definitions;
-    newTrainDialog.rounds[roundIndex].extractorStep.textVariations = textVariations;
+    newTrainDialog.definitions = definitions
+    newTrainDialog.rounds[roundIndex].extractorStep.textVariations = textVariations
 
     // Replay logic functions on train dialog
     const replayedDialog = await trainDialogReplay(appId, newTrainDialog)
@@ -408,7 +408,7 @@ export async function onUpdateActivities(
         else if (activityIndex === null && selectionType === SelectionType.CURRENT) {
 
             const clData: CLM.CLChannelData = selectedActivity.channelData.clData
-            if (clData && clData.activityIndex) {
+            if (clData?.activityIndex) {
                 activityIndex = clData.activityIndex
             }
         }
@@ -491,10 +491,7 @@ export async function getOrCreatePlaceholderAPIAction(
 ): Promise<CLM.ActionBase | undefined> {
     // Get the action if it has been attached to real API call.
     const apiHash = CLM.hashText(placeholderName)
-    let placeholder = actions.find(a => {return a.clientData && a.clientData.actionHashes
-        ? (a.clientData.actionHashes.find(h => h === apiHash) !== undefined)
-        : false
-    })
+    let placeholder = actions.find(a => a.clientData?.actionHashes?.find(h => h === apiHash) !== undefined)
 
     // Otherwise look for matching placeholder action with same name
     if (!placeholder) {
@@ -512,7 +509,7 @@ export async function getOrCreatePlaceholderAPIAction(
         const newPlaceholder = CLM.ActionBase.createPlaceholderAPIAction(placeholderName, isTerminal)
 
         // If placeholder was created by import, add hash for future matching
-        newPlaceholder.clientData = { actionHashes: [apiHash]}
+        newPlaceholder.clientData = { actionHashes: [apiHash] }
 
         const newAction = await createActionThunkAsync(appId, newPlaceholder)
         if (!newAction) {
@@ -537,7 +534,7 @@ export function scorerStepFromActivity(trainDialog: CLM.TrainDialog, selectedAct
         if (round.scorerSteps.length > 0) {
             // If a score round
             if (typeof clData.scoreIndex === "number") {
-                return round.scorerSteps[clData.scoreIndex];
+                return round.scorerSteps[clData.scoreIndex]
             }
             // If user round, get filled entities from first scorer step
             return round.scorerSteps[0]
