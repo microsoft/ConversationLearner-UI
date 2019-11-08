@@ -75,6 +75,7 @@ export const isConditionEqual = (conditionA: CLM.Condition, conditionB: CLM.Cond
         && conditionA.value === conditionB.value
 }
 
+
 /**
  * Given memory value,
  * If entity is multivalue returns the number of labels/values
@@ -88,17 +89,19 @@ export const findNumberFromMemory = (memory: CLM.Memory, isMultivalue: boolean):
 
     const valueString: string | undefined = (memory?.entityValues?.[0]?.resolution as any).value
 
-    return valueString
-        ? parseInt(valueString, 10)
+    const value = valueString
+        ? parseInt(valueString)
         : undefined
+
+    return value
 }
 
 export const isValueConditionTrue = (condition: CLM.Condition, numberValue: number): boolean => {
     let isTrue = false
 
     if (condition.value) {
-        isTrue = (condition.condition === CLM.ConditionType.EQUAL && numberValue === condition.value)
-            || (condition.condition === CLM.ConditionType.NOT_EQUAL && numberValue !== condition.value)
+        isTrue = (condition.condition === CLM.ConditionType.EQUAL && numberValue == condition.value)
+            || (condition.condition === CLM.ConditionType.NOT_EQUAL && numberValue != condition.value)
             || (condition.condition === CLM.ConditionType.GREATER_THAN && numberValue > condition.value)
             || (condition.condition === CLM.ConditionType.GREATER_THAN_OR_EQUAL && numberValue >= condition.value)
             || (condition.condition === CLM.ConditionType.LESS_THAN && numberValue < condition.value)
@@ -120,7 +123,7 @@ export const getUniqueConditions = (actions: CLM.ActionBase[]): CLM.Condition[] 
         .map(a => [...a.requiredConditions, ...a.negativeConditions])
         .reduce((a, b) => [...a, ...b], [])
 
-    return allConditions
+    const uniqueConditions = allConditions
         .reduce<CLM.Condition[]>((conditions, condition) => {
             const matchingCondition = conditions.find(c => isConditionEqual(c, condition))
             // If no identical condition was found, condition is unique, add it to list
@@ -130,6 +133,8 @@ export const getUniqueConditions = (actions: CLM.ActionBase[]): CLM.Condition[] 
 
             return conditions
         }, [])
+
+    return uniqueConditions
 }
 
 /**
@@ -165,3 +170,4 @@ export const getUpdatedActionsUsingCondition = (actions: CLM.ActionBase[], exist
         return actionsUsingCondition
     }, [])
 }
+
