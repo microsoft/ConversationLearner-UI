@@ -203,14 +203,44 @@ export class ObiDialogParser {
         steps: (string | OBITypes.OBIDialog)[],
         conditionalEntities: { [key: string]: Set<string> },
         requiredCondition?: OBIUtils.ConditionEntityAndValue): Promise<void> {
-        for (const step of steps) {
+        for (const [i, step] of steps.entries()) {
             if (typeof step === "string") {
                 this.warnings.push(`Unexpected string step in ${node.dialog.$id}`)
                 continue
             }
             // Handle any steps that may contain an expansion of the dialog tree.
             switch (step.$type) {
-                case OBIStepType.BEGIN_DIALOG:
+                case OBIStepType.HTTP_REQUEST: {
+                    // For HTTP requests, we need to inject a synthetic utterance in to the dialog tree to represent a user
+                    // supplying the input to the HTTP request.
+                    // To do this, we split apart both the dialog tree and the steps within the OBI dialog.
+                    // The HTTP request goes in a new node with a GUID representing the user utterance.
+
+                    // Build a node containing just the HTTP request.
+                    // TODO(thpar) : consider handling the case where the HTTP request is in a SwitchCondition branch (this may be unusual).
+                    // In the SwitchCondition case, the step is in the switch's branch, not the node's dialog.
+                    const httpStep = node.dialog.steps![i]
+                    const httpDialog = Util.deepCopy(node.dialog)
+                    httpDialog.steps = [httpStep]
+                    const httpNode = new ObiDialogNode(httpDialog)
+                    httpNode.intent = CLM.ModelUtils.generateGUID()
+                    // This new node becomes a child of the current node.
+                    node.children = [httpNode]
+
+                    // Everything following the HTTP request becomes a child of the HTTP request node.
+                    const childSteps = Util.deepCopy(node.dialog.steps!.slice(i + 1))
+                    const childDialog = Util.deepCopy(node.dialog)
+                    childDialog.steps = childSteps
+                    const childNode = await this.collectDialogNodes(childDialog, conditionalEntities)
+                    // Make sure that the child node doesn't have an intent set.
+                    childNode.intent = undefined
+                    httpNode.children = [childNode]
+                    node.dialog.steps = node.dialog.steps!.slice(0, i)
+
+                    // We just recursively expanded the rest of the child steps above, so we short-circuit the loop here.
+                    return
+                }
+                case OBIStepType.BEGIN_DIALOG: {
                     if (!step.dialog || typeof step.dialog !== "string") {
                         this.warnings.push(`Invalid dialog in ${node.dialog.$id}`)
                         continue
@@ -228,6 +258,7 @@ export class ObiDialogParser {
                         node.children.push(childDialog)
                     }
                     break
+                }
                 case OBIStepType.SWITCH_CONDITION:
                     if (!step.cases && !step.default) {
                         throw new Error("SwitchCondition must have at least one case or default")
@@ -617,12 +648,9 @@ export class ObiDialogParser {
 
     private getTextVariations(intentName: string) {
         let userInputs = this.luMap[intentName]
-        if (!userInputs) {
-            throw new Error(`Intent name ${intentName} undefined`)
-        }
-        // Programatically fired events have no intent
-        // Use intent name for now
-        if (userInputs.length === 0) {
+        // Programatically fired events and synthetic nodes have no intent.
+        // Use intent name for now.
+        if (!userInputs || userInputs.length === 0) {
             userInputs = [intentName]
         }
         userInputs = userInputs.slice(0, CLM.MAX_TEXT_VARIATIONS)
