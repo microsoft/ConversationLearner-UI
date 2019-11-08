@@ -211,12 +211,15 @@ export class ObiDialogParser {
             // Handle any steps that may contain an expansion of the dialog tree.
             switch (step.$type) {
                 case OBIStepType.HTTP_REQUEST: {
-                    // For HTTP requests, we need to inject a synthetic utterance in to the dialog tree to represent a user utterance.
+                    // For HTTP requests, we need to inject a synthetic utterance in to the dialog tree to represent a user
+                    // supplying the input to the HTTP request.
                     // To do this, we split apart both the dialog tree and the steps within the OBI dialog.
-                    // The HTTP request goes in a new node with a GUID representing the user utterance.  This becomes a child of the current node.
+                    // The HTTP request goes in a new node with a GUID representing the user utterance.
+                    // This new node becomes a child of the current node.
                     // Everything following the HTTP request becomes a child of the HTTP request node.
 
                     // Build a node containing just the HTTP request.
+                    // TODO(thpar) : this logic would be incorrect if the HTTP request is in a SwitchCondition branch, handle that case.
                     const httpStep = node.dialog.steps![i]
                     const httpDialog = Util.deepCopy(node.dialog)
                     httpDialog.steps = [httpStep]
