@@ -46,13 +46,15 @@ const rules: any[] = [
                 case BLOCK_TAGS.p:
                 case 'paragraph':
                     return <p>{children}</p>
+                default:
+                    return
             }
         },
     },
     {
         deserialize(el: any, next: any): object | void {
             const type = INLINES_TAGS[el.tagName.toLowerCase()]
-            if (type == NodeTypes.Mention) {
+            if (type === NodeTypes.Mention) {
                 return {
                     object: 'inline',
                     kind: 'inline',
@@ -67,7 +69,7 @@ const rules: any[] = [
                     nodes: next(el.childNodes),
                 }
             }
-            else if (type == NodeTypes.Optional) {
+            else if (type === NodeTypes.Optional) {
                 return {
                     object: 'inline',
                     kind: 'inline',
@@ -86,6 +88,8 @@ const rules: any[] = [
                     const { id, name } = option
                     return <b data-id={id} data-name={name}>{children}</b>
                 }
+                default:
+                    return
             }
         },
     },

@@ -15,7 +15,6 @@ interface Props {
     memories?: CLM.Memory[]
 }
 
-
 const Component: React.FC<Props> = (props) => {
     const payloadRenderData = usePayloadRenderer(props.textAction.value, props.entities, props.showMissingEntities, props.memories)
 
