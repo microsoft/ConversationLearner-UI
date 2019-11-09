@@ -141,7 +141,7 @@ export const createSlateValueFromTextVariation = (textVariation: TextVariation, 
                 throw new Error(`Could not find matching entity for given label entity with id: ${le.entityId}`)
             }
 
-            const ge: IGenericEntity<IGenericEntityData<LabeledEntity>> = {
+            return {
                 startIndex: le.startCharIndex,
                 endIndex: le.endCharIndex,
                 data: {
@@ -157,11 +157,7 @@ export const createSlateValueFromTextVariation = (textVariation: TextVariation, 
                     original: le
                 }
             }
-
-            return ge
         })
 
-    const slateValue = convertEntitiesAndTextToEditorValue(textVariation.text, genericEntities, inlineNodeType)
-
-    return slateValue
+    return convertEntitiesAndTextToEditorValue(textVariation.text, genericEntities, inlineNodeType)
 }
