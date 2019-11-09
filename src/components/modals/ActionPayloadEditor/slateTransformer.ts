@@ -144,7 +144,6 @@ function replaceEntityNodesWithValues(node: any, entityValuesMap: Record<string,
                 .filter((n: any) => n)
         }
     }
-
     return node
 }
 
