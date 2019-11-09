@@ -41,7 +41,7 @@ describe('Two Consecutive User Inputs - ErrorHandling', () => {
     it('Should save the Train Dialog and verify the errors show up in the grid', () => {
       train.ClickSaveCloseButton()
       modelPage.VerifyErrorTriangleForTrainDialogs()
-      trainDialogsGrid.VerifyIncidentTriangleFoundInTrainDialogsGrid(`Hey`, 'world peace', "Sorry $name, I can't help you get $want", 1)
+      trainDialogsGrid.VerifyIncidentTriangleFoundInTrainDialogsGrid(`Hey`, 'world peace', "Sorry $name, I can't help you get $want", '', '', 1)
     })
   })
 

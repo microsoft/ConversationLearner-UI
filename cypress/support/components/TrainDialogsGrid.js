@@ -23,6 +23,7 @@ export function IsVisible() { return Cypress.$(`[data-testid="train-dialogs-titl
 export function ClickNewTrainDialogButton() { cy.Get('[data-testid="button-new-train-dialog"]').Click() }
 export function VerifyNewTrainDialogButtonIsDisabled() { cy.Get('[data-testid="button-new-train-dialog"]').should('be.disabled') }
 export function VerifyNewTrainDialogButtonIsEnabled() { cy.Get('[data-testid="button-new-train-dialog"]').should('be.enabled') }
+export function ClickReplaySelectedButton() { cy.Get('[data-testid="button-replay-selected"]').Click() }
 export function SearchBox() { cy.Get('label[for="traindialogs-input-search"]').contains('input.ms-SearchBox-field') }
 export function EntityDropDownFilter() { cy.Get('[data-testid="dropdown-filter-by-entity"]') }
 export function ActionDropDownFilter() { cy.Get('[data-testid="dropdown-filter-by-action"]') }
@@ -49,6 +50,7 @@ export function GetTagLists() { return helpers.StringArrayFromElementText('[data
 export function GetDescriptions() { return helpers.StringArrayFromElementText('[data-testid="train-dialogs-description"]') }
 
 export function VerifyErrorIconForTrainGridRow(rowIndex) { cy.Get(`div.ms-List-cell[data-list-index="${rowIndex}"]`).find('[data-testid="train-dialogs-validity-indicator"]') }
+export function VerifyNoErrorIconForTrainGridRow(rowIndex) { cy.Get(`div.ms-List-cell[data-list-index="${rowIndex}"]`).DoesNotContain('[data-testid="train-dialogs-validity-indicator"]') }
 
 export function VerifyDescriptionForRow(row, description) { cy.Get(`div[data-item-index=${row}][data-automationid="DetailsRow"]`).find('span[data-testid="train-dialogs-description"]').contains(description) }
 
@@ -141,6 +143,39 @@ export class TdGrid {
     const length = description ? this.descriptions.length : (tagList ? this.tagLists : undefined)
     for (let i = 0; i < length; i++) {
       if ((!description || this.descriptions[i] === description) && (!tagList || this.tagLists[i] == tagList)) {
+        helpers.ConLog(funcName, `Found on row ${i}`)
+        return i
+      }
+    }
+    
+    helpers.ConLog(funcName, 'Not Found')
+    return -1
+  }
+
+  // 2) this should be called from an object returned from TdGrid.GetTdGrid
+  // Returns the index of the row that was found or -1 if not found
+  // If firstInput is empty string it will not use any of these 3 in the search: firstInput, lastInput, lastResponse
+  // If either decription or tagList is an empty string it will not be used in the search.
+  FindGridRowByAll(firstInput, lastInput, lastResponse, description, tagList){
+    const funcName = `TdGrid.FindGridRowByAll("${firstInput}", "${lastInput}", "${lastResponse}", "${description}", "${tagList}")`
+    helpers.ConLog(funcName, this.feedback)
+
+    if (this.expectedRowCount >= 0 && (
+        this.expectedRowCount != this.firstInputs.length || 
+        this.expectedRowCount != this.lastInputs.length ||
+        this.expectedRowCount != this.lastResponses.length ||
+        this.expectedRowCount != this.descriptions.length || 
+        this.expectedRowCount != this.tagLists.length)) {
+        throw new Error(`Somethings wrong in TdGrid.FindGridRowByAll - ${this.feedback}`)
+    }
+
+    for (let i = 0; i < this.firstInputs.length; i++) {
+      if ((firstInput === '' || 
+          (this.firstInputs[i] == firstInput && 
+          this.lastInputs[i] == lastInput && 
+          this.lastResponses[i] == lastResponse)) &&
+          (description === "" || this.descriptions[i] === description) && 
+          (tagList === '' || this.tagLists[i] == tagList)) {
         helpers.ConLog(funcName, `Found on row ${i}`)
         return i
       }
@@ -398,20 +433,32 @@ TdGrid.currentData = undefined  // Data that is or should be in the Train Dialog
 TdGrid.iCurrentRow = -1         // Index of current row in grid that is being edited
 TdGrid.tdGrid = undefined
 
-export function VerifyIncidentTriangleFoundInTrainDialogsGrid(firstInput, lastInput, lastResponse, expectedRowCount = -1) {
-  const funcName = `VerifyIncidentTriangleFoundInTrainDialogsGrid(${firstInput}, ${lastInput}, ${lastResponse})`
+export function VerifyIncidentTriangleFoundInTrainDialogsGrid(firstInput, lastInput, lastResponse, description = '', tagList = '', expectedRowCount = -1) {
+  FindGridRowByAllThenDo( firstInput, lastInput, lastResponse, description, tagList, expectedRowCount, VerifyErrorIconForTrainGridRow)
+}
+
+export function VerifyNoIncidentTriangleFoundInTrainDialogsGrid(firstInput, lastInput, lastResponse, description = '', tagList = '', expectedRowCount = -1) {
+  FindGridRowByAllThenDo( firstInput, lastInput, lastResponse, description, tagList, expectedRowCount, VerifyNoErrorIconForTrainGridRow)
+}
+
+export function ToggleRowSelection(firstInput, lastInput, lastResponse, description = '', tagList = '', expectedRowCount = -1) {
+  FindGridRowByAllThenDo( firstInput, lastInput, lastResponse, description, tagList, expectedRowCount, (iRow) => { cy.Get(`div.ms-List-cell[data-list-index="${iRow}"]`).find('div[role="checkbox"]').Click() })
+}
+
+export function FindGridRowByAllThenDo(firstInput, lastInput, lastResponse, description = '', tagList = '', expectedRowCount = -1, func) {
+  const funcName = `FindGridRowByAllThenDo("${firstInput}", "${lastInput}", "${lastResponse}", "${description}", "${tagList}, ${expectedRowCount}")`
   helpers.ConLog(funcName, 'Start')
 
   let tdGrid
   cy.wrap(1).should(() => {
     tdGrid = TdGrid.GetTdGrid(expectedRowCount)
   }).then(() => {
-    let iRow = tdGrid.FindGridRowByChatInputs(firstInput, lastInput, lastResponse)
+    let iRow = tdGrid.FindGridRowByAll(firstInput, lastInput, lastResponse, description, tagList)
     if (iRow >= 0) { 
-      VerifyErrorIconForTrainGridRow(iRow)
+      func(iRow)
       return
     }
-    throw new Error(`Can't Find Training to Verify it contains errors. The grid should, but does not, contain a row with this data in it: FirstInput: ${firstInput} -- LastInput: ${lastInput} -- LastResponse: ${lastResponse}`)
+    throw new Error(`Can't Find Train Dialog. The grid should, but does not, contain a row with this data in it: FirstInput: "${firstInput}" -- LastInput: "${lastInput}" -- LastResponse: "${lastResponse}" -- Description: "${description}" -- TagList: "${tagList}`)
   })
 }
 
@@ -426,7 +473,11 @@ export function VerifyListOfTrainDialogs(expectedTrainDialogs) {
   }).then(() => {
     let errors = false
     expectedTrainDialogs.forEach(trainDialog => {
-      errors = errors || tdGrid.FindGridRowByChatInputs(trainDialog.firstInput, trainDialog.lastInput, trainDialog.lastResponse) < 0
+      errors = errors || tdGrid.FindGridRowByAll(trainDialog.firstInput, 
+                                                 trainDialog.lastInput, 
+                                                 trainDialog.lastResponse, 
+                                                 trainDialog.description, 
+                                                 trainDialog.tagList) < 0
     })
   
     if (errors) {

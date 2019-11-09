@@ -450,7 +450,7 @@ export function VerifyEndSessionChatMessage(expectedData, expectedIndexOfMessage
 }
 
 export function PreSaveDataUsedToVerifyTdGrid(description, tagList) {
-  let funcName = `PreSaveDataUsedToVerifyTdGrid(${description}, ${tagList})`
+  let funcName = `PreSaveDataUsedToVerifyTdGrid("${description}", "${tagList}")`
   helpers.ConLog(funcName, 'start')
   cy.WaitForStableDOM().then(() => {
     // When the TD ends with a user turn, the lastResponse needs to be an empty string.

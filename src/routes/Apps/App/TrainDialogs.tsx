@@ -1590,6 +1590,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         />
                     }
                     <OF.DefaultButton
+                        data-testid="button-replay-selected"
                         iconProps={{
                             iconName: "Refresh"
                         }}

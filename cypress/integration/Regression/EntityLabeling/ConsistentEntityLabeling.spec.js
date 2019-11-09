@@ -139,7 +139,7 @@ describe('Consistent Entity Labeling', () => {
       entityDetectionPanel.RemoveEntityLabel('Frog', 'multi')
     })
 
-    it('Change other instance of the phrase to attempted changes we just made', () => {
+    it('Submit changes, verify conflict popup, and use "Attempted Labels" option to alter other instances of this phrase in other TDs', () => {
       train.ClickSubmitChangesButton()
       entityDetectionPanel.VerifyEntityLabelConflictPopupAndChangeToAttempted(textEntityPairs)
     })
@@ -149,7 +149,7 @@ describe('Consistent Entity Labeling', () => {
     })
 
     it('Error Triangle in the Train Dialog Grid should be showing for the effected Train Dialog', () => {
-      trainDialogsGrid.VerifyIncidentTriangleFoundInTrainDialogsGrid('This is Tag.', 'This is Tag.', 'Hi', 3)  
+      trainDialogsGrid.VerifyIncidentTriangleFoundInTrainDialogsGrid('This is Tag.', 'This is Tag.', 'Hi', '', '', 3)  
     })
     
     it('Edit the Train Dialog that got changed', () => {
@@ -181,21 +181,33 @@ describe('Consistent Entity Labeling', () => {
       entityDetectionPanel.VerifyTextIsNotLabeledAsEntity('Frog', 'multi', 1)
     })
 
-    it('Re-lable the entities to set things right in this Train Dialog', () => {
-      //train.XLabelTextAsEntity()
+    it('Re-label the entities to set things right in this Train Dialog', () => {
+      entityDetectionPanel.LabelTextAsEntity('Tag', 'multi', 1, true)
+      entityDetectionPanel.LabelTextAsEntity('Frog', 'multi', 1, true)
     })
 
-    it('', () => {
+    it('Submit changes, verify conflict popup, and use "Attempted Labels" option to set things right again in other instances of this phrase in other TDs', () => {
+      train.ClickSubmitChangesButton()
+      entityDetectionPanel.VerifyEntityLabelConflictPopupAndChangeToAttempted(undefined, textEntityPairs)
     })
 
-    it('Close the Train Dialog', () => {
-      train.ClickSaveCloseButton()
+    it('Save the Train Dialog', () => {
+      train.SaveAsIs()
     })
 
-    it('', () => {
+    it('Verify there is a yellow warning triangle on the TD that was affected by the last change', () => {
+      trainDialogsGrid.VerifyIncidentTriangleFoundInTrainDialogsGrid('This is Tag.', 'This is Tag and Frog.', 'Hi', 'Both Tag & Frog', 'TagFrog', 3)
     })
 
-    it('', () => {
+    it('Select the row with the warning and replay the TD intending to have the warning go away', () => {
+      trainDialogsGrid.ToggleRowSelection('This is Tag.', 'This is Tag and Frog.', 'Hi', 'Both Tag & Frog', 'TagFrog', 3)
+      trainDialogsGrid.ClickReplaySelectedButton()
+    })
+
+    // Bug 2326: Replay Selected Train Dialogs fails to resolve Error Incident Triangle
+    // This verifies that the bug does NOT reproduce.
+    it('Verify the yellow warning triangle is now gone', () => {
+      trainDialogsGrid.VerifyNoIncidentTriangleFoundInTrainDialogsGrid('This is Tag.', 'This is Tag and Frog.', 'Hi', 'Both Tag & Frog', 'TagFrog', 3)
     })
   })
 })

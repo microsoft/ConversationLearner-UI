@@ -47,7 +47,7 @@ describe('Missing Action - ErrorHandling', () => {
     it('Should verify there are now error icons showing in the Train Dialog grid', () => {
       modelPage.NavigateToTrainDialogs()
       modelPage.VerifyErrorTriangleForTrainDialogs()
-      trainDialogsGrid.VerifyIncidentTriangleFoundInTrainDialogsGrid(common.gonnaDeleteAnAction, common.gonnaDeleteAnAction, '', 1)
+      trainDialogsGrid.VerifyIncidentTriangleFoundInTrainDialogsGrid(common.gonnaDeleteAnAction, common.gonnaDeleteAnAction, '', '', '', 1)
     })
   })
 
