@@ -30,6 +30,57 @@ const createApplicationFulfilled = (app: CLM.AppBase, obiImportData?: OBIImportD
     }
 }
 
+const fetchApplicationTrainingStatusAsync = (appId: string): ActionObject => {
+    return {
+        type: AT.FETCH_APPLICATION_TRAININGSTATUS_ASYNC,
+        appId
+    }
+}
+
+const fetchApplicationTrainingStatusFulfilled = (appId: string, trainingStatus: CLM.TrainingStatus): ActionObject => {
+    return {
+        type: AT.FETCH_APPLICATION_TRAININGSTATUS_FULFILLED,
+        appId,
+        trainingStatus
+    }
+}
+
+const fetchApplicationTrainingStatusExpired = (appId: string): ActionObject => {
+    return {
+        type: AT.FETCH_APPLICATION_TRAININGSTATUS_EXPIRED,
+        appId
+    }
+}
+
+const poller = new Poller({ interval: 2000 })
+
+export const fetchApplicationTrainingStatusThunkAsync = (appId: string) => {
+    return async (dispatch: Dispatch<any>) => {
+        dispatch(fetchApplicationTrainingStatusAsync(appId))
+        // Wait 1 second before polling to ensure service has time to change status from previous to queued / running
+        await delay(1000)
+
+        const clClient = ClientFactory.getInstance(AT.FETCH_APPLICATION_TRAININGSTATUS_ASYNC)
+        const pollConfig: IPollConfig<CLM.TrainingStatus> = {
+            id: appId,
+            maxDuration: 60000,
+            request: async () => {
+                const trainingStatus = await clClient.appGetTrainingStatus(appId)
+                console.debug(`${new Date().getTime()} Poll app: ${appId}: `, trainingStatus.trainingStatus)
+                return trainingStatus
+            },
+            isResolved: trainingStatus => [CLM.TrainingStatusCode.Completed, CLM.TrainingStatusCode.Failed].includes(trainingStatus.trainingStatus),
+            onExpired: () => {
+                console.warn(`Polling for app ${appId} exceeded max duration. Stopping`)
+                dispatch(fetchApplicationTrainingStatusExpired(appId))
+            },
+            onUpdate: trainingStatus => dispatch(fetchApplicationTrainingStatusFulfilled(appId, trainingStatus)),
+        }
+
+        void poller.addPoll(pollConfig)
+    }
+}
+
 export const createApplicationThunkAsync = (userId: string, application: CLM.AppBase, source: CLM.AppDefinition | null = null, obiImportData?: OBIImportData) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.CREATE_APPLICATION_ASYNC)
@@ -46,7 +97,7 @@ export const createApplicationThunkAsync = (userId: string, application: CLM.App
             }
 
             dispatch(createApplicationFulfilled(newApp, obiImportData))
-            dispatch(fetchApplicationTrainingStatusThunkAsync(newApp.appId));
+            void dispatch(fetchApplicationTrainingStatusThunkAsync(newApp.appId))
             return newApp
         }
         catch (e) {
@@ -200,13 +251,87 @@ const copyApplicationFulfilled = (): ActionObject => {
     }
 }
 
+const fetchApplicationsAsync = (userId: string): ActionObject => {
+    return {
+        type: AT.FETCH_APPLICATIONS_ASYNC,
+        userId: userId
+    }
+}
+
+const fetchApplicationsFulfilled = (uiAppList: CLM.UIAppList): ActionObject => {
+    return {
+        type: AT.FETCH_APPLICATIONS_FULFILLED,
+        uiAppList: uiAppList
+    }
+}
+
+const fetchAppSourceAsync = (appId: string, packageId: string): ActionObject => {
+    return {
+        type: AT.FETCH_APPSOURCE_ASYNC,
+        appId: appId,
+        packageId: packageId
+    }
+}
+
+const fetchAppSourceFulfilled = (appDefinition: CLM.AppDefinition): ActionObject => {
+    return {
+        type: AT.FETCH_APPSOURCE_FULFILLED,
+        appDefinition: appDefinition
+    }
+}
+
+export const fetchAppSourceThunkAsync = (appId: string, packageId: string, updateState = true) => {
+    return async (dispatch: Dispatch<any>) => {
+        const clClient = ClientFactory.getInstance(AT.FETCH_APPSOURCE_ASYNC)
+        dispatch(fetchAppSourceAsync(appId, packageId))
+
+        try {
+            const appDefinitionChange = await clClient.source(appId, packageId)
+
+            if (appDefinitionChange.isChanged) {
+                dispatch(setUpdatedAppDefinition(appId, appDefinitionChange))
+                dispatch(fetchAppSourceFulfilled(appDefinitionChange.updatedAppDefinition))
+                return appDefinitionChange.updatedAppDefinition
+            }
+            else {
+                dispatch(fetchAppSourceFulfilled(appDefinitionChange.currentAppDefinition))
+                return appDefinitionChange.currentAppDefinition
+            }
+        } catch (e) {
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.FETCH_APPSOURCE_ASYNC))
+            return null;
+        }
+    }
+}
+
+export const fetchApplicationsThunkAsync = (userId: string) => {
+    return async (dispatch: Dispatch<any>) => {
+        const clClient = ClientFactory.getInstance(AT.FETCH_APPLICATIONS_ASYNC)
+        dispatch(fetchApplicationsAsync(userId))
+
+        try {
+            const uiAppList = await clClient.apps(userId)
+
+            // Initialize datetime property since trainingStatus comes with app
+            uiAppList.appList.apps.forEach(app => app.datetime = new Date())
+            dispatch(fetchApplicationsFulfilled(uiAppList))
+            return uiAppList
+        } catch (e) {
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.FETCH_APPLICATIONS_ASYNC))
+            return null
+        }
+    }
+}
+
 export const copyApplicationThunkAsync = (srcUserId: string, destUserId: string, appId: string) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.COPY_APPLICATION_ASYNC)
         try {
             dispatch(copyApplicationAsync(srcUserId, destUserId, appId))
             await clClient.appCopy(srcUserId, destUserId, appId)
-            dispatch(fetchApplicationsThunkAsync(destUserId))
+            void dispatch(fetchApplicationsThunkAsync(destUserId))
             dispatch(copyApplicationFulfilled())
         }
         catch (e) {
@@ -279,131 +404,6 @@ export const deleteApplicationThunkAsync = (appId: string) => {
             const error = e as AxiosError
             dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.DELETE_APPLICATION_ASYNC))
             return false;
-        }
-    }
-}
-
-const fetchApplicationsAsync = (userId: string): ActionObject => {
-    return {
-        type: AT.FETCH_APPLICATIONS_ASYNC,
-        userId: userId
-    }
-}
-
-const fetchApplicationsFulfilled = (uiAppList: CLM.UIAppList): ActionObject => {
-    return {
-        type: AT.FETCH_APPLICATIONS_FULFILLED,
-        uiAppList: uiAppList
-    }
-}
-
-export const fetchApplicationsThunkAsync = (userId: string) => {
-    return async (dispatch: Dispatch<any>) => {
-        const clClient = ClientFactory.getInstance(AT.FETCH_APPLICATIONS_ASYNC)
-        dispatch(fetchApplicationsAsync(userId))
-
-        try {
-            const uiAppList = await clClient.apps(userId)
-
-            // Initialize datetime property since trainingStatus comes with app
-            uiAppList.appList.apps.forEach(app => app.datetime = new Date())
-            dispatch(fetchApplicationsFulfilled(uiAppList))
-            return uiAppList
-        } catch (e) {
-            const error = e as AxiosError
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.FETCH_APPLICATIONS_ASYNC))
-            return null
-        }
-    }
-}
-
-const poller = new Poller({ interval: 2000 })
-
-const fetchApplicationTrainingStatusAsync = (appId: string): ActionObject => {
-    return {
-        type: AT.FETCH_APPLICATION_TRAININGSTATUS_ASYNC,
-        appId
-    }
-}
-
-const fetchApplicationTrainingStatusFulfilled = (appId: string, trainingStatus: CLM.TrainingStatus): ActionObject => {
-    return {
-        type: AT.FETCH_APPLICATION_TRAININGSTATUS_FULFILLED,
-        appId,
-        trainingStatus
-    }
-}
-
-const fetchApplicationTrainingStatusExpired = (appId: string): ActionObject => {
-    return {
-        type: AT.FETCH_APPLICATION_TRAININGSTATUS_EXPIRED,
-        appId
-    }
-}
-
-export const fetchApplicationTrainingStatusThunkAsync = (appId: string) => {
-    return async (dispatch: Dispatch<any>) => {
-        dispatch(fetchApplicationTrainingStatusAsync(appId))
-        // Wait 1 second before polling to ensure service has time to change status from previous to queued / running
-        await delay(1000)
-
-        const clClient = ClientFactory.getInstance(AT.FETCH_APPLICATION_TRAININGSTATUS_ASYNC)
-        const pollConfig: IPollConfig<CLM.TrainingStatus> = {
-            id: appId,
-            maxDuration: 60000,
-            request: async () => {
-                const trainingStatus = await clClient.appGetTrainingStatus(appId)
-                console.debug(`${new Date().getTime()} Poll app: ${appId}: `, trainingStatus.trainingStatus)
-                return trainingStatus
-            },
-            isResolved: trainingStatus => [CLM.TrainingStatusCode.Completed, CLM.TrainingStatusCode.Failed].includes(trainingStatus.trainingStatus),
-            onExpired: () => {
-                console.warn(`Polling for app ${appId} exceeded max duration. Stopping`)
-                dispatch(fetchApplicationTrainingStatusExpired(appId))
-            },
-            onUpdate: trainingStatus => dispatch(fetchApplicationTrainingStatusFulfilled(appId, trainingStatus)),
-        }
-
-        poller.addPoll(pollConfig)
-    }
-}
-
-const fetchAppSourceAsync = (appId: string, packageId: string): ActionObject => {
-    return {
-        type: AT.FETCH_APPSOURCE_ASYNC,
-        appId: appId,
-        packageId: packageId
-    }
-}
-
-const fetchAppSourceFulfilled = (appDefinition: CLM.AppDefinition): ActionObject => {
-    return {
-        type: AT.FETCH_APPSOURCE_FULFILLED,
-        appDefinition: appDefinition
-    }
-}
-
-export const fetchAppSourceThunkAsync = (appId: string, packageId: string, updateState = true) => {
-    return async (dispatch: Dispatch<any>) => {
-        const clClient = ClientFactory.getInstance(AT.FETCH_APPSOURCE_ASYNC)
-        dispatch(fetchAppSourceAsync(appId, packageId))
-
-        try {
-            const appDefinitionChange = await clClient.source(appId, packageId)
-
-            if (appDefinitionChange.isChanged) {
-                dispatch(setUpdatedAppDefinition(appId, appDefinitionChange))
-                dispatch(fetchAppSourceFulfilled(appDefinitionChange.updatedAppDefinition))
-                return appDefinitionChange.updatedAppDefinition
-            }
-            else {
-                dispatch(fetchAppSourceFulfilled(appDefinitionChange.currentAppDefinition))
-                return appDefinitionChange.currentAppDefinition
-            }
-        } catch (e) {
-            const error = e as AxiosError
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.FETCH_APPSOURCE_ASYNC))
-            return null;
         }
     }
 }

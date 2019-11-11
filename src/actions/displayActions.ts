@@ -25,6 +25,16 @@ const setCurrentAppFulfilled = (app: AppBase): ActionObject => {
     }
 }
 
+export const setErrorDisplay = (errorType: ErrorType, title: string, message: string, actionType: AT | null): ActionObject => {
+    return {
+        type: AT.SET_ERROR_DISPLAY,
+        errorType,
+        title,
+        message,
+        actionType
+    }
+}
+
 export const setCurrentAppThunkAsync = (key: string, application: AppBase) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.SET_CURRENT_APP_ASYNC)
@@ -70,16 +80,6 @@ export const setTipType = (tipType: TipType): ActionObject => {
     return {
         type: AT.SET_TIP_TYPE,
         tipType: tipType
-    }
-}
-
-export const setErrorDisplay = (errorType: ErrorType, title: string, message: string, actionType: AT | null): ActionObject => {
-    return {
-        type: AT.SET_ERROR_DISPLAY,
-        errorType,
-        title,
-        message,
-        actionType
     }
 }
 

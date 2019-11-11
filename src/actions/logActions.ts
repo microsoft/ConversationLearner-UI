@@ -47,7 +47,7 @@ export const deleteLogDialogThunkAsync = (app: CLM.AppBase, logDialogId: string,
             const error = e as AxiosError
             dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.DELETE_LOG_DIALOG_ASYNC))
             dispatch(deleteLogDialogRejected())
-            dispatch(fetchAllLogDialogsThunkAsync(app, packageId));
+            void dispatch(fetchAllLogDialogsThunkAsync(app, packageId));
         }
     }
 }
@@ -87,7 +87,7 @@ export const deleteLogDialogsThunkAsync = (app: CLM.AppBase, logDialogIds: strin
             dispatch(deleteLogDialogsRejected())
         }
         finally {
-            dispatch(fetchAllLogDialogsThunkAsync(app, packageId))
+            void dispatch(fetchAllLogDialogsThunkAsync(app, packageId))
         }
     }
 }
