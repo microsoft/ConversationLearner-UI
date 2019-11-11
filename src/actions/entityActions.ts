@@ -48,8 +48,8 @@ export const createEntityThunkAsync = (appId: string, entity: CLM.EntityBase) =>
 
             // If created entity has resolver, we fetch all entities to make sure
             // that definition of prebuilt entity is in the memory
-            if (typeof entity.resolverType !== 'undefined' && entity.resolverType !== null) {
-                dispatch(fetchAllEntitiesThunkAsync(appId));
+            if (entity.resolverType !== undefined && entity.resolverType !== null) {
+                void dispatch(fetchAllEntitiesThunkAsync(appId));
             }
 
             return posEntity.entityId
@@ -109,21 +109,21 @@ export const editEntityThunkAsync = (appId: string, entity: CLM.EntityBase, prev
             // If updated entity has a different resolver, we fetch all entities to make sure
             // that definition of prebuilt entity is in the memory
             if (entity.resolverType !== prevEntity.resolverType) {
-                dispatch(fetchAllEntitiesThunkAsync(appId));
+                void dispatch(fetchAllEntitiesThunkAsync(appId));
             }
             // If an enum entity, new EnumValuesIds have been set and actions may have been invalidated
             else if (entity.entityType === CLM.EntityType.ENUM) {
                 const updatedEntity = await clClient.entitiesGetById(appId, entity.entityId)
                 dispatch(editEntityFulfilled(updatedEntity))
-                dispatch(fetchAllActionsThunkAsync(appId))
+                void dispatch(fetchAllActionsThunkAsync(appId))
             }
 
             // If any train dialogs were modified fetch train dialogs
             if (changedEntityResponse.trainDialogIds?.length > 0) {
-                dispatch(fetchAllTrainDialogsThunkAsync(appId));
+                void dispatch(fetchAllTrainDialogsThunkAsync(appId));
             }
 
-            dispatch(fetchApplicationTrainingStatusThunkAsync(appId))
+            void dispatch(fetchApplicationTrainingStatusThunkAsync(appId))
             return entity
         }
         catch (e) {
@@ -170,20 +170,20 @@ export const deleteEntityThunkAsync = (appId: string, entity: CLM.EntityBase) =>
             // If deleted entity is prebuilt entity, we fetch all entities to make sure
             // that entities in the memory are all up to date
             if (CLM.isPrebuilt(entity)) {
-                dispatch(fetchAllEntitiesThunkAsync(appId));
+                void dispatch(fetchAllEntitiesThunkAsync(appId));
             }
 
             // If any actions were modified, reload them
             if (deleteEditResponse.actionIds?.length > 0) {
-                dispatch(fetchAllActionsThunkAsync(appId))
+                void dispatch(fetchAllActionsThunkAsync(appId))
             }
 
             // If any train dialogs were modified fetch train dialogs
             if (deleteEditResponse.trainDialogIds?.length > 0) {
-                dispatch(fetchAllTrainDialogsThunkAsync(appId));
+                void dispatch(fetchAllTrainDialogsThunkAsync(appId));
             }
 
-            dispatch(fetchApplicationTrainingStatusThunkAsync(appId));
+            void dispatch(fetchApplicationTrainingStatusThunkAsync(appId));
             return true;
         } catch (e) {
             const error = e as AxiosError
