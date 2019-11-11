@@ -49,4 +49,3 @@ export default class Component extends React.Component<Props, State> {
         </div>
     }
 }
-

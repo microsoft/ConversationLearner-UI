@@ -33,7 +33,7 @@ describe('obiDialogParser', () => {
          * such as `SwitchCondition` nodes, `ScorerSteps` that need to be appended to previous
          * `TrainDialogRounds`.
          */
-        const guidLength = "3d560a3f-bfd6-466b-8388-b1bdf93d15de".length
+        const GUID_LENGTH = "3d560a3f-bfd6-466b-8388-b1bdf93d15de".length
         test('Test product key example', async () => {
             // TODO(thpar) : investigate why this test fails on CircleCI.
             const envOS: string | undefined = process.env.OS
@@ -117,7 +117,7 @@ describe('obiDialogParser', () => {
                 expect(round1.scorerSteps[0].importText).toEqual("[option15]")
                 const round2 = dialog.rounds[2]
                 expect(round2.extractorStep.textVariations.length).toEqual(1)
-                expect(round2.extractorStep.textVariations[0].text.length).toEqual(guidLength)
+                expect(round2.extractorStep.textVariations[0].text.length).toEqual(GUID_LENGTH)
                 expect(round2.scorerSteps.length).toEqual(2)
                 expect(round2.scorerSteps[0].scoredAction!.actionType).toEqual(CLM.ActionTypes.API_LOCAL)
                 expect(round2.scorerSteps[1].importText).toEqual("[option18]")
@@ -138,7 +138,7 @@ describe('obiDialogParser', () => {
                 expect(round1.scorerSteps[0].importText).toEqual("[option15]")
                 const round2 = dialog.rounds[2]
                 expect(round2.extractorStep.textVariations.length).toEqual(1)
-                expect(round2.extractorStep.textVariations[0].text.length).toEqual(guidLength)
+                expect(round2.extractorStep.textVariations[0].text.length).toEqual(GUID_LENGTH)
                 expect(round2.scorerSteps.length).toEqual(2)
                 expect(round2.scorerSteps[0].scoredAction!.actionType).toEqual(CLM.ActionTypes.API_LOCAL)
                 expect(round2.scorerSteps[1].importText).toEqual("[option19]")
@@ -155,7 +155,7 @@ describe('obiDialogParser', () => {
                 expect(round4.scorerSteps[0].importText).toEqual("[option15]")
                 const round5 = dialog.rounds[5]
                 expect(round5.extractorStep.textVariations.length).toEqual(1)
-                expect(round5.extractorStep.textVariations[0].text.length).toEqual(guidLength)
+                expect(round5.extractorStep.textVariations[0].text.length).toEqual(GUID_LENGTH)
                 expect(round5.scorerSteps.length).toEqual(2)
                 expect(round5.scorerSteps[0].scoredAction!.actionType).toEqual(CLM.ActionTypes.API_LOCAL)
                 expect(round5.scorerSteps[1].importText).toEqual("[option18]")
@@ -176,7 +176,7 @@ describe('obiDialogParser', () => {
                 expect(round1.scorerSteps[0].importText).toEqual("[option15]")
                 const round2 = dialog.rounds[2]
                 expect(round2.extractorStep.textVariations.length).toEqual(1)
-                expect(round2.extractorStep.textVariations[0].text.length).toEqual(guidLength)
+                expect(round2.extractorStep.textVariations[0].text.length).toEqual(GUID_LENGTH)
                 expect(round2.scorerSteps.length).toEqual(2)
                 expect(round2.scorerSteps[0].scoredAction!.actionType).toEqual(CLM.ActionTypes.API_LOCAL)
                 expect(round2.scorerSteps[1].importText).toEqual("[option19]")
@@ -208,7 +208,7 @@ describe('obiDialogParser', () => {
                 expect(round1.scorerSteps[0].importText).toEqual("[option15]")
                 const round2 = dialog.rounds[2]
                 expect(round2.extractorStep.textVariations.length).toEqual(1)
-                expect(round2.extractorStep.textVariations[0].text.length).toEqual(guidLength)
+                expect(round2.extractorStep.textVariations[0].text.length).toEqual(GUID_LENGTH)
                 expect(round2.scorerSteps.length).toEqual(2)
                 expect(round2.scorerSteps[0].scoredAction!.actionType).toEqual(CLM.ActionTypes.API_LOCAL)
                 expect(round2.scorerSteps[1].importText).toEqual("[option19]")

@@ -32,7 +32,6 @@ import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../react-intl-messages'
 import './ActionCreatorEditor.css'
 import { autobind } from 'core-decorators';
-import { TagItemSuggestion } from 'office-ui-fabric-react'
 import { IConditionalTag, getEnumConditionName, convertConditionToConditionalTag, isConditionEqual, getUniqueConditions } from 'src/Utils/actionCondition'
 
 const TEXT_SLOT = '#TEXT_SLOT#'
@@ -129,10 +128,10 @@ const convertEntityToConditionalTags = (entity: CLM.EntityBase, expand = true): 
     }]
 }
 
-// Entities that can be chosen for required / blocking
-const conditionalEntityTags = (entities: CLM.EntityBase[], actions: CLM.ActionBase[]): IConditionalTag[] => {
+// Returns deduplicated array of conditions currently used as required or negative conditions.
+const conditionalEntityTags = (entities: CLM.EntityBase[], actionz: CLM.ActionBase[]): IConditionalTag[] => {
     // Might have duplicates since different actions can have same conditions
-    const actionConditionTags = actions
+    const actionConditionTags = actionz
         .map(a => [...a.requiredConditions, ...a.negativeConditions])
         .reduce((a, b) => [...a, ...b], [])
         .map(c => convertConditionToConditionalTag(c, entities))
@@ -144,7 +143,7 @@ const conditionalEntityTags = (entities: CLM.EntityBase[], actions: CLM.ActionBa
         .map(e => convertEntityToConditionalTags(e))
         .reduce((a, b) => [...a, ...b], [])
 
-    const uniqueConditionTags = [
+    return [
         ...entityTags,
         ...actionConditionTags,
     ].reduce<IConditionalTag[]>((conditions, condition) => {
@@ -155,8 +154,6 @@ const conditionalEntityTags = (entities: CLM.EntityBase[], actions: CLM.ActionBa
 
         return conditions
     }, [])
-
-    return uniqueConditionTags
 }
 
 // Entities that can be picked as expected entity
@@ -256,8 +253,6 @@ const convertModelToDropdownOption = (model: CLM.AppBase): ModelOption =>
     })
 
 type SlateValueMap = { [slot: string]: ActionPayloadEditor.SlateValue }
-
-
 
 interface ComponentState {
     entityOptions: OF.IDropdownOption[]
@@ -1372,7 +1367,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     onRenderConditionSuggestion(tag: OF.ITag, itemProps: OF.ISuggestionItemProps<OF.ITag>): JSX.Element {
         return tag.key === addConditionPlaceholder.key
             ? addConditionPlaceholderButton
-            : <TagItemSuggestion>{tag.name}</TagItemSuggestion>
+            : <OF.TagItemSuggestion>{tag.name}</OF.TagItemSuggestion>
     }
 
     onResolveNegativeConditionTags = (filterText: string, selectedTags: OF.ITag[]): OF.ITag[] => {
