@@ -164,7 +164,7 @@ export const deleteTeachSessionThunkAsync = (
             dispatch(deleteTeachSessionFulfilled(teachSession, newTrainDialog, sourceTrainDialogId));
 
             if (save) {
-                dispatch(fetchApplicationTrainingStatusThunkAsync(app.appId))
+                void dispatch(fetchApplicationTrainingStatusThunkAsync(app.appId))
             }
 
             return newTrainDialog
@@ -173,7 +173,7 @@ export const deleteTeachSessionThunkAsync = (
             const error = e as AxiosError
             dispatch(clearTeachSession())
             dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.CREATE_TRAIN_DIALOG_ASYNC))
-            dispatch(fetchAllTrainDialogsThunkAsync(app.appId));
+            void dispatch(fetchAllTrainDialogsThunkAsync(app.appId));
             throw error
         }
     }
