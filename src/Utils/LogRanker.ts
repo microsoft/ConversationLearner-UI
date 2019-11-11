@@ -64,7 +64,7 @@ export class LogRanker {
             + Math.min(1, numberUnknownUtterances * 0.1)
             + Math.min(1, numberLowConfidence * 0.1)
         
-        return +(score / 4.0).toFixed(4)
+        return +(score / 4).toFixed(4)
     }
 
     // Returns true if TrainDialog's last action is in the set of actionIds
