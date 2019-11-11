@@ -2,9 +2,7 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
-
 import { doesTrainDialogMatch, findMatchingTrainDialog, isPrimaryTrainDialog, mergeTrainDialogs, mergeTrainDialogTags, hasInternalLabelConflict, isConflictingTextVariation, isIncompatibleTextVariation, getCorrectedDialogs } from './dialogUtils'
-import { makeTrainDialog, makeExtractorStep, makeScorerStep, makeLabelEntities } from './testDataUtil'
 import { deepCopy } from './util'
 import * as CLM from '@conversationlearner/models'
 import * as uuid from 'uuid/v4'
@@ -13,7 +11,7 @@ import { fromLogTag } from '../types'
 describe('dialogUtils', () => {
 
     // Create training dialogs for test
-    const trainDialog1 = makeTrainDialog(
+    const trainDialog1 = CLM.MockData.makeTrainDialog(
         [
             {
                 textVariations: [{
@@ -120,7 +118,7 @@ describe('dialogUtils', () => {
             const newDialog = copyTrainDialog()
 
             // Add a label - should fail
-            let newLabelledEntities = makeLabelEntities({ "new_id": "value" })
+            let newLabelledEntities = CLM.MockData.makeLabelEntities({ "new_id": "value" })
             newDialog.rounds[0].extractorStep.textVariations[0].labelEntities.push(newLabelledEntities[0])
 
             let result = doesTrainDialogMatch(newDialog, trainDialog1)
@@ -139,7 +137,7 @@ describe('dialogUtils', () => {
             expect(result).toEqual(false)
 
             // Different labels - should fail
-            newLabelledEntities = makeLabelEntities({ "entityN1_id": "entity1_value", "entityN2_id": "entity2_value" })
+            newLabelledEntities = CLM.MockData.makeLabelEntities({ "entityN1_id": "entity1_value", "entityN2_id": "entity2_value" })
             newDialog.rounds[0].extractorStep.textVariations[0].labelEntities = newLabelledEntities
 
             result = doesTrainDialogMatch(newDialog, trainDialog1)
@@ -313,7 +311,7 @@ describe('dialogUtils', () => {
         test('addTextVariation', () => {
 
             const trainDialog2 = copyTrainDialog()
-            trainDialog2.rounds[0].extractorStep = makeExtractorStep(
+            trainDialog2.rounds[0].extractorStep = CLM.MockData.makeTrainExtractorStep(
                 [{
                     "entity1_id": "entity1_value_new",
                     "entity2_id": "entity2_value_new"
@@ -342,7 +340,7 @@ describe('dialogUtils', () => {
             const trainDialog2 = copyTrainDialog()
             const lastRound = trainDialog2.rounds.length - 1
             trainDialog2.rounds[lastRound].scorerSteps.push(
-                makeScorerStep("action5", ["entity1_id", "entity2_id"])
+                CLM.MockData.makeTrainScorerStep("action5", ["entity1_id", "entity2_id"])
             )
 
             // Need a copy as will be mutated
@@ -415,9 +413,9 @@ describe('dialogUtils', () => {
             const dialog1Tags = [fromLogTag]
             const dialog2Tags = ['othertag']
 
-            const dialog1 = makeTrainDialog([])
+            const dialog1 = CLM.MockData.makeTrainDialog([])
             dialog1.tags = dialog1Tags
-            const dialog2 = makeTrainDialog([])
+            const dialog2 = CLM.MockData.makeTrainDialog([])
             dialog2.tags = dialog2Tags
 
             // Act
@@ -606,7 +604,7 @@ describe('dialogUtils', () => {
             ],
         }
 
-        const dialog1 = makeTrainDialog([
+        const dialog1 = CLM.MockData.makeTrainDialog([
             {
                 textVariations: [{
                     "entity1_id": "entity1_value",
@@ -618,7 +616,7 @@ describe('dialogUtils', () => {
             },
         ], uuid())
 
-        const dialog2 = makeTrainDialog([
+        const dialog2 = CLM.MockData.makeTrainDialog([
             {
                 textVariations: [{
                     "entity1_id": "entity1_value",
@@ -632,7 +630,7 @@ describe('dialogUtils', () => {
         ], uuid())
         dialog2.rounds[0].extractorStep.textVariations[0] = textVariation01
 
-        const dialog3 = makeTrainDialog([
+        const dialog3 = CLM.MockData.makeTrainDialog([
             {
                 textVariations: [{
                     "entity1_id": "entity1_value",
