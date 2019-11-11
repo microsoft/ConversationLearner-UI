@@ -174,26 +174,16 @@ export const deleteEntityThunkAsync = (appId: string, entity: CLM.EntityBase) =>
             }
 
             // If any actions were modified, reload them
-<<<<<<< HEAD
-            if (deleteEditResponse.actionIds && deleteEditResponse.actionIds.length > 0) {
+            if (deleteEditResponse.actionIds?.length > 0) {
                 void dispatch(fetchAllActionsThunkAsync(appId))
             }
 
             // If any train dialogs were modified fetch train dialogs
-            if (deleteEditResponse.trainDialogIds && deleteEditResponse.trainDialogIds.length > 0) {
-                void dispatch(fetchAllTrainDialogsThunkAsync(appId));
-=======
-            if (deleteEditResponse.actionIds?.length > 0) {
-                dispatch(fetchAllActionsThunkAsync(appId))
-            }
-
-            // If any train dialogs were modified fetch train dialogs
             if (deleteEditResponse.trainDialogIds?.length > 0) {
-                dispatch(fetchAllTrainDialogsThunkAsync(appId));
->>>>>>> 5148b9b623f2f8abd438d978709c40780488d50b
+                void dispatch(fetchAllTrainDialogsThunkAsync(appId))
             }
 
-            void dispatch(fetchApplicationTrainingStatusThunkAsync(appId));
+            void dispatch(fetchApplicationTrainingStatusThunkAsync(appId))
             return true;
         } catch (e) {
             const error = e as AxiosError
