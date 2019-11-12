@@ -127,6 +127,8 @@ const ExtractConflictModal: React.FC<Props> = (props) => {
                 >
                     <OF.ChoiceGroup
                         options={[
+                            // data-testid is not defined on IChoiceGroupOption, so the type assertion is required.
+                            // tslint:disable-next-line:no-object-literal-type-assertion
                             {
                                 key: ExtractionType.Attempted,
                                 text: '',
@@ -155,6 +157,8 @@ const ExtractConflictModal: React.FC<Props> = (props) => {
                 >
                     <OF.ChoiceGroup
                         options={[
+                            // data-testid is not defined on IChoiceGroupOption, so the type assertion is required.
+                            // tslint:disable-next-line:no-object-literal-type-assertion
                             {
                                 key: ExtractionType.Existing,
                                 text: '',

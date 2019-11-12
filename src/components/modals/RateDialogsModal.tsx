@@ -129,11 +129,11 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
             const ratingPair = Util.deepCopy(this.state.ratingPair)
             if (this.state.isFlipped) {
                 ratingPair.result = Test.RatingResult.FIRST
-                await this.props.onRate(ratingPair)
+                this.props.onRate(ratingPair)
             }
             else {
                 ratingPair.result = Test.RatingResult.SECOND
-                await this.props.onRate(ratingPair)
+                this.props.onRate(ratingPair)
             }
         }
         this.onNext()
@@ -146,7 +146,7 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
             // Make copy so it can be edited
             const ratingPair = Util.deepCopy(this.state.ratingPair)
             ratingPair.result = Test.RatingResult.SAME
-            await this.props.onRate(ratingPair)
+            this.props.onRate(ratingPair)
         }
         this.onNext()
     }
@@ -158,11 +158,11 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
             const ratingPair = Util.deepCopy(this.state.ratingPair)
             if (this.state.isFlipped) {
                 ratingPair.result = Test.RatingResult.SECOND
-                await this.props.onRate(ratingPair)
+                this.props.onRate(ratingPair)
             }
             else {
                 ratingPair.result = Test.RatingResult.FIRST
-                await this.props.onRate(ratingPair)
+                this.props.onRate(ratingPair)
             }
         }
         this.onNext()
@@ -233,8 +233,8 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
         const maxLength = Math.max(activities1.length, activities2.length)
         const replayError = new CLM.ReplayErrorTranscriptValidation()
         for (let i = 0; i < maxLength; i = i + 1) {
-            const activity1 = activities1[i] as BB.Activity
-            const activity2 = activities2[i] as BB.Activity
+            const activity1 = activities1[i]
+            const activity2 = activities2[i]
             if (!OBIUtils.isSameActivity(activity1, activity2)) {
                 if (activity1) {
                     activity1.channelData.clData = {...activity1.channelData.clData, replayError  }
@@ -252,7 +252,7 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
 
         // Initialize activity heights for lookup
         const activityHeights: ActivityHeight[] = []
-        for (const [index, activity] of Object.entries(activities1 as BB.Activity[])) {
+        for (const [index, activity] of Object.entries(activities1)) {
             if (activity.id) {
                 const activityHeight: ActivityHeight = {
                     sourceName: ratingPair.sourceNames[0],
@@ -264,7 +264,7 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
                 activityHeights.push(activityHeight)
             }
         }
-        for (const [index, activity] of Object.entries(activities2 as BB.Activity[])) {
+        for (const [index, activity] of Object.entries(activities2)) {
             if (activity.id) {
                 const activityHeight: ActivityHeight = {
                     sourceName: ratingPair.sourceNames[1],

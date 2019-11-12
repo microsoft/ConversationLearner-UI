@@ -349,8 +349,8 @@ class Testing extends React.Component<Props, ComponentState> {
                 doneCount: -1,
                 testItems: []
             })
-            this.onTranscriptsChanged()
-            this.onSaveSet()
+            await this.onTranscriptsChanged()
+            await this.onSaveSet()
         }
         else {
             // Call myself a again after delay
@@ -433,7 +433,7 @@ class Testing extends React.Component<Props, ComponentState> {
             isRateDialogsOpen: false
         })
         await this.calcRankings()
-        this.onSaveSet()
+        await this.onSaveSet()
     }
 
     async calcRankings() {
