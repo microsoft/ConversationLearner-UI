@@ -788,7 +788,7 @@ class Container extends React.Component<Props, ComponentState> {
         if (this.state.selectedCondition) {
             const actionsUsingCondition = getUpdatedActionsUsingCondition(this.props.actions, this.state.selectedCondition, condition)
             for (const action of actionsUsingCondition) {
-                await (this.props.editActionThunkAsync(this.props.app.appId, action) as any) as Promise<CLM.ActionBase>
+                this.props.editActionThunkAsync(this.props.app.appId, action)
             }
         }
 

@@ -226,22 +226,23 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                 return score
             },
             render: (action, component) => {
-                let fieldContent: number | string = (action as CLM.ScoredAction).score
+                const fieldContent: number = (action as CLM.ScoredAction).score
+                let fieldContentString: string
                 if (fieldContent) {
-                    fieldContent = `${(fieldContent as number * 100).toFixed(1)}%`
+                    fieldContentString = `${(fieldContent * 100).toFixed(1)}%`
                 } else if (component.isMasked(action.actionId)) {
-                    fieldContent = "Masked"
+                    fieldContentString = "Masked"
                 } else {
                     const isAvailable = component.isUnscoredActionAvailable(action as CLM.UnscoredAction);
                     if (isAvailable) {
-                        fieldContent = (component.props.dialogType !== CLM.DialogType.TEACH || component.props.historyItemSelected)
+                        fieldContentString = (component.props.dialogType !== CLM.DialogType.TEACH || component.props.historyItemSelected)
                             ? '-' : "Training...";
                     }
                     else {
-                        fieldContent = "Disqualified";
+                        fieldContentString = "Disqualified";
                     }
                 }
-                return <span className={OF.FontClassNames.mediumPlus} data-testid="action-scorer-score">{fieldContent}</span>
+                return <span className={OF.FontClassNames.mediumPlus} data-testid="action-scorer-score">{fieldContentString}</span>
             }
         },
         {
