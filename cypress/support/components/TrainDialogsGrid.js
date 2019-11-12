@@ -29,15 +29,6 @@ export function EntityDropDownFilter() { cy.Get('[data-testid="dropdown-filter-b
 export function ActionDropDownFilter() { cy.Get('[data-testid="dropdown-filter-by-action"]') }
 export function ClickTraining(row) { cy.Get('[data-testid="train-dialogs-description"]').then(elements => { cy.wrap(elements[row]).Click({force: true}) }) }
 
-// TODO: Rework this as well
-// TODO: Rework this as well
-// TODO: Rework this as well
-export function WaitForGridReadyThen(expectedRowCount, functionToRunAfterGridIsReady) {
-  cy.Get('[data-testid="train-dialogs-turns"]', { timeout: 10000 })
-    .should(elements => { expect(elements).to.have.length(expectedRowCount) })
-    .then(() => { functionToRunAfterGridIsReady() })
-}
-
 // These functions circumvent the Cypress retry logic by using jQuery
 export function GetFirstInputs() { return helpers.StringArrayFromElementText('[data-testid="train-dialogs-first-input"]') }
 export function GetLastInputs() { return helpers.StringArrayFromElementText('[data-testid="train-dialogs-last-input"]') }
@@ -370,9 +361,6 @@ export class TdGrid {
     }
   }
 
-// TODO: VERIFY THIS WITH Train\DisqualifyingEntities.spec.js
-// TODO: VERIFY THIS WITH Train\DisqualifyingEntities.spec.js
-// TODO: VERIFY THIS WITH Train\DisqualifyingEntities.spec.js
   static VerifySavedTrainDialogIsInGridAlongWithAllOtherExpectedTDs() {
     VerifyListOfTrainDialogs(TdGrid.currentData)
   }
