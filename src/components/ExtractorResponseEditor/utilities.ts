@@ -340,7 +340,7 @@ function convertSegmentsToSlateValue(normalizedSegements: models.ISegement[], in
             }
         })
 
-    const document = {
+    return {
         "document": {
             "nodes": [
                 {
@@ -353,10 +353,7 @@ function convertSegmentsToSlateValue(normalizedSegements: models.ISegement[], in
             ]
         }
     }
-
-    return document
 }
-
 
 /**
  * Note: this is more like a negative match used to determine characters that split the string instead of
@@ -371,7 +368,6 @@ export const tokenizeRegex = /\s+|[.?,!]/g
  *
  * @param text plain text
  * @param customEntities array of entities
- * @param inlineType
  */
 export const convertEntitiesAndTextToTokenizedEditorValue = (text: string, customEntities: models.IGenericEntity<any>[], inlineNodeType: string) => {
     const labeledTokens = labelTokens(tokenizeText(text, tokenizeRegex), customEntities)
@@ -543,7 +539,7 @@ export const convertGenericEntityToPredictedEntity = (entities: CLM.EntityBase[]
     // If predicted entity doesn't exist, re-construct predicted entity object using the option/entity chosen by the user and the selected text
     // Such as the case where we're editing the extract response and adding a new entity
     const option = ge.data.option
-    const text = ge.data.text || ''
+    const text = ge.data.text ?? ''
 
     if (option.type !== CLM.EntityType.LUIS) {
         console.warn(`convertGenericEntityToPredictedEntity option selected as option type other than LUIS, this will most likely cause an error`)
@@ -597,7 +593,7 @@ export const convertExtractorResponseToEditorModels = (extractResponse: CLM.Extr
         .filter(ipe => ipe.entity !== null)
 
     const customEntities = internalPredictedEntities
-        .filter(({ entity }) => entity && entity.entityType === CLM.EntityType.LUIS)
+        .filter(({ entity }) => entity?.entityType === CLM.EntityType.LUIS)
         .map(({ entity, predictedEntity }) => convertPredictedEntityToGenericEntity(predictedEntity, entity!.entityName, util.entityDisplayName(entity!)))
 
     const preBuiltEntities = internalPredictedEntities
@@ -611,4 +607,3 @@ export const convertExtractorResponseToEditorModels = (extractResponse: CLM.Extr
         preBuiltEntities
     }
 }
-

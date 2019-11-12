@@ -172,7 +172,7 @@ export class TestSet {
     addTestItem(item: TestItem): void {
         // Check that is a valid transcript
         if (!item.transcript || item.transcript.length === 0) {
-            throw new Error("Transcript has no rounds")
+            throw new Error(`Transcript has no rounds. ConversationID = ${item.conversationId}`)
         }
         if (!item.transcript[0].conversation || !item.transcript[0].conversation.id) {
             throw new Error("Transcript does not have a conversationId")

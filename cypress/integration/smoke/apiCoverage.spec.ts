@@ -96,7 +96,7 @@ describe('Scenario 01 - API Coverage - Exercise all major use cases', () => {
             util.inputText(testData.dialog.input01)
 
             cy.get('body')
-                .trigger(constants.events.selectWord, { detail: testData.dialog.word01 })
+                .trigger(constants.events.selectWord, { detail: { phrase: testData.dialog.word01, inex: 0 } })
 
             cy.get(s.entityPicker.inputSearch)
                 // TODO: Why?  Sometimes there is a glitch in what it types.
@@ -118,7 +118,7 @@ describe('Scenario 01 - API Coverage - Exercise all major use cases', () => {
             util.inputText(testData.dialog.input02)
 
             cy.get('body')
-                .trigger(constants.events.selectWord, { detail: testData.dialog.word02 })
+                .trigger(constants.events.selectWord, { detail: { phrase: testData.dialog.word02, inex: 0 } })
 
             cy.get(s.entityPicker.buttonNew)
                 .click()
@@ -254,7 +254,7 @@ describe('Scenario 01 - API Coverage - Exercise all major use cases', () => {
             cy.get(s.webChat.buttonAddInput)
                 .click()
 
-            cy.get(s.dialogModal.branchInput)
+            cy.get(s.addInputModal.branchInput)
                 .type(testData.dialog.userInput)
 
             cy.get(s.dialogModal.branchSubmit)
@@ -289,6 +289,9 @@ describe('Scenario 01 - API Coverage - Exercise all major use cases', () => {
 
             cy.get(s.logDialogs.buttonCreate)
                 .click()
+
+            cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+                .should('not.exist')
         })
 
         it('should create a log dialog', () => {
@@ -343,7 +346,7 @@ describe('Scenario 01 - API Coverage - Exercise all major use cases', () => {
 
             // This assumes the extraction from last edit was trained and 'one' will be labeled
             cy.get('body')
-                .trigger(constants.events.selectWord, { detail: 'prefix' })
+                .trigger(constants.events.selectWord, { detail: { phrase: 'prefix', inex: 0 } })
 
             cy.get(s.entityPicker.inputSearch)
                 .wait(100)
@@ -374,7 +377,7 @@ describe('Scenario 01 - API Coverage - Exercise all major use cases', () => {
 
             // remove any / first label
             cy.get(s.extractionEditor.slateEditor)
-                .get('.cl-entity-node--custom')
+                .get(s.extractionEditor.customNode)
                 .click()
                 .find(s.extractionEditor.buttonRemoveLabel)
                 .click()

@@ -4,7 +4,6 @@
  */
 import * as React from 'react'
 import * as OF from 'office-ui-fabric-react'
-import { returntypeof } from 'react-redux-typescript'
 import { connect } from 'react-redux'
 import { State } from '../../types'
 import './SpinnerWindow.css'
@@ -44,7 +43,7 @@ const mapStateToProps = (state: State) => {
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
-const stateProps = returntypeof(mapStateToProps)
-type Props = typeof stateProps
+type stateProps = ReturnType<typeof mapStateToProps>
+type Props = stateProps
 
-export default connect<typeof stateProps>(mapStateToProps)(SpinnerWindow)
+export default connect<stateProps>(mapStateToProps)(SpinnerWindow)

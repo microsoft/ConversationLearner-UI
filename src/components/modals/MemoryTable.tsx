@@ -5,7 +5,6 @@
 import * as React from 'react'
 import * as CLM from '@conversationlearner/models'
 import * as OF from 'office-ui-fabric-react'
-import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { State } from '../../types'
@@ -42,7 +41,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             isResizable: true,
             render: (entity, component) => {
                 const changeStatus = component.getMemoryChangeStatus(entity.entityName)
-                const changeClass = memoryChangeClassMap[changeStatus] || ''
+                const changeClass = memoryChangeClassMap[changeStatus] ?? ''
 
                 return <span className={`${OF.FontClassNames.mediumPlus} ${changeClass}`} data-testid="entity-memory-name">{entity.entityName}</span>
             },
@@ -60,7 +59,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
 
                 return (<React.Fragment>
                     {entityValues.map((value, i) => {
-                        const changeClass = memoryChangeClassMap[value.changeStatus] || ''
+                        const changeClass = memoryChangeClassMap[value.changeStatus] ?? ''
                         let renderedValue;
 
                         const valuesAsObject = component.valuesAsObject(value.displayText)
@@ -112,11 +111,11 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             maxWidth: 180,
             isResizable: true,
             getSortValue: entity => {
-                const display = entity.resolverType === undefined || entity.resolverType === null ? "none" : entity.resolverType;
+                const display = entity.resolverType ?? "none"
                 return display.toLowerCase();
             },
             render: entity => {
-                const display = entity.resolverType === undefined || entity.resolverType === null ? "none" : entity.resolverType
+                const display = entity.resolverType ?? "none"
                 if (display.toLowerCase() === "none") {
                     return (
                         <OF.Icon iconName="Remove" className="cl-icon" />
@@ -246,11 +245,11 @@ class MemoryTable extends React.Component<Props, ComponentState> {
         return unionMemoryValues.map((memoryValue, index) => {
             let changeStatus = MemoryChangeStatus.Unchanged
             // In old but not new
-            if (prevValues.indexOf(memoryValue.userText) >= 0 && curValues.indexOf(memoryValue.userText) < 0) {
+            if (prevValues.includes(memoryValue.userText) && !curValues.includes(memoryValue.userText)) {
                 changeStatus = MemoryChangeStatus.Removed
             }
             // In new but not old
-            else if (prevValues.indexOf(memoryValue.userText) < 0 && curValues.indexOf(memoryValue.userText) >= 0) {
+            else if (!prevValues.includes(memoryValue.userText) && curValues.includes(memoryValue.userText)) {
                 changeStatus = MemoryChangeStatus.Added
             }
 
@@ -367,8 +366,8 @@ export interface ReceivedProps {
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
-const stateProps = returntypeof(mapStateToProps);
-const dispatchProps = returntypeof(mapDispatchToProps);
-type Props = typeof stateProps & typeof dispatchProps & ReceivedProps & InjectedIntlProps
+type stateProps = ReturnType<typeof mapStateToProps>;
+type dispatchProps = ReturnType<typeof mapDispatchToProps>;
+type Props = stateProps & dispatchProps & ReceivedProps & InjectedIntlProps
 
-export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(MemoryTable) as any)
+export default connect<stateProps, dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(MemoryTable) as any)

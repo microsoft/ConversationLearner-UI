@@ -16,7 +16,6 @@ import { connect } from 'react-redux'
 import { State, AppCreatorType } from '../../../types'
 import { Expando, AppCreator, TextboxRestrictable, PackageCreator, ErrorInjectionEditor, PackageTable } from '../../../components/modals'
 import { bindActionCreators } from 'redux'
-import { returntypeof } from 'react-redux-typescript'
 import { FM } from '../../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import './Settings.css'
@@ -76,8 +75,8 @@ class Settings extends React.Component<Props, ComponentState> {
             appNameVal: app.appName,
             selectedEditingVersionOptionKey: this.props.editingPackageId,
             selectedLiveVersionOptionKey: app.livePackageId,
-            markdownVal: (app.metadata && app.metadata.markdown) ? app.metadata.markdown : '',
-            videoVal: (app.metadata && app.metadata.video) ? app.metadata.video : '',
+            markdownVal: app.metadata?.markdown ?? '',
+            videoVal: app.metadata?.video ?? '',
             botFrameworkAppsVal: app.metadata.botFrameworkApps,
             // For backward compatibility to cover undefined
             isLoggingOnVal: (app.metadata.isLoggingOn !== false),
@@ -180,8 +179,8 @@ class Settings extends React.Component<Props, ComponentState> {
             localeVal: app.locale,
             appIdVal: app.appId,
             appNameVal: app.appName,
-            markdownVal: (app.metadata && app.metadata.markdown) ? app.metadata.markdown : '',
-            videoVal: (app.metadata && app.metadata.video) ? app.metadata.video : '',
+            markdownVal: app.metadata?.markdown ? app.metadata.markdown : '',
+            videoVal: app.metadata?.video ? app.metadata.video : '',
             botFrameworkAppsVal: app.metadata.botFrameworkApps,
             isLoggingOnVal: app.metadata.isLoggingOn,
             edited: false,
@@ -606,8 +605,8 @@ export interface ReceivedProps {
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
-const stateProps = returntypeof(mapStateToProps);
-const dispatchProps = returntypeof(mapDispatchToProps);
-type Props = typeof stateProps & typeof dispatchProps & ReceivedProps & InjectedIntlProps;
+type stateProps = ReturnType<typeof mapStateToProps>;
+type dispatchProps = ReturnType<typeof mapDispatchToProps>;
+type Props = stateProps & dispatchProps & ReceivedProps & InjectedIntlProps;
 
-export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(Settings))
+export default connect<stateProps, dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(Settings))

@@ -19,7 +19,6 @@ import { autobind } from 'core-decorators';
 import { withRouter } from 'react-router-dom'
 import { RouteComponentProps } from 'react-router'
 import { State } from '../../types'
-import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
@@ -85,14 +84,14 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
             const haveHeights = this.state.activityHeights.length > 0 && this.state.activityHeights.filter(ah => ah.height === undefined).length === 0
             
             if (haveHeights) {
-                // If I have them calcluate padding to align acitivity horizontally
+                // If I have them calculate padding to align activity horizontally
                 const activityHeights = [...this.state.activityHeights]
                 const numActivities = Math.max(...Object.values(this.state.activityMap).map(ah => ah.length))
                 for (let index = 0; index < numActivities; index = index + 1) {
                     // Get max height for this index
                     const maxHeight = Math.max(...this.state.activityHeights
                         .filter(ah => ah.index === index) 
-                        .map(ah => ah.height || 0))
+                        .map(ah => ah.height ?? 0))
                     
                     const itemHeights = activityHeights.filter(ah => ah.index === index)
                     for (const activityHeight of itemHeights) {
@@ -120,7 +119,7 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
             // Find height lookup
             const activityHeight = this.state.activityHeights.find(ah => ah.id === activityProps.activity.id)
             
-            if (activityHeight && activityHeight.padding) {
+            if (activityHeight?.padding) {
                 padding = activityHeight.padding
             }
         }
@@ -384,7 +383,7 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
                                                 isOpen={rd.activities !== undefined}
                                                 key={`${rd.sourceName}-${this.state.webchatKey}`}
                                                 app={this.props.app}
-                                                history={rd.activities as any || []}
+                                                history={rd.activities ?? []}
                                                 onPostActivity={() => {}}
                                                 onSelectActivity={(activity) => this.onSelectActivity(rd.activities as any, activity)}
                                                 onScrollChange={this.onScrollChange}
@@ -466,8 +465,8 @@ export interface ReceivedProps {
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
-const stateProps = returntypeof(mapStateToProps)
-const dispatchProps = returntypeof(mapDispatchToProps)
-type Props = typeof stateProps & typeof dispatchProps & ReceivedProps & InjectedIntlProps & RouteComponentProps<any>
+type stateProps = ReturnType<typeof mapStateToProps>
+type dispatchProps = ReturnType<typeof mapDispatchToProps>
+type Props = stateProps & dispatchProps & ReceivedProps & InjectedIntlProps & RouteComponentProps<any>
 
-export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(withRouter(injectIntl(CompareDialogsModal)))
+export default connect<stateProps, dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(withRouter(injectIntl(CompareDialogsModal)))

@@ -6,7 +6,6 @@ import * as React from 'react'
 import * as CLM from '@conversationlearner/models'
 import * as OF from 'office-ui-fabric-react'
 import * as Util from '../../Utils/util'
-import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { State } from '../../types'
@@ -166,7 +165,7 @@ class MemorySetter extends React.Component<Props> {
                                             {entity.entityType === CLM.EntityType.ENUM ?
                                                 <OF.Dropdown
                                                     className="cl-input--inline"
-                                                    selectedKey={memoryValue.enumValueId || undefined}
+                                                    selectedKey={memoryValue.enumValueId ?? undefined}
                                                     onChange={(event, item) => this.onEnumChange(item, entity)}
                                                     options={entity.enumValues!.map<OF.IDropdownOption>(ev => {
                                                         return {
@@ -185,7 +184,7 @@ class MemorySetter extends React.Component<Props> {
                                                         id: FM.TEACHSESSIONINIT_INPUT_PLACEHOLDER,
                                                         defaultMessage: "Value..."
                                                     })}
-                                                    value={memoryValue.userText || ''}
+                                                    value={memoryValue.userText ?? ''}
                                                 />
                                             }
                                             {(editableEntities.length > 1) &&
@@ -241,8 +240,8 @@ export interface ReceivedProps {
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
-const stateProps = returntypeof(mapStateToProps);
-const dispatchProps = returntypeof(mapDispatchToProps);
-type Props = typeof stateProps & typeof dispatchProps & ReceivedProps & InjectedIntlProps
+type stateProps = ReturnType<typeof mapStateToProps>;
+type dispatchProps = ReturnType<typeof mapDispatchToProps>;
+type Props = stateProps & dispatchProps & ReceivedProps & InjectedIntlProps
 
-export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(MemorySetter))
+export default connect<stateProps, dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(MemorySetter))

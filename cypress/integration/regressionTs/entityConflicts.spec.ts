@@ -28,7 +28,7 @@ describe('Entity Conflicts', () => {
         function createModelToTestConflicts(wordToLabel: string, entityName: string) {
             cy.visit(`/`)
             util.importModel(testData.modelName, testData.modelFile)
-            cy.get(s.trainingStatus.running, { timeout: constants.training.timeout })
+            cy.wait(2000)
             cy.get(s.trainingStatus.completed, { timeout: constants.training.timeout })
 
             cy.get(s.model.buttonNavTrainDialogs)
@@ -37,12 +37,15 @@ describe('Entity Conflicts', () => {
             cy.get(s.trainDialogs.buttonNew)
                 .click()
 
+            cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+                .should('not.exist')
+
             util.inputText(testData.dialog.input)
 
             util.removeLabel(testData.dialog.word1)
 
             cy.get('body')
-                .trigger(constants.events.selectWord, { detail: wordToLabel })
+                .trigger(constants.events.selectWord, { detail: { phrase: wordToLabel, inex: 0 } })
 
             cy.get(s.entityPicker.options)
                 .contains(entityName)
@@ -63,6 +66,9 @@ describe('Entity Conflicts', () => {
 
             cy.get(s.trainDialog.buttonSave)
                 .click()
+
+            cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+                .should('not.exist')
         }
 
         describe('preserve entity presence but change location', () => {
@@ -171,6 +177,8 @@ describe('Entity Conflicts', () => {
         const labeledWord1 = 'test'
         const labeledWord2 = 'input'
         const testData = {
+            modelName: 'entityConflicts',
+            modelFile: 'z-entityConflicts.cl',
             entityName: 'testEntity',
             userInput1: `${labeledWord1} ${labeledWord2} 1`,
             userInput2: `${labeledWord1} ${labeledWord2} 2`,
@@ -179,9 +187,11 @@ describe('Entity Conflicts', () => {
         }
 
         before(() => {
-            models.ImportModel('z-entityConflicts', 'z-entityConflicts.cl')
+            cy.visit('/')
+            util.importModel(testData.modelName, testData.modelFile)
 
-            cy.WaitForTrainingStatusCompleted()
+            cy.wait(2000)
+            cy.get(s.trainingStatus.completed, { timeout: constants.training.timeout })
         })
 
         context('Train Dialogs', () => {
@@ -191,15 +201,30 @@ describe('Entity Conflicts', () => {
                     cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
                         .should('not.exist')
 
-                    model.NavigateToTrainDialogs()
-                    trainDialogsGrid.TdGrid.CreateNewTrainDialog()
-                    trainDialog.TypeYourMessage(testData.userInput1)
-                    entityDetectionPanel.RemoveEntityLabel(labeledWord1, testData.entityName)
-                    entityDetectionPanel.LabelTextAsEntity(labeledWord2, testData.entityName)
+                    cy.get(s.model.buttonNavTrainDialogs)
+                        .click()
+
+                    cy.get(s.trainDialogs.buttonNew)
+                        .click()
+
+                    util.inputText(testData.userInput1)
+                    util.removeLabel(labeledWord1)
+
+                    cy.get('body')
+                        .trigger(constants.events.selectWord, { detail: { phrase: labeledWord2, inex: 0 } })
+
+                    cy.get(s.entityPicker.inputSearch)
+                        .wait(100)
+                        .type(testData.entityName)
+                        .type('{enter}')
                 })
 
                 it('should show entity conflict modal when score actions is clicked', () => {
-                    trainDialog.ClickScoreActionsButton()
+                    cy.get(s.trainDialog.buttonScoreActions)
+                        .click()
+
+                    cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+                        .should('not.exist')
 
                     cy.get(s.dialogModal.entityConflictModal.modal)
                 })
@@ -208,25 +233,35 @@ describe('Entity Conflicts', () => {
                     cy.get(s.dialogModal.entityConflictModal.buttonCancel)
                         .click()
 
-                    entityDetectionPanel.VerifyTextIsLabeledAsEntity(labeledWord2, testData.entityName)
+                    // https://docs.cypress.io/api/commands/contains.html#Keep-the-form-as-the-subject
+                    cy.get(s.extractionEditor.customNode)
+                        .contains(s.extractionEditor.customNode, labeledWord2)
+                        .find(s.extractionEditor.customButton)
+                        .contains(testData.entityName)
                 })
 
                 it('should change the labels if Accept is clicked', () => {
-                    trainDialog.ClickScoreActionsButton()
+                    cy.get(s.trainDialog.buttonScoreActions)
+                        .click()
 
-                    cy.WaitForStableDOM()
+                    cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+                        .should('not.exist')
+
                     cy.get(s.dialogModal.entityConflictModal.buttonAccept)
                         .click()
 
                     // TODO: Selects score actions immediately, need to verify memory
-                    // entityDetectionPanel.VerifyTextIsLabeledAsEntity(labeledWord1, testData.entityName)
-                    trainDialog.SelectTextAction(testData.actionResponse)
-                    trainDialog.ClickAbandonDeleteButton()
+                    // trainDialog.VerifyEntityLabel(labeledWord1, testData.entityName)
+                    util.selectAction(s.trainDialog.actionScorerTextActions, testData.actionResponse)
+
+                    cy.get(s.trainDialog.buttonAbandon)
+                        .click()
 
                     cy.get(s.confirmCancelModal.buttonConfirm)
                         .click()
 
-                    cy.WaitForTrainingStatusCompleted()
+                    cy.wait(1000)
+                    cy.get(s.trainingStatus.completed, { timeout: constants.training.timeout })
                 })
             })
         })
@@ -244,41 +279,101 @@ describe('Entity Conflicts', () => {
 
                 // Create log dialogs (one for each test to isolate behavior)
                 (new Array<number>(4)).fill(0).forEach((_, i) => {
-                    logDialogs.CreateNewLogDialogButton()
-                    logDialog.TypeYourMessageValidateResponse(testData.userInput1, testData.actionResponse)
-                    // TODO: Why is this wait needed if we're waiting/validating response before next input
-                    cy.wait(500)
-                    logDialog.TypeYourMessageValidateResponse(testData.userInput2, testData.actionResponse)
-                    cy.wait(500)
-                    logDialog.TypeYourMessageValidateResponse(testData.userInput3, testData.actionResponse)
-                    logDialog.ClickDoneTestingButton()
+                    cy.get(s.logDialogs.buttonCreate)
+                        .click()
+
+                    cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+                        .should('not.exist')
+
+                    util.inputText(testData.userInput1)
+                    cy.get(s.webChat.messageFromBot, { timeout: constants.prediction.timeout })
+                        .contains(testData.actionResponse)
+
+                    util.inputText(testData.userInput2)
+                    cy.get(s.webChat.messageFromBot, { timeout: constants.prediction.timeout })
+                        .should($messages => {
+                            expect($messages).to.contain(testData.actionResponse)
+                            expect($messages).to.have.length(4)
+                        })
+
+                    util.inputText(testData.userInput3)
+                    cy.get(s.webChat.messageFromBot, { timeout: constants.prediction.timeout })
+                        .should($messages => {
+                            expect($messages).to.contain(testData.actionResponse)
+                            expect($messages).to.have.length(6)
+                        })
+
+                    cy.get(s.logDialog.buttonDone)
+                        .click()
+
+                    cy.get(s.logDialog.modal)
+                        .should('not.exist')
+
+                    cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+                        .should('not.exist')
                 })
 
                 // Change the labels on train dialogs to create conflict
-                model.NavigateToTrainDialogs();
+                cy.get(s.model.buttonNavTrainDialogs)
+                    .click()
 
                 cy.get(s.trainDialogs.descriptions)
                     .contains(testData.userInput1)
                     .click()
 
-                trainDialog.SelectChatTurnExactMatch(testData.userInput1)
-                entityDetectionPanel.RemoveEntityLabel(labeledWord1, testData.entityName)
-                entityDetectionPanel.LabelTextAsEntity(labeledWord2, testData.entityName)
-                trainDialog.ClickSubmitChangesButton()
+                cy.get(s.webChat.messageFromMe)
+                    .contains(testData.userInput1)
+                    .click()
 
-                trainDialog.SelectChatTurnExactMatch(testData.userInput2)
-                entityDetectionPanel.RemoveEntityLabel(labeledWord1, testData.entityName)
-                entityDetectionPanel.LabelTextAsEntity(labeledWord2, testData.entityName)
-                trainDialog.ClickSubmitChangesButton()
+                // Change labels on input 1
+                util.removeLabel(labeledWord1)
 
-                trainDialog.ClickSaveCloseButton()
+                cy.get('body')
+                    .trigger(constants.events.selectWord, { detail: { phrase: labeledWord2, inex: 0 } })
+
+                cy.get(s.entityPicker.inputSearch)
+                    .wait(100)
+                    .type(testData.entityName)
+                    .type('{enter}')
+
+                cy.get(s.extractionEditor.buttonSubmitChanges)
+                    .click()
+
+                cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+                    .should('not.exist')
+
+                // Change labels on input 2
+                cy.get(s.webChat.messageFromMe)
+                    .contains(testData.userInput2)
+                    .click()
+
+                util.removeLabel(labeledWord1)
+
+                cy.get('body')
+                    .trigger(constants.events.selectWord, { detail: { phrase: labeledWord2, inex: 0 } })
+
+                cy.get(s.entityPicker.inputSearch)
+                    .wait(100)
+                    .type(testData.entityName)
+                    .type('{enter}')
+
+                cy.get(s.extractionEditor.buttonSubmitChanges)
+                    .click()
+
+                cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+                    .should('not.exist')
+
+                cy.get(s.trainDialog.buttonSave)
+                    .click()
+
+                cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+                    .should('not.exist')
+
+                cy.get(s.model.buttonNavLogDialogs)
+                    .click()
             })
 
             describe('direct conversion without edit', () => {
-                before(() => {
-                    model.NavigateToLogDialogs()
-                })
-
                 it('clicking Save As Train dialog should show conflict modal', () => {
                     cy.get(s.logDialogs.description)
                         .contains(testData.userInput1)
@@ -336,7 +431,8 @@ describe('Entity Conflicts', () => {
                         cy.get(s.dialogModal.buttonSaveAsTrainDialog)
                             .click()
 
-                        cy.WaitForStableDOM()
+                        cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+                            .should('not.exist')
 
                         cy.get(s.logConversionConflictsModal.buttonAccept)
                             .click()
@@ -360,8 +456,22 @@ describe('Entity Conflicts', () => {
                             .contains(testData.userInput1)
                             .click()
 
+                        cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+                            .should('not.exist')
+
                         // Due to bug this has to be second input
-                        chatPanel.InsertUserInputAfter(testData.userInput3, 'New User Input')
+                        cy.get(s.webChat.messageFromMe)
+                            .contains(testData.userInput3)
+                            .click()
+
+                        cy.get(s.webChat.buttonAddInput)
+                            .click()
+
+                        cy.get(s.addInputModal.branchInput)
+                            .type('New User Input')
+
+                        cy.get(s.dialogModal.branchSubmit)
+                            .click()
 
                         cy.get(s.logConversionConflictsModal.modal, { timeout: 10000 })
                     })
@@ -373,8 +483,17 @@ describe('Entity Conflicts', () => {
                             .contains(testData.userInput1)
                             .click()
 
-                        // Get second bot action since there seems to be bug with inserting after first
-                        trainDialog.InsertBotResponseAfter(testData.actionResponse, null, 1)
+                        cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+                            .should('not.exist')
+
+                        // Get second bot action since there is to be bug with inserting after first
+                        cy.get(s.webChat.messageFromBot)
+                            .eq(2)
+                            .contains(testData.actionResponse)
+                            .click()
+
+                        cy.get(s.webChat.buttonAddAction)
+                            .click()
 
                         cy.get(s.logConversionConflictsModal.modal, { timeout: 10000 })
                     })
@@ -409,6 +528,9 @@ describe('Entity Conflicts', () => {
                         .should('not.exist')
 
                     cy.reload()
+
+                    cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+                        .should('not.exist')
                 })
             })
 
@@ -418,7 +540,7 @@ describe('Entity Conflicts', () => {
                         .contains(testData.userInput1)
                         .click()
 
-                    trainDialog.TypeYourMessage('Continued Log Dialog')
+                    util.inputText('Continued Log Dialog')
 
                     cy.get(s.logConversionConflictsModal.modal)
 
@@ -427,9 +549,19 @@ describe('Entity Conflicts', () => {
                     cy.get(s.logConversionConflictsModal.buttonAccept)
                         .click()
 
-                    trainDialog.ClickScoreActionsButton()
-                    trainDialog.SelectTextAction(testData.actionResponse)
-                    trainDialog.ClickSaveCloseButton()
+                    cy.get(s.trainDialog.buttonScoreActions)
+                        .click()
+
+                    cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+                        .should('not.exist')
+
+                    util.selectAction(s.trainDialog.actionScorerTextActions, testData.actionResponse)
+
+                    cy.get(s.trainDialog.buttonSave)
+                        .click()
+
+                    cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+                        .should('not.exist')
 
                     cy.WaitForStableDOM()
                     cy.get(s.mergeModal.buttonSaveAsIs)

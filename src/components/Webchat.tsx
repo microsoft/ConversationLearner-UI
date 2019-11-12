@@ -7,7 +7,6 @@ import * as BotChat from '@conversationlearner/webchat'
 import * as CLM from '@conversationlearner/models'
 import * as BB from 'botbuilder'
 import actions from '../actions'
-import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { State } from '../types'
@@ -95,8 +94,8 @@ export function renderActivity(
                     {children}
                 </div>
             </div>
-            {activityProps.selected && renderSelected && renderSelected(activityProps.activity as BB.Activity)}
-            {clData && clData.validWaitAction !== undefined ?
+            {activityProps.selected && renderSelected?.(activityProps.activity as BB.Activity)}
+            {clData?.validWaitAction !== undefined ?
                 (
                     <svg className="wc-message-downarrow">
                         <polygon
@@ -197,7 +196,7 @@ class Webchat extends React.Component<Props> {
                 ...dl,
                 postActivity: (activity: any) => {
                     this.props.onPostActivity(activity)
-                    if (this.props.disableDL && (activity.value && activity.value[SUBMIT_KEY])) {
+                    if (this.props.disableDL && activity.value?.[SUBMIT_KEY]) {
                         return Observable.empty()
                     }
                     return dl.postActivity(activity)
@@ -308,8 +307,8 @@ export interface ReceivedProps {
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
-const stateProps = returntypeof(mapStateToProps);
-const dispatchProps = returntypeof(mapDispatchToProps);
-type Props = typeof stateProps & typeof dispatchProps & ReceivedProps;
+type stateProps = ReturnType<typeof mapStateToProps>;
+type dispatchProps = ReturnType<typeof mapDispatchToProps>;
+type Props = stateProps & dispatchProps & ReceivedProps;
 
-export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(Webchat);
+export default connect<stateProps, dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(Webchat);

@@ -5,7 +5,6 @@
 import * as React from 'react'
 import { bindActionCreators } from 'redux'
 import { State } from '../types'
-import { returntypeof } from 'react-redux-typescript'
 import { connect } from 'react-redux'
 import * as ToolTip from './ToolTips/ToolTips'
 import * as OF from 'office-ui-fabric-react'
@@ -61,8 +60,8 @@ const mapStateToProps = (state: State, ownProps: any) => {
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
-const stateProps = returntypeof(mapStateToProps);
-const dispatchProps = returntypeof(mapDispatchToProps)
-type Props = typeof stateProps & typeof dispatchProps
+type stateProps = ReturnType<typeof mapStateToProps>
+type dispatchProps = ReturnType<typeof mapDispatchToProps>
+type Props = stateProps & dispatchProps
 
-export default connect<typeof stateProps, typeof dispatchProps, {}>(mapStateToProps, mapDispatchToProps)(HelpPanel);
+export default connect<stateProps, dispatchProps, {}>(mapStateToProps, mapDispatchToProps)(HelpPanel)

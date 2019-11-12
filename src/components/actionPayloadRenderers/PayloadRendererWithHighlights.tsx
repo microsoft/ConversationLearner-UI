@@ -21,12 +21,13 @@ interface NodeProps extends EntityComponentProps {
 }
 
 export const EntityHighlight = (props: NodeProps) => {
-    const isEntityMissing = props.node.data.get('missing')
-    const isEntityRequired = props.node.data.get('required')
-    const isEntityFilled = props.node.data.get('filled')
+    const isEntityCompleted = props.node.data.get('completed') === true
+    const isEntityMissing = props.node.data.get('missing') === true
+    const isEntityRequired = props.node.data.get('required') === true
+    const isEntityFilled = props.node.data.get('filled') === true
 
     const classNames = classnames({
-        'cl-action-payload-entity': true,
+        'cl-action-payload-entity': isEntityCompleted,
         'cl-action-payload-entity--filled': isEntityFilled,
         'cl-action-payload-entity--missing': isEntityMissing,
         'cl-action-payload-entity--required': isEntityRequired,
@@ -52,7 +53,6 @@ interface Props {
     slateValue: SlateValue
 }
 
-
 const renderNode = (props: any): React.ReactNode | void => {
     switch (props.node.type) {
         case NodeTypes.Mention:
@@ -72,7 +72,6 @@ const Component: React.FC<Props> = (props) => {
 
     return (
         <Editor
-            data-testid="action-scorer-text-response"
             className={editorClassnames}
             value={props.slateValue}
             renderNode={renderNode}
