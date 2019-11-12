@@ -305,7 +305,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     }
 
     componentDidUpdate(prevProps: Props, prevState: ComponentState) {
-        this.handleQueryParameters(this.props.location.search, prevProps.location.search)
+        void this.handleQueryParameters(this.props.location.search, prevProps.location.search)
     }
 
     async handleQueryParameters(newSearch: string, oldSearch?: string): Promise<void> {
@@ -335,7 +335,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     return
                 }
             }
-            this.openLogDialog(logDialog)
+            await this.openLogDialog(logDialog)
         }
     }
 
@@ -367,7 +367,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
 
     @autobind
     onChangeSearchString(event?: React.ChangeEvent<HTMLInputElement>, newValue?: string) {
-        if (typeof newValue === 'undefined') {
+        if (newValue === undefined) {
             return
         }
 
@@ -1080,7 +1080,6 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                             onItemInvoked={logDialog => this.onClickLogDialogItem(logDialog)}
                         />
                     </>
-
 
                     <ChatSessionModal
                         app={this.props.app}

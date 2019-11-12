@@ -1,3 +1,7 @@
+/**
+ * Copyright (c) Microsoft Corporation. All rights reserved.
+ * Licensed under the MIT License.
+ */
 import * as React from 'react'
 import * as OF from 'office-ui-fabric-react'
 import * as Util from '../../Utils/util'
@@ -10,13 +14,13 @@ import { conditionDisplay, convertConditionToConditionalTag, isConditionEqual } 
 import './ConditionModal.css'
 
 const entityIsAllowedInCondition = (entity: CLM.EntityBase): boolean => {
-    if (entity.entityType == CLM.EntityType.ENUM) {
+    if (entity.entityType === CLM.EntityType.ENUM) {
         return true
     }
 
-    if (entity.entityType == CLM.EntityType.LUIS
-        && entity.resolverType == PreBuilts.Number
-        && entity.isResolutionRequired == true) {
+    if (entity.entityType === CLM.EntityType.LUIS
+        && entity.resolverType === PreBuilts.Number
+        && entity.isResolutionRequired === true) {
         return true
     }
 
@@ -67,7 +71,7 @@ const convertConditionTypesToDropdownOptions = (conditionTypes: object): Operato
 
 const operatorOptions = convertConditionTypesToDropdownOptions(CLM.ConditionType)
 // We know EQUAL will be found since it was created from enum type in line above
-const equalOperatorOption = operatorOptions.find(o => o.data == CLM.ConditionType.EQUAL)!
+const equalOperatorOption = operatorOptions.find(o => o.data === CLM.ConditionType.EQUAL)!
 
 interface EnumOption extends OF.IDropdownOption {
     data: CLM.EnumValue
@@ -134,13 +138,13 @@ const Component: React.FC<Props> = (props) => {
     const [showNumberValue, setShowNumberValue] = React.useState(true)
     const [numberValue, setNumberValue] = React.useState(0)
     const [enumValueOptions, setEnumValueOptions] = React.useState<EnumOption[]>([])
+    const [selectedEnumValueOption, setSelectedEnumValueOption] = React.useState<EnumOption>()
     React.useLayoutEffect(() => {
         if (enumValueOptions.length > 0) {
             setSelectedEnumValueOption(enumValueOptions[0])
         }
     }, [enumValueOptions])
 
-    const [selectedEnumValueOption, setSelectedEnumValueOption] = React.useState<EnumOption>()
     const onChangeEnumValueOption = (event: React.FormEvent<HTMLDivElement>, option?: EnumOption) => {
         if (!option) {
             return
@@ -158,10 +162,10 @@ const Component: React.FC<Props> = (props) => {
             return
         }
 
-        const entity = selectedEntityOption.data as CLM.EntityBase
+        const entity = selectedEntityOption.data
         if (entity.entityType === CLM.EntityType.ENUM && entity.enumValues) {
-            const enumValueOptions = entity.enumValues.map(ev => convertEnumValueToDropdownOption(ev))
-            setEnumValueOptions(enumValueOptions)
+            const valueOptions = entity.enumValues.map(ev => convertEnumValueToDropdownOption(ev))
+            setEnumValueOptions(valueOptions)
             // Only allow equal operator when selecting enum
             setSelectedOperatorOption(equalOperatorOption)
             setShowNumberValue(false)
@@ -227,26 +231,26 @@ const Component: React.FC<Props> = (props) => {
             return
         }
 
-        const condition: CLM.Condition = {
+        const conditionFromState: CLM.Condition = {
             entityId: selectedEntityOption.data.entityId,
             condition: selectedOperatorOption.data
         }
 
         if (showNumberValue) {
-            condition.value = numberValue
+            conditionFromState.value = numberValue
         }
         else if (selectedEnumValueOption) {
             // TODO: Fix enum types
-            condition.valueId = selectedEnumValueOption.data.enumValueId!
+            conditionFromState.valueId = selectedEnumValueOption.data.enumValueId!
         }
 
-        return condition
+        return conditionFromState
     }
 
     const onClickCreate = () => {
-        const condition = createConditionFromState()
-        if (condition) {
-            props.onClickCreate(condition)
+        const conditionFromState = createConditionFromState()
+        if (conditionFromState) {
+            props.onClickCreate(conditionFromState)
         }
         else {
             console.warn(`User attempted to create condition but condition did not exist. Usually means there is bad state calculation in modal.`)
@@ -257,8 +261,8 @@ const Component: React.FC<Props> = (props) => {
         props.onClickCancel()
     }
 
-    const onClickExistingCondition = (condition: CLM.Condition) => {
-        props.onClickCreate(condition)
+    const onClickExistingCondition = (theCondition: CLM.Condition) => {
+        props.onClickCreate(theCondition)
     }
 
     const isOperatorDisabled = selectedEntityOption?.data.entityType === CLM.EntityType.ENUM
@@ -307,7 +311,7 @@ const Component: React.FC<Props> = (props) => {
                                     <OF.SpinButton
                                         value={numberValue.toString()}
                                         onBlur={(event: React.FocusEvent<HTMLInputElement>) => {
-                                            const value = parseInt(event.target.value)
+                                            const value = parseInt(event.target.value, 10)
                                             if (!Number.isNaN(value)) {
                                                 setNumberValue(value)
                                             }
@@ -329,15 +333,17 @@ const Component: React.FC<Props> = (props) => {
 
                         <h2 style={{ fontWeight: OF.FontWeights.semibold as number }} className={OF.FontClassNames.large}>Existing Conditions:</h2>
                         <div className="cl-condition-creator__existing-conditions" data-testid="condition-creator-existing-conditions">
-                            {conditionsUsingEntity.map(condition => {
-                                const conditionalTag = convertConditionToConditionalTag(condition, props.entities)
+                            {conditionsUsingEntity.map(cond => {
+                                const conditionalTag = convertConditionToConditionalTag(cond, props.entities)
                                 const isActive = currentCondition
-                                    ? isConditionEqual(condition, currentCondition)
+                                    ? isConditionEqual(cond, currentCondition)
                                     : false
 
                                 return <React.Fragment key={conditionalTag.key}>
-                                    <div className="cl-condition-creator__existing-condition"
-                                        data-testid="condition-creator-modal-existing-condition">
+                                    <div
+                                        className="cl-condition-creator__existing-condition"
+                                        data-testid="condition-creator-modal-existing-condition"
+                                    >
                                         {conditionalTag.name}
                                     </div>
 
@@ -365,8 +371,7 @@ const Component: React.FC<Props> = (props) => {
         </div>
 
         <div className="cl-modal_footer cl-modal-buttons">
-            <div className="cl-modal-buttons_secondary">
-            </div>
+            <div className="cl-modal-buttons_secondary" />
             <div className="cl-modal-buttons_primary">
                 <OF.PrimaryButton
                     data-testid="condition-creator-button-create"
