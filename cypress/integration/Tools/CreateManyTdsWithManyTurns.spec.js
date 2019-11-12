@@ -57,7 +57,7 @@ describe('Create many TDs for New Entity Label test - Train Dialog', () => {
   let userTurns = new UserTurns()
 
   context('Create many TDs', () => {
-    for (let iTD = 32; iTD < 33; iTD++) {
+    for (let iTD = 0; iTD < 33; iTD++) {
       context(`Create Train Dialog #${iTD}`, () => {
         it('New Train Dialog', () => {
           trainDialogsGrid.TdGrid.CreateNewTrainDialog()
