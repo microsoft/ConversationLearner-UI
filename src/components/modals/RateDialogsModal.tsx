@@ -129,11 +129,11 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
             const ratingPair = Util.deepCopy(this.state.ratingPair)
             if (this.state.isFlipped) {
                 ratingPair.result = Test.RatingResult.FIRST
-                await this.props.onRate(ratingPair)
+                this.props.onRate(ratingPair)
             }
             else {
                 ratingPair.result = Test.RatingResult.SECOND
-                await this.props.onRate(ratingPair)
+                this.props.onRate(ratingPair)
             }
         }
         this.onNext()
@@ -146,7 +146,7 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
             // Make copy so it can be edited
             const ratingPair = Util.deepCopy(this.state.ratingPair)
             ratingPair.result = Test.RatingResult.SAME
-            await this.props.onRate(ratingPair)
+            this.props.onRate(ratingPair)
         }
         this.onNext()
     }
@@ -158,11 +158,11 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
             const ratingPair = Util.deepCopy(this.state.ratingPair)
             if (this.state.isFlipped) {
                 ratingPair.result = Test.RatingResult.SECOND
-                await this.props.onRate(ratingPair)
+                this.props.onRate(ratingPair)
             }
             else {
                 ratingPair.result = Test.RatingResult.FIRST
-                await this.props.onRate(ratingPair)
+                this.props.onRate(ratingPair)
             }
         }
         this.onNext()
