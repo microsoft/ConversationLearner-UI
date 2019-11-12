@@ -18,15 +18,17 @@ export class TrainingStatus {
       this.pollingStoppedWarning = false
       this.failed = false
       this.completed = false
+      this.confirmedCompleted = false
       this.currentStatus = "unknown"
-      
+      this.startTime = new Date().getTime()
+
       this._GetTrainingStatus()
   
       if (this.completed) {
         // This is most likely due to the previous training. So we need to wait until we see a different
         // status, most likely queued or running, before we can accept a completed status, however
         // 4 seconds is the longest we will wait for that before we call it complete.
-        this.waitForTrainingStatusQueuedOrRunningTime = new Date().getTime() + 4000
+        this.waitForTrainingStatusQueuedOrRunningTime = this.startTime + 4000
       } else {
         this.waitForTrainingStatusQueuedOrRunningTime = 0
       }
@@ -35,17 +37,22 @@ export class TrainingStatus {
     WaitForCompleted() { this._RetryWaitForRunning() }
   
   // PRIVATE:
-    // Wait retry loop for any state other than running. 
+    // Wait retry loop while in any state except running (usually Queued state). 
     // This loop can wait as long as 5 minutes.
     _RetryWaitForRunning() {
+      const startTime = new Date().getTime()
       cy.log('Training Status is NOT Running - Waiting for it to Start Running')
       cy.wrap(1, { timeout: 5 * 60 * 1000 }).should(() => {
+
         if (this._EvaluateTrainingStatus()) { 
           return // Because the status is now complete!
         }
   
-        if (!this.running) { 
-          throw new Error(`Stauts is ${this.currentStatus} - Still Waiting for Status == Running or Completed`) 
+        if (!this.running) {
+          const currentTime = new Date().getTime()
+          const totalWaitTime = Math.floor((currentTime - this.startTime) / 1000)
+          const queuedWaitTime = Math.floor((currentTime - startTime) / 1000)
+          throw new Error(`Stauts is ${this.currentStatus} - Still Waiting for Status == Running or Completed - Queued Wait Time: ${queuedWaitTime} - Total Wait Time: ${totalWaitTime}`)
         }
   
         // The status is now Running so we need to wait a different 
@@ -55,16 +62,20 @@ export class TrainingStatus {
     }
   
     // Wait retry loop while in the running state. 
-    // This loop can wait as long as 40 seconds.
+    // This loop can wait as long as 2 minutes.
     _RetryWaitForCompleted() {
+      const startTime = new Date().getTime()
       cy.log('Training Status is Running - Waiting for it to Complete')
-      cy.wrap(1, { timeout: 40 * 1000 }).should(() => {
+      cy.wrap(1, { timeout: 2 * 60 * 1000 }).should(() => {
         if (this._EvaluateTrainingStatus()) { 
           return // Because the status is now complete!
         }
         
-        if (this.running) { 
-          throw new Error(`Stauts is ${this.currentStatus} - Still Waiting for Status == Completed`)
+        if (this.running) {
+          const currentTime = new Date().getTime()
+          const totalWaitTime = Math.floor((currentTime - this.startTime) / 1000)
+          const runningWaitTime = Math.floor((currentTime - startTime) / 1000)
+          throw new Error(`Stauts is ${this.currentStatus} - Still Waiting for Status == Completed - Running Wait Time: ${runningWaitTime} - Total Wait Time: ${totalWaitTime}`)
         }
   
         // The status is no longer Running so we need to wait a different 
@@ -112,13 +123,16 @@ export class TrainingStatus {
   
     // Returns true when the training status is complete
     _EvaluateTrainingStatus() {
+      if (this.confirmedCompleted) { return true }
+
       const funcName = 'TrainingStatus._MonitorTrainingStatus'
       this._GetTrainingStatus()
       const currentTime = new Date().getTime()
   
       if (this.completed) {
         if (currentTime > this.waitForTrainingStatusQueuedOrRunningTime) {
-          helpers.ConLog(funcName, 'Training Status IS COMPLETED!')
+          helpers.ConLog(funcName, `Training Status IS COMPLETED! - Total wait time: ${Math.floor((currentTime - this.startTime) / 1000)} seconds`)
+          this.confirmedCompleted = true
           return true
         }
         helpers.ConLog(funcName, 'Waiting to see queued or running before we can accept the current completed status')
