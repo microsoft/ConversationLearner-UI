@@ -57,7 +57,7 @@ describe('Entity Labeling - Create Model', () => {
     it('Label multiple words as the same entity.', () => {
       train.TypeYourMessage('This is Frog and Tag.')
       memoryTableComponent.VerifyEntityValues('multi', ['Tag'])
-      entityDetectionPanel.VerifyEntityLabel('Tag', 'multi')
+      entityDetectionPanel.VerifyTextIsLabeledAsEntity('Tag', 'multi')
       entityDetectionPanel.LabelTextAsEntity('Frog', 'multi', 0, false)
       train.ClickScoreActionsButton()
       memoryTableComponent.VerifyEntityValues('multi', ['Tag', 'Frog'])
@@ -73,8 +73,8 @@ describe('Entity Labeling - Create Model', () => {
     it('Reverse the labeled words and once again label them as the same entity.', () => {
       train.TypeYourMessage('This is Tag and Frog.')
       memoryTableComponent.VerifyEntityValues('multi', ['Tag', 'Frog'])
-      entityDetectionPanel.VerifyEntityLabel('Tag', 'multi')
-      entityDetectionPanel.VerifyEntityLabel('Frog', 'multi')
+      entityDetectionPanel.VerifyTextIsLabeledAsEntity('Tag', 'multi')
+      entityDetectionPanel.VerifyTextIsLabeledAsEntity('Frog', 'multi')
       train.ClickScoreActionsButton()
       train.SelectTextAction('Hi')
 

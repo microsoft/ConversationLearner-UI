@@ -38,8 +38,8 @@ describe('New Entity Label on Existing Phrase 2 - Entity Labeling', () => {
     it('Score Actions, verify that the Entitly Label Conflict modal pops up and that we can close it without change to our labeling', () => {
       train.ClickScoreActionsButton()
       entityDetectionPanel.VerifyEntityLabelConflictPopupAndClose(undefined, [{ text: 'Two', entity: 'anEntity' }, { text: 'phrase', entity: 'anEntity' }])
-      entityDetectionPanel.VerifyEntityLabel('Two', 'anEntity')
-      entityDetectionPanel.VerifyEntityLabel('phrase', 'anEntity')
+      entityDetectionPanel.VerifyTextIsLabeledAsEntity('Two', 'anEntity')
+      entityDetectionPanel.VerifyTextIsLabeledAsEntity('phrase', 'anEntity')
     })
 
     it('Change to Previously Submitted Labels from other Train Dialogs...after we Score Actions', () => {
@@ -73,7 +73,7 @@ describe('New Entity Label on Existing Phrase 2 - Entity Labeling', () => {
 
     it('Verify that the affected turn is now Entity labeled', () => {
       chatPanel.SelectChatTurnExactMatch('Two instances of this phrase there are.')
-      entityDetectionPanel.VerifyEntityLabel('Two', 'anEntity')
+      entityDetectionPanel.VerifyTextIsLabeledAsEntity('Two', 'anEntity')
     })
 
     it('Click Replay button and verify it clears the warning for this Train Dialog', () => {
@@ -93,7 +93,7 @@ describe('New Entity Label on Existing Phrase 2 - Entity Labeling', () => {
 
     it('Verify that the affected turn is now Entity labeled', () => {
       chatPanel.SelectChatTurnExactMatch('Two instances of this phrase there are.')
-      entityDetectionPanel.VerifyEntityLabel('Two', 'anEntity')
+      entityDetectionPanel.VerifyTextIsLabeledAsEntity('Two', 'anEntity')
     })
 
     it('Click Replay button and verify it clears the warning for this Train Dialog', () => {

@@ -46,7 +46,7 @@ describe('Disqualifying Entities - Train', () => {
     context('2nd Round', () => {
       it('Should type in another user utterance, verify it is labled as the "name" Entity and click Score Actions button', () => {
         train.TypeYourMessage('Sam')
-        entityDetectionPanel.VerifyEntityLabel('Sam', 'name')
+        entityDetectionPanel.VerifyTextIsLabeledAsEntity('Sam', 'name')
         train.ClickScoreActionsButton()
       })
 
@@ -126,7 +126,7 @@ describe('Disqualifying Entities - Train', () => {
     context('2nd Round', () => {
       it('Should type in a user utterance and click Score Actions button', () => {
         train.TypeYourMessage('Sandeep')
-        entityDetectionPanel.VerifyEntityLabel('Sandeep', 'name')
+        entityDetectionPanel.VerifyTextIsLabeledAsEntity('Sandeep', 'name')
         train.ClickScoreActionsButton()
       })
 

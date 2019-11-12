@@ -57,7 +57,7 @@ describe('New Entity Label on Existing Phrase 3 - Entity Labeling', () => {
 
       it('Verify that the affected turn is now Entity labeled', () => {
         chatPanel.SelectChatTurnExactMatch("Pearls of wisdom are useless unless diligently applied to one's own life.")
-        entityDetectionPanel.VerifyEntityLabel('wisdom', 'anEntity')
+        entityDetectionPanel.VerifyTextIsLabeledAsEntity('wisdom', 'anEntity')
       })
 
       it('Click Replay button and verify it clears the warning for this Train Dialog', () => {

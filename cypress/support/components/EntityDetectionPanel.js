@@ -5,17 +5,6 @@
 
 import * as helpers from '../Helpers'
 
-// TODO - REMOVE THIS BEFORE CODE REVIEW
-// TODO - REMOVE THIS BEFORE CODE REVIEW
-// TODO - REMOVE THIS BEFORE CODE REVIEW
-export function XLabelTextAsEntity(text, entity, index = 0, itMustNotBeLabeledYet = true) {
-  cy.Get('body').trigger('Test_SelectWord', { detail: { phrase: text, index: index } })
-  cy.WaitForStableDOM().then(() => {
-    const editorContainerElements = _GetEditorContainerForEntityDetectionPanel(index)
-    cy.wrap(editorContainerElements).find('[data-testid="fuse-match-option"]').contains(entity).Click()
-  })
-}
-
 export function TypeAlternativeInput(trainMessage) { cy.Get('[data-testid="entity-extractor-alternative-input-text"]').type(`${trainMessage}{enter}`) }
 
 export function ClickEntityDetectionToken(tokenValue) { cy.Get('[data-testid="token-node-entity-value"]').contains(tokenValue).Click() }
@@ -27,15 +16,12 @@ export function VerifyEntityLabelUndoButtonIsEnabled() { cy.Get(EntityLabelUndoB
 export function ClickEntityLabelUndoButton() { cy.Get(EntityLabelUndoButtonSelector).Click() }
 
 // expectedEntities is a string segment that you will see in the UI warning message.
-export function VerifyDuplicateEntityLabelsWarning(expectedEntities) { cy.Get('[data-testid="entity-extractor-duplicate-entity-warning"]').contains(`Entities that are not multi-value (i.e. ${expectedEntities}) will only store the last labelled utterance`) }
-export function VerifyNoDuplicateEntityLabelsWarning() { cy.DoesNotContain('[data-testid="entity-extractor-duplicate-entity-warning"]') }
+export function VerifyDuplicateEntityLabelsWarning(expectedEntities, index = 0) { _VerifyFoundInEntityDetectionPanel(index, `[data-testid="entity-extractor-duplicate-entity-warning"]:contains("Entities that are not multi-value (i.e. ${expectedEntities}) will only store the last labelled utterance")`) }
+export function VerifyNoDuplicateEntityLabelsWarning(index = 0) { _VerifyNotFoundInEntityDetectionPanel(index, '[data-testid="entity-extractor-duplicate-entity-warning"]') }
 
 export function VerifyMatchWarning(index = 0) { _VerifyFoundInEntityDetectionPanel(index, '[data-testid="entity-extractor-match-warning"]:contains("Equivalent input must contain the same detected Entities as the original input text.")') }
 export function VerifyNoMatchWarning(index = 0) { _VerifyNotFoundInEntityDetectionPanel(index, '[data-testid="entity-extractor-match-warning"]') }
 
-// TODO: The following set of functions need to be used by other functions as well
-// TODO: The following set of functions need to be used by other functions as well
-// TODO: The following set of functions need to be used by other functions as well
 function _VerifyFoundInEntityDetectionPanel(index, selector) {
   cy.wrap(1).should(() => {
     if (_FindInEntityDetectionPanel(index, selector).length == 0) {
@@ -81,34 +67,22 @@ function _VerifyLabelTextAsEntity(text, verification) {
   cy.Get('[data-testid="entity-picker-entity-search"').should(verification)
 }
 
-export function VerifyTextIsLabeledAsEntity(text, entity) {
-  cy.WaitForStableDOM().then(() => {
-    if (!_IsWordLabeledAsEntity(text, entity)) { throw new Error(`Failed to find "${text}" labeled as "${entity}"`) }
-  })
+// 'index' is for the possible alternative inputs, index=0 is for the primary input.
+function _IsWordAtInputIndexLabeledAsEntity(word, entity, index = 0) {
+  let elements = _GetEditorContainerForEntityDetectionPanel(index)
+  return _IsWordLabeledAsEntity(word, entity, elements)
 }
 
-// index is for the possible alternative inputs, index=0 is for the primary input.
-export function VerifyTextIsNotLabeledAsEntity(text, entity, index = 0) {
-  cy.WaitForStableDOM().then(() => {
-    if (_IsWordLabeledAsEntity(text, entity, index)) { 
-      throw new Error(`At index ${index} we found that "${text}" is labeled as "${entity}" - it should have no label`) 
-    }
-  })
-}
-
-// index is for the possible alternative inputs, index=0 is for the primary input.
-function _IsWordLabeledAsEntity(word, entity, index = 0) {
-  let elements = Cypress.$('div.slate-editor')
-  if (index > elements.length - 1) {
-    throw new Error(`IsWordLabeledAsEntity - invalid index: ${index} - maximum index is: ${elements.length - 1} `)
-  }
-
-  let wordWasFound = false
-  elements = Cypress.$(elements[index]).find('[data-testid="token-node-entity-value"] > span > span')
-  helpers.ConLog('IsWordLabeledAsEntity', `Number of elements found: ${elements.length}`)
+// An error is thrown if the 'word' is not found in the text, however if it is not labled
+// as expected 'false' is returned.
+function _IsWordLabeledAsEntity(word, entity, elements) {
+  // Get the list of elements of the individual words that make up the utterance.
+  elements = Cypress.$(elements[0]).find('[data-testid="token-node-entity-value"] > span > span')
+  helpers.ConLog('IsWordLabeledAsEntity', `Number of word elements found: ${elements.length}`)
 
   // If you need to find a phrase, this part of the code will fail, 
   // you will need to upgrade this code in that case.
+  let wordWasFound = false
   for (let i = 0; i < elements.length; i++) {
     if (helpers.TextContentWithoutNewlines(elements[i]) === word) {
       wordWasFound = true
@@ -122,10 +96,38 @@ function _IsWordLabeledAsEntity(word, entity, index = 0) {
   }
   
   if (!wordWasFound) {
-    throw new Error(`We could not find '${word}' in the phrase.`)
+    throw new Error(`We could not find '${word}' in the utterance.`)
   }
   return false
 }
+
+// Verify that a specific word of a user utterance has been labeled as an entity.
+//  word = a word within the utterance that should already be labeled
+//  entity = name of entity the word should be labeled with
+//  elements = optional array of elements of the input row to search
+// *** This does NOT work for phrases. ***
+export function VerifyTextIsLabeledAsEntity(word, entity, elements = undefined) {
+  cy.log(`Verify that '${word}' is labeled as entity '${entity}'`)
+  cy.WaitForStableDOM().then(() => { 
+    if (!elements) {
+      elements = _GetEditorContainerForEntityDetectionPanel(0)  
+    }
+
+    if (!_IsWordLabeledAsEntity(word, entity, elements)) {
+      throw new Error(`The word '${word}' was found, but it does not have the expected '${entity}' Entity label`)
+    }
+  })
+}
+
+// index is for the possible alternative inputs, index=0 is for the primary input.
+export function VerifyTextIsNotLabeledAsEntity(text, entity, index = 0) {
+  cy.WaitForStableDOM().then(() => {
+    if (_IsWordAtInputIndexLabeledAsEntity(text, entity, index)) { 
+      throw new Error(`In input #${index} we found that "${text}" is labeled as "${entity}" - it should have no label`) 
+    }
+  })
+}
+
 
 // index is for the possible alternative inputs, index=0 is for the primary input.
 export function LabelTextAsEntity(text, entity, index = 0, itMustNotBeLabeledYet = true) {
@@ -143,7 +145,7 @@ export function LabelTextAsEntity(text, entity, index = 0, itMustNotBeLabeledYet
   } else {
     // First make sure it is not already labeled before trying to label it.
     cy.WaitForStableDOM().then(() => { 
-      if (!_IsWordLabeledAsEntity(text, entity, index)) {
+      if (!_IsWordAtInputIndexLabeledAsEntity(text, entity, index)) {
         LabelIt()
       }
     })
@@ -157,9 +159,8 @@ export function LabelTextAsEntity(text, entity, index = 0, itMustNotBeLabeledYet
 // *** This does work for multiple word labels, but you must pass in only one
 // *** word that uniquely identifies the labeled text
 export function SelectEntityLabel(word, entity, index = 0) {
-  cy.Get('div.slate-editor').then(elements => {
-    expect(elements.length).to.be.at.least(index + 1)
-    cy.wrap(elements[index]).within(() => {
+  cy.WaitForStableDOM().then(() => { return _GetEditorContainerForEntityDetectionPanel(index) }).then(elements => {
+    cy.wrap(elements[0]).within(() => {
       cy.Get('[data-testid="token-node-entity-value"] > span > span')
         .ExactMatch(word)
         .parents('.cl-entity-node--custom')
@@ -177,35 +178,20 @@ export function RemoveEntityLabel(word, entity, index = 0) {
 
 
 
-// Verify that a specific word of a user utterance has been labeled as an entity.
-//  word = a word within the utterance that should already be labeled
-//  entity = name of entity the word should be labeled with
-// *** This does NOT work for multiple words. ***
-export function VerifyEntityLabel(word, entity) {
-  cy.log(`Verify that '${word}' is labeled as entity '${entity}'`)
-  cy.Get('[data-testid="token-node-entity-value"] > span > span')
-    .ExactMatch(word)
-    .parents('.cl-entity-node--custom')
-    .find('[data-testid="custom-entity-name-button"]')
-    .contains(entity)
-}
-
-export function VerifyWordNotLabeledAsEntity(word, entity) { 
+export function VerifyWordNotLabeledAsEntity(word, entity, index = 0) { 
   cy.wrap(1).should(() => {
-    if (_IsWordLabeledAsEntity(word, entity)) {
-      throw new Error(`The word '${word}' was found, it should NOT be labeled as '${entity}'`)
+    if (_IsWordAtInputIndexLabeledAsEntity(word, entity, index)) {
+      throw new Error(`The word '${word}' was found, but it should NOT be labeled as '${entity}'`)
     }
   })
 }
 
 // Verifies that the user input at index (0=primary, 1-n=alternative) has the
 // expected text labeled as entities.
-export function VerifyEntityLabelWithinSpecificInput(textEntityPairs, index) {
-  cy.Get('div.slate-editor').then(elements => {
-    expect(elements.length).to.be.at.least(index - 1)
-    cy.wrap(elements[index]).within(() => {
-      textEntityPairs.forEach(textEntityPair => VerifyEntityLabel(textEntityPair.text, textEntityPair.entity))
-    })
+export function VerifyMultipleEntityLabels(textEntityPairs, index) {
+  cy.WaitForStableDOM().then(() => { 
+    const elements = _GetEditorContainerForEntityDetectionPanel(index)
+    textEntityPairs.forEach(textEntityPair => VerifyTextIsLabeledAsEntity(textEntityPair.text, textEntityPair.entity, elements))
   })
 }
 
@@ -223,24 +209,26 @@ export function VerifyEntityLabelConflictPopupAndChangeToPevious(previousTextEnt
 export function VerifyEntityLabelConflictPopupAndChangeToAttempted(previousTextEntityPairs, attemptedTextEntityPairs) { _VerifyEntityLabelConflictPopupAndClickButton(previousTextEntityPairs, attemptedTextEntityPairs, '[data-testid="entity-conflict-accept"]', true) }
 
 function _VerifyEntityLabelConflictPopupAndClickButton(previousTextEntityPairs, attemptedTextEntityPairs, buttonSelector, selectAttempted = false) {
+  function VerifyTextEntityPairs(selector, textEntityPairs) {
+    const elements = Cypress.$(selector).siblings('[data-testid="extractor-response-editor-entity-labeler"]')
+    textEntityPairs.forEach(textEntityPair => VerifyTextIsLabeledAsEntity(textEntityPair.text, textEntityPair.entity, elements))
+  }
+
   helpers.ConLog('VerifyEntityLabelConflictPopupAndClickButton', 'start')
-  
-  if (previousTextEntityPairs) {
-    cy.Get('[data-testid="extract-conflict-modal-previously-submitted-labels"]')
-      .siblings('[data-testid="extractor-response-editor-entity-labeler"]')
-      .within(() => { previousTextEntityPairs.forEach(textEntityPair => VerifyEntityLabel(textEntityPair.text, textEntityPair.entity)) })
-  }
+ 
+  cy.WaitForStableDOM().then(() => { 
+    if (previousTextEntityPairs) {
+      VerifyTextEntityPairs('[data-testid="extract-conflict-modal-previously-submitted-labels"]', previousTextEntityPairs)
+    }
 
-  if (attemptedTextEntityPairs) {
-    cy.Get('[data-testid="extract-conflict-modal-conflicting-labels"]')
-      .siblings('[data-testid="extractor-response-editor-entity-labeler"]')
-      .within(() => { attemptedTextEntityPairs.forEach(textEntityPair => VerifyEntityLabel(textEntityPair.text, textEntityPair.entity)) })
-  }
-  
-  if (selectAttempted) {
-    cy.Get('[data-testid="extract-conflict-modal-conflicting-labels"]').click()
-  }
+    if (attemptedTextEntityPairs) {
+      VerifyTextEntityPairs('[data-testid="extract-conflict-modal-conflicting-labels"]', attemptedTextEntityPairs)
+    }
 
-  cy.get(buttonSelector).Click()
-  helpers.ConLog('VerifyEntityLabelConflictPopupAndClickButton', 'end')
+    if (selectAttempted) {
+      cy.get('[data-testid="extract-conflict-modal-conflicting-labels"]').click()
+    }
+    cy.get(buttonSelector).Click()
+    helpers.ConLog('VerifyEntityLabelConflictPopupAndClickButton', 'end')
+  })
 }

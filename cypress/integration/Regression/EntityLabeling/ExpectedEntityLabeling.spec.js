@@ -49,7 +49,7 @@ describe('Expected Entity Labeling', () => {
   context('Train Dialog - 2nd Round', () => {
     it('Should type in another user utterance, verify it was labeled as the "name" entity and click Score Actions button', () => {
       train.TypeYourMessage('David')
-      entityDetectionPanel.VerifyEntityLabel('David', 'name')
+      entityDetectionPanel.VerifyTextIsLabeledAsEntity('David', 'name')
       train.ClickScoreActionsButton()
     })
 

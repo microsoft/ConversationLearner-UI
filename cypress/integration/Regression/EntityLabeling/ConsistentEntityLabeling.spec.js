@@ -72,9 +72,9 @@ describe('Consistent Entity Labeling', () => {
       entityDetectionPanel.TypeAlternativeInput('This is Frog and Tag.')
       entityDetectionPanel.TypeAlternativeInput('This is Tag and Frog.')
 
-      entityDetectionPanel.VerifyEntityLabelWithinSpecificInput([textEntityPairs[0]], 0)
-      entityDetectionPanel.VerifyEntityLabelWithinSpecificInput(textEntityPairs, 1)
-      entityDetectionPanel.VerifyEntityLabelWithinSpecificInput(textEntityPairs, 2)
+      entityDetectionPanel.VerifyMultipleEntityLabels([textEntityPairs[0]], 0)
+      entityDetectionPanel.VerifyMultipleEntityLabels(textEntityPairs, 1)
+      entityDetectionPanel.VerifyMultipleEntityLabels(textEntityPairs, 2)
     })
 
     it('Should get an error message after removing two entity labels from alternative input & prevent scoring actions till fixed', () => {
@@ -100,9 +100,9 @@ describe('Consistent Entity Labeling', () => {
       trainDialogsGrid.TdGrid.EditTrainingByChatInputs('This is Tag.', 'This is Tag.', 'Hi')
       chatPanel.SelectChatTurnExactMatch('This is Tag.')
 
-      entityDetectionPanel.VerifyEntityLabelWithinSpecificInput([textEntityPairs[0]], 0)
-      entityDetectionPanel.VerifyEntityLabelWithinSpecificInput(textEntityPairs, 1)
-      entityDetectionPanel.VerifyEntityLabelWithinSpecificInput(textEntityPairs, 2)
+      entityDetectionPanel.VerifyMultipleEntityLabels([textEntityPairs[0]], 0)
+      entityDetectionPanel.VerifyMultipleEntityLabels(textEntityPairs, 1)
+      entityDetectionPanel.VerifyMultipleEntityLabels(textEntityPairs, 2)
     })
 
     it('Remove two entity labels from alternative input', () => {

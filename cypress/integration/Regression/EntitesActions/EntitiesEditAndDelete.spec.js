@@ -21,21 +21,6 @@ describe('Entities Edit and Delete - EntitiesActions', () => {
     })
   })
 
-// TODO: REMOVE THIS BEFORE MERGING INTO MASTER!
-// TODO: REMOVE THIS BEFORE MERGING INTO MASTER!
-// TODO: REMOVE THIS BEFORE MERGING INTO MASTER!
-let trainDialogs
-context('TEMPORARY DIVERGENCE', () => {
-  it('Capture Train Dialog Grid data', () => {
-    modelPage.NavigateToTrainDialogs()
-    cy.Enqueue(() => { return trainDialogsGrid.TdGrid.GetAllRows() }).then(returnValue => trainDialogs = returnValue)
-  })
-
-  it('Verify the list of Train Dialog Grid data', () => {
-    trainDialogsGrid.VerifyListOfTrainDialogs(trainDialogs)
-  })
-})
-
   context('"name" Entity', () => {
     it('Should edit an existing entity and verify the Entity Type field is disabled', () => {
       modelPage.NavigateToEntities()

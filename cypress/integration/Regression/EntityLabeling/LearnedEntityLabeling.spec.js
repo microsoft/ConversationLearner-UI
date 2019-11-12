@@ -35,7 +35,7 @@ describe('Learned Entity Labeling', () => {
 
     it('Should auto-label Entity in user utterance based existing Train Dialog', () => {
       train.TypeYourMessage('My name is David.')
-      entityDetectionPanel.VerifyEntityLabel('David', 'name')
+      entityDetectionPanel.VerifyTextIsLabeledAsEntity('David', 'name')
     })
 
     it('Should find labeled Entity in memory', () => {
@@ -77,7 +77,7 @@ describe('Learned Entity Labeling', () => {
 
     it('Should auto-label Entity in user utterance based previous Train Dialog', () => {
       train.TypeYourMessage('My name is Gabriella.')
-      entityDetectionPanel.VerifyEntityLabel('Gabriella', 'name')
+      entityDetectionPanel.VerifyTextIsLabeledAsEntity('Gabriella', 'name')
     })
 
     it('Should find labeled Entity in memory', () => {

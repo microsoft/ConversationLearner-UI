@@ -208,7 +208,7 @@ describe('Entity Conflicts', () => {
                     cy.get(s.dialogModal.entityConflictModal.buttonCancel)
                         .click()
 
-                    entityDetectionPanel.VerifyEntityLabel(labeledWord2, testData.entityName)
+                    entityDetectionPanel.VerifyTextIsLabeledAsEntity(labeledWord2, testData.entityName)
                 })
 
                 it('should change the labels if Accept is clicked', () => {
@@ -219,7 +219,7 @@ describe('Entity Conflicts', () => {
                         .click()
 
                     // TODO: Selects score actions immediately, need to verify memory
-                    // entityDetectionPanel.VerifyEntityLabel(labeledWord1, testData.entityName)
+                    // entityDetectionPanel.VerifyTextIsLabeledAsEntity(labeledWord1, testData.entityName)
                     trainDialog.SelectTextAction(testData.actionResponse)
                     trainDialog.ClickAbandonDeleteButton()
 
