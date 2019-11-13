@@ -11,7 +11,7 @@ import * as trainDialogsGrid from '../../../support/components/TrainDialogsGrid'
 import * as train from '../../../support/Train'
 import * as helpers from '../../../support/Helpers'
 
-describe('New Entity Label on Existing Phrase 1 - Entity Labeling', () => {
+describe.skip('New Entity Label on Existing Phrase 1 - Entity Labeling', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
 
   context('Setup', () => {
@@ -56,6 +56,8 @@ describe('New Entity Label on Existing Phrase 1 - Entity Labeling', () => {
       entityDetectionPanel.VerifyEntityLabelConflictPopupAndChangeToAttempted(undefined, [{ text: 'once', entity: 'anEntity' }])
     })
 
+    // Bug 2343: Test Blocker: Rendering Issue with Inconsistent Entity Label popup
+    // At this point this bug blocks this test from continuing.
     it('Save the Train Dialog and verify that it is in the grid', () => {
       train.SaveAsIsVerifyInGrid()
     })

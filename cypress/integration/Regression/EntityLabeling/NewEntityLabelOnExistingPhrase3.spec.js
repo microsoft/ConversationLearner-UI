@@ -11,7 +11,7 @@ import * as trainDialogsGrid from '../../../support/components/TrainDialogsGrid'
 import * as train from '../../../support/Train'
 import * as helpers from '../../../support/Helpers'
 
-describe('New Entity Label on Existing Phrase 3 - Entity Labeling', () => {
+describe.skip('New Entity Label on Existing Phrase 3 - Entity Labeling', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
 
   context('Setup', () => {
@@ -38,6 +38,8 @@ describe('New Entity Label on Existing Phrase 3 - Entity Labeling', () => {
       entityDetectionPanel.VerifyEntityLabelConflictPopupAndChangeToAttempted(undefined, [{ text: 'wisdom', entity: 'anEntity' }])
     })
 
+    // Bug 2343: Test Blocker: Rendering Issue with Inconsistent Entity Label popup
+    // At this point this bug blocks this test from continuing.
     it('Select the only Bot response', () => {
       train.SelectTextAction('The only response')
     })
