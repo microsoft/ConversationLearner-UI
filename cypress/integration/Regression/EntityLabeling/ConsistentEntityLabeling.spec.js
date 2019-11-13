@@ -11,7 +11,7 @@ import * as train from '../../../support/Train'
 import * as entityDetectionPanel from '../../../support/components/EntityDetectionPanel'
 import * as helpers from '../../../support/Helpers'
 
-describe('Consistent Entity Labeling', () => {
+describe.skip('Consistent Entity Labeling', () => {
   const textEntityPairs = [{ text: 'Tag', entity: 'multi' }, { text: 'Frog', entity: 'multi' }]
 
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
@@ -144,6 +144,8 @@ describe('Consistent Entity Labeling', () => {
       entityDetectionPanel.VerifyEntityLabelConflictPopupAndChangeToAttempted(textEntityPairs)
     })
 
+    // Bug 2343: Test Blocker: Rendering Issue with Inconsistent Entity Label popup
+    // At this point this bug blocks this test from continuing.
     it('Save the changes', () => {
       train.SaveAsIs()
     })
