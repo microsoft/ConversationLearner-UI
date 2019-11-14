@@ -76,9 +76,10 @@ function _IsWordAtInputIndexLabeledAsEntity(word, entity, index = 0) {
 // An error is thrown if the 'word' is not found in the text, however if it is not labled
 // as expected 'false' is returned.
 function _IsWordLabeledAsEntity(word, entity, elements) {
+  const funcName = `_IsWordLabeledAsEntity("${word}", "${entity}")`
+  
   // Get the list of elements of the individual words that make up the utterance.
   elements = Cypress.$(elements[0]).find('[data-testid="token-node-entity-value"] > span > span')
-  helpers.ConLog('IsWordLabeledAsEntity', `Number of word elements found: ${elements.length}`)
 
   // If you need to find a phrase, this part of the code will fail, 
   // you will need to upgrade this code in that case.
@@ -90,14 +91,18 @@ function _IsWordLabeledAsEntity(word, entity, elements) {
                  .parents('.cl-entity-node--custom')
                  .find(`[data-testid="custom-entity-name-button"]:contains('${entity}')`)
                  .length > 0) {
+        helpers.ConLog(funcName, `The word "${word} was found and labeled as the entity "${entity}`)
         return true
       }
     }
   }
   
   if (!wordWasFound) {
+    helpers.ConLog(funcName, `The word "${word} was NOT found - Very likely a test code bug`)
     throw new Error(`We could not find '${word}' in the utterance.`)
   }
+  
+  helpers.ConLog(funcName, `The word "${word} was found but it was NOT labeled as the entity "${entity}`)
   return false
 }
 

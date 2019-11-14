@@ -37,7 +37,7 @@ describe('API Callbacks - Train', () => {
       entityDetectionPanel.LabelTextAsEntity('ThingOne', '1stArg')
       entityDetectionPanel.LabelTextAsEntity('ThingTwo', '2ndArg')
       train.ClickScoreActionsButton()
-      train.SelectApiCardAction('LogicWithArgs', 'API Call:', 'LogicWithArgs(ThingOne,ThingTwo)')
+      train.SelectApiCardAction('LogicWithArgs', 'API Call:', 'LogicWithArgs(ThingOne, ThingTwo)')
     })
 
     it('Should invoke "RenderTheArgs" API Callback and verify it is in the chat pane', () => {
@@ -71,7 +71,7 @@ describe('API Callbacks - Train', () => {
 
     it('Should verify that all of the Bot responses were persisted and re-renders correctly', () => {
       chatPanel.VerifyCardChatMessage('API Call:', 'LogicWithNoArgs()', 1)
-      chatPanel.VerifyCardChatMessage('API Call:', 'LogicWithArgs(ThingOne,ThingTwo)', 3)
+      chatPanel.VerifyCardChatMessage('API Call:', 'LogicWithArgs(ThingOne, ThingTwo)', 3)
       chatPanel.VerifyTextChatMessage("The Logic Args: 'ThingOne', 'ThingTwo', '333', '4444', 'five', 'six', 'seven'The Render Args: 'ThingOne', 'ThingTwo', 'three', 'four', '55555', '666666', '7777777'", 5)
       chatPanel.VerifyCardChatMessage('Greetings', 'Have a great day!', 7)
       train.ClickSaveCloseButton()
