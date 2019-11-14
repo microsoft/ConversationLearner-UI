@@ -142,7 +142,7 @@ class App extends React.Component<Props, ComponentState> {
             </OF.MessageBar>
           }
           <Switch>
-            <Route eexact={true} path="/" render={() => <Redirect to="/home" />} />
+            <Route exact={true} path="/" render={() => <Redirect to="/home" />} />
             <Route
               path="/home"
               render={props =>
