@@ -150,30 +150,35 @@ export class TdGrid {
   FindGridRowByAll(firstInput, lastInput, lastResponse, description, tagList){
     const funcName = `TdGrid.FindGridRowByAll("${firstInput}", "${lastInput}", "${lastResponse}", "${description}", "${tagList}")`
     helpers.ConLog(funcName, this.feedback)
-
-    if (this.expectedRowCount >= 0 && (
-        this.expectedRowCount != this.firstInputs.length || 
-        this.expectedRowCount != this.lastInputs.length ||
-        this.expectedRowCount != this.lastResponses.length ||
-        this.expectedRowCount != this.descriptions.length || 
-        this.expectedRowCount != this.tagLists.length)) {
-        throw new Error(`Somethings wrong in TdGrid.FindGridRowByAll - ${this.feedback}`)
-    }
-
-    for (let i = 0; i < this.firstInputs.length; i++) {
-      if ((firstInput === '' || 
-          (this.firstInputs[i] == firstInput && 
-          this.lastInputs[i] == lastInput && 
-          this.lastResponses[i] == lastResponse)) &&
-          (description === "" || this.descriptions[i] === description) && 
-          (tagList === '' || this.tagLists[i] == tagList)) {
-        helpers.ConLog(funcName, `Found on row ${i}`)
-        return i
+    try {
+      if (this.expectedRowCount >= 0 && (
+          this.expectedRowCount != this.firstInputs.length || 
+          this.expectedRowCount != this.lastInputs.length ||
+          this.expectedRowCount != this.lastResponses.length ||
+          this.expectedRowCount != this.descriptions.length || 
+          this.expectedRowCount != this.tagLists.length)) {
+          throw new Error(`Somethings wrong in TdGrid.FindGridRowByAll - ${this.feedback}`)
       }
+
+      for (let i = 0; i < this.firstInputs.length; i++) {
+        if ((!firstInput || 
+            (this.firstInputs[i] === firstInput && 
+            this.lastInputs[i] === lastInput && 
+            this.lastResponses[i] === lastResponse)) &&
+            (!description || this.descriptions[i] === description) && 
+            (!tagList || this.tagLists[i] === tagList)) {
+          helpers.ConLog(funcName, `Found on row ${i}`)
+          return i
+        }
+      }
+      
+      helpers.ConLog(funcName, 'Not Found')
+      return -1
     }
-    
-    helpers.ConLog(funcName, 'Not Found')
-    return -1
+    catch (error) {
+      helpers.ConLog(funcName, `Caught Errors: ${error.message}`)
+      return -1
+    }
   }
 
   get firstInputs() { 
