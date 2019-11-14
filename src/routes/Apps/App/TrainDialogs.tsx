@@ -1249,8 +1249,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
         let trainDialog = importData.trainDialogs[importData.index]
 
-        // Extract entities
-        if (this.props.entities.length > 0) {
+        // Extract entities, if the model has any custom-trained entities.
+        if (this.props.entities.length > 0 && this.props.entities.find(e => e.entityType === CLM.EntityType.LUIS) !== undefined) {
             await this.addEntityExtractions(trainDialog)
         }
 
