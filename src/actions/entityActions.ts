@@ -180,10 +180,10 @@ export const deleteEntityThunkAsync = (appId: string, entity: CLM.EntityBase) =>
 
             // If any train dialogs were modified fetch train dialogs
             if (deleteEditResponse.trainDialogIds?.length > 0) {
-                void dispatch(fetchAllTrainDialogsThunkAsync(appId));
+                void dispatch(fetchAllTrainDialogsThunkAsync(appId))
             }
 
-            void dispatch(fetchApplicationTrainingStatusThunkAsync(appId));
+            void dispatch(fetchApplicationTrainingStatusThunkAsync(appId))
             return true;
         } catch (e) {
             const error = e as AxiosError
