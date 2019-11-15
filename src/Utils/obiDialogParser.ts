@@ -10,6 +10,9 @@ import * as OBITypes from '../types/obiTypes'
 import * as fspath from 'path'
 import * as stripJsonComments from 'strip-json-comments'
 
+// TODO(thpar) : update to use value from Models package.
+const MAX_NAME_LENGTH = 30
+
 enum OBIStepType {
     BEGIN_DIALOG = "Microsoft.BeginDialog",
     END_DIALOG = "Microsoft.EndDialog",
@@ -504,7 +507,7 @@ export class ObiDialogParser {
         // any collisions.
         let updatedValues: { [key: string]: Set<string> } = {}
         for (const value of values) {
-            const normalized = this.normalizeEnumValueName(value)
+            const normalized = this.normalizeValueName(value, CLM.MAX_ENUM_VALUE_NAME_LENGTH)
             if (!updatedValues[normalized]) {
                 updatedValues[normalized] = new Set([value])
             } else {
@@ -545,8 +548,32 @@ export class ObiDialogParser {
         return newEntity
     }
 
-    private async createProgrammaticEntity(entity: CLM.EntityBase): Promise<CLM.EntityBase> {
-        
+    private async createProgrammaticEntity(entityName: string): Promise<CLM.EntityBase> {
+        const newEntity: CLM.EntityBase = {
+            entityId: undefined!,
+            entityName,
+            resolverType: "none",
+            createdDateTime: new Date().toJSON(),
+            lastModifiedDateTime: new Date().toJSON(),
+            isResolutionRequired: false,
+            isMultivalue: false,
+            isNegatible: false,
+            negativeId: null,
+            positiveId: null,
+            entityType: CLM.EntityType.LOCAL,
+            enumValues: undefined,
+            version: null,
+            packageCreationId: null,
+            packageDeletionId: null,
+            doNotMemorize: false
+        }
+        const entityId = await ((this.createEntityThunkAsync(this.appId, newEntity) as any) as Promise<string>)
+        if (!entityId) {
+            throw new Error(`Failed to create entity ${entityName}`)
+        }
+        newEntity.entityId = entityId
+        this.entities.push(newEntity)
+        return newEntity
     }
 
     /**
@@ -562,7 +589,7 @@ export class ObiDialogParser {
             // Unexpected, shouldn't happen.
             throw new Error(`Entity ${conditionEntity.entityName} is not a valid enum`)
         }
-        const normalizedValueName = this.normalizeEnumValueName(requiredEntity.value)
+        const normalizedValueName = this.normalizeValueName(requiredEntity.value, CLM.MAX_ENUM_VALUE_NAME_LENGTH)
         const enumValueId = conditionEntity.enumValues.find(v => v.enumValue === normalizedValueName)
         if (!enumValueId) {
             // Unexpected, shouldn't happen.
@@ -607,35 +634,13 @@ export class ObiDialogParser {
         }
         // Create entities for the API inputs.
         for (const entityName of Object.keys(step.body)) {
-            let entity = this.entities.find(e => e.entityName === entityName)
+            const normalizedEntityName = this.normalizeValueName(entityName, MAX_NAME_LENGTH)
+            let entity = this.entities.find(e => e.entityName === normalizedEntityName)
             if (entity) {
                 // An entity for this API input was already created, nothing to do.
                 continue
             }
-            const newEntity: CLM.EntityBase = {
-                entityId: undefined!,
-                entityName,
-                resolverType: "none",
-                createdDateTime: new Date().toJSON(),
-                lastModifiedDateTime: new Date().toJSON(),
-                isResolutionRequired: false,
-                isMultivalue: false,
-                isNegatible: false,
-                negativeId: null,
-                positiveId: null,
-                entityType: CLM.EntityType.LOCAL,
-                enumValues: undefined,
-                version: null,
-                packageCreationId: null,
-                packageDeletionId: null,
-                doNotMemorize: false
-            }
-            const entityId = this.createProgrammaticEntity(newEntity)
-            if (!entityId) {
-                throw new Error(`Failed to create entity ${entityName} for API input`)
-            }
-            newEntity.entityId = entityId
-            this.entities.push(newEntity)
+            await this.createProgrammaticEntity(normalizedEntityName)
         }
 
         // TODO(thpar) : revisit logic for this.
@@ -705,8 +710,8 @@ export class ObiDialogParser {
     }
 
     // Returns a version of `name` that is compatible with the backend.
-    private normalizeEnumValueName(name: string): string {
-        return name.substr(0, CLM.MAX_ENUM_VALUE_NAME_LENGTH)
+    private normalizeValueName(name: string, maxLength: number): string {
+        return name.substr(0, maxLength)
     }
 
     private makeEmptyTrainDialog(): CLM.TrainDialog {
