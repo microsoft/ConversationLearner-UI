@@ -5,8 +5,9 @@
 
 import * as models from '../../../support/Models'
 import * as modelPage from '../../../support/components/ModelPage'
-import * as train from '../../../support/Train'
+import * as chatPanel from '../../../support/components/ChatPanel'
 import * as trainDialogsGrid from '../../../support/components/TrainDialogsGrid'
+import * as train from '../../../support/Train'
 import * as common from '../../../support/Common'
 import * as actions from '../../../support/Actions'
 import * as scorerModal from '../../../support/components/ScorerModal'
@@ -23,11 +24,11 @@ describe('Missing Action - ErrorHandling', () => {
     })
 
     it('Should verify there are no error icons on the page', () => {
-      modelPage.VerifyNoIncidentTriangleOnPage()
+      modelPage.VerifyNoErrorTriangleOnPage()
     })
 
     it('Should complete and save a simple 1 action Train Dialog', () => {
-      train.CreateNewTrainDialog()
+      trainDialogsGrid.TdGrid.CreateNewTrainDialog()
       train.TypeYourMessage(common.gonnaDeleteAnAction)
       train.ClickScoreActionsButton()
       train.SelectTextAction(common.whatsYourName)
@@ -45,17 +46,17 @@ describe('Missing Action - ErrorHandling', () => {
   context('Train Dialogs Grid', () => {
     it('Should verify there are now error icons showing in the Train Dialog grid', () => {
       modelPage.NavigateToTrainDialogs()
-      modelPage.VerifyIncidentTriangleForTrainDialogs()
-      trainDialogsGrid.VerifyIncidentTriangleFoundInTrainDialogsGrid(common.gonnaDeleteAnAction, common.gonnaDeleteAnAction, '')
+      modelPage.VerifyErrorTriangleForTrainDialogs()
+      trainDialogsGrid.VerifyIncidentTriangleFoundInTrainDialogsGrid(common.gonnaDeleteAnAction, common.gonnaDeleteAnAction, '', '', '', 1)
     })
   })
 
   context('Train', () => {
     it('Should edit the Train Dialog and verify the expected error messages show up', () => {
-      train.EditTraining(common.gonnaDeleteAnAction, common.gonnaDeleteAnAction, '')
+      trainDialogsGrid.TdGrid.EditTrainingByChatInputs(common.gonnaDeleteAnAction, common.gonnaDeleteAnAction, '')
       train.VerifyErrorMessage(common.trainDialogHasErrorsMessage)
 
-      train.SelectChatTurnStartsWith("ERROR: Can't find Action Id")
+      chatPanel.SelectChatTurnStartsWith("ERROR: Can't find Action Id")
       train.VerifyErrorMessage('Action does not exist')
       scorerModal.VerifyMissingActionNotice()
     })
@@ -65,7 +66,7 @@ describe('Missing Action - ErrorHandling', () => {
       actions.CreateNewAction({ responseNameData: common.whatsYourName, expectedEntity: 'name' })
       train.VerifyNoErrorMessage()
       train.ClickSaveCloseButton()
-      modelPage.VerifyNoIncidentTriangleOnPage()
+      modelPage.VerifyNoErrorTriangleOnPage()
     })
   })
 })

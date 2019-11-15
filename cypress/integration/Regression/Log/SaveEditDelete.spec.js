@@ -5,7 +5,10 @@
 
 import * as models from '../../../support/Models'
 import * as modelPage from '../../../support/components/ModelPage'
+import * as chatPanel from '../../../support/components/ChatPanel'
+import * as trainDialogsGrid from '../../../support/components/TrainDialogsGrid'
 import * as train from '../../../support/Train'
+import * as entityDetectionPanel from '../../../support/components/EntityDetectionPanel'
 import * as logDialogsGrid from '../../../support/components/LogDialogsGrid'
 import * as logDialogModal from '../../../support/components/LogDialogModal'
 import * as helpers from '../../../support/Helpers'
@@ -124,8 +127,8 @@ describe("Save Edit Delete - Log", () => {
     
     it('Edit Log Dialog to Add alternate input', () => {
       logDialogsGrid.Edit('Log Dialog #2 ◾️ Hola ◾️ Bye')
-      train.SelectChatTurnExactMatch("Hola")
-      train.TypeAlternativeInput('Howdy')
+      chatPanel.SelectChatTurnExactMatch("Hola")
+      entityDetectionPanel.TypeAlternativeInput('Howdy')
       train.ClickSubmitChangesButton()
       train.ClickSaveCloseButton()
       train.MergeSaveAsIs()
@@ -138,7 +141,7 @@ describe("Save Edit Delete - Log", () => {
 
     it("Should verify the Log Dialog was added to the list of Train Dialogs", () => {
       modelPage.NavigateToTrainDialogs()    
-      train.VerifyListOfTrainDialogs([
+      trainDialogsGrid.VerifyListOfTrainDialogs([
         {firstInput: 'Log Dialog #2', lastInput: 'Bye', lastResponse: 'Goodbye'},
         {firstInput: 'Yo', lastInput: 'Bye', lastResponse: 'Goodbye'},
         {firstInput: '1st Log Dialog', lastInput: 'Goodbye', lastResponse: 'Goodbye'},

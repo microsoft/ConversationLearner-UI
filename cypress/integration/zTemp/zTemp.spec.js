@@ -7,24 +7,56 @@ import * as helpers from '../../support/Helpers'
 import * as homePage from '../../support/components/HomePage'
 import * as modelPage from '../../support/components/ModelPage'
 import * as models from '../../support/Models'
-import * as train from '../../support/Train'
+import * as chatPanel from '../../support/components/ChatPanel'
+import * as scorerModal from '../../support/components/ScorerModal'
 import * as trainDialogsGrid from '../../support/components/TrainDialogsGrid'
+import * as train from '../../support/Train'
 
 describe('zTemp', () => {
-  it('Temporary Experimental Test', () => {
-    models.ImportModel('z-importTest', 'z-whatsYourName.cl')
-    
-    // homePage.Visit()
-    // cy.pause()
+  it('Experiment with action-scorer-entity-toggle', () => {
+    homePage.Visit()
+    homePage.LoadModel('expectedEntityLablel')
+    modelPage.NavigateToTrainDialogs()
+    trainDialogsGrid.TdGrid.EditTrainingByChatInputs('Hello', 'David', 'Hello $name')
+
+    chatPanel.SelectChatTurnExactMatch('Hello David')
+    //chatPanel.SelectChatTurnExactMatch("What's your name?")
+
+    cy.Enqueue(() => { return scorerModal.GetTextWithEntityNamesFromSelectedAction() }).then(actionText => {
+      if (actionText != 'Hello $name') { throw new Error(`Found ZERO elements that exactly matches 'Hello $name'`) }
+      helpers.ConLog('After waiting for promise', `actionText: ${actionText}`)
+    })
   })
 
-  it.skip('Temporary Experimental Test', () => {
+  it.skip('Experiment with scroll bar on home page', () => {
+    //models.ImportModel('z-importTest', 'z-whatsYourName.cl')
+    
+    homePage.Visit()
+
+    cy.get(document).then((element) => {
+    // cy.get('div.cl-app_content')
+    //   .parent('div.cl-o-app-columns')
+    //   .then((element) => {
+      helpers.ConLog('ScrollBar', `isScrollable: ${Cypress.dom.isScrollable(element)}`)
+      if (Cypress.dom.isScrollable(element)) {
+        cy.scrollTo('bottom')     
+      }
+
+      if (Cypress.$(document).height() > Cypress.$(window).height()) { 
+        helpers.ConLog('ScrollBar', `isScrollable!!!`)
+        cy.scrollTo('bottom')     
+      }
+
+    })
+  })
+
+  it.skip('Verify too many multiple tags', () => {
     // TODO: Turn this into a full test case since there is a 20 tag 
     // limit and produces a bug when saving the Train Dialog.
     // Bug 1930: Train Dialog - Tag Editor should prevent user from entering more than 20 tags.
     models.CreateNewModel('z-foods')
     modelPage.NavigateToTrainDialogs()
-    train.CreateNewTrainDialog()
+    trainDialogsGrid.TdGrid.CreateNewTrainDialog()
 
     train.AddTags(['Apple', 'Banana', 'Carrot', 'Duck', 'Egg', 'Food', 'Green Chilli', 'Habanero','Ice Cream', 'Jalapeno', 'Kale', 'Letuce', 'Mango', 'Necterine', 'Orange', 'Plum', 'QQQ', 'Raisin', 'Salt', 'Tangerine', 'UUUuuu', 'VVV', 'WwWwWwW', 'X', 'YYYyy', 'ZzZzZ'])
   })

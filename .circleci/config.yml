@@ -137,6 +137,8 @@ jobs:
           command: npm run cypress -- run --record false --spec "cypress/integration/Tools/DeleteAllTestGeneratedModels.spec.js"
           when: always
 
+      - save-test-results
+
 workflows:
   build-test:
     jobs:

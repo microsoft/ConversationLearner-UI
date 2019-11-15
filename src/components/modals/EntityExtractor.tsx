@@ -510,7 +510,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                             </div>
                             : <div />}
                         {!isValid &&
-                            <div className="cl-error-message-label">
+                            <div className="cl-error-message-label" data-testid="entity-extractor-match-warning">
                                 {Util.formatMessageId(this.props.intl, FM.TOOLTIP_ENTITY_EXTRACTOR_MATCH_WARNING)}
                             </div>
                         }

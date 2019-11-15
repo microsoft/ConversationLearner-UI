@@ -8,6 +8,7 @@ import * as modelPage from '../../../support/components/ModelPage'
 import * as actions from '../../../support/Actions'
 import * as actionModal from '../../../support/components/ActionModal'
 import * as actionsGrid from '../../../support/components/ActionsGrid'
+import * as chatPanel from '../../../support/components/ChatPanel'
 import * as trainDialogsGrid from '../../../support/components/TrainDialogsGrid'
 import * as train from '../../../support/Train'
 import * as logDialogsGrid from '../../../support/components/LogDialogsGrid'
@@ -45,17 +46,17 @@ describe('Bot Missing API - ErrorHandling', () => {
     })
 
     it('Should verify the Train Dialog shows error and warning messages', () => {
-      train.EditTraining('Lets have that greeting.', 'How about some text?', 'Just a simple text action...')
-      train.VerifyChatTurnIsAnExactMatch('ERROR: API callback with name "RandomGreeting" is not defined', 6, 1)
+      trainDialogsGrid.TdGrid.EditTrainingByChatInputs('Lets have that greeting.', 'How about some text?', 'Just a simple text action...')
+      chatPanel.VerifyChatTurnIsAnExactMatch('ERROR: API callback with name "RandomGreeting" is not defined', 6, 1)
       train.VerifyWarningMessage('Running Bot not compatible with this Model')
     })
     
     it('Should verify that the turns have no actionable buttons', () => {
-      train.SelectAndVerifyEachChatTurnHasNoButtons()
+      chatPanel.SelectAndVerifyEachChatTurnHasNoButtons()
     })
 
     it('Should verify the Action Scorer pane has no enabled buttons for any of the Bot turns', () => {
-      train.SelectAndVerifyEachBotChatTurnHasNoSelectActionButtons()
+      chatPanel.SelectAndVerifyEachBotChatTurnHasNoSelectActionButtons()
     })
 
     it('Should verify that there only the Close button is enabled', () => {

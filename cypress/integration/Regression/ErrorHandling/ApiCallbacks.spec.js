@@ -5,6 +5,8 @@
 
 import * as models from '../../../support/Models'
 import * as modelPage from '../../../support/components/ModelPage'
+import * as chatPanel from '../../../support/components/ChatPanel'
+import * as trainDialogsGrid from '../../../support/components/TrainDialogsGrid'
 import * as train from '../../../support/Train'
 import * as helpers from '../../../support/Helpers'
 
@@ -20,7 +22,7 @@ describe('API Callbacks - ErrorHandling', () => {
 
   context('Train Dialog', () => {
     it('Should create a new Train Dialog', () => {
-      train.CreateNewTrainDialog()
+      trainDialogsGrid.TdGrid.CreateNewTrainDialog()
     })
 
     it('Should invoke "BadCard" API Callback and verify it is in the chat pane', () => {
@@ -45,7 +47,7 @@ describe('API Callbacks - ErrorHandling', () => {
 
   context('Edit the Train Dialog to Verify the Errors Persisted', () => {
     it('Should edit the Train Dialog that was persisted', () => {
-      train.EditTraining('BadCard', 'Malformed', 'Malformed')
+      trainDialogsGrid.TdGrid.EditTrainingByChatInputs('BadCard', 'Malformed', 'Malformed')
 
       // Bug 2137: Render Error appears to be lost when editing an existing Train Dialog
       // When this bug is fixed remove these comments and the line below.
@@ -53,8 +55,8 @@ describe('API Callbacks - ErrorHandling', () => {
     })
 
     it('Should verify that all Bot responses persisted correctly', () => {
-      train.VerifyCardChatMessage('Malformed API Callback: ‘BadCard’', 'Return value in Render function must be a string or BotBuilder Activity', 1)
-      train.VerifyCardChatMessage('Malformed API Callback: ‘Malformed’', 'Logic portion of callback returns a value, but no Render portion defined', 3)
+      chatPanel.VerifyCardChatMessage('Malformed API Callback: ‘BadCard’', 'Return value in Render function must be a string or BotBuilder Activity', 1)
+      chatPanel.VerifyCardChatMessage('Malformed API Callback: ‘Malformed’', 'Logic portion of callback returns a value, but no Render portion defined', 3)
     })
     
     it('Should abandon the edit', () => {

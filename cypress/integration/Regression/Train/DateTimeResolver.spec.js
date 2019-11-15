@@ -6,7 +6,9 @@
 import * as models from '../../../support/Models'
 import * as modelPage from '../../../support/components/ModelPage'
 import * as memoryTableComponent from '../../../support/components/MemoryTableComponent'
+import * as entityDetectionPanel from '../../../support/components/EntityDetectionPanel'
 import * as scorerModal from '../../../support/components/ScorerModal'
+import * as trainDialogsGrid from '../../../support/components/TrainDialogsGrid'
 import * as train from '../../../support/Train'
 import * as helpers from '../../../support/Helpers'
 
@@ -30,7 +32,7 @@ describe('Date Time Resolver - Train', () => {
 
   context('Train', () => {
     it('Should create a new Train Dialog and type in first user turn', () => {
-      train.CreateNewTrainDialog()
+      trainDialogsGrid.TdGrid.CreateNewTrainDialog()
       train.TypeYourMessage('Book me a flight.')
     })
 
@@ -46,8 +48,8 @@ describe('Date Time Resolver - Train', () => {
 
     it('Should type in the next user turn and label the departure and return dates', () => {
       train.TypeYourMessage('Leaving tomorrow and returning Sunday next week.')
-      train.LabelTextAsEntity('tomorrow', 'departure')
-      train.LabelTextAsEntity('Sunday next week', 'return')
+      entityDetectionPanel.LabelTextAsEntity('tomorrow', 'departure')
+      entityDetectionPanel.LabelTextAsEntity('Sunday next week', 'return')
     })
 
     it('Should verify that we have the expected entities in memory after clicking Score Actions Button', () => {
@@ -63,7 +65,7 @@ describe('Date Time Resolver - Train', () => {
     })
 
     it('Should select the enabled Bot response, save the Train Dialog, and verifiy the training shows up in the grid', () => {
-      train.SelectTextAction(botResponse, 'You are leaving on $departure and returning on $return')
+      train.SelectTextAction(botResponse)
       train.SaveAsIsVerifyInGrid()
     })
   })
