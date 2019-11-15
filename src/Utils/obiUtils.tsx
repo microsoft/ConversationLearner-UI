@@ -332,7 +332,7 @@ export async function trainDialogFromTranscriptImport(
 // Given an Activity try to find a matching action
 function findMatchedAction(activity: BB.Activity, entities: CLM.EntityBase[], actions: CLM.ActionBase[], filledEntities: CLM.FilledEntity[]): CLM.ActionBase | undefined {
     // If actionId provided return the action
-    if (activity.channelData) {
+    if (activity.channelData?.clData) {
         const clData: CLM.CLChannelData = activity.channelData.clData
         if (clData.actionId) {
             const action = actions.find(a => a.actionId === clData.actionId)
