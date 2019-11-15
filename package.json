@@ -128,7 +128,6 @@
     "eject": "react-scripts-ts eject",
     "tsc": "tsc",
     "builduipackage": "tsc -p ./publish/tsconfig.json --listFiles && tsc -p ./scripts/tsconfig.json --listFiles && node ./scripts/publish.js",
-    "prepublishOnly": "npm run builduipackage",
     "commit": "git-cz",
     "servebuild": "tsc -p ./server/tsconfig.json && node ./server/server.js",
     "wait-on": "wait-on"
