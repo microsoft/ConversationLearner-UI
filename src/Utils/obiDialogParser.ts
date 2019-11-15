@@ -416,7 +416,7 @@ export class ObiDialogParser {
                     break
                 }
                 case OBIStepType.HTTP_REQUEST: {
-                    const scorerStep = await this.createActionFromHttpRequest(step, nextStep)
+                    const scorerStep = await this.createActionAndEntitiesFromHttpRequest(step, nextStep)
                     scorerSteps.push(scorerStep)
                     break
                 }
@@ -545,6 +545,10 @@ export class ObiDialogParser {
         return newEntity
     }
 
+    private async createProgrammaticEntity(entity: CLM.EntityBase): Promise<CLM.EntityBase> {
+        
+    }
+
     /**
      * Returns a `Condition` referencing an enum entity and enum value id, which is built from the entity and value name.
      */
@@ -593,11 +597,47 @@ export class ObiDialogParser {
      * output parameters of the response object.  Note that as of 2019.09, this field is specific
      * to ConversationLearner and is not part of the OBI spec.
      */
-    private async createActionFromHttpRequest(step: OBITypes.OBIDialog, nextStep: OBITypes.OBIDialog | undefined):
+    private async createActionAndEntitiesFromHttpRequest(step: OBITypes.OBIDialog, nextStep: OBITypes.OBIDialog | undefined):
         Promise<CLM.TrainScorerStep> {
         if (!step.url) {
             throw new Error('HTTP requests require url')
         }
+        if (!step.body) {
+            throw new Error('HTTP requests require body')
+        }
+        // Create entities for the API inputs.
+        for (const entityName of Object.keys(step.body)) {
+            let entity = this.entities.find(e => e.entityName === entityName)
+            if (entity) {
+                // An entity for this API input was already created, nothing to do.
+                continue
+            }
+            const newEntity: CLM.EntityBase = {
+                entityId: undefined!,
+                entityName,
+                resolverType: "none",
+                createdDateTime: new Date().toJSON(),
+                lastModifiedDateTime: new Date().toJSON(),
+                isResolutionRequired: false,
+                isMultivalue: false,
+                isNegatible: false,
+                negativeId: null,
+                positiveId: null,
+                entityType: CLM.EntityType.LOCAL,
+                enumValues: undefined,
+                version: null,
+                packageCreationId: null,
+                packageDeletionId: null,
+                doNotMemorize: false
+            }
+            const entityId = this.createProgrammaticEntity(newEntity)
+            if (!entityId) {
+                throw new Error(`Failed to create entity ${entityName} for API input`)
+            }
+            newEntity.entityId = entityId
+            this.entities.push(newEntity)
+        }
+
         // TODO(thpar) : revisit logic for this.
         // Note that we cannot do this 100% correctly in the current implementation, since actions (scorer steps)
         // from a given dialog tree node $Y may be added to rounds from the previous dialog tree node $X if $Y does
