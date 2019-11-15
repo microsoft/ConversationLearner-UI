@@ -7,6 +7,8 @@ import * as models from '../../../support/Models'
 import * as modelPage from '../../../support/components/ModelPage'
 import * as memoryTableComponent from '../../../support/components/MemoryTableComponent'
 import * as scorerModal from '../../../support/components/ScorerModal'
+import * as entityDetectionPanel from '../../../support/components/EntityDetectionPanel'
+import * as trainDialogsGrid from '../../../support/components/TrainDialogsGrid'
 import * as train from '../../../support/Train'
 import * as common from '../../../support/Common'
 import * as helpers from '../../../support/Helpers'
@@ -15,7 +17,7 @@ import * as helpers from '../../../support/Helpers'
 // the "Learned Entity Labeling" test scenario is Part 2 in that 
 // it continues from where this test case left off by using the
 // model created by this test scenario.
-describe('Expected Entity Labeling - Train', () => {
+describe('Expected Entity Labeling', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
   let generatedScoreActionsData = new scorerModal.GeneratedData('expectedEntityLabeling.json')
 
@@ -29,7 +31,7 @@ describe('Expected Entity Labeling - Train', () => {
 
   context('Train Dialog - 1st Round', () => {
     it('Should create a new Train Dialog', () => {
-      train.CreateNewTrainDialog()
+      trainDialogsGrid.TdGrid.CreateNewTrainDialog()
     })
 
     it('Should type in a user utterance and click Score Actions button', () => {
@@ -47,7 +49,7 @@ describe('Expected Entity Labeling - Train', () => {
   context('Train Dialog - 2nd Round', () => {
     it('Should type in another user utterance, verify it was labeled as the "name" entity and click Score Actions button', () => {
       train.TypeYourMessage('David')
-      train.VerifyEntityLabel('David', 'name')
+      entityDetectionPanel.VerifyTextIsLabeledAsEntity('David', 'name')
       train.ClickScoreActionsButton()
     })
 
@@ -58,7 +60,7 @@ describe('Expected Entity Labeling - Train', () => {
     generatedScoreActionsData.VerifyScoreActionsList()
 
     it('Should select an action', () => {
-      train.SelectTextAction('Hello David', 'Hello $name')
+      train.SelectTextAction('Hello David')
     })
 
     it('Should save the Train Dialog and verify that it shows up in the grid', () => {

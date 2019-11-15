@@ -8,6 +8,8 @@ import * as models from '../../../../support/Models'
 import * as modelPage from '../../../../support/components/ModelPage'
 import * as entitiesGrid from '../../../../support/components/EntitiesGrid'
 import * as actionsGrid from '../../../../support/components/ActionsGrid'
+import * as chatPanel from '../../../../support/components/ChatPanel'
+import * as trainDialogsGrid from '../../../../support/components/TrainDialogsGrid'
 import * as train from '../../../../support/Train'
 import * as settings from '../../../../support/components/Settings'
 import * as helpers from '../../../../support/Helpers'
@@ -28,16 +30,16 @@ describe("Settings - Settings", () => {
 
     it('Capture Train Dialog Grid data', () => {
       modelPage.NavigateToTrainDialogs()
-      cy.WaitForStableDOM().then(() => { trainDialogs = train.GetAllTrainDialogGridRows() })
+      cy.Enqueue(() => { return trainDialogsGrid.TdGrid.GetAllRows() }).then(returnValue => trainDialogs = returnValue)
     })
 
     it('Capture Train Dialog Description, Tags and Chat data for each Train Dialog', () => {
       trainDialogs.forEach(trainDialog => {
-        train.EditTraining(trainDialog.firstInput, trainDialog.lastInput, trainDialog.lastResponse)
+        trainDialogsGrid.TdGrid.EditTrainingByChatInputs(trainDialog.firstInput, trainDialog.lastInput, trainDialog.lastResponse)
         cy.WaitForStableDOM().then(() => {
           trainDialog.description = train.GetDescription()
           trainDialog.tags = train.GetAllTags()
-          trainDialog.chatMessages = train.GetAllChatMessages()
+          trainDialog.chatMessages = chatPanel.GetAllChatMessages()
   
           train.ClickSaveCloseButton()
         })
@@ -172,14 +174,14 @@ describe("Settings - Settings", () => {
 
       it('Verify all Train Dialogs data', () => {
         modelPage.NavigateToTrainDialogs()
-        train.VerifyListOfTrainDialogs(trainDialogs)
+        trainDialogsGrid.VerifyListOfTrainDialogs(trainDialogs)
 
         trainDialogs.forEach(trainDialog => {
-          train.EditTraining(trainDialog.firstInput, trainDialog.lastInput, trainDialog.lastResponse)
+          trainDialogsGrid.TdGrid.EditTrainingByChatInputs(trainDialog.firstInput, trainDialog.lastInput, trainDialog.lastResponse)
           cy.WaitForStableDOM().then(() => {
             train.VerifyDescription(trainDialog.description)
             train.VerifyTags(trainDialog.tags)
-            train.VerifyAllChatMessages(trainDialog.chatMessages)
+            chatPanel.VerifyAllChatMessages(trainDialog.chatMessages)
             train.ClickSaveCloseButton()
           })
         })

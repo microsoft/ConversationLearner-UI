@@ -9,6 +9,9 @@ import * as entities from '../../../../support/Entities'
 import * as actions from '../../../../support/Actions'
 import * as actionModal from '../../../../support/components/ActionModal'
 import * as scorerModal from '../../../../support/components/ScorerModal'
+import * as entityDetectionPanel from '../../../../support/components/EntityDetectionPanel'
+import * as chatPanel from '../../../../support/components/ChatPanel'
+import * as trainDialogsGrid from '../../../../support/components/TrainDialogsGrid'
 import * as train from '../../../../support/Train'
 import * as helpers from '../../../../support/Helpers'
 
@@ -26,7 +29,7 @@ describe('Comprehensive 2 - Score Actions', () => {
 
   context('Continue Training', () => {
     it('Edit existing Train Dialog', () => {
-      train.EditTraining('Hi', 'I love oranges!', 'I like $fruit too')
+      trainDialogsGrid.TdGrid.EditTrainingByChatInputs('Hi', 'I love oranges!', 'I like $fruit too')
     })
 
     it('User prompts Bot for other Actions', () => {
@@ -60,43 +63,43 @@ describe('Comprehensive 2 - Score Actions', () => {
 
       scorerModal.ClickAddActionButton()
       actions.CreateNewAction({ responseNameData: 'Uhhhh...' })
-      train.SelectLastChatTurn()
+      chatPanel.SelectLastChatTurn()
     })
 
     generatedScoreActionsData.VerifyScoreActionsList()
 
     it('Label an entity from prior User Turn to cause a change in the API qualification', () => {
-      train.SelectChatTurnStartsWith('Render these')
-      train.LabelTextAsEntity('disqualify', 'disqualifier')
+      chatPanel.SelectChatTurnStartsWith('Render these')
+      entityDetectionPanel.LabelTextAsEntity('disqualify', 'disqualifier')
       train.ClickSubmitChangesButton()
-      train.SelectChatTurnExactMatch('Uhhhh…')
+      chatPanel.SelectChatTurnExactMatch('Uhhhh…')
     })
 
     generatedScoreActionsData.VerifyScoreActionsList()
 
     it('Label another entity from prior User Turn to cause a change in the API qualification', () => {
-      train.SelectChatTurnStartsWith('Render these')
-      train.LabelTextAsEntity('OneFromAnEntity', '1stArg')
+      chatPanel.SelectChatTurnStartsWith('Render these')
+      entityDetectionPanel.LabelTextAsEntity('OneFromAnEntity', '1stArg')
       train.ClickSubmitChangesButton()
-      train.SelectChatTurnExactMatch('Uhhhh…')
+      chatPanel.SelectChatTurnExactMatch('Uhhhh…')
     })
 
     generatedScoreActionsData.VerifyScoreActionsList()
 
     it('Label yet another entity from prior User Turn to cause a change in the API qualification', () => {
-      train.SelectChatTurnStartsWith('Render these')
-      train.LabelTextAsEntity('TwoToBeUsedByApiCall', '2ndArg')
+      chatPanel.SelectChatTurnStartsWith('Render these')
+      entityDetectionPanel.LabelTextAsEntity('TwoToBeUsedByApiCall', '2ndArg')
       train.ClickSubmitChangesButton()
-      train.SelectChatTurnExactMatch('Uhhhh…')
+      chatPanel.SelectChatTurnExactMatch('Uhhhh…')
     })
 
     generatedScoreActionsData.VerifyScoreActionsList()
 
     it('Remove label from the disqualifying entity from prior User Turn to cause a change in the API qualification', () => {
-      train.SelectChatTurnStartsWith('Render these')
-      train.RemoveEntityLabel('disqualify', 'disqualifier')
+      chatPanel.SelectChatTurnStartsWith('Render these')
+      entityDetectionPanel.RemoveEntityLabel('disqualify', 'disqualifier')
       train.ClickSubmitChangesButton()
-      train.SelectChatTurnExactMatch('Uhhhh…')
+      chatPanel.SelectChatTurnExactMatch('Uhhhh…')
     })
 
     generatedScoreActionsData.VerifyScoreActionsList()

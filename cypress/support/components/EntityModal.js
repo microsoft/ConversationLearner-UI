@@ -32,7 +32,7 @@ export function ClickCancelButtonOnUnableToDeletePopUp() { popupModal.VerifyExac
 export function SelectResolverType(resolverType) {
   cy.Get('[data-testid="entity-creator-resolver-type-dropdown"]').Click()
 
-  cy.Get('div[role="listbox"].ms-Dropdown-items > button.ms-Dropdown-item > div > div > span.clDropdown--normal')
+  cy.Get('div.ms-Dropdown-items[role="listbox"] > button.ms-Dropdown-item > span > div > span.clDropdown--normal')
     .ExactMatch(resolverType)
     .parents('button.ms-Dropdown-item')
     .Click()

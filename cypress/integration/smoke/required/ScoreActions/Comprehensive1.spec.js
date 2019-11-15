@@ -10,6 +10,9 @@ import * as actions from '../../../../support/Actions'
 import * as actionModal from '../../../../support/components/ActionModal'
 import * as scorerModal from '../../../../support/components/ScorerModal'
 import * as common from '../../../../support/Common'
+import * as entityDetectionPanel from '../../../../support/components/EntityDetectionPanel'
+import * as chatPanel from '../../../../support/components/ChatPanel'
+import * as trainDialogsGrid from '../../../../support/components/TrainDialogsGrid'
 import * as train from '../../../../support/Train'
 import * as common from '../../../../support/Common'
 import * as helpers from '../../../../support/Helpers'
@@ -27,7 +30,7 @@ describe('Comprehensive 1 - Score Actions', () => {
 
   context('Train Dialog', () => {
     it('Create a new Train Dialog', () => {
-      train.CreateNewTrainDialog()
+      trainDialogsGrid.TdGrid.CreateNewTrainDialog()
     })
 
     it('Simple User Turn', () => {
@@ -45,7 +48,7 @@ describe('Comprehensive 1 - Score Actions', () => {
     })
 
     it('Select the action that was just used as a Bot Response', () => {
-      train.SelectLastChatTurn()
+      chatPanel.SelectLastChatTurn()
     })
 
     generatedScoreActionsData.VerifyScoreActionsList()
@@ -56,16 +59,16 @@ describe('Comprehensive 1 - Score Actions', () => {
       scorerModal.ClickAddActionButton()
       actions.CreateNewAction({ responseNameData: 'Hello', uncheckWaitForResponse: true })
       train.ClickScoreActionsButton()
-      train.VerifyChatTurnIsAnExactMatch(common.whatsYourName, 3, 2)
-      train.SelectLastChatTurn()
+      chatPanel.VerifyChatTurnIsAnExactMatch(common.whatsYourName, 3, 2)
+      chatPanel.SelectLastChatTurn()
     })
 
     generatedScoreActionsData.VerifyScoreActionsList()
 
     it('Name Entity in User Turn', () => {
       train.TypeYourMessage('My name is Jeff')
-      train.RemoveEntityLabel('My', 'name')
-      train.LabelTextAsEntity('Jeff', 'name')
+      entityDetectionPanel.RemoveEntityLabel('My', 'name')
+      entityDetectionPanel.LabelTextAsEntity('Jeff', 'name')
     })
 
     it('Uses the "name" Entity in a new Bot Response', () => {
@@ -99,7 +102,7 @@ describe('Comprehensive 1 - Score Actions', () => {
     // Once this bug is fixed remove this block of code and the test suite should work as expected.
     it('Hack around Bug 2243', () => {
       scorerModal.ClickTextAction('What kind of fruit do you like?')
-      train.SelectChatTurnExactMatch('What kind of fruit do you like?', 1)
+      chatPanel.SelectChatTurnExactMatch('What kind of fruit do you like?', 1)
     })
 
     generatedScoreActionsData.VerifyScoreActionsList()
@@ -107,7 +110,7 @@ describe('Comprehensive 1 - Score Actions', () => {
     it('Select Set Entity Action fruit: ORANGES', () => {
       scorerModal.ClickSetEntityAction('fruit: ORANGES')
       train.ClickScoreActionsButton()
-      train.SelectLastChatTurn()
+      chatPanel.SelectLastChatTurn()
     })
 
     generatedScoreActionsData.VerifyScoreActionsList()

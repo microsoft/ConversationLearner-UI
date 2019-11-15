@@ -5,6 +5,8 @@
 
 import * as models from '../../../../support/Models'
 import * as modelPage from '../../../../support/components/ModelPage'
+import * as chatPanel from '../../../../support/components/ChatPanel'
+import * as trainDialogsGrid from '../../../../support/components/TrainDialogsGrid'
 import * as train from '../../../../support/Train'
 import * as helpers from '../../../../support/Helpers'
 
@@ -24,24 +26,24 @@ describe('Branching - Edit and Branching', () => {
 
   context('Branch and Extend Training', () => {
     it('Should edit a specific Train Dialog and capture the original chat messages for verification later', () => {
-      train.EditTraining('My name is David.', 'My name is Susan.', 'Hello $name')
-      cy.WaitForStableDOM().then(() => { originalChatMessages = train.GetAllChatMessages() })
+      trainDialogsGrid.TdGrid.EditTrainingByChatInputs('My name is David.', 'My name is Susan.', 'Hello $name')
+      cy.WaitForStableDOM().then(() => { originalChatMessages = chatPanel.GetAllChatMessages() })
     })
 
     it('Should branch a turn', () => {
-        train.BranchChatTurn('My name is Susan.', 'My name is Joseph.')
-        train.ClickScoreActionsButton()
-        train.VerifyTextChatMessage('Hello Joseph')
+      chatPanel.BranchChatTurn('My name is Susan.', 'My name is Joseph.')
+      train.ClickScoreActionsButton()
+      chatPanel.VerifyTextChatMessage('Hello Joseph')
     })
 
     it('Should add another user input and Bot response', () => {
       train.TypeYourMessage('My name is Guadalupe.')
       train.ClickScoreActionsButton()
-      train.SelectTextAction('Hello Guadalupe', 'Hello $name')
+      train.SelectTextAction('Hello Guadalupe')
     })
 
     it('Should capture the changes for verification later', () => {
-      cy.WaitForStableDOM().then(() => { editedChatMessages = train.GetAllChatMessages() })
+      cy.WaitForStableDOM().then(() => { editedChatMessages = chatPanel.GetAllChatMessages() })
     })
 
     it('Should save the changes and confirm they show up in the grid', () => {
@@ -51,14 +53,14 @@ describe('Branching - Edit and Branching', () => {
 
   context('Validations', () => {
     it('Should edit the original Train Dialog and verify it was not changed.', () => {
-      train.EditTraining('My name is David.', 'My name is Susan.', 'Hello $name')
-      train.VerifyAllChatMessages(originalChatMessages)
+      trainDialogsGrid.TdGrid.EditTrainingByChatInputs('My name is David.', 'My name is Susan.', 'Hello $name')
+      chatPanel.VerifyAllChatMessages(originalChatMessages)
       train.ClickSaveCloseButton()
     })
 
     it('Should edit the branched Train Dialog and verify it was persisted correctly.', () => {
-      train.EditTraining('My name is David.', 'My name is Guadalupe.', 'Hello $name')
-      train.VerifyAllChatMessages(editedChatMessages)
+      trainDialogsGrid.TdGrid.EditTrainingByChatInputs('My name is David.', 'My name is Guadalupe.', 'Hello $name')
+      chatPanel.VerifyAllChatMessages(editedChatMessages)
       train.ClickSaveCloseButton()
     })
   })

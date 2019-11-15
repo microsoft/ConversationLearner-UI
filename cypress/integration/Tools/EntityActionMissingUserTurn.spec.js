@@ -5,6 +5,7 @@
 
 import * as models from '../../support/Models'
 import * as modelPage from '../../support/components/ModelPage'
+import * as chatPanel from '../../../support/components/ChatPanel'
 import * as train from '../../support/Train'
 import * as trainDialogsGrid from '../../support/components/TrainDialogsGrid'
 import * as common from '../../support/Common'
@@ -23,11 +24,11 @@ describe('Entity Action Missing User Turn', () => {
 
   context('Train Dialog', () => {
     it('Create an error in an existing Train Dialog', () => {
-      train.EditTraining('My entity: XXYYZZ', 'My entity: XXYYZZ', 'Your entity contains: $entity')
+      trainDialogsGrid.TdGrid.EditTrainingByChatInputs('My entity: XXYYZZ', 'My entity: XXYYZZ', 'Your entity contains: $entity')
       train.TypeYourMessage('xxx')
       train.ClickScoreActionsButton()
       train.SelectTextAction('Something extra')
-      train.SelectChatTurnExactMatch('xxx')
+      chatPanel.SelectChatTurnExactMatch('xxx')
       train.ClickDeleteChatTurn()
     })
 

@@ -5,10 +5,9 @@
 
 import * as models from '../../../support/Models'
 import * as modelPage from '../../../support/components/ModelPage'
-import * as memoryTableComponent from '../../../support/components/MemoryTableComponent'
-import * as scorerModal from '../../../support/components/ScorerModal'
+import * as entityDetectionPanel from '../../../support/components/EntityDetectionPanel'
+import * as trainDialogsGrid from '../../../support/components/TrainDialogsGrid'
 import * as train from '../../../support/Train'
-import * as common from '../../../support/Common'
 import * as helpers from '../../../support/Helpers'
 
 describe('Other Errors - ErrorHandling', () => {
@@ -23,13 +22,13 @@ describe('Other Errors - ErrorHandling', () => {
 
   context('Train Dialog', () => {
     it('Should create a new Train Dialog', () => {
-      train.CreateNewTrainDialog()
+      trainDialogsGrid.TdGrid.CreateNewTrainDialog()
     })
 
     it('Type in a user utterance and label some of the text', () => {
       train.TypeYourMessage('My name is Joe Shmo')
-      train.LabelTextAsEntity('Joe', 'name')
-      train.LabelTextAsEntity('Shmo', 'name')
+      entityDetectionPanel.LabelTextAsEntity('Joe', 'name')
+      entityDetectionPanel.LabelTextAsEntity('Shmo', 'name')
     })
 
     it('Verify the warning message comes up.', () => {

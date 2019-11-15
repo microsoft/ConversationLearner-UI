@@ -5,6 +5,8 @@
 
 import * as models from '../../../support/Models'
 import * as modelPage from '../../../support/components/ModelPage'
+import * as chatPanel from '../../../support/components/ChatPanel'
+import * as trainDialogsGrid from '../../../support/components/TrainDialogsGrid'
 import * as train from '../../../support/Train'
 import * as helpers from '../../../support/Helpers'
 
@@ -21,33 +23,33 @@ describe('Last Turn and Undo - Edit and Branching', () => {
 
   context('Last Turn and Undo', () => {
     it('Edit user turn, which ends with a Bot turn, then verify expected UI Elements', () => {
-      train.EditTraining('Hello', 'David', 'Hello $name')
+      trainDialogsGrid.TdGrid.EditTrainingByChatInputs('Hello', 'David', 'Hello $name')
       train.VerifyScoreActionsButtonIsMissing()
       train.VerifyTypeYourMessageIsPresent()
       train.VerifyTurnUndoButtonIsMissing()
     })
     
     it('Preserve all chat messages for later verification', () => {
-      cy.WaitForStableDOM().then(() => { chatMessages = train.GetAllChatMessages() })
+      cy.WaitForStableDOM().then(() => { chatMessages = chatPanel.GetAllChatMessages() })
     })
 
     it('Type in a message, verify that Undo button is present and user cannot select another chat turn', () => {
       train.TypeYourMessage('A message to be undone!')
       train.VerifyTurnUndoButtonIsPresent()
-      train.VerifyChatPanelIsDisabled()
+      chatPanel.VerifyChatPanelIsDisabled()
     })
 
     it('Undo the last message, verify turn was discarded and Undo button is gone.', () => {
       train.ClickTurnUndoButton()
-      train.VerifyChatPanelIsEnabled()
-      train.VerifyAllChatMessages(chatMessages)
+      chatPanel.VerifyChatPanelIsEnabled()
+      chatPanel.VerifyAllChatMessages(chatMessages)
       train.VerifyTurnUndoButtonIsMissing()
     })
 
     it('Type in another message, verify that Undo button is present and user cannot select another chat turn', () => {
       train.TypeYourMessage('A message to persist')
       train.VerifyTurnUndoButtonIsPresent()
-      train.VerifyChatPanelIsDisabled()
+      chatPanel.VerifyChatPanelIsDisabled()
     })
 
     it('Click Score Actions, verify that Undo botton goes away', () => {
@@ -60,7 +62,7 @@ describe('Last Turn and Undo - Edit and Branching', () => {
     })
 
     it('Edit the train dialog and confirm that "Score Acctions" is present and "Type your message" is missing', () => {
-      train.EditTraining('Hello', 'A message to persist', '')
+      trainDialogsGrid.TdGrid.EditTrainingByChatInputs('Hello', 'A message to persist', '')
       train.VerifyScoreActionsButtonIsPresent()
       train.VerifyTypeYourMessageIsMissing()
     })
