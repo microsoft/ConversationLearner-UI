@@ -91,7 +91,7 @@ function _IsWordLabeledAsEntity(word, entity, elements) {
                  .parents('.cl-entity-node--custom')
                  .find(`[data-testid="custom-entity-name-button"]:contains('${entity}')`)
                  .length > 0) {
-        helpers.ConLog(funcName, `The word "${word} was found and labeled as the entity "${entity}`)
+        helpers.ConLog(funcName, `The word "${word} was found and it was labeled as the entity "${entity}"`)
         return true
       }
     }
@@ -102,7 +102,7 @@ function _IsWordLabeledAsEntity(word, entity, elements) {
     throw new Error(`We could not find '${word}' in the utterance.`)
   }
   
-  helpers.ConLog(funcName, `The word "${word} was found but it was NOT labeled as the entity "${entity}`)
+  helpers.ConLog(funcName, `The word "${word} was found but it was NOT labeled as the entity "${entity}"`)
   return false
 }
 
