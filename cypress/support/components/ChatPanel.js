@@ -40,7 +40,6 @@ export function GetAllChatMessages(retainMarkup = false) {
   return returnValues
 }
 
-// NEXT - NEXT - NEXT - NEXT - NEXT
 export function VerifyNoChatTurnSelected() { cy.Get('[data-testid="chat-edit-add-user-input-button"], [data-testid="chat-edit-delete-turn-button"]').should('have.length', 0) }
 
 export function VerifySelectedChatTurn(expectedMessage) { 
