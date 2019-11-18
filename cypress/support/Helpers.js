@@ -64,7 +64,7 @@ export function StringArrayFromElementText(selector, retainMarkup = false) {
   for (let i = 0; i < elements.length; i++)  {
     let text = retainMarkup ? elements[i].innerHTML : TextContentWithoutNewlines(elements[i])
     returnValues.push(text)
-    ConLog(funcName, text)
+    ConLog(funcName, `"${text}"`)
   }
   return returnValues
 }
@@ -109,7 +109,7 @@ export function TextContentWithoutNewlines(element) {
                                  .replace(/‘|’/g, "'")
                                  .replace(/“|”/g, '"')
                                  .replace(/([^◾️…\x20-\x7E])/gm, '')
-  ConLog('TextContentWithoutNewlines', returnValue)
+  ConLog('TextContentWithoutNewlines', `"${returnValue}"`)
   return returnValue
 }
 

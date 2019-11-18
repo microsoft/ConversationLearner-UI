@@ -68,7 +68,7 @@ class TranscriptComparisons extends React.Component<Props, ComponentState> {
             return []
         }
 
-        // Gatcher up items by result type
+        // Gather up items by result type.
         const renderResults: SourceRenderData[] = []
         for (const sourceName of this.props.testSet.sourceNames) {
 

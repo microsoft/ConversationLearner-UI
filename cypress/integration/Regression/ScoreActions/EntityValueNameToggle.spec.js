@@ -6,6 +6,8 @@
 import * as models from '../../../support/Models'
 import * as modelPage from '../../../support/components/ModelPage'
 import * as scorerModal from '../../../support/components/ScorerModal'
+import * as chatPanel from '../../../support/components/ChatPanel'
+import * as trainDialogsGrid from '../../../support/components/TrainDialogsGrid'
 import * as train from '../../../support/Train'
 import * as helpers from '../../../support/Helpers'
 
@@ -22,14 +24,14 @@ describe('Entity Value-Name Toggle - Score Actions', () => {
 
   context('Train Dialog', () => {
     it('Edit the Train Dialog', () => {
-      train.EditTraining('Testing Entity Value/Name Toggle feature.', "We're done here.", 'Goodbye $name')
+      trainDialogsGrid.TdGrid.EditTrainingByChatInputs('Testing Entity Value/Name Toggle feature.', "We're done here.", 'Goodbye $name')
     })
 
     it('Select and Verify the Presence or Absence of Toggle Button for Each Bot Turn', () => {
       // While verifying everything in the Score Actions Panel this also verifies 
       // the presence or absense of the toggle switch on all Actions at each turn.
       // These will vary due to the values contained (or not) in Entities.
-      train.VerifyEachBotChatTurn(() => { generatedScoreActionsData.VerifyScoreActionsListUnwrapped() })      
+      chatPanel.VerifyEachBotChatTurn(() => { generatedScoreActionsData.VerifyScoreActionsListUnwrapped() })      
     })
 
 

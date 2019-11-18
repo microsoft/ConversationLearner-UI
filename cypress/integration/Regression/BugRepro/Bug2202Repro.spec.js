@@ -5,6 +5,8 @@
 
 import * as models from '../../../support/Models'
 import * as modelPage from '../../../support/components/ModelPage'
+import * as chatPanel from '../../../support/components/ChatPanel'
+import * as trainDialogsGrid from '../../../support/components/TrainDialogsGrid'
 import * as train from '../../../support/Train'
 import * as helpers from '../../../support/Helpers'
 
@@ -21,8 +23,8 @@ describe("Bug 2202 Repro", () => {
 
   context('Attempt to reproduce Bug 2202', () => {
     it('Should edit a Train Dialog and insert a user turn', () => {
-      train.EditTraining('Use all Actions and Entities', "I'm feeling lucky!", 'name:$name sweets:$sweets want:$want')
-      train.InsertUserInputAfter('I like to win!', 'Insert this User Turn')
+      trainDialogsGrid.TdGrid.EditTrainingByChatInputs('Use all Actions and Entities', "I'm feeling lucky!", 'name:$name sweets:$sweets want:$want')
+      chatPanel.InsertUserInputAfter('I like to win!', 'Insert this User Turn')
     })
 
     // Bug 2202: FETCH_TRAINDIALOGREPLAY_ASYNC Failed: nasty error came up

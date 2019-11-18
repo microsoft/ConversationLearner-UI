@@ -6,8 +6,8 @@
 import * as models from '../../../support/Models'
 import * as modelPage from '../../../support/components/ModelPage'
 import * as actions from '../../../support/Actions'
-import * as train from '../../../support/Train'
 import * as trainDialogsGrid from '../../../support/components/TrainDialogsGrid'
+import * as train from '../../../support/Train'
 import * as helpers from '../../../support/Helpers'
 
 const preliminaryTrainingDescription = 'Preliminary Training to cause some expected behaviors in future Train Dialogs'
@@ -31,7 +31,7 @@ describe('End Session - Create Model', () => {
     it('Should create a new Train Dialog', () => {
       modelPage.NavigateToTrainDialogs()
       cy.WaitForTrainingStatusCompleted()
-      train.CreateNewTrainDialog()
+      trainDialogsGrid.TdGrid.CreateNewTrainDialog()
     })
 
     it('Should train model to respond to "Hi"', () => {
@@ -56,7 +56,7 @@ describe('End Session - Create Model', () => {
     // as a second TD rather than overwriting the edited TD and retaining the description as it should have done.
     it('Should be able to edit the training that we just saved and find the description we gave it', () => {
       cy.WaitForTrainingStatusCompleted()
-      train.EditTraining('Hi', 'Yo', 'Okay')
+      trainDialogsGrid.TdGrid.EditTrainingByChatInputs('Hi', 'Yo', 'Okay')
       train.VerifyDescription(preliminaryTrainingDescription)
     })
 
@@ -79,7 +79,7 @@ describe('End Session - Create Model', () => {
   context('2nd Train Dialog', () => {
     it('Should create another Train Dialog', () => {
       cy.WaitForTrainingStatusCompleted()
-      train.CreateNewTrainDialog()
+      trainDialogsGrid.TdGrid.CreateNewTrainDialog()
     })
 
     it('Should train model to respond to "Yo"', () => {

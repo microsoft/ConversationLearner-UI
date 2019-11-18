@@ -14,7 +14,7 @@ import * as helpers from '../../support/Helpers'
 //    node_modules\.bin\cypress open --config baseurl= 
 describe('Training Status Tester Using Mock Page', () => {
   it('Visit the Mock Page', () => {
-    cy.visit('cypress/support/TrainingStatusExerciser.html')
+    cy.visit('cypress/support/MockTrainingStatus.html')
   })
 
   it('Wait for Traning Status Complete', () => {

@@ -420,3 +420,29 @@ export function GenerateScoreActionsDataFromGrid() {
   
   return generatedData
 }
+
+// To use this function 1st select the chat message whose text you want to capture.
+// This is intended to capture text, with $ entity names, just as it will be seen as "LastResponse" in the TD Grid.
+// For example it would capture: "Hello $name" rather than "Hello David"
+// If there are no entities specified for the action, it still returns the text of the action.
+export function GetTextWithEntityNamesFromSelectedAction() {
+  const elements = FindActionRowElements('[data-testid="action-scorer-button-selected"]', 'SelectedSelected')
+  if (typeof elements == 'string') { 
+    throw new Error(elements) 
+  }
+
+  const toggleElements = Cypress.$(elements).find('[data-testid="action-scorer-entity-toggle"]')
+  if (toggleElements.length == 1) { 
+    toggleElements.click() 
+  }
+
+  return cy.WaitForStableDOM().then(() => {
+    const responseElement = Cypress.$(elements).find('[data-testid="action-scorer-text-response"], [data-testid="action-scorer-api-name"], [data-testid="action-scorer-session-response-user"], [data-testid="action-scorer-card-name"]')
+    if (responseElement.length != 1) {
+      // Won't work for [data-testid="action-scorer-action-set-entity"] - need to ask devs to change lastResponse in grid to get this working.
+      throw new Error('in scorerModal.GetTextWithEntityNamesFromSelectedAction() - The last Bot response of this Train Dialog uses an action type that is NOT supported by this function, the test code needs to be fixed.')
+    }
+    const text = helpers.TextContentWithoutNewlines(responseElement[0])
+    return text
+  })
+}

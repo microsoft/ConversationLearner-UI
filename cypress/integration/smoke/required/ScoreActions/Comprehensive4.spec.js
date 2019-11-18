@@ -7,6 +7,8 @@ import * as models from '../../../../support/Models'
 import * as modelPage from '../../../../support/components/ModelPage'
 import * as actions from '../../../../support/Actions'
 import * as scorerModal from '../../../../support/components/ScorerModal'
+import * as chatPanel from '../../../../support/components/ChatPanel'
+import * as trainDialogsGrid from '../../../../support/components/TrainDialogsGrid'
 import * as train from '../../../../support/Train'
 import * as helpers from '../../../../support/Helpers'
 
@@ -24,7 +26,7 @@ describe('Comprehensive 4 - Score Actions', () => {
 
   context('Continue Training', () => {
     it('Edit existing Train Dialog', () => {
-      train.EditTraining('Hi',
+      trainDialogsGrid.TdGrid.EditTrainingByChatInputs('Hi',
                          'Set Entities: 1stArg: FirstArg - 2ndArg: SecondArg - fruit: PEACHES - name: Cindy - disqualifier: DISQUALIFIED', 
                          'Uhhhh...')
     })
@@ -48,7 +50,7 @@ describe('Comprehensive 4 - Score Actions', () => {
 
     it('Bot Response Uhhh...', () => {
       scorerModal.ClickTextAction('Uhhhh...')
-      train.SelectLastChatTurn()
+      chatPanel.SelectLastChatTurn()
     })
 
     it('User Turn Mangoes and Peaches', () => {
@@ -73,7 +75,7 @@ describe('Comprehensive 4 - Score Actions', () => {
     it('Bot Responds with End Session', () => {
       scorerModal.ClickAddActionButton()
       actions.CreateNewAction({ type: 'END_SESSION', responseNameData: "Goodbye" })
-      train.SelectLastChatTurn()
+      chatPanel.SelectLastChatTurn()
     })
 
     generatedScoreActionsData.VerifyScoreActionsList()

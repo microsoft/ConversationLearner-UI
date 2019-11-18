@@ -5,11 +5,10 @@
 
 import * as models from '../../../support/Models'
 import * as modelPage from '../../../support/components/ModelPage'
-import * as train from '../../../support/Train'
+import * as chatPanel from '../../../support/components/ChatPanel'
 import * as trainDialogsGrid from '../../../support/components/TrainDialogsGrid'
-import * as common from '../../../support/Common'
-import * as actions from '../../../support/Actions'
-import * as scorerModal from '../../../support/components/ScorerModal'
+import * as train from '../../../support/Train'
+import * as entityDetectionPanel from '../../../support/components/EntityDetectionPanel'
 import * as helpers from '../../../support/Helpers'
 
 // This test suite is part 1 of 2. The second part is in ApiVerifyMultipleExceptions.
@@ -25,12 +24,12 @@ describe('API Create Multiple Exceptions - ErrorHandling', () => {
 
   context('Train Dialog that will be Discarded by an Error', () => {
     it('Should create a new Train Dialog', () => {
-      train.CreateNewTrainDialog()
+      trainDialogsGrid.TdGrid.CreateNewTrainDialog()
     })
 
     it('Should add a user turn to cause an error, dismiss the error and the TD and verify it returns to the TD grid pane view', () => {
       train.TypeYourMessage('This entityError will cause the Train Dialog to be discarded.')
-      train.LabelTextAsEntity('entityError', 'entityError')
+      entityDetectionPanel.LabelTextAsEntity('entityError', 'entityError')
       train.ClickScoreActionsButton()
       train.VerifyErrorPopup("Error in Bot's EntityDetectionCallback:  An intentional error was invoked in the EntityDetectionCallback function.")
       train.ClickPopupConfirmCancelOkButton()
@@ -48,7 +47,7 @@ describe('API Create Multiple Exceptions - ErrorHandling', () => {
 
   context('Train Dialog that will be Saved', () => {
     it('Should create a new Train Dialog', () => {
-      train.CreateNewTrainDialog()
+      trainDialogsGrid.TdGrid.CreateNewTrainDialog()
     })
 
     it('Should add a user turn to be used later to cause an EntityDetectionCallback error and verify it is in the chat pane', () => {
@@ -59,14 +58,14 @@ describe('API Create Multiple Exceptions - ErrorHandling', () => {
 
     it('Should add a logicError turn and verify it renders a card with an error message in the chat pane', () => {
       train.TypeYourMessage('This is a logicError')
-      train.LabelTextAsEntity('logicError', '+logicError')
+      entityDetectionPanel.LabelTextAsEntity('logicError', '+logicError')
       train.ClickScoreActionsButton()
       train.SelectApiCardAction('ExceptionAPI', 'Exception hit in Bot’s API Callback: ‘ExceptionAPI’', 'Error: ExceptionAPI: Logic Error')
     })
 
     it('Should add a turn to remove the logicError and verify it renders a NON-error message', () => {
       train.TypeYourMessage('Remove the logicError')
-      train.LabelTextAsEntity('logicError', '-logicError')
+      entityDetectionPanel.LabelTextAsEntity('logicError', '-logicError')
       train.ClickScoreActionsButton()
       train.SelectApiTextAction('ExceptionAPI', 'ExceptionAPI: Hello with no exception')
     })
@@ -85,14 +84,14 @@ describe('API Create Multiple Exceptions - ErrorHandling', () => {
 
     it('Should add a renderError turn and verify it renders a card with an error message in the chat pane', () => {
       train.TypeYourMessage('This will produce a renderError')
-      train.LabelTextAsEntity('renderError', '+renderError')
+      entityDetectionPanel.LabelTextAsEntity('renderError', '+renderError')
       train.ClickScoreActionsButton()
       train.SelectApiCardAction('ExceptionAPI', 'Exception hit in Bot’s API Callback: ‘ExceptionAPI’', 'Error: ExceptionAPI: Render Error')
     })
 
     it('Should add a logicError turn again and verify the error message is for the logicError, not the renderError', () => {
       train.TypeYourMessage('This is a logicError')
-      train.LabelTextAsEntity('logicError', '+logicError', false)
+      entityDetectionPanel.LabelTextAsEntity('logicError', '+logicError', 0, false)
       train.ClickScoreActionsButton()
       train.SelectApiCardAction('ExceptionAPI', 'Exception hit in Bot’s API Callback: ‘ExceptionAPI’', 'Error: ExceptionAPI: Logic Error')
     })
@@ -105,25 +104,25 @@ describe('API Create Multiple Exceptions - ErrorHandling', () => {
 
     it('Should add a turn to remove the logicError and verify it renders the error message for renderError once again', () => {
       train.TypeYourMessage('Remove the logicError, however, you will still see the renderError.')
-      train.LabelTextAsEntity('logicError', '-logicError', false)
+      entityDetectionPanel.LabelTextAsEntity('logicError', '-logicError', 0, false)
       train.ClickScoreActionsButton()
       train.SelectApiCardAction('ExceptionAPI', 'Exception hit in Bot’s API Callback: ‘ExceptionAPI’', 'Error: ExceptionAPI: Render Error')
     })
 
     it('Should add a turn to remove the renderError and verify it renders a NON-error message', () => {
       train.TypeYourMessage('Clear out the renderError. At this point you should no longer see errors.')
-      train.LabelTextAsEntity('renderError', '-renderError')
+      entityDetectionPanel.LabelTextAsEntity('renderError', '-renderError')
       train.ClickScoreActionsButton()
       train.SelectApiTextAction('ExceptionAPI', 'ExceptionAPI: Hello with no exception')
     })
 
     it('Should add a user turn with an Entiy error, verify popup, confirm popup, and verify user turn is removed', () => {
       train.TypeYourMessage('This entityError will cause the user turn to be discarded.', true)
-      train.LabelTextAsEntity('entityError', 'entityError')
+      entityDetectionPanel.LabelTextAsEntity('entityError', 'entityError')
       train.ClickScoreActionsButton()
       train.VerifyErrorPopup("Error in Bot's EntityDetectionCallback:  An intentional error was invoked in the EntityDetectionCallback function.")
       train.ClickPopupConfirmCancelOkButton()
-      train.VerifyChatMessageCount(20)
+      chatPanel.VerifyChatMessageCount(20)
     })
 
     it('Should add a user turn, to be used later to cause an error, and verify it is in the chat pane', () => {

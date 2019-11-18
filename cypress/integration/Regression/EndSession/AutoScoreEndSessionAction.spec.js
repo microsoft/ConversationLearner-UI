@@ -5,6 +5,8 @@
 
 import * as models from '../../../support/Models'
 import * as modelPage from '../../../support/components/ModelPage'
+import * as chatPanel from '../../../support/components/ChatPanel'
+import * as trainDialogsGrid from '../../../support/components/TrainDialogsGrid'
 import * as train from '../../../support/Train'
 import * as helpers from '../../../support/Helpers'
 
@@ -24,7 +26,7 @@ describe('Auto Score End Session Action - End Session', () => {
 
   context('New Train Dialog', () => {
     it('Should create a new Train Dialog with an End Session Action in it', () => {
-      train.CreateNewTrainDialog()
+      trainDialogsGrid.TdGrid.CreateNewTrainDialog()
 
       train.TypeYourMessage('Hi')
       train.ClickScoreActionsButton()
@@ -43,7 +45,7 @@ describe('Auto Score End Session Action - End Session', () => {
   context('Edit Train Dialog', () => {
     it('Should be able to edit the training that we just saved', () => {
       cy.WaitForTrainingStatusCompleted()
-      train.EditTraining('Hi', 'Bye', '')
+      trainDialogsGrid.TdGrid.EditTrainingByChatInputs('Hi', 'Bye', '')
     })
 
     it('Should score actions for an automaticly selected Bot response', () => {
@@ -53,8 +55,8 @@ describe('Auto Score End Session Action - End Session', () => {
     it('Should verify the automaticly selected Bot response is acording to the training.', () => {
       // Bug 2027: Auto Scored Action Selection should select EndSession action if model has been trained for that.
       // Remove this comment and the following line when this bug is fixed...uncomment the next line.
-      train.VerifyChatTurnIsAnExactMatch('Hello', 4, 3)
-      //train.VerifyChatTurnIsAnExactMatch('EndSession: Goodbye', 4, 3)
+      chatPanel.VerifyChatTurnIsAnExactMatch('Hello', 4, 3)
+      //chatPanel.VerifyChatTurnIsAnExactMatch('EndSession: Goodbye', 4, 3)
     })
 
     it('Should abandon our changes', () => {

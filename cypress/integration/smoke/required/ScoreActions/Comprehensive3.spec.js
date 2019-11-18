@@ -9,6 +9,9 @@ import * as entities from '../../../../support/Entities'
 import * as actions from '../../../../support/Actions'
 import * as actionModal from '../../../../support/components/ActionModal'
 import * as scorerModal from '../../../../support/components/ScorerModal'
+import * as entityDetectionPanel from '../../../../support/components/EntityDetectionPanel'
+import * as chatPanel from '../../../../support/components/ChatPanel'
+import * as trainDialogsGrid from '../../../../support/components/TrainDialogsGrid'
 import * as train from '../../../../support/Train'
 import * as helpers from '../../../../support/Helpers'
 
@@ -26,14 +29,14 @@ describe('Comprehensive 3 - Score Actions', () => {
 
   context('Continue Training', () => {
     it('Edit existing Train Dialog', () => {
-      train.EditTraining('Hi', 
+      trainDialogsGrid.TdGrid.EditTrainingByChatInputs('Hi', 
                          'Render these API Arguments: OneFromAnEntity, TwoToBeUsedByApiCall - and temporarily disqualify the Api response', 
                          'RenderTheArgs')
     })
 
     it('Add two more entities', () => {
       train.ClickScoreActionsButton()
-      train.SelectLastChatTurn()
+      chatPanel.SelectLastChatTurn()
       scorerModal.ClickAddActionButton()
 
       actionModal.ClickAddEntityButton()
@@ -47,7 +50,7 @@ describe('Comprehensive 3 - Score Actions', () => {
 
     it('Add another Bot response', () => {
       scorerModal.ClickTextAction('Uhhhh...')
-      train.SelectLastChatTurn()
+      chatPanel.SelectLastChatTurn()
     })
 
     generatedScoreActionsData.VerifyScoreActionsList()
@@ -57,8 +60,8 @@ describe('Comprehensive 3 - Score Actions', () => {
       // The text that is labeled as the 'clear' Entity will cause those values to be 
       // cleared whenever the 'ClearMemory' API is used.
       train.TypeYourMessage('Clear Entity Values: 1stArg - 2ndArg - disqualifier - clear - fruit - name - set')
-      train.LabelTextAsEntity('1stArg', 'clear')
-      train.LabelTextAsEntity('2ndArg', 'clear')
+      entityDetectionPanel.LabelTextAsEntity('1stArg', 'clear')
+      entityDetectionPanel.LabelTextAsEntity('2ndArg', 'clear')
       train.ClickScoreActionsButton()
     })
 
@@ -95,8 +98,8 @@ describe('Comprehensive 3 - Score Actions', () => {
 
     it('Create an API Action to set Entities listed in the "clear" Entity', () => {
       train.TypeYourMessage('Set Entities: 1stArg: FirstArg - 2ndArg: SecondArg - fruit: PEACHES - name: Cindy - disqualifier: DISQUALIFIED')
-      train.LabelTextAsEntity('fruit: PEACHES', 'set')
-      train.LabelTextAsEntity('2ndArg: SecondArg', 'set')
+      entityDetectionPanel.LabelTextAsEntity('fruit: PEACHES', 'set')
+      entityDetectionPanel.LabelTextAsEntity('2ndArg: SecondArg', 'set')
       train.ClickScoreActionsButton()
     })
 
@@ -114,7 +117,7 @@ describe('Comprehensive 3 - Score Actions', () => {
 
     it('Bot Response to finish the round and allow scrutiny of the Action scores', () => {
       scorerModal.ClickTextAction('Uhhhh...')
-      train.SelectLastChatTurn()
+      chatPanel.SelectLastChatTurn()
     })
 
     generatedScoreActionsData.VerifyScoreActionsList()

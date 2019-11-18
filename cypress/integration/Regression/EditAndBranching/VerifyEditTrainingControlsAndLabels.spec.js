@@ -5,8 +5,9 @@
 
 import * as models from '../../../support/Models'
 import * as modelPage from '../../../support/components/ModelPage'
-import * as train from '../../../support/Train'
+import * as chatPanel from '../../../support/components/ChatPanel'
 import * as trainDialogsGrid from '../../../support/components/TrainDialogsGrid'
+import * as train from '../../../support/Train'
 import * as helpers from '../../../support/Helpers'
 
 describe('Verify Edit Training Controls And Labels - Edit And Branching', () => {
@@ -28,8 +29,8 @@ describe('Verify Edit Training Controls And Labels - Edit And Branching', () => 
 
   context('Edit Train Dialog', () => {
     it('Should edit a Train Dialog and capture the chat messages to verifiy later', () => {
-      train.EditTraining('My name is David.', 'My name is Susan.', 'Hello $name')
-      cy.WaitForStableDOM().then(() => { originalChatMessages = train.GetAllChatMessages() })
+      trainDialogsGrid.TdGrid.EditTrainingByChatInputs('My name is David.', 'My name is Susan.', 'Hello $name')
+      cy.WaitForStableDOM().then(() => { originalChatMessages = chatPanel.GetAllChatMessages() })
     })
 
     it('Should verify the labels for the Close and Delete buttons', () => {
@@ -38,15 +39,15 @@ describe('Verify Edit Training Controls And Labels - Edit And Branching', () => 
     })
 
     it('Should verify there are no edit controls visible in the chat pane', () => {
-      train.VerifyThereAreNoChatEditControls()
+      chatPanel.VerifyThereAreNoChatEditControls()
     })
 
     it('Should verify each chat turn contains only the expected buttons based on position in the chat and User or Bot turn', () => {
-      train.SelectAndVerifyEachChatTurnHasExpectedButtons()
+      chatPanel.SelectAndVerifyEachChatTurnHasExpectedButtons()
     })
 
     it('Should branch the Train Dialog at a specific chat turn', () => {
-      train.BranchChatTurn('My name is Susan.', 'I am Groot')
+      chatPanel.BranchChatTurn('My name is Susan.', 'I am Groot')
     })
 
     it('Should verify that labels changed on two of the buttons to "Save Branch" and "Abandon Branch"', () => {
@@ -55,13 +56,13 @@ describe('Verify Edit Training Controls And Labels - Edit And Branching', () => 
     })
 
     it('Should verify there are no edit controls visible in the chat pane', () => {
-      train.VerifyThereAreNoChatEditControls('I am Groot', 'Hello David')
+      chatPanel.VerifyThereAreNoChatEditControls('I am Groot', 'Hello David')
     })
 
     it('Should abandon the branched training and verify the original training remains in its original state', () => {
       train.AbandonBranchChanges()
-      train.EditTraining('My name is David.', 'My name is Susan.', 'Hello $name')
-      train.VerifyAllChatMessages(originalChatMessages)
+      trainDialogsGrid.TdGrid.EditTrainingByChatInputs('My name is David.', 'My name is Susan.', 'Hello $name')
+      chatPanel.VerifyAllChatMessages(originalChatMessages)
     })
 
     it('Should close the Train Dialog', () => {

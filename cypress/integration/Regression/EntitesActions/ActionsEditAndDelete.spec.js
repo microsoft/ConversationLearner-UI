@@ -5,11 +5,9 @@
 
 import * as models from '../../../support/Models'
 import * as modelPage from '../../../support/components/ModelPage'
-import * as entities from '../../../support/Entities'
-import * as entitiesGrid from '../../../support/components/EntitiesGrid'
-import * as entityModal from '../../../support/components/EntityModal'
 import * as actionsGrid from '../../../support/components/ActionsGrid'
 import * as actionModal from '../../../support/components/ActionModal'
+import * as trainDialogsGrid from '../../../support/components/TrainDialogsGrid'
 import * as train from '../../../support/Train'
 import * as helpers from '../../../support/Helpers'
 
@@ -52,7 +50,7 @@ describe('Actions Edit and Delete - EntitiesActions', () => {
     })
 
     it('Should edit Train Dialog that caused those Actions to have a disabled Type field and delete it', () => {
-      train.EditTraining('API', 'We are done here.', 'Goodbye')
+      trainDialogsGrid.TdGrid.EditTrainingByChatInputs('API', 'We are done here.', 'Goodbye')
       train.ClickAbandonDeleteButton()
       train.ClickConfirmAbandonDialogButton()
     })
@@ -119,7 +117,7 @@ describe('Actions Edit and Delete - EntitiesActions', () => {
     it('Should verify that filter Train Dialog on Action button works', () => {
       actionModal.ClickTrainDialogFilterButton()
       train.VerifyActionFilter('Something extra')
-      train.VerifyListOfTrainDialogs([
+      trainDialogsGrid.VerifyListOfTrainDialogs([
         {firstInput: 'My entity: AABBCC', lastInput: 'Error is Intentional', lastResponse: 'Something extra'},
       ])
     })
@@ -155,7 +153,7 @@ describe('Actions Edit and Delete - EntitiesActions', () => {
     it('Should verify that filter Train Dialog on Action button works', () => {
       actionModal.ClickTrainDialogFilterButton()
       train.VerifyActionFilter('Your entity contains: $entity')
-      train.VerifyListOfTrainDialogs([
+      trainDialogsGrid.VerifyListOfTrainDialogs([
         {firstInput: 'My entity: AABBCC', lastInput: 'Error is Intentional', lastResponse: ''},
         {firstInput: 'An entity: EEEFFFGGG', lastInput: 'An entity: EEEFFFGGG', lastResponse: 'Your entity contains: $entity'},
       ])

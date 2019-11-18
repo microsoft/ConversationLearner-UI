@@ -35,13 +35,11 @@ interface ComponentState {
     // Item selected in webchat window
     selectedActivityIndex: number | null
     // The ID of the selected log dialog
-    currentLogDialogId: string | null  // LARS
+    currentLogDialogId: string | null
     // The trainDialog created out of the selected LogDialog
-    currentTrainDialog: CLM.TrainDialog | null  // LARS
+    currentTrainDialog: CLM.TrainDialog | null
     // Is Dialog being edited a new one, a TrainDialog or a LogDialog
     editType: EditDialogType
-    // Allows user to re-open modal for same row ()
-    dialogKey: number
     activityHistory: BB.Activity[]
     lastAction: CLM.ActionBase | null
     validationErrors: CLM.ReplayError[]
@@ -91,7 +89,6 @@ class LogDialogEditor extends React.Component<Props, ComponentState> {
             currentLogDialogId: null,
             currentTrainDialog: null,
             editType: EditDialogType.LOG_ORIGINAL,
-            dialogKey: 0,  // LARS needs to pass up
             activityHistory: [],
             lastAction: null,
             validationErrors: [],
@@ -452,9 +449,10 @@ class LogDialogEditor extends React.Component<Props, ComponentState> {
             activityHistory: [],
             lastAction: null,
             currentLogDialogId: null,
-            currentTrainDialog: null,
-            dialogKey: this.state.dialogKey + 1
+            currentTrainDialog: null
         })
+
+        this.onCloseEditDialogModal()
     }
 
     async onCloseEditDialogModal(reload: boolean = false) {
@@ -473,8 +471,7 @@ class LogDialogEditor extends React.Component<Props, ComponentState> {
             currentTrainDialog: null,
             currentLogDialogId: null,
             activityHistory: [],
-            lastAction: null,
-            dialogKey: this.state.dialogKey + 1
+            lastAction: null
         })
 
         // Remove selection from query parameter
@@ -483,6 +480,8 @@ class LogDialogEditor extends React.Component<Props, ComponentState> {
         if (selectedDialogId) {
             this.props.history.replace(this.props.match.url, { app: this.props.app })
         }
+
+        this.props.onCloseEdit()
     }
 
     async onSaveTrainDialog(newTrainDialog: CLM.TrainDialog) {
@@ -582,9 +581,10 @@ class LogDialogEditor extends React.Component<Props, ComponentState> {
             activityHistory: [],
             lastAction: null,
             currentLogDialogId: null,
-            currentTrainDialog: null,
-            dialogKey: this.state.dialogKey + 1
+            currentTrainDialog: null
         })
+
+        this.onCloseEditDialogModal()
     }
 
     @autobind
@@ -784,6 +784,7 @@ export interface ReceivedProps {
     invalidBot: boolean,
     editingPackageId: string,
     logDialog: CLM.LogDialog | undefined
+    onCloseEdit: () => void
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps

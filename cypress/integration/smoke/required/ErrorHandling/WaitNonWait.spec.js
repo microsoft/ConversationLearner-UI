@@ -5,6 +5,7 @@
 
 import * as models from '../../../../support/Models'
 import * as modelPage from '../../../../support/components/ModelPage'
+import * as chatPanel from '../../../../support/components/ChatPanel'
 import * as train from '../../../../support/Train'
 import * as trainDialogsGrid from '../../../../support/components/TrainDialogsGrid'
 import * as common from '../../../../support/Common'
@@ -18,13 +19,13 @@ describe('Wait Non Wait Error Handling', () => {
     modelPage.NavigateToTrainDialogs()
     cy.WaitForTrainingStatusCompleted()
 
-    modelPage.VerifyNoIncidentTriangleOnPage()
+    modelPage.VerifyNoErrorTriangleOnPage()
   })
   
   context('Create Errors', () => {
     it('Deletes a user turn to create an error, verifies expected (and no other) error messages come up', () => {
-      train.EditTraining('Duck', 'Fish', common.fishJustSwim)
-      train.SelectChatTurnExactMatch(common.whichAnimalWouldYouLike)
+      trainDialogsGrid.TdGrid.EditTrainingByChatInputs('Duck', 'Fish', common.fishJustSwim)
+      chatPanel.SelectChatTurnExactMatch(common.whichAnimalWouldYouLike)
       train.ClickDeleteChatTurn()
       train.VerifyErrorMessage(common.userInputFollowsNonWaitErrorMessage)
 
@@ -32,14 +33,14 @@ describe('Wait Non Wait Error Handling', () => {
     })
 
     it('Inserts an extra Bot response, verifies new error message and other error message remain', () => {
-      train.InsertBotResponseAfter('Duck', common.whichAnimalWouldYouLike)
+      chatPanel.InsertBotResponseAfter('Duck', common.whichAnimalWouldYouLike)
       train.VerifyErrorMessage(common.trainDialogHasErrorsMessage)
 
       Validations(2)
     })
 
     it('Inserts another Bot response, verifies new error message and other error messages remain', () => {
-      train.InsertBotResponseAfter('Fish', common.whichAnimalWouldYouLike)
+      chatPanel.InsertBotResponseAfter('Fish', common.whichAnimalWouldYouLike)
       train.VerifyErrorMessage(common.trainDialogHasErrorsMessage)
 
       Validations(3)
@@ -49,12 +50,12 @@ describe('Wait Non Wait Error Handling', () => {
   context(`SaveAsIsVerifyInGrid & Validate Training Errors`, () => {
     it('Saves the Training with Errors, verifies Model page and Train Dialog grid shows an error', () => {
       train.ClickSaveCloseButton()
-      modelPage.VerifyIncidentTriangleForTrainDialogs()
-      trainDialogsGrid.VerifyIncidentTriangleFoundInTrainDialogsGrid(`Duck`, 'Fish', common.fishJustSwim)
+      modelPage.VerifyErrorTriangleForTrainDialogs()
+      trainDialogsGrid.VerifyIncidentTriangleFoundInTrainDialogsGrid(`Duck`, 'Fish', common.fishJustSwim, '', '', 1)
     })
 
     it('Re-opens the Training and validates all error messages remain', () => {
-      train.EditTraining(`Duck`, 'Fish', common.fishJustSwim)
+      trainDialogsGrid.TdGrid.EditTrainingByChatInputs(`Duck`, 'Fish', common.fishJustSwim)
       train.VerifyErrorMessage(common.trainDialogHasErrorsMessage)
 
       Validations(3)
@@ -63,7 +64,7 @@ describe('Wait Non Wait Error Handling', () => {
 
   context('Correct the Errors', () => {
     it('Deletes one of the error causing turns, verifies an error went away & other error remained', () => {
-      train.SelectChatTurnExactMatch(common.whichAnimalWouldYouLike, 1)
+      chatPanel.SelectChatTurnExactMatch(common.whichAnimalWouldYouLike, 1)
       train.ClickDeleteChatTurn()
       train.VerifyErrorMessage(common.trainDialogHasErrorsMessage)
 
@@ -71,7 +72,7 @@ describe('Wait Non Wait Error Handling', () => {
     })
 
     it('Deletes another error causing turn, verifies another error went away & still one error remains', () => {
-      train.SelectChatTurnExactMatch(common.whichAnimalWouldYouLike)
+      chatPanel.SelectChatTurnExactMatch(common.whichAnimalWouldYouLike)
       train.ClickDeleteChatTurn()
       train.VerifyErrorMessage(common.trainDialogHasErrorsMessage)
 
@@ -79,41 +80,41 @@ describe('Wait Non Wait Error Handling', () => {
     })
 
     it('Re-inserts the original user turn, verifies all errors are gone in dialog and on Model page', () => {
-      train.SelectChatTurnExactMatch('Fish')
+      chatPanel.SelectChatTurnExactMatch('Fish')
       train.VerifyErrorMessage(common.userInputFollowsNonWaitErrorMessage)
 
-      train.InsertBotResponseAfter(common.ducksSayQuack, common.whichAnimalWouldYouLike)
+      chatPanel.InsertBotResponseAfter(common.ducksSayQuack, common.whichAnimalWouldYouLike)
       train.VerifyNoErrorMessage()
 
       train.ClickSaveCloseButton()
-      modelPage.VerifyNoIncidentTriangleOnPage()
+      modelPage.VerifyNoErrorTriangleOnPage()
     })
   })
 })
 
 function Validations(errCount) {
   cy.ConLog(`Validations(${errCount})`, `Start`)
-  train.SelectChatTurnExactMatch('Duck')
+  chatPanel.SelectChatTurnExactMatch('Duck')
   train.VerifyErrorMessage(common.trainDialogHasErrorsMessage)
 
   if (errCount > 1) {
-    train.SelectChatTurnExactMatch(common.whichAnimalWouldYouLike)
+    chatPanel.SelectChatTurnExactMatch(common.whichAnimalWouldYouLike)
     train.VerifyErrorMessage(common.trainDialogHasErrorsMessage)
   }
 
-  train.SelectChatTurnExactMatch(common.ducksSayQuack)
+  chatPanel.SelectChatTurnExactMatch(common.ducksSayQuack)
   if (errCount == 1) train.VerifyErrorMessage(common.trainDialogHasErrorsMessage)
   else train.VerifyErrorMessage(common.actionFollowsWaitActionErrorMessage)
 
-  train.SelectChatTurnExactMatch('Fish')
+  chatPanel.SelectChatTurnExactMatch('Fish')
   train.VerifyErrorMessage(common.userInputFollowsNonWaitErrorMessage)
 
   if (errCount > 2) {
-    train.SelectChatTurnExactMatch(common.whichAnimalWouldYouLike, 1)
+    chatPanel.SelectChatTurnExactMatch(common.whichAnimalWouldYouLike, 1)
     train.VerifyErrorMessage(common.trainDialogHasErrorsMessage)
   }
 
-  train.SelectChatTurnExactMatch(common.fishJustSwim)
+  chatPanel.SelectChatTurnExactMatch(common.fishJustSwim)
   if (errCount < 3) train.VerifyErrorMessage(common.trainDialogHasErrorsMessage)
   else train.VerifyErrorMessage(common.actionFollowsWaitActionErrorMessage)
 

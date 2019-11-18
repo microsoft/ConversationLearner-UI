@@ -70,7 +70,7 @@ export const editActionThunkAsync = (appId: string, action: ActionBase) => {
 
             // Fetch train dialogs if any train dialogs were impacted
             if (deleteEditResponse.trainDialogIds?.length > 0) {
-                dispatch(fetchAllTrainDialogsThunkAsync(appId))
+                void dispatch(fetchAllTrainDialogsThunkAsync(appId))
             }
 
             dispatch(fetchApplicationTrainingStatusThunkAsync(appId)).catch()
@@ -105,15 +105,15 @@ export const deleteActionThunkAsync = (appId: string, actionId: string, removeFr
         const clClient = ClientFactory.getInstance(AT.DELETE_ACTION_ASYNC)
 
         try {
-            const deleteEditResponse = await clClient.actionsDelete(appId, actionId, removeFromDialogs);
-            dispatch(deleteActionFulfilled(actionId));
+            const deleteEditResponse = await clClient.actionsDelete(appId, actionId, removeFromDialogs)
+            dispatch(deleteActionFulfilled(actionId))
 
             // Fetch train dialogs if any train dialogs were impacted
             if (deleteEditResponse.trainDialogIds?.length > 0) {
-                dispatch(fetchAllTrainDialogsThunkAsync(appId));
+                void dispatch(fetchAllTrainDialogsThunkAsync(appId));
             }
 
-            dispatch(fetchApplicationTrainingStatusThunkAsync(appId));
+            void dispatch(fetchApplicationTrainingStatusThunkAsync(appId))
             return true;
         } catch (e) {
             const error = e as AxiosError

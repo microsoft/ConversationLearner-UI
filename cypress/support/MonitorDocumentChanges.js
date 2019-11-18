@@ -227,7 +227,8 @@ import * as helpers from './Helpers.js'
       ]
 
     for (let i = 0; i < spinnerTexts.length; i++) {
-      if (lastHtml.includes(spinnerTexts[i])) {   // We found a spinner on the page.
+      if (lastHtml.includes(spinnerTexts[i])) {
+        // We found a spinner on the page.
         lastChangeTime = new Date().getTime()
         SetExpectingSpinner(false)
 
@@ -246,6 +247,8 @@ import * as helpers from './Helpers.js'
     }
 
     if (expectingSpinner) {
+      // Since we are expecting the spinner to show up, we reset the lastChangeTime and in doing so
+      // we prevent the test from progressing prematurely.
       helpers.ConLog(funcName, `Expecting Spinner to show up`)
       lastChangeTime = new Date().getTime()
     }

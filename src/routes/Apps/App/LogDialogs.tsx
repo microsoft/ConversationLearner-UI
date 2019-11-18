@@ -21,7 +21,6 @@ import { ChatSessionModal, ConfirmCancelModal } from '../../../components/modals
 import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../../react-intl-messages'
 import { autobind } from 'core-decorators'
-import { LogScore } from '../../../Utils/LogRanker'
 
 interface IRenderableColumn extends OF.IColumn {
     render: (logDialog: CLM.LogDialog, component: LogDialogs) => React.ReactNode
@@ -122,8 +121,7 @@ interface ComponentState {
     editType: EditDialogType
     searchValue: string
     // Allows user to re-open modal for same row ()
-    dialogKey: number
-    logScores: LogScore[] | undefined
+    detailListKey: number
 }
 
 // TODO: This component is highly redundant with TrainDialogs.  Should collapse
@@ -162,8 +160,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             editingLogDialog: undefined,
             editType: EditDialogType.LOG_ORIGINAL,
             searchValue: '',
-            dialogKey: 0,
-            logScores: undefined
+            detailListKey: 0
         }
     }
 
@@ -286,7 +283,15 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         this.setState({
             chatSession: null,
             isChatSessionWindowOpen: false,
-            dialogKey: this.state.dialogKey + 1
+            detailListKey: this.state.detailListKey + 1
+        })
+    }
+
+    @autobind
+    onCloseEditModal() {
+        // Allows user to open same log dialog row a second time in a row
+        this.setState({
+            detailListKey: this.state.detailListKey + 1,
         })
     }
 
@@ -460,7 +465,6 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                         iconProps={{ iconName: 'Delete' }}
                     />
                 </div>
-
                 <div className={`cl-page-placeholder ${isPlaceholderVisible ? '' : 'cl-page-placeholder--none'}`}>
                     <div className="cl-page-placeholder__content">
                         <div className={`cl-page-placeholder__description ${OF.FontClassNames.xxLarge}`}>Create a Log Dialog</div>
@@ -490,7 +494,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     </div>
                     <OF.DetailsList
                         data-testid="logdialogs-details-list"
-                        key={this.state.dialogKey}
+                        key={this.state.detailListKey}
                         className={`${OF.FontClassNames.mediumPlus} ${isPlaceholderVisible ? 'cl-hidden' : ''}`}
                         items={computedLogDialogs}
                         selection={this.selection}
@@ -501,10 +505,9 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                         onColumnHeaderClick={this.onClickColumnHeader}
                         onRenderRow={(props, defaultRender) => <div data-selection-invoke={true}>{defaultRender && defaultRender(props)}</div>}
                         onRenderItemColumn={(logDialog, i, column: IRenderableColumn) => returnErrorStringWhenError(() => column.render(logDialog, this))}
-                        onItemInvoked={logDialog => this.onClickLogDialogItem(logDialog)}
+                        onActiveItemChanged={logDialog => this.onClickLogDialogItem(logDialog)}
                     />
                 </>
-
                 <ChatSessionModal
                     app={this.props.app}
                     editingPackageId={this.props.editingPackageId}
@@ -516,6 +519,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     invalidBot={this.props.invalidBot}
                     editingPackageId={this.props.editingPackageId}
                     logDialog={this.state.editingLogDialog}
+                    onCloseEdit={this.onCloseEditModal}
                 />
                 <ConfirmCancelModal
                     open={this.state.isConfirmDeleteModalOpen}
