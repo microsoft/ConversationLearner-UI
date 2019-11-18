@@ -155,9 +155,8 @@ interface ComponentState {
     editingLogDialog: CLM.LogDialog | undefined
     // Is Dialog being edited a new one, a TrainDialog or a LogDialog
     editType: EditDialogType
-    searchValue: string
     // Allows user to re-open modal for same row ()
-    dialogKey: number
+    detailListKey: number
     logScores: LogScore[] | undefined
     doAnalysis: boolean
 }
@@ -196,8 +195,7 @@ class Review extends React.Component<Props, ComponentState> {
             selectionCount: 0,
             editingLogDialog: undefined,
             editType: EditDialogType.LOG_ORIGINAL,
-            searchValue: '',
-            dialogKey: 0,
+            detailListKey: 0,
             logScores: undefined,
             doAnalysis: false
         }
@@ -355,55 +353,18 @@ class Review extends React.Component<Props, ComponentState> {
         })
     }
 
+    @autobind
+    onCloseEditModal() {
+        // Allows user to open same log dialog row a second time in a row
+        this.setState({
+            detailListKey: this.state.detailListKey + 1,
+        })
+    }
+
+    @autobind
     async onClickSync() {
         // Load dialogs anew
         await ((this.props.fetchLogDialogsThunkAsync(this.props.app, this.props.editingPackageId, true) as any) as Promise<void>)
-    }
-
-    getFilteredDialogs(
-        logDialogs: CLM.LogDialog[],
-        entities: CLM.EntityBase[],
-        actions: CLM.ActionBase[],
-        searchValue: string
-    ): CLM.LogDialog[] {
-        if (!searchValue) {
-            return logDialogs
-        }
-
-        return logDialogs
-            .filter(logDialog => {
-                const keys = [];
-                for (const round of logDialog.rounds) {
-                    keys.push(round.extractorStep.text)
-
-                    for (const le of round.extractorStep.predictedEntities) {
-                        const entity = entities.find(e => e.entityId === le.entityId)
-                        if (!entity) {
-                            throw new Error(`Could not find entity by id: ${le.entityId} in list of entities`)
-                        }
-                        keys.push(entity.entityName)
-                    }
-
-                    for (const ss of round.scorerSteps) {
-                        const action = actions.find(a => a.actionId === ss.predictedAction)
-                        if (!action) {
-                            throw new Error(`Could not find action by id: ${ss.predictedAction} in list of actions`)
-                        }
-
-                        let payload = ''
-                        try {
-                            payload = CLM.ActionBase.GetPayload(action, Util.getDefaultEntityMap(this.props.entities))
-                        }
-                        catch {
-                            // Backwards compatibility to models with old payload type
-                        }
-                        keys.push(payload)
-                    }
-                }
-
-                const searchString = keys.join(' ').toLowerCase();
-                return searchString.includes(searchValue);
-            })
     }
 
     @autobind
@@ -430,21 +391,15 @@ class Review extends React.Component<Props, ComponentState> {
         })
     }
 
-    getFilteredAndSortedDialogs() {
-        let computedLogDialogs = this.getFilteredDialogs(
-            this.props.logDialogs,
-            this.props.entities,
-            this.props.actions,
-            this.state.searchValue)
-
-        computedLogDialogs = this.sortLogDialogs(computedLogDialogs, this.state.columns, this.state.sortColumn)
+    getSortedDialogs() {
+        const computedLogDialogs = this.sortLogDialogs(this.props.logDialogs, this.state.columns, this.state.sortColumn)
         // Return the top 14 scores
         return computedLogDialogs.slice(0, MAX_LOGS_DISPLAYED)
     }
 
     render() {
         const { intl } = this.props
-        const computedLogDialogs = this.getFilteredAndSortedDialogs()
+        const computedLogDialogs = this.getSortedDialogs()
 
         return (
             <div className="cl-page">
@@ -494,7 +449,7 @@ class Review extends React.Component<Props, ComponentState> {
                 <>
                     <OF.DetailsList
                         data-testid="logdialogs-details-list"
-                        key={this.state.dialogKey}
+                        key={this.state.detailListKey}
                         className={`${OF.FontClassNames.mediumPlus} ${!this.state.logScores ? 'cl-hidden' : ''}`}
                         items={computedLogDialogs}
                         selection={this.selection}
@@ -513,6 +468,7 @@ class Review extends React.Component<Props, ComponentState> {
                     invalidBot={this.props.invalidBot}
                     editingPackageId={this.props.editingPackageId}
                     logDialog={this.state.editingLogDialog}
+                    onCloseEdit={this.onCloseEditModal}
                 />
                 <ConfirmCancelModal
                     open={this.state.isConfirmDeleteModalOpen}
