@@ -27,7 +27,7 @@ const removeSpinner = (spinners: string[], oldSpinner: string): string[] => {
 const displayReducer: Reducer<DisplayState> = produce((state: DisplayState, action: ActionObject) => {
     switch (action.type) {
         case AT.USER_LOGOUT:
-            return { ...initialState };
+            return { ...initialState }
         case AT.CLEAR_BANNER:
             state.clearedBanner = action.clearedBanner
             return

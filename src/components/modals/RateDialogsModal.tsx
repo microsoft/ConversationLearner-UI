@@ -448,7 +448,7 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
 
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        fetchLogDialogAsync: actions.log.fetchLogDialogThunkAsync,
+        fetchLogDialogThunkAsync: actions.log.fetchLogDialogThunkAsync,
         fetchActivitiesThunkAsync: actions.train.fetchActivitiesThunkAsync,
     }, dispatch);
 }

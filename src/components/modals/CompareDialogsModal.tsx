@@ -452,7 +452,7 @@ const mapStateToProps = (state: State) => {
         user: state.user.user,
         entities: state.entities,
         actions: state.actions,
-        logDialogs: state.logDialogs
+        logDialogs: state.logDialogState.logDialogs
     }
 }
 

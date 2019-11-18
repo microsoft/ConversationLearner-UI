@@ -315,7 +315,8 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     }
 
     async onClickSync() {
-        await ((this.props.fetchAllLogDialogsThunkAsync(this.props.app, this.props.editingPackageId) as any) as Promise<void>)
+        const clear = this.props.logDialogs.length > 0 && !this.props.logConinuationToken
+        await ((this.props.fetchLogDialogsThunkAsync(this.props.app, this.props.editingPackageId, clear, this.props.logConinuationToken) as any) as Promise<void>)
     }
 
     getFilteredDialogs(
@@ -434,10 +435,19 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                         iconProps={{ iconName: 'Add' }}
                     />
                     <OF.DefaultButton
+                        disabled={this.props.logDialogs.length === 0 || this.props.logConinuationToken === undefined}
                         data-testid="logdialogs-button-refresh"
                         onClick={() => this.onClickSync()}
-                        ariaDescription="Refresh"
-                        text="Refresh"
+                        ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_MORE_LOGS)}
+                        text={Util.formatMessageId(this.props.intl, FM.BUTTON_MORE_LOGS)}
+                        iconProps={{ iconName: 'AddNotes' }}
+                    />
+                    <OF.DefaultButton
+                        disabled={this.props.logDialogs.length > 0 && this.props.logConinuationToken !== undefined}
+                        data-testid="logdialogs-button-refresh"
+                        onClick={() => this.onClickSync()}
+                        ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_REFRESH)}
+                        text={Util.formatMessageId(this.props.intl, FM.BUTTON_REFRESH)}
                         iconProps={{ iconName: 'Sync' }}
                     />
                     <OF.DefaultButton
@@ -534,7 +544,7 @@ const mapDispatchToProps = (dispatch: any) => {
         createChatSessionThunkAsync: actionTypes.chat.createChatSessionThunkAsync,
         deleteLogDialogsThunkAsync: actionTypes.log.deleteLogDialogsThunkAsync,
         fetchLogDialogAsync: actionTypes.log.fetchLogDialogThunkAsync,
-        fetchAllLogDialogsThunkAsync: actionTypes.log.fetchAllLogDialogsThunkAsync,
+        fetchLogDialogsThunkAsync: actionTypes.log.fetchLogDialogsThunkAsync,
     }, dispatch)
 }
 const mapStateToProps = (state: State) => {
@@ -543,7 +553,8 @@ const mapStateToProps = (state: State) => {
     }
 
     return {
-        logDialogs: state.logDialogs,
+        logDialogs: state.logDialogState.logDialogs,
+        logConinuationToken: state.logDialogState.continuationToken,
         trainDialogs: state.trainDialogs,
         user: state.user.user,
         actions: state.actions,

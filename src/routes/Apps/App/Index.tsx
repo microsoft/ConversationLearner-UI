@@ -48,8 +48,8 @@ class Index extends React.Component<Props, ComponentState> {
 
         const thunk1 = this.props.fetchBotInfoThunkAsync(this.props.browserId, app.appId)
         const thunk2 = this.props.setCurrentAppThunkAsync(this.props.user.id, app)
-        // Note: We load log dialogs in a separate call as eventually we want to page
-        const thunk3 = this.props.fetchAllLogDialogsThunkAsync(app, packageId)
+        // Fetch the first 100 dialogs
+        const thunk3 = this.props.fetchLogDialogsThunkAsync(app, packageId, true)
         const thunk4 = this.props.fetchAppSourceThunkAsync(app.appId, packageId)
 
         await Promise.all([thunk1, thunk2, thunk3, thunk4])
@@ -190,7 +190,7 @@ class Index extends React.Component<Props, ComponentState> {
         const trainDialogValidity = this.getTrainDialogValidity();
         const invalidBot = this.state.botValidationErrors && this.state.botValidationErrors.length > 0;
         const filteredLogDialogs = this.props.logDialogs.filter(l => !l.targetTrainDialogIds || l.targetTrainDialogIds.length === 0)
-        const TRIPLE_DIGIT_LOGDIALOG_COUNT = 99;
+        const logDialogCount = `${filteredLogDialogs.length}${this.props.logContinuationToken ? "+" : ""}`
 
         return (
             <>
@@ -272,7 +272,7 @@ class Index extends React.Component<Props, ComponentState> {
                                         </NavLink>
                                         <NavLink className="cl-nav-link" data-testid="app-index-nav-link-log-dialogs" to={{ pathname: `${match.url}/logDialogs`, state: { app } }}>
                                             <OF.Icon iconName="List" /><span>Log Dialogs</span>
-                                            <span className="count">{this.state.modelLoaded && ((filteredLogDialogs.length > TRIPLE_DIGIT_LOGDIALOG_COUNT) ? `${TRIPLE_DIGIT_LOGDIALOG_COUNT}+` : filteredLogDialogs.length)}</span>
+                                            <span className="count">{this.state.modelLoaded ? logDialogCount : ""}</span>
                                         </NavLink>
                                         {Util.isFeatureEnabled(this.props.settings.features, FeatureStrings.CCI) &&
                                             <NavLink className="cl-nav-link" data-testid="app-index-nav-link-testing" to={{ pathname: `${match.url}/testing`, state: { app } }}>
@@ -342,7 +342,7 @@ const mapDispatchToProps = (dispatch: any) => {
         setCurrentAppThunkAsync: actions.display.setCurrentAppThunkAsync,
         createApplicationThunkAsync: actions.app.createApplicationThunkAsync,
         fetchAppSourceThunkAsync: actions.app.fetchAppSourceThunkAsync,
-        fetchAllLogDialogsThunkAsync: actions.log.fetchAllLogDialogsThunkAsync,
+        fetchLogDialogsThunkAsync: actions.log.fetchLogDialogsThunkAsync,
         fetchBotInfoThunkAsync: actions.bot.fetchBotInfoThunkAsync,
         deleteApplicationThunkAsync: actions.app.deleteApplicationThunkAsync
     }, dispatch);
@@ -361,7 +361,8 @@ const mapStateToProps = (state: State) => {
         user: state.user.user,
         browserId: state.bot.browserId,
         activeApps: state.apps.activeApps,
-        logDialogs: state.logDialogs,
+        logDialogs: state.logDialogState.logDialogs,
+        logContinuationToken: state.logDialogState.continuationToken,
         settings: state.settings
     }
 }

@@ -161,8 +161,9 @@ export enum FM {
     BUTTON_INFO = 'Button.INFO',
     BUTTON_IMPORT = 'Button.IMPORT',
     BUTTON_LOAD = 'Button.LOAD',
-    BUTTON_SELECT_FILES = 'Button.SELECT_FILES',
+    BUTTON_MORE_LOGS = "Button.MORE",
     BUTTON_OK = 'Button.OK',
+    BUTTON_REFRESH = 'Button.REFRESH',
     BUTTON_REPLAY = 'Button.REPLAY',
     BUTTON_REPLAY_SELECTED = 'Button.REPLAY_SELECTED',
     BUTTON_REGENERATE = 'Button.REGENERATE',
@@ -170,6 +171,7 @@ export enum FM {
     BUTTON_SAVE_AS_TRAIN_DIALOG = 'Button.SAVE_AS_TD',
     BUTTON_SAVE_EDIT = 'Button.SAVE_EDIT',
     BUTTON_SAVE_BRANCH = 'Button.SAVE_BRANCH',
+    BUTTON_SELECT_FILES = 'Button.SELECT_FILES',
     BUTTON_SUBMIT = 'Button.SUMBIT',
     BUTTON_UNDO = 'Button.UNDO',
     BUTTON_RATE = 'Button.RATE',
@@ -416,6 +418,8 @@ export enum FM {
     // Review
     REVIEW_TITLE = 'Review.title',
     REVIEW_SUBTITLE = 'Review.subtitle',
+    REVIEW_ANALYZE = 'Review.analyze',
+    REVIEW_PLACEHOLDER_TITLE = "Analyze Log Dialogs",
 
     // Settings
     SETTINGS_TITLE = 'Settings.title',
@@ -819,7 +823,9 @@ export default {
         [FM.BUTTON_IMPORT]: 'Import',
         [FM.BUTTON_INFO]: 'Info',
         [FM.BUTTON_LOAD]: 'Load',
+        [FM.BUTTON_MORE_LOGS]: 'More Logs',
         [FM.BUTTON_OK]: 'OK',
+        [FM.BUTTON_REFRESH]: 'Refresh',
         [FM.BUTTON_REPLAY]: 'Replay',
         [FM.BUTTON_REPLAY_SELECTED]: 'Replay Selected ({selectionCount})',
         [FM.BUTTON_REGENERATE]: 'Re-Generate',
@@ -907,7 +913,9 @@ export default {
 
         // LogDialogs
         [FM.REVIEW_TITLE]: 'Review Suspect Log Dialogs',
-        [FM.REVIEW_SUBTITLE]: 'Stuff that will improve your bot LARS.',
+        [FM.REVIEW_SUBTITLE]: 'Top log dialogs suspected of having issues',
+        [FM.REVIEW_ANALYZE]: 'Analyze',
+        [FM.REVIEW_PLACEHOLDER_TITLE]: 'Analyze Log Dialogs',
         
         // Settings
         [FM.SETTINGS_TITLE]: 'Settings',

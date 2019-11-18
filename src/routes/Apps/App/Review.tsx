@@ -10,15 +10,14 @@ import * as OF from 'office-ui-fabric-react'
 import * as moment from 'moment'
 import FormattedMessageId from '../../../components/FormattedMessageId'
 import actionTypes from '../../../actions'
-import TreeView from '../../../components/modals/TreeView/TreeView'
 import LogDialogEditor from '../../../components/LogDialogEditor'
 import { withRouter } from 'react-router-dom'
 import { RouteComponentProps } from 'react-router'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { State } from '../../../types'
-import { EditDialogType, EditState } from '../../../types/const'
-import { ChatSessionModal, ConfirmCancelModal } from '../../../components/modals'
+import { EditDialogType } from '../../../types/const'
+import { ConfirmCancelModal } from '../../../components/modals'
 import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../../react-intl-messages'
 import { autobind } from 'core-decorators'
@@ -28,6 +27,12 @@ interface IRenderableColumn extends OF.IColumn {
     render: (logDialog: CLM.LogDialog, component: Review) => React.ReactNode
     getSortValue: (logDialog: CLM.LogDialog, component: Review) => string
 }
+
+// Maximum number of logs to analyze
+const MAX_LOGS_ANALYZED = 1000
+
+// Maximum number of analyzed logs to display
+const MAX_LOGS_DISPLAYED = 15
 
 const returnErrorStringWhenError = Util.returnStringWhenError("ERR")
 
@@ -87,11 +92,11 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
         },
         {
             key: `score`,
-            name: "SCORE", // LARS Util.formatMessageId(intl, FM.LOGDIALOGS_USERINPUT),
+            name: "Score",
             fieldName: `score`,
             minWidth: 100,
             maxWidth: 100,
-            isResizable: true,
+            isResizable: false,
             render: (logDialog, component) => {
                 return <>
                     
@@ -154,7 +159,7 @@ interface ComponentState {
     // Allows user to re-open modal for same row ()
     dialogKey: number
     logScores: LogScore[] | undefined
-    treeDialogs: CLM.TrainDialog[] | undefined
+    doAnalysis: boolean
 }
 
 class Review extends React.Component<Props, ComponentState> {
@@ -194,7 +199,7 @@ class Review extends React.Component<Props, ComponentState> {
             searchValue: '',
             dialogKey: 0,
             logScores: undefined,
-            treeDialogs: undefined
+            doAnalysis: false
         }
     }
 
@@ -257,12 +262,18 @@ class Review extends React.Component<Props, ComponentState> {
     }
 
     componentDidMount() {
-        this.focusNewChatButton()
         this.handleQueryParameters(this.props.location.search)
     }
 
     componentDidUpdate(prevProps: Props, prevState: ComponentState) {
-        this.handleQueryParameters(this.props.location.search, prevProps.location.search)
+        if (!prevState.doAnalysis && this.state.doAnalysis) {
+            this.analyze()
+        }
+        else if (this.state.doAnalysis && this.props.logDialogs !== prevProps.logDialogs) {
+            this.analyze()
+        }
+
+        void this.handleQueryParameters(this.props.location.search, prevProps.location.search)
     }
 
     async handleQueryParameters(newSearch: string, oldSearch?: string): Promise<void> {
@@ -291,34 +302,8 @@ class Review extends React.Component<Props, ComponentState> {
                     return
                 }
             }
-            this.openLogDialog(logDialog)
+            await this.openLogDialog(logDialog)
         }
-    }
-
-    @autobind
-    async onClickNewChatSession() {
-        try {
-            // TODO: Find cleaner solution for the types.  Thunks return functions but when using them on props they should be returning result of the promise.
-            const chatSession = await ((this.props.createChatSessionThunkAsync(this.props.app.appId, this.props.editingPackageId, this.props.app.metadata.isLoggingOn !== false) as any) as Promise<CLM.Session>)
-            this.setState({
-                chatSession,
-                isChatSessionWindowOpen: true,
-                editType: EditDialogType.LOG_ORIGINAL
-            })
-        }
-        catch (e) {
-            const error = e as Error
-            console.warn(`Error when attempting to opening chat window: `, error)
-        }
-    }
-
-    @autobind
-    onCloseChatSessionWindow() {
-        this.setState({
-            chatSession: null,
-            isChatSessionWindowOpen: false,
-            dialogKey: this.state.dialogKey + 1
-        })
     }
 
     @autobind
@@ -328,51 +313,51 @@ class Review extends React.Component<Props, ComponentState> {
         history.push(url, { app: this.props.app })
     }
 
-    @autobind
-    onClickAnalyze() {
-        const logRanker = new LogRanker(this.props.logDialogs, this.props.trainDialogs, this.props.entities)
-        const logScores = logRanker.analyze()
+    async analyze() {
+        if (this.props.logDialogs.length < MAX_LOGS_ANALYZED) {
+            const doneLogs = this.state.logScores?.map(ls => ls.logDialogId) || []
+            const newLogs = this.props.logDialogs.filter(ld => !doneLogs.includes(ld.logDialogId))
+            const logRanker = new LogRanker(newLogs, this.props.trainDialogs, this.props.entities)
+            const logScores = logRanker.analyze()
         
-        // Sort by the analyzed scores
-        const sortColumn = this.state.columns.find(c => c.fieldName === "score")
-        if (!sortColumn) {
-            throw new Error("Undefined Column")
-        }
-        const columns = this.state.columns.map(column => {
-            column.isSorted = false
-            column.isSortedDescending = false
-            if (column === sortColumn) {
-                column.isSorted = true
-                column.isSortedDescending = false
+            // Sort by the analyzed scores
+            const sortColumn = this.state.columns.find(c => c.fieldName === "score")
+            if (!sortColumn) {
+                throw new Error("Undefined Column")
             }
-            return column
-        })
+            const columns = this.state.columns.map(column => {
+                column.isSorted = false
+                column.isSortedDescending = false
+                if (column === sortColumn) {
+                    column.isSorted = true
+                    column.isSortedDescending = false
+                }
+                return column
+            })
 
-        this.setState({ logScores, columns, sortColumn })
+            this.setState({
+                logScores: this.state.logScores ? [...logScores, ...this.state.logScores] : logScores,
+                columns,
+                sortColumn
+            })
+
+            // Get more logs to analyze
+            if (this.props.logConinuationToken) {
+                await ((this.props.fetchLogDialogsThunkAsync(this.props.app, this.props.editingPackageId, false, this.props.logConinuationToken, 20) as any) as Promise<CLM.LogQueryResult>)
+            }
+        }
     }
 
     @autobind
-    onClickTreeView() {
-        if (!this.state.logScores) {
-            return
-        }
-        /*LARS
-                // Convert log ranks to train dialogs
-                let treeDialogs = (this.state.logScores
-                    .map(lr => lr.logDialogIds[0])
-                    .map(id => {
-                        const logDialog = this.props.logDialogs.find(ld => ld.logDialogId === id)
-                        return logDialog || null
-                    })
-                    .filter(i => i) as CLM.LogDialog[])
-                    .map(ld => CLM.ModelUtils.ToTrainDialog(ld))
-        
-                this.setState({ treeDialogs: [...treeDialogs, ...this.props.trainDialogs] })
-                */
+    async onClickAnalyze() {
+        this.setState({
+            doAnalysis: true
+        })
     }
 
     async onClickSync() {
-        await ((this.props.fetchAllLogDialogsThunkAsync(this.props.app, this.props.editingPackageId) as any) as Promise<void>)
+        // Load dialogs anew
+        await ((this.props.fetchLogDialogsThunkAsync(this.props.app, this.props.editingPackageId, true) as any) as Promise<void>)
     }
 
     getFilteredDialogs(
@@ -453,22 +438,14 @@ class Review extends React.Component<Props, ComponentState> {
             this.state.searchValue)
 
         computedLogDialogs = this.sortLogDialogs(computedLogDialogs, this.state.columns, this.state.sortColumn)
-        return computedLogDialogs
+        // Return the top 14 scores
+        return computedLogDialogs.slice(0, MAX_LOGS_DISPLAYED)
     }
 
     render() {
         const { intl } = this.props
         const computedLogDialogs = this.getFilteredAndSortedDialogs()
 
-        const editState = (this.props.editingPackageId !== this.props.app.devPackageId)
-            ? EditState.INVALID_PACKAGE
-            : this.props.invalidBot
-                ? EditState.INVALID_BOT
-                : EditState.CAN_EDIT
-        
-        const isPlaceholderVisible = this.props.logDialogs.length === 0
-
-        const isEditingDisabled = this.props.editingPackageId !== this.props.app.devPackageId || this.props.invalidBot;
         return (
             <div className="cl-page">
                 <div data-testid="log-dialogs-title" className={`cl-dialog-title cl-dialog-title--log ${OF.FontClassNames.xxLarge}`}>
@@ -483,38 +460,14 @@ class Review extends React.Component<Props, ComponentState> {
                     <span className="cl-errorpanel">Editing is only allowed in Master Tag</span>
                 }
                 <div className="cl-buttons-row">
-                    <OF.PrimaryButton
-                        data-testid="log-dialogs-new-button"
-                        disabled={isEditingDisabled}
-                        onClick={this.onClickNewChatSession}
-                        ariaDescription={Util.formatMessageId(this.props.intl, FM.LOGDIALOGS_CREATEBUTTONARIALDESCRIPTION)}
-                        text={Util.formatMessageId(this.props.intl, FM.LOGDIALOGS_CREATEBUTTONTITLE)}
-                        componentRef={this.newChatSessionButtonRef}
-                        iconProps={{ iconName: 'Add' }}
-                    />
                     <OF.DefaultButton
+                        disabled={!this.state.logScores}
                         data-testid="logdialogs-button-refresh"
                         onClick={() => this.onClickSync()}
-                        ariaDescription="Refresh"
-                        text="Refresh"
+                        ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_REFRESH)}
+                        text={Util.formatMessageId(this.props.intl, FM.BUTTON_REFRESH)}
                         iconProps={{ iconName: 'Sync' }}
                     />
-                    <OF.DefaultButton
-                        data-testid="logdialogs-button-refresh"
-                        onClick={this.onClickAnalyze}
-                        ariaDescription="Refresh"
-                        text="Analyze"//LARS intl
-                        iconProps={{ iconName: 'Sync' }}
-                    />
-                    {this.state.logScores &&
-                        <OF.DefaultButton
-                            data-testid="logdialogs-button-refresh"
-                            onClick={this.onClickTreeView}
-                            ariaDescription="Refresh"
-                            text="Tree View"//LARS intl
-                            iconProps={{ iconName: 'Sync' }}
-                        />
-                    }
                     <OF.DefaultButton
                         data-testid="logdialogs-button-deleteall"
                         className="cl-button-delete"
@@ -526,17 +479,15 @@ class Review extends React.Component<Props, ComponentState> {
                     />
                 </div>
 
-                <div className={`cl-page-placeholder ${isPlaceholderVisible ? '' : 'cl-page-placeholder--none'}`}>
+                <div className={`cl-page-placeholder ${!this.state.logScores ? '' : 'cl-page-placeholder--none'}`}>
                     <div className="cl-page-placeholder__content">
-                        <div className={`cl-page-placeholder__description ${OF.FontClassNames.xxLarge}`}>Create a Log Dialog</div>
+                        <div className={`cl-page-placeholder__description ${OF.FontClassNames.xxLarge}`}><FormattedMessageId id={FM.REVIEW_PLACEHOLDER_TITLE} /></div>
                         <OF.PrimaryButton
-                            iconProps={{
-                                iconName: "Add"
-                            }}
-                            disabled={isEditingDisabled}
-                            onClick={this.onClickNewChatSession}
-                            ariaDescription={Util.formatMessageId(this.props.intl, FM.LOGDIALOGS_CREATEBUTTONARIALDESCRIPTION)}
-                            text={Util.formatMessageId(this.props.intl, FM.LOGDIALOGS_CREATEBUTTONTITLE)}
+                            data-testid="logdialogs-button-refresh"
+                            onClick={this.onClickAnalyze}
+                            ariaDescription={Util.formatMessageId(this.props.intl, FM.REVIEW_ANALYZE)}
+                            text={Util.formatMessageId(this.props.intl, FM.REVIEW_ANALYZE)}
+                            iconProps={{ iconName: 'Processing' }}
                         />
                     </div>
                 </div>
@@ -544,7 +495,7 @@ class Review extends React.Component<Props, ComponentState> {
                     <OF.DetailsList
                         data-testid="logdialogs-details-list"
                         key={this.state.dialogKey}
-                        className={`${OF.FontClassNames.mediumPlus} ${isPlaceholderVisible ? 'cl-hidden' : ''}`}
+                        className={`${OF.FontClassNames.mediumPlus} ${!this.state.logScores ? 'cl-hidden' : ''}`}
                         items={computedLogDialogs}
                         selection={this.selection}
                         getKey={getDialogKey}
@@ -557,13 +508,6 @@ class Review extends React.Component<Props, ComponentState> {
                         onItemInvoked={logDialog => this.onClickLogDialogItem(logDialog)}
                     />
                 </>
-
-                <ChatSessionModal
-                    app={this.props.app}
-                    editingPackageId={this.props.editingPackageId}
-                    open={this.state.isChatSessionWindowOpen}
-                    onClose={this.onCloseChatSessionWindow}
-                />
                 <LogDialogEditor
                     app={this.props.app}
                     invalidBot={this.props.invalidBot}
@@ -576,19 +520,6 @@ class Review extends React.Component<Props, ComponentState> {
                     onConfirm={this.onClickConfirmDelete}
                     title={Util.formatMessageId(intl, FM.LOGDIALOGS_CONFIRMCANCEL_DELETESELECTED, { selectionCount: this.state.selectionCount })}
                 />
-                <TreeView
-                    open={this.state.treeDialogs !== undefined}
-                    app={this.props.app}
-                    originalTrainDialogId={null}
-                    sourceTrainDialog={null}//LARS this.state.currentTrainDialog}
-                    editType={this.state.editType}
-                    editState={editState}
-                    editingPackageId={this.props.editingPackageId}
-                    onCancel={() => this.setState({ treeDialogs: undefined })}
-                    openTrainDialog={() => { }}
-                    trainDialogs={this.state.treeDialogs || []}
-                />
-
             </div>
         );
     }
@@ -610,12 +541,6 @@ class Review extends React.Component<Props, ComponentState> {
         return logScore ? JSON.stringify(logScore, null, 2) : ""
     }
 
-    private focusNewChatButton() {
-        if (this.newChatSessionButtonRef.current) {
-            this.newChatSessionButtonRef.current.focus()
-        }
-    }
-
     private async openLogDialog(logDialog: CLM.LogDialog) {
         this.setState({ editingLogDialog: logDialog })
     }
@@ -627,7 +552,7 @@ const mapDispatchToProps = (dispatch: any) => {
         createChatSessionThunkAsync: actionTypes.chat.createChatSessionThunkAsync,
         deleteLogDialogsThunkAsync: actionTypes.log.deleteLogDialogsThunkAsync,
         fetchLogDialogAsync: actionTypes.log.fetchLogDialogThunkAsync,
-        fetchAllLogDialogsThunkAsync: actionTypes.log.fetchAllLogDialogsThunkAsync,
+        fetchLogDialogsThunkAsync: actionTypes.log.fetchLogDialogsThunkAsync,
     }, dispatch)
 }
 const mapStateToProps = (state: State) => {
@@ -636,7 +561,8 @@ const mapStateToProps = (state: State) => {
     }
 
     return {
-        logDialogs: state.logDialogs,
+        logDialogs: state.logDialogState.logDialogs,
+        logConinuationToken: state.logDialogState.continuationToken,
         trainDialogs: state.trainDialogs,
         user: state.user.user,
         actions: state.actions,
