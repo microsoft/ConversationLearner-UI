@@ -161,7 +161,7 @@ export enum FM {
     BUTTON_INFO = 'Button.INFO',
     BUTTON_IMPORT = 'Button.IMPORT',
     BUTTON_LOAD = 'Button.LOAD',
-    BUTTON_MORE_LOGS = "Button.MORE",
+    BUTTON_MORE_LOGS = 'Button.MORE',
     BUTTON_OK = 'Button.OK',
     BUTTON_REFRESH = 'Button.REFRESH',
     BUTTON_REPLAY = 'Button.REPLAY',
@@ -419,7 +419,7 @@ export enum FM {
     REVIEW_TITLE = 'Review.title',
     REVIEW_SUBTITLE = 'Review.subtitle',
     REVIEW_ANALYZE = 'Review.analyze',
-    REVIEW_PLACEHOLDER_TITLE = "Analyze Log Dialogs",
+    REVIEW_PLACEHOLDER_TITLE = 'Analyze Log Dialogs',
 
     // Settings
     SETTINGS_TITLE = 'Settings.title',
