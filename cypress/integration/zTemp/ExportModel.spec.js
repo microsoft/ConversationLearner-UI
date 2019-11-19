@@ -7,6 +7,7 @@ import * as models from '../../support/Models'
 import * as modelPage from '../../support/components/ModelPage'
 import * as settings from '../../support/components/Settings'
 import * as exportModelModal from '../../support/components/ExportModelModal'
+import * as trainDialogsGrid from '../../support/components/TrainDialogsGrid'
 import * as helpers from '../../support/Helpers'
 
 describe('Export Model', () => {
@@ -27,5 +28,11 @@ describe('Export Model', () => {
       settings.ClickExportModelButton()
       exportModelModal.ClickExportButton()
     })
+
+    it('Navigate to Train Dialogs and Edit One of Them', () => {
+      modelPage.NavigateToTrainDialogs()
+      trainDialogsGrid.TdGrid.EditTrainingByChatInputs('Hey', 'world peace', "Sorry $name, I can't help you get $want")
+    })
+
   })
 })
