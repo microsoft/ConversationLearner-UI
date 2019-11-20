@@ -21,7 +21,7 @@ import { ConfirmCancelModal } from '../../../components/modals'
 import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../../react-intl-messages'
 import { autobind } from 'core-decorators'
-import { LogRanker, LogScore } from '../../../Utils/LogRanker'
+import { rankLogs, LogScore } from '../../../Utils/LogRanker'
 
 interface IRenderableColumn extends OF.IColumn {
     render: (logDialog: CLM.LogDialog, component: Review) => React.ReactNode
@@ -315,8 +315,7 @@ class Review extends React.Component<Props, ComponentState> {
         if (this.props.logDialogs.length < MAX_LOGS_ANALYZED) {
             const doneLogs = this.state.logScores?.map(ls => ls.logDialogId) || []
             const newLogs = this.props.logDialogs.filter(ld => !doneLogs.includes(ld.logDialogId))
-            const logRanker = new LogRanker(newLogs, this.props.trainDialogs, this.props.entities)
-            const logScores = logRanker.analyze()
+            const logScores = rankLogs(newLogs, this.props.trainDialogs, this.props.entities)
         
             // Sort by the analyzed scores
             const sortColumn = this.state.columns.find(c => c.fieldName === "score")

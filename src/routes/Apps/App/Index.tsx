@@ -46,13 +46,13 @@ class Index extends React.Component<Props, ComponentState> {
     async loadApp(app: CLM.AppBase, packageId: string): Promise<void> {
         this.setState({ packageId })
 
-        const thunk1 = this.props.fetchBotInfoThunkAsync(this.props.browserId, app.appId)
-        const thunk2 = this.props.setCurrentAppThunkAsync(this.props.user.id, app)
+        const infoThunk = this.props.fetchBotInfoThunkAsync(this.props.browserId, app.appId)
+        const appThunk = this.props.setCurrentAppThunkAsync(this.props.user.id, app)
         // Fetch the first 100 dialogs
-        const thunk3 = this.props.fetchLogDialogsThunkAsync(app, packageId, true)
-        const thunk4 = this.props.fetchAppSourceThunkAsync(app.appId, packageId)
+        const logsThunk = this.props.fetchLogDialogsThunkAsync(app, packageId, true)
+        const sourceThunk = this.props.fetchAppSourceThunkAsync(app.appId, packageId)
 
-        await Promise.all([thunk1, thunk2, thunk3, thunk4])
+        await Promise.all([infoThunk, appThunk, logsThunk, sourceThunk])
         this.setState({ modelLoaded: true })
     }
 

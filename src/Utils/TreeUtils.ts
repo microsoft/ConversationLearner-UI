@@ -157,10 +157,10 @@ export class TreeUtils {
 
     private findMatchingRound(parent: TreeNode, round: CLM.TrainRound, roundIndex: number, trainDialog: CLM.TrainDialog, testOnly: boolean): TreeNode | null {
 
-        // Create new round
-        const tempParent: TreeNode = this.makeRoot()
-        const child = this.addRound(tempParent, round, roundIndex, trainDialog)
-        const newRound = tempParent.children[0]
+        // Create new round.  Will throw away if find a match, or add if no match found
+        const newParent: TreeNode = this.makeRoot()
+        const child = this.addRound(newParent, round, roundIndex, trainDialog)
+        const newRound = newParent.children[0]
 
         // Check for existing matching round
         const match = parent.children.find(r => {
@@ -182,7 +182,7 @@ export class TreeUtils {
         }
 
         // Otherwise add as new child
-        parent.children.push(tempParent.children[0])
+        parent.children.push(newParent.children[0])
         return child
     }
 
