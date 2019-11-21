@@ -303,7 +303,7 @@ export function getBestUnscoredAction(scoreResponse: CLM.ScoreResponse, actions:
     return unavailableScoredAction
 }
 
-// Check if entity is in memory and return it's name
+// Check if entity is in memory and return its name
 export function entityInMemory(entityId: string, entities: CLM.EntityBase[], memories: CLM.Memory[]): { match: boolean, name: string } {
     const entity = entities.find(e => e.entityId === entityId);
 

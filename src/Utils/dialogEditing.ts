@@ -61,7 +61,7 @@ export async function onInsertAction(
     // Find top scoring Action
     let insertedAction = DialogUtils.getBestAction(uiScoreResponse.scoreResponse, actions, canEndSession)
 
-    // None were qualified so try to find a valid one in unscored action
+    // If none were qualified, try to find a valid one in unscored action
     if (!insertedAction && uiScoreResponse.scoreResponse.unscoredActions[0]) {
         const lastRoundIndex = trainDialogCopy.rounds.length - 1
         const lastScoreIndex = trainDialogCopy.rounds[lastRoundIndex].scorerSteps.length > 0
