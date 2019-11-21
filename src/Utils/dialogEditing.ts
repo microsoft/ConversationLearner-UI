@@ -61,11 +61,14 @@ export async function onInsertAction(
     // Find top scoring Action
     let insertedAction = DialogUtils.getBestAction(uiScoreResponse.scoreResponse, actions, canEndSession)
 
-    // None were qualified so pick the first (will show in UI as invalid)
+    // If none were qualified, try to find a valid one in unscored action
     if (!insertedAction && uiScoreResponse.scoreResponse.unscoredActions[0]) {
-        const scoredAction = { ...uiScoreResponse.scoreResponse.unscoredActions[0], score: 1 }
-        delete scoredAction.reason
-        insertedAction = scoredAction
+        const lastRoundIndex = trainDialogCopy.rounds.length - 1
+        const lastScoreIndex = trainDialogCopy.rounds[lastRoundIndex].scorerSteps.length > 0
+            ? trainDialogCopy.rounds[lastRoundIndex].scorerSteps.length - 1
+            : null
+        const memories = DialogUtils.getPrevMemories(trainDialogCopy, entities, lastRoundIndex, lastScoreIndex)
+        insertedAction = DialogUtils.getBestUnscoredAction(uiScoreResponse.scoreResponse, actions, entities, memories)
     }
     if (!insertedAction) {
         throw new Error("No actions available")
