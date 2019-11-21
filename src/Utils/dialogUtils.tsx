@@ -289,7 +289,7 @@ export function getBestUnscoredAction(scoreResponse: CLM.ScoreResponse, actions:
     if (scoreResponse.unscoredActions.length === 0) {
         return undefined
     }
-    // Return first available unscored action
+    // Return first available unscored action (we have no scores to can't tell which is best)
     for (const action of scoreResponse.unscoredActions) {
         if (isActionIdAvailable(action.actionId, actions, entities, memories)) {
             const scoredAction = { ...action, score: 1 }
