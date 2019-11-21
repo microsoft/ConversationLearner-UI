@@ -29,6 +29,9 @@ describe('Export Model', () => {
       exportModelModal.ClickExportButton()
     })
 
+    // This next step is used to prove that the UI does not pop up an unexpected dialog box asking for the
+    // folder path and file name to save the exported file to...which is where the problem lies. The Electron
+    // browser is doing that and we have not found the way to make it save to the default download folder.
     it('Navigate to Train Dialogs and Edit One of Them', () => {
       modelPage.NavigateToTrainDialogs()
       trainDialogsGrid.TdGrid.EditTrainingByChatInputs('Hey', 'world peace', "Sorry $name, I can't help you get $want")

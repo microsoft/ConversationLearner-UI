@@ -24,7 +24,7 @@ function VerifyTrainingSummaryIsInGrid(trainingSummary) {
 
   let tdGrid
   cy.wrap(1, {timeout: 60000}).should(() => {
-    tdGrid = trainDialogsGrid.TdGrid.GetTdGrid(trainingSummary.TrainGridRowCount)
+    tdGrid = trainDialogsGrid.TdGrid.WaitForGridReadyThen(trainingSummary.TrainGridRowCount)
   }).then(() => {
     let iRow = tdGrid.FindGridRowByChatInputs(trainingSummary.FirstInput, trainingSummary.LastInput, trainingSummary.LastResponse)
     if (iRow >= 0) {

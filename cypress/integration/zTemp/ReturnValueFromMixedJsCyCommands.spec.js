@@ -95,18 +95,23 @@ describe('Experiment with Getting Return Value from Function with Mixed JavaScri
   // it does not return them down the chain of commands.
   it('Test4 - wrap ".then()" after a call to ".should()"', () => {
     function aFunc() {   
-    let returnedResult
+      let returnedFromShould
       cy.wrap(1).should(() => {
-        return 'Value returned from .should() is lost'
+        returnedFromShould = 'Value returned from .should() is lost, but value returned from then is preserved'
+        return returnedFromShould
       }).then(shouldResult => {
-        if (shouldResult != 1) { throw new Error('THEN shouldResult.data SHOULD BE 1') }
-        return 'Value returned from .then() is retained'
+        if (shouldResult != 1) { 
+          throw new Error('THEN shouldResult.data SHOULD BE 1') 
+        }
+        return returnedFromShould
       })
     }
 
     cy.Enqueue(() => { return aFunc() }).then(returnedResult => {
       helpers.ConLog('main', `returnedResult: ${returnedResult}`)
-      if (returnedResult != 'Value returned from .then() is retained') { throw new Error('Unexpected Result. Review the Log File.') }
+      if (returnedResult != 'Value returned from .should() is lost, but value returned from then is preserved') { 
+        throw new Error('Unexpected Result. Review the Log File.') 
+      }
     })
   })
 })

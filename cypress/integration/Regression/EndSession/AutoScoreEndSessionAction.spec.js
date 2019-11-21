@@ -52,7 +52,7 @@ describe('Auto Score End Session Action - End Session', () => {
       train.ClickScoreActionsButton()
     })
 
-    it('Should verify the automaticly selected Bot response is acording to the training.', () => {
+    it('Should verify the automaticly selected Bot response is according to the training.', () => {
       // Bug 2027: Auto Scored Action Selection should select EndSession action if model has been trained for that.
       // Remove this comment and the following line when this bug is fixed...uncomment the next line.
       chatPanel.VerifyChatTurnIsAnExactMatch('Hello', 4, 3)
