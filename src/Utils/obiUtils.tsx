@@ -551,6 +551,7 @@ export async function createImportedActions(
             let action = findActionFromScorerStep(scorerStep, [...newActions, ...actions], [])
 
             // If not, create a new one.
+            // TODO - need to flag suggestedEntity if applicable
             if (!action) {
                 const isTerminal = round.scorerSteps.length === scoreIndex + 1
                 let importedAction: ImportedAction | undefined
