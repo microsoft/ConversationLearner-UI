@@ -10,6 +10,8 @@ import { Dispatch } from 'redux'
 import { setErrorDisplay } from './displayActions'
 import { AxiosError } from 'axios'
 
+export const MAX_FETCH_LOG_PAGE_SIZE = 100
+
 //-------------------------------------
 // deleteLogDialog
 //-------------------------------------
@@ -149,11 +151,12 @@ export const fetchLogDialogThunkAsync = (appId: string, logDialogId: string, rep
 //-------------------------------------
 // fetchLogDialogs
 //-------------------------------------
-const fetchLogDialogsAsync = (appId: string, packageIds: string[]): ActionObject => {
+const fetchLogDialogsAsync = (appId: string, packageIds: string[], noSpinnerDisplay: boolean): ActionObject => {
     return {
         type: AT.FETCH_LOG_DIALOGS_ASYNC,
         appId,
         packageIds,
+        noSpinnerDisplay
     }
 }
 
@@ -166,7 +169,7 @@ const fetchLogDialogsFulfilled = (logQueryResult: CLM.LogQueryResult, clear: boo
     }
 }
 
-export const fetchLogDialogsThunkAsync = (app: CLM.AppBase, packageId: string, clear: boolean = true, continuationToken?: string, maxPageSize = 100) => {
+export const fetchLogDialogsThunkAsync = (app: CLM.AppBase, packageId: string, clear: boolean = true, continuationToken?: string, noSpinnerDisplay = true, maxPageSize = MAX_FETCH_LOG_PAGE_SIZE) => {
     return async (dispatch: Dispatch<any>) => {
         // Note: In future change fetch log dialogs to default to all package if packageId is dev
         const packageIds = (packageId === app.devPackageId)
@@ -174,7 +177,7 @@ export const fetchLogDialogsThunkAsync = (app: CLM.AppBase, packageId: string, c
             : [packageId]
 
         const clClient = ClientFactory.getInstance(AT.FETCH_LOG_DIALOGS_ASYNC)
-        dispatch(fetchLogDialogsAsync(app.appId, packageIds))
+        dispatch(fetchLogDialogsAsync(app.appId, packageIds, noSpinnerDisplay))
 
         try {
             const logQueryResult = await clClient.logDialogs(app.appId, packageIds, maxPageSize, continuationToken)

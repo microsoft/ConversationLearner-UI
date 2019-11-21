@@ -321,7 +321,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
 
     async onClickSync() {
         const clear = this.props.logDialogs.length > 0 && !this.props.logConinuationToken
-        await ((this.props.fetchLogDialogsThunkAsync(this.props.app, this.props.editingPackageId, clear, this.props.logConinuationToken) as any) as Promise<void>)
+        await ((this.props.fetchLogDialogsThunkAsync(this.props.app, this.props.editingPackageId, clear, this.props.logConinuationToken, false) as any) as Promise<void>)
     }
 
     getFilteredDialogs(
@@ -548,7 +548,7 @@ const mapDispatchToProps = (dispatch: any) => {
         createChatSessionThunkAsync: actionTypes.chat.createChatSessionThunkAsync,
         deleteLogDialogsThunkAsync: actionTypes.log.deleteLogDialogsThunkAsync,
         fetchLogDialogAsync: actionTypes.log.fetchLogDialogThunkAsync,
-        fetchLogDialogsThunkAsync: actionTypes.log.fetchLogDialogsThunkAsync,
+        fetchLogDialogsThunkAsync: actionTypes.log.fetchLogDialogsThunkAsync
     }, dispatch)
 }
 const mapStateToProps = (state: State) => {

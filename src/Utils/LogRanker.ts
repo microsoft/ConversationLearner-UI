@@ -71,7 +71,7 @@ function getAllUtterances(trainDialogs: CLM.TrainDialog[]): string[] {
     const utterances: string[] = []
     trainDialogs.forEach(td =>
         td.rounds.forEach(r =>
-            r.extractorStep.textVariations.forEach(t => utterances.push(clean(t.text)))
+            r.extractorStep.textVariations.forEach(t => utterances.push(removePunctuationAndLowercase(t.text)))
         )
     )
     // Make unique
@@ -82,13 +82,13 @@ function getAllUtterances(trainDialogs: CLM.TrainDialog[]): string[] {
 function getUtterances(trainDialog: CLM.TrainDialog): string[] {
     const utterances: string[] = []
     trainDialog.rounds.forEach(r =>
-        r.extractorStep.textVariations.forEach(t => utterances.push(clean(t.text)))
+        r.extractorStep.textVariations.forEach(t => utterances.push(removePunctuationAndLowercase(t.text)))
     )
     return utterances
 }
 
-// Remove punctuation and lowercase
-function clean(text: string): string {
+// Remove punctuation and lowercases input string
+function removePunctuationAndLowercase(text: string): string {
     const regex = /[!"#$%&'ʼ()*+,-./:;<=>?@[\]^_`{|}~]/g;
     return text.replace(regex, '').toLowerCase()
 }

@@ -48,7 +48,7 @@ class Index extends React.Component<Props, ComponentState> {
 
         const infoThunk = this.props.fetchBotInfoThunkAsync(this.props.browserId, app.appId)
         const appThunk = this.props.setCurrentAppThunkAsync(this.props.user.id, app)
-        // Fetch the first 100 dialogs
+        // Fetch the first page of log dialogs 
         const logsThunk = this.props.fetchLogDialogsThunkAsync(app, packageId, true)
         const sourceThunk = this.props.fetchAppSourceThunkAsync(app.appId, packageId)
 

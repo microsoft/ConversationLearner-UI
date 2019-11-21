@@ -73,26 +73,8 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             }
         },
         {
-            key: `description`,
-            name: Util.formatMessageId(intl, FM.LOGDIALOGS_USERINPUT),
-            fieldName: `description`,
-            minWidth: 100,
-            maxWidth: 1500,
-            isResizable: true,
-            render: (logDialog) => {
-                return <>
-                    <span className={OF.FontClassNames.mediumPlus} data-testid="log-dialogs-description">
-                        {DialogUtils.dialogSampleInput(logDialog)}
-                    </span>
-                </>
-            },
-            getSortValue: logDialog => {
-                return DialogUtils.dialogSampleInput(logDialog)
-            }
-        },
-        {
             key: `score`,
-            name: "Score",
+            name: "Review Score",
             fieldName: `score`,
             minWidth: 100,
             maxWidth: 100,
@@ -117,6 +99,24 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             },
             getSortValue: (logDialog, component) => {
                 return component.getLogScore(logDialog.logDialogId).toFixed(2)
+            }
+        },
+        {
+            key: `description`,
+            name: Util.formatMessageId(intl, FM.LOGDIALOGS_USERINPUT),
+            fieldName: `description`,
+            minWidth: 100,
+            maxWidth: 1500,
+            isResizable: true,
+            render: (logDialog) => {
+                return <>
+                    <span className={OF.FontClassNames.mediumPlus} data-testid="log-dialogs-description">
+                        {DialogUtils.dialogSampleInput(logDialog)}
+                    </span>
+                </>
+            },
+            getSortValue: logDialog => {
+                return DialogUtils.dialogSampleInput(logDialog)
             }
         },
         {
@@ -340,7 +340,7 @@ class Review extends React.Component<Props, ComponentState> {
 
             // Get more logs to analyze
             if (this.props.logConinuationToken) {
-                await ((this.props.fetchLogDialogsThunkAsync(this.props.app, this.props.editingPackageId, false, this.props.logConinuationToken, 20) as any) as Promise<CLM.LogQueryResult>)
+                await ((this.props.fetchLogDialogsThunkAsync(this.props.app, this.props.editingPackageId, false, this.props.logConinuationToken, false) as any) as Promise<CLM.LogQueryResult>)
             }
         }
     }

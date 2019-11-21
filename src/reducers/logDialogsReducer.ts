@@ -34,7 +34,7 @@ const logDialogsReducer = produce((state: LogDialogState, action: ActionObject) 
                     replace(state.logDialogs, action.logDialog, a => a.logDialogId)
                 }
                 else {
-                    state.logDialogs = [...state.logDialogs, action.logDialog]
+                    state.logDialogs.push(action.logDialog)
                 }
             }
             return
