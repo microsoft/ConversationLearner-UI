@@ -16,7 +16,7 @@ describe('New Phrase Used 2 Times Inconsistently - Entity Labeling', () => {
 
   context('Setup', () => {
     it('Import a model and wait for training to complete', () => {
-      models.ImportModel('z-newEntityLabel1', 'z-newEntityLabel.cl')
+      models.ImportModel('z-newPhraseUsed2x', 'z-newEntityLabel.cl')
       modelPage.NavigateToTrainDialogs()
       cy.WaitForTrainingStatusCompleted()
     })
