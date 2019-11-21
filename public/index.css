@@ -148,7 +148,7 @@ html {
   font-size: 1.2em;
 }
 .cl-icon[data-icon-name="CheckMark"] {
-  color: green !important;
+  color: green;
   font-size: 20px;
 }
 

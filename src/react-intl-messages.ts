@@ -823,7 +823,7 @@ export default {
         [FM.BUTTON_IMPORT]: 'Import',
         [FM.BUTTON_INFO]: 'Info',
         [FM.BUTTON_LOAD]: 'Load',
-        [FM.BUTTON_MORE_LOGS]: 'More Logs',
+        [FM.BUTTON_MORE_LOGS]: 'Load More Logs',
         [FM.BUTTON_OK]: 'OK',
         [FM.BUTTON_REFRESH]: 'Refresh',
         [FM.BUTTON_REPLAY]: 'Replay',
