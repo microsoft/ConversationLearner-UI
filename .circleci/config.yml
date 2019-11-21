@@ -107,7 +107,7 @@ jobs:
       # Run UI e2e tests
       # Need to add in --parallel once we have a license for it from Cypress
       - run: npm run cypress -- run --record false --spec  "cypress/integration/smoke/required/**/*.spec.*"
-      
+
       - save-test-results
 
   test-regression:

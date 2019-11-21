@@ -103,9 +103,10 @@ export class TdGrid {
       }
       
       helpers.ConLog(funcName, 'Failed attempt, the Train Dialog Grid is not stable yet.')
-      throw new Error(`Train Dialog Grid is not stable yet.`)
+      throw new Error(`Train Dialog Grid is not stable yet, however, if you see this in the Cypress UI it is a TEST BUG`)
+      // Its a test bug if this error shows up in the Cypress UI because this function was designed to NOT time out.
     }).then(() => { 
-      thenDoFunction(TdGrid.tdGrid) 
+      return thenDoFunction(TdGrid.tdGrid) 
     })
   }
 
