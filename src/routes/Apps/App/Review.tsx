@@ -340,7 +340,7 @@ class Review extends React.Component<Props, ComponentState> {
 
             // Get more logs to analyze
             if (this.props.logConinuationToken) {
-                await ((this.props.fetchLogDialogsThunkAsync(this.props.app, this.props.editingPackageId, false, this.props.logConinuationToken, 20) as any) as Promise<CLM.LogQueryResult>)
+                await ((this.props.fetchLogDialogsThunkAsync(this.props.app, this.props.editingPackageId, false, this.props.logConinuationToken, false) as any) as Promise<CLM.LogQueryResult>)
             }
         }
     }

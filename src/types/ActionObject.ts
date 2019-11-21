@@ -212,7 +212,8 @@ export type FetchAction = {
 } | {
     type: AT.FETCH_LOG_DIALOGS_ASYNC,
     appId: string,
-    packageIds: string[]
+    packageIds: string[],
+    noSpinnerDisplay: boolean
 } | {
     type: AT.FETCH_LOG_DIALOGS_FULFILLED,
     logDialogs: CLM.LogDialog[],
