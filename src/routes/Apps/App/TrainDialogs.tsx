@@ -157,6 +157,8 @@ interface TranscriptImportData {
     warnings: string[]
     // Conditions are keyed by TrainScorerStep.importId.
     conditions?: { [key: string]: CLM.Condition[] }
+    // Expected entities are keyed by actionId.
+    expectedEntities?: { [key: string]: string }
 }
 
 interface ComponentState {
@@ -1277,6 +1279,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 importData.lgItems,
                 this.props.actions,
                 importData.conditions,
+                importData.expectedEntities,
                 this.props.createActionThunkAsync as any,
             )
 

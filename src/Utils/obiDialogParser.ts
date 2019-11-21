@@ -44,10 +44,19 @@ class ObiDialogNode {
 
 export interface ObiDialogParserResult {
     luMap: { [key: string]: string[] }
-    lgItems: CLM.LGItem[],
+    lgItems: CLM.LGItem[]
     trainDialogs: CLM.TrainDialog[]
-    warnings: string[],
+    // Non-fatal warnings raised during dialog import.
+    warnings: string[]
+    // Captures entity value restrictions derived from dialog SwitchCondition cases.
+    // Key is a ScorerStep import id.
     conditions: { [key: string]: CLM.Condition[] }
+    // Captures "expected entity" settings to be applied when the bot is asking the user for information
+    // that will be used as the input to an API call.  Key is an action id, value is the expected entity name.
+    // Eg, if the bot asks "are you on Windows or MacOS" and the next step is an API call that takes "osType"
+    // as an input, the key will be the action id for the "are you on..." bot utterance and the value will be
+    // "osType".
+    expectedEntities: { [key: string]: string }
 }
 
 export class ObiDialogParser {
@@ -59,6 +68,7 @@ export class ObiDialogParser {
     private luMap: { [key: string]: string[] }
     private warnings: string[]
     private conditions: { [key: string]: CLM.Condition[] }
+    private expectedEntities: { [key: string]: string }
     private createActionThunkAsync: (appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null>
     private createEntityThunkAsync: (appId: string, entity: CLM.EntityBase) => Promise<CLM.EntityBase | null>
 
@@ -100,7 +110,8 @@ export class ObiDialogParser {
             lgItems: this.lgItems,
             trainDialogs,
             warnings: this.warnings,
-            conditions: this.conditions
+            conditions: this.conditions,
+            expectedEntities: this.expectedEntities,
         }
     }
 
@@ -239,6 +250,9 @@ export class ObiDialogParser {
                     childNode.intent = undefined
                     httpNode.children = [childNode]
                     node.dialog.steps = node.dialog.steps!.slice(0, i)
+
+                    // Finally, we will need to set expectedEntity on the action for the *previous* bot utterance so
+                    // the user utterance will be saved as expected.
 
                     // We just recursively expanded the rest of the child steps above, so we short-circuit the loop here.
                     return
@@ -623,6 +637,9 @@ export class ObiDialogParser {
      * The .dialog file is expected to have a field `responseFields` that enumerates the top-level
      * output parameters of the response object.  Note that as of 2019.09, this field is specific
      * to ConversationLearner and is not part of the OBI spec.
+     *
+     * @param expectedEntities key is actionId for the newly-created HTTP action, value is name of the input entity
+     *     This allows us to set expected entity values when the actions are actually created.
      */
     private async createActionAndEntitiesFromHttpRequest(step: OBITypes.OBIDialog, nextStep: OBITypes.OBIDialog | undefined):
         Promise<CLM.TrainScorerStep> {
@@ -632,7 +649,8 @@ export class ObiDialogParser {
         if (!step.body) {
             throw new Error('HTTP requests require body')
         }
-        // Create entities for the API inputs.
+        // Create entity for the API inputs.
+        const apiInputEntityNames: string[] = []
         for (const entityName of Object.keys(step.body)) {
             const normalizedEntityName = this.normalizeValueName(entityName, MAX_NAME_LENGTH)
             let entity = this.entities.find(e => e.entityName === normalizedEntityName)
@@ -641,6 +659,7 @@ export class ObiDialogParser {
                 continue
             }
             await this.createProgrammaticEntity(normalizedEntityName)
+            apiInputEntityNames.push(normalizedEntityName)
         }
 
         // TODO(thpar) : revisit logic for this.
