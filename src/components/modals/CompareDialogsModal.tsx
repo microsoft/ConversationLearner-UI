@@ -144,7 +144,7 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
         this.setState({conversationIndex})
     }
 
-    // Set from and recipient data from proper rendering
+    // Set from and recipient data for proper rendering
     cleanTranscript(activities: BB.Activity[]): void {
         const userAccount: BB.ChannelAccount = { id: this.props.user.id, name: this.props.user.name, role: "user", aadObjectId: '' }
         const botAccount: BB.ChannelAccount = { id: `BOT-${this.props.user.id}`, name: CLM.CL_USER_NAME_ID, role: "bot", aadObjectId: '' }
@@ -452,7 +452,7 @@ const mapStateToProps = (state: State) => {
         user: state.user.user,
         entities: state.entities,
         actions: state.actions,
-        logDialogs: state.logDialogs
+        logDialogs: state.logDialogState.logDialogs
     }
 }
 

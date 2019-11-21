@@ -28,9 +28,10 @@ const deleteLogDialogFulfilled = (logDialogId: string): ActionObject => {
     }
 }
 
-const deleteLogDialogRejected = (): ActionObject => {
+const deleteLogDialogRejected = (logDialogId: string): ActionObject => {
     return {
-        type: AT.DELETE_LOG_DIALOG_REJECTED
+        type: AT.DELETE_LOG_DIALOG_REJECTED,
+        logDialogId
     }
 }
 
@@ -46,8 +47,9 @@ export const deleteLogDialogThunkAsync = (app: CLM.AppBase, logDialogId: string,
         catch (e) {
             const error = e as AxiosError
             dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.DELETE_LOG_DIALOG_ASYNC))
-            dispatch(deleteLogDialogRejected())
-            void dispatch(fetchAllLogDialogsThunkAsync(app, packageId));
+            dispatch(deleteLogDialogRejected(logDialogId))
+            // Delete failed so reload it back into UI
+            void dispatch(fetchLogDialogThunkAsync(app.appId, logDialogId, true));
         }
     }
 }
@@ -60,15 +62,17 @@ const deleteLogDialogsAsync = (appId: string, logDialogIds: string[]): ActionObj
     }
 }
 
-const deleteLogDialogsFulfilled = (): ActionObject => {
+const deleteLogDialogsFulfilled = (logDialogIds: string[]): ActionObject => {
     return {
         type: AT.DELETE_LOG_DIALOGS_FULFILLED,
+        logDialogIds
     }
 }
 
-const deleteLogDialogsRejected = (): ActionObject => {
+const deleteLogDialogsRejected = (logDialogIds: string[]): ActionObject => {
     return {
         type: AT.DELETE_LOG_DIALOGS_REJECTED,
+        logDialogIds
     }
 }
 
@@ -79,15 +83,12 @@ export const deleteLogDialogsThunkAsync = (app: CLM.AppBase, logDialogIds: strin
 
         try {
             await clClient.logDialogsDeleteMany(app.appId, logDialogIds)
-            dispatch(deleteLogDialogsFulfilled())
+            dispatch(deleteLogDialogsFulfilled(logDialogIds))
         }
         catch (e) {
             const error = e as AxiosError
             dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.DELETE_LOG_DIALOGS_ASYNC))
-            dispatch(deleteLogDialogsRejected())
-        }
-        finally {
-            void dispatch(fetchAllLogDialogsThunkAsync(app, packageId))
+            dispatch(deleteLogDialogsRejected(logDialogIds))
         }
     }
 }
@@ -146,9 +147,9 @@ export const fetchLogDialogThunkAsync = (appId: string, logDialogId: string, rep
 }
 
 //-------------------------------------
-// fetchAllLogDialogs
+// fetchLogDialogs
 //-------------------------------------
-const fetchAllLogDialogsAsync = (appId: string, packageIds: string[]): ActionObject => {
+const fetchLogDialogsAsync = (appId: string, packageIds: string[]): ActionObject => {
     return {
         type: AT.FETCH_LOG_DIALOGS_ASYNC,
         appId,
@@ -156,14 +157,16 @@ const fetchAllLogDialogsAsync = (appId: string, packageIds: string[]): ActionObj
     }
 }
 
-const fetchAllLogDialogsFulfilled = (logDialogs: CLM.LogDialog[]): ActionObject => {
-    return {
+const fetchLogDialogsFulfilled = (logQueryResult: CLM.LogQueryResult, clear: boolean): ActionObject => {
+    return { 
         type: AT.FETCH_LOG_DIALOGS_FULFILLED,
-        allLogDialogs: logDialogs
+        logDialogs: logQueryResult.logDialogs,
+        continuationToken: logQueryResult.continuationToken,
+        clear
     }
 }
 
-export const fetchAllLogDialogsThunkAsync = (app: CLM.AppBase, packageId: string) => {
+export const fetchLogDialogsThunkAsync = (app: CLM.AppBase, packageId: string, clear: boolean = true, continuationToken?: string, maxPageSize = 100) => {
     return async (dispatch: Dispatch<any>) => {
         // Note: In future change fetch log dialogs to default to all package if packageId is dev
         const packageIds = (packageId === app.devPackageId)
@@ -171,12 +174,12 @@ export const fetchAllLogDialogsThunkAsync = (app: CLM.AppBase, packageId: string
             : [packageId]
 
         const clClient = ClientFactory.getInstance(AT.FETCH_LOG_DIALOGS_ASYNC)
-        dispatch(fetchAllLogDialogsAsync(app.appId, packageIds))
+        dispatch(fetchLogDialogsAsync(app.appId, packageIds))
 
         try {
-            const logDialogs = await clClient.logDialogs(app.appId, packageIds)
-            dispatch(fetchAllLogDialogsFulfilled(logDialogs))
-            return logDialogs
+            const logQueryResult = await clClient.logDialogs(app.appId, packageIds, maxPageSize, continuationToken)
+            dispatch(fetchLogDialogsFulfilled(logQueryResult, clear))
+            return logQueryResult
         } catch (e) {
             const error = e as AxiosError
             dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.FETCH_LOG_DIALOGS_ASYNC))

@@ -10,26 +10,33 @@ import * as OF from 'office-ui-fabric-react'
 import * as moment from 'moment'
 import FormattedMessageId from '../../../components/FormattedMessageId'
 import actionTypes from '../../../actions'
+import LogDialogEditor from '../../../components/LogDialogEditor'
 import { withRouter } from 'react-router-dom'
 import { RouteComponentProps } from 'react-router'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { State } from '../../../types'
-import LogDialogEditor from '../../../components/LogDialogEditor'
 import { EditDialogType } from '../../../types/const'
-import { ChatSessionModal, ConfirmCancelModal } from '../../../components/modals'
+import { ConfirmCancelModal } from '../../../components/modals'
 import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../../react-intl-messages'
 import { autobind } from 'core-decorators'
+import { rankLogs, LogScore } from '../../../Utils/LogRanker'
 
 interface IRenderableColumn extends OF.IColumn {
-    render: (logDialog: CLM.LogDialog, component: LogDialogs) => React.ReactNode
-    getSortValue: (logDialog: CLM.LogDialog, component: LogDialogs) => string
+    render: (logDialog: CLM.LogDialog, component: Review) => React.ReactNode
+    getSortValue: (logDialog: CLM.LogDialog, component: Review) => string
 }
+
+// Maximum number of logs to analyze
+const MAX_LOGS_ANALYZED = 1000
+
+// Maximum number of analyzed logs to display
+const MAX_LOGS_DISPLAYED = 15
 
 const returnErrorStringWhenError = Util.returnStringWhenError("ERR")
 
-function getTagName(logDialog: CLM.LogDialog, component: LogDialogs): string {
+function getTagName(logDialog: CLM.LogDialog, component: Review): string {
     // Only show tag column on Master branch it's the only one containing multiple tag types
     if (component.props.editingPackageId !== component.props.app.devPackageId) {
         return ''
@@ -58,7 +65,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             isResizable: true,
             render: (logDialog, component) => {
                 const tagName = getTagName(logDialog, component);
-                return <span className={OF.FontClassNames.mediumPlus}>{tagName}</span>;
+                return <span className={OF.FontClassNames.mediumPlus}>{tagName}</span>
             },
             getSortValue: (logDialog, component) => {
                 const tagName = getTagName(logDialog, component)
@@ -72,7 +79,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             minWidth: 100,
             maxWidth: 1500,
             isResizable: true,
-            render: (logDialog, component) => {
+            render: (logDialog) => {
                 return <>
                     <span className={OF.FontClassNames.mediumPlus} data-testid="log-dialogs-description">
                         {DialogUtils.dialogSampleInput(logDialog)}
@@ -81,6 +88,35 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             },
             getSortValue: logDialog => {
                 return DialogUtils.dialogSampleInput(logDialog)
+            }
+        },
+        {
+            key: `score`,
+            name: "Score",
+            fieldName: `score`,
+            minWidth: 100,
+            maxWidth: 100,
+            isResizable: false,
+            render: (logDialog, component) => {
+                return <>
+                    
+                    <span>
+                        <OF.TooltipHost
+                            tooltipProps={{
+                                onRenderContent: () =>
+                                    <span>
+                                        {<pre>{component.getLogScoreDetails(logDialog.logDialogId)}</pre>}
+                                    </span>
+                            }}
+                            calloutProps={{ gapSpace: 0 }}
+                        >
+                            {component.getLogScore(logDialog.logDialogId).toFixed(2)}
+                        </OF.TooltipHost>
+                    </span>
+                </>
+            },
+            getSortValue: (logDialog, component) => {
+                return component.getLogScore(logDialog.logDialogId).toFixed(2)
             }
         },
         {
@@ -119,13 +155,13 @@ interface ComponentState {
     editingLogDialog: CLM.LogDialog | undefined
     // Is Dialog being edited a new one, a TrainDialog or a LogDialog
     editType: EditDialogType
-    searchValue: string
     // Allows user to re-open modal for same row ()
     detailListKey: number
+    logScores: LogScore[] | undefined
+    doAnalysis: boolean
 }
 
-// TODO: This component is highly redundant with TrainDialogs.  Should collapse
-class LogDialogs extends React.Component<Props, ComponentState> {
+class Review extends React.Component<Props, ComponentState> {
     newChatSessionButtonRef = React.createRef<OF.IButton>()
     state: ComponentState
 
@@ -159,8 +195,9 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             selectionCount: 0,
             editingLogDialog: undefined,
             editType: EditDialogType.LOG_ORIGINAL,
-            searchValue: '',
-            detailListKey: 0
+            detailListKey: 0,
+            logScores: undefined,
+            doAnalysis: false
         }
     }
 
@@ -223,11 +260,17 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     }
 
     componentDidMount() {
-        this.focusNewChatButton()
         this.handleQueryParameters(this.props.location.search)
     }
 
     componentDidUpdate(prevProps: Props, prevState: ComponentState) {
+        if (!prevState.doAnalysis && this.state.doAnalysis) {
+            this.analyze()
+        }
+        else if (this.state.doAnalysis && this.props.logDialogs !== prevProps.logDialogs) {
+            this.analyze()
+        }
+
         void this.handleQueryParameters(this.props.location.search, prevProps.location.search)
     }
 
@@ -262,28 +305,50 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    async onClickNewChatSession() {
-        try {
-            // TODO: Find cleaner solution for the types.  Thunks return functions but when using them on props they should be returning result of the promise.
-            const chatSession = await ((this.props.createChatSessionThunkAsync(this.props.app.appId, this.props.editingPackageId, this.props.app.metadata.isLoggingOn !== false) as any) as Promise<CLM.Session>)
-            this.setState({
-                chatSession,
-                isChatSessionWindowOpen: true,
-                editType: EditDialogType.LOG_ORIGINAL
+    async onClickLogDialogItem(logDialog: CLM.LogDialog) {
+        const { history } = this.props
+        let url = `${this.props.match.url}?id=${logDialog.logDialogId}`
+        history.push(url, { app: this.props.app })
+    }
+
+    async analyze() {
+        if (this.props.logDialogs.length < MAX_LOGS_ANALYZED) {
+            const doneLogs = this.state.logScores?.map(ls => ls.logDialogId) || []
+            const newLogs = this.props.logDialogs.filter(ld => !doneLogs.includes(ld.logDialogId))
+            const logScores = rankLogs(newLogs, this.props.trainDialogs, this.props.entities)
+        
+            // Sort by the analyzed scores
+            const sortColumn = this.state.columns.find(c => c.fieldName === "score")
+            if (!sortColumn) {
+                throw new Error("Undefined Column")
+            }
+            const columns = this.state.columns.map(column => {
+                column.isSorted = false
+                column.isSortedDescending = false
+                if (column === sortColumn) {
+                    column.isSorted = true
+                    column.isSortedDescending = false
+                }
+                return column
             })
-        }
-        catch (e) {
-            const error = e as Error
-            console.warn(`Error when attempting to opening chat window: `, error)
+
+            this.setState({
+                logScores: this.state.logScores ? [...logScores, ...this.state.logScores] : logScores,
+                columns,
+                sortColumn
+            })
+
+            // Get more logs to analyze
+            if (this.props.logConinuationToken) {
+                await ((this.props.fetchLogDialogsThunkAsync(this.props.app, this.props.editingPackageId, false, this.props.logConinuationToken, 20) as any) as Promise<CLM.LogQueryResult>)
+            }
         }
     }
 
     @autobind
-    onCloseChatSessionWindow() {
+    async onClickAnalyze() {
         this.setState({
-            chatSession: null,
-            isChatSessionWindowOpen: false,
-            detailListKey: this.state.detailListKey + 1
+            doAnalysis: true
         })
     }
 
@@ -296,78 +361,9 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    onChangeSearchString(event?: React.ChangeEvent<HTMLInputElement>, newValue?: string) {
-        if (newValue === undefined) {
-            return
-        }
-
-        this.onSearch(newValue)
-    }
-
-    @autobind
-    onSearch(newValue: string) {
-        const lcString = newValue.toLowerCase();
-        this.setState({
-            searchValue: lcString
-        })
-    }
-
-    @autobind
-    async onClickLogDialogItem(logDialog: CLM.LogDialog) {
-        const { history } = this.props
-        let url = `${this.props.match.url}?id=${logDialog.logDialogId}`
-        history.push(url, { app: this.props.app })
-    }
-
     async onClickSync() {
-        const clear = this.props.logDialogs.length > 0 && !this.props.logConinuationToken
-        await ((this.props.fetchLogDialogsThunkAsync(this.props.app, this.props.editingPackageId, clear, this.props.logConinuationToken) as any) as Promise<void>)
-    }
-
-    getFilteredDialogs(
-        logDialogs: CLM.LogDialog[],
-        entities: CLM.EntityBase[],
-        actions: CLM.ActionBase[],
-        searchValue: string
-    ): CLM.LogDialog[] {
-        if (!searchValue) {
-            return logDialogs
-        }
-
-        return logDialogs
-            .filter(logDialog => {
-                const keys = [];
-                for (const round of logDialog.rounds) {
-                    keys.push(round.extractorStep.text)
-
-                    for (const le of round.extractorStep.predictedEntities) {
-                        const entity = entities.find(e => e.entityId === le.entityId)
-                        if (!entity) {
-                            throw new Error(`Could not find entity by id: ${le.entityId} in list of entities`)
-                        }
-                        keys.push(entity.entityName)
-                    }
-
-                    for (const ss of round.scorerSteps) {
-                        const action = actions.find(a => a.actionId === ss.predictedAction)
-                        if (!action) {
-                            throw new Error(`Could not find action by id: ${ss.predictedAction} in list of actions`)
-                        }
-
-                        let payload = ''
-                        try {
-                            payload = CLM.ActionBase.GetPayload(action, Util.getDefaultEntityMap(this.props.entities))
-                        }
-                        catch {
-                            // Backwards compatibility to models with old payload type
-                        }
-                        keys.push(payload)
-                    }
-                }
-
-                const searchString = keys.join(' ').toLowerCase();
-                return searchString.includes(searchValue);
-            })
+        // Load dialogs anew
+        await ((this.props.fetchLogDialogsThunkAsync(this.props.app, this.props.editingPackageId, true) as any) as Promise<void>)
     }
 
     @autobind
@@ -394,61 +390,32 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         })
     }
 
-    getFilteredAndSortedDialogs() {
-        let computedLogDialogs = this.getFilteredDialogs(
-            this.props.logDialogs,
-            this.props.entities,
-            this.props.actions,
-            this.state.searchValue)
-
-        computedLogDialogs = this.sortLogDialogs(computedLogDialogs, this.state.columns, this.state.sortColumn)
-        return computedLogDialogs
+    getSortedDialogs() {
+        const computedLogDialogs = this.sortLogDialogs(this.props.logDialogs, this.state.columns, this.state.sortColumn)
+        // Return the top 14 scores
+        return computedLogDialogs.slice(0, MAX_LOGS_DISPLAYED)
     }
 
     render() {
         const { intl } = this.props
-        const computedLogDialogs = this.getFilteredAndSortedDialogs()
-        const isPlaceholderVisible = this.props.logDialogs.length === 0
-        const isEditingDisabled = this.props.editingPackageId !== this.props.app.devPackageId || this.props.invalidBot;
-        
+        const computedLogDialogs = this.getSortedDialogs()
+
         return (
             <div className="cl-page">
                 <div data-testid="log-dialogs-title" className={`cl-dialog-title cl-dialog-title--log ${OF.FontClassNames.xxLarge}`}>
-                    <OF.Icon iconName="UserFollowed" />
-                    <FormattedMessageId id={FM.LOGDIALOGS_TITLE} />
+                    <OF.Icon iconName="D365TalentLearn" />
+                    <FormattedMessageId id={FM.REVIEW_TITLE} />
                 </div>
                 {this.props.editingPackageId === this.props.app.devPackageId ?
                     <span className={OF.FontClassNames.mediumPlus}>
-                        <FormattedMessageId id={FM.LOGDIALOGS_SUBTITLE} />
+                        <FormattedMessageId id={FM.REVIEW_SUBTITLE} />
                     </span>
                     :
                     <span className="cl-errorpanel">Editing is only allowed in Master Tag</span>
                 }
-                {this.props.app.metadata.isLoggingOn === false &&
-                    <span className="ms-TextField-errorMessage label-error">
-                        <FormattedMessageId id={FM.LOGDIALOGS_LOGDISABLED} />
-                    </span>
-                }
                 <div className="cl-buttons-row">
-                    <OF.PrimaryButton
-                        data-testid="log-dialogs-new-button"
-                        disabled={isEditingDisabled}
-                        onClick={this.onClickNewChatSession}
-                        ariaDescription={Util.formatMessageId(this.props.intl, FM.LOGDIALOGS_CREATEBUTTONARIALDESCRIPTION)}
-                        text={Util.formatMessageId(this.props.intl, FM.LOGDIALOGS_CREATEBUTTONTITLE)}
-                        componentRef={this.newChatSessionButtonRef}
-                        iconProps={{ iconName: 'Add' }}
-                    />
                     <OF.DefaultButton
-                        disabled={this.props.logDialogs.length === 0 || this.props.logConinuationToken === undefined}
-                        data-testid="logdialogs-button-refresh"
-                        onClick={() => this.onClickSync()}
-                        ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_MORE_LOGS)}
-                        text={Util.formatMessageId(this.props.intl, FM.BUTTON_MORE_LOGS)}
-                        iconProps={{ iconName: 'AddNotes' }}
-                    />
-                    <OF.DefaultButton
-                        disabled={this.props.logDialogs.length > 0 && this.props.logConinuationToken !== undefined}
+                        disabled={!this.state.logScores}
                         data-testid="logdialogs-button-refresh"
                         onClick={() => this.onClickSync()}
                         ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_REFRESH)}
@@ -465,37 +432,24 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                         iconProps={{ iconName: 'Delete' }}
                     />
                 </div>
-                <div className={`cl-page-placeholder ${isPlaceholderVisible ? '' : 'cl-page-placeholder--none'}`}>
+
+                <div className={`cl-page-placeholder ${!this.state.logScores ? '' : 'cl-page-placeholder--none'}`}>
                     <div className="cl-page-placeholder__content">
-                        <div className={`cl-page-placeholder__description ${OF.FontClassNames.xxLarge}`}>Create a Log Dialog</div>
+                        <div className={`cl-page-placeholder__description ${OF.FontClassNames.xxLarge}`}><FormattedMessageId id={FM.REVIEW_PLACEHOLDER_TITLE} /></div>
                         <OF.PrimaryButton
-                            iconProps={{
-                                iconName: "Add"
-                            }}
-                            disabled={isEditingDisabled}
-                            onClick={this.onClickNewChatSession}
-                            ariaDescription={Util.formatMessageId(this.props.intl, FM.LOGDIALOGS_CREATEBUTTONARIALDESCRIPTION)}
-                            text={Util.formatMessageId(this.props.intl, FM.LOGDIALOGS_CREATEBUTTONTITLE)}
+                            data-testid="logdialogs-button-refresh"
+                            onClick={this.onClickAnalyze}
+                            ariaDescription={Util.formatMessageId(this.props.intl, FM.REVIEW_ANALYZE)}
+                            text={Util.formatMessageId(this.props.intl, FM.REVIEW_ANALYZE)}
+                            iconProps={{ iconName: 'Processing' }}
                         />
                     </div>
                 </div>
                 <>
-                    <div className={isPlaceholderVisible ? 'cl-hidden' : ''}>
-                        <OF.Label htmlFor="logdialogs-input-search" className={OF.FontClassNames.medium}>
-                            Search:
-                            </OF.Label>
-                        <OF.SearchBox
-                            id="logdialogs-input-search"
-                            data-testid="logdialogs-search-box"
-                            className={OF.FontClassNames.mediumPlus}
-                            onChange={this.onChangeSearchString}
-                            onSearch={this.onSearch}
-                        />
-                    </div>
                     <OF.DetailsList
                         data-testid="logdialogs-details-list"
                         key={this.state.detailListKey}
-                        className={`${OF.FontClassNames.mediumPlus} ${isPlaceholderVisible ? 'cl-hidden' : ''}`}
+                        className={`${OF.FontClassNames.mediumPlus} ${!this.state.logScores ? 'cl-hidden' : ''}`}
                         items={computedLogDialogs}
                         selection={this.selection}
                         getKey={getDialogKey}
@@ -505,15 +459,9 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                         onColumnHeaderClick={this.onClickColumnHeader}
                         onRenderRow={(props, defaultRender) => <div data-selection-invoke={true}>{defaultRender && defaultRender(props)}</div>}
                         onRenderItemColumn={(logDialog, i, column: IRenderableColumn) => returnErrorStringWhenError(() => column.render(logDialog, this))}
-                        onActiveItemChanged={logDialog => this.onClickLogDialogItem(logDialog)}
+                        onItemInvoked={logDialog => this.onClickLogDialogItem(logDialog)}
                     />
                 </>
-                <ChatSessionModal
-                    app={this.props.app}
-                    editingPackageId={this.props.editingPackageId}
-                    open={this.state.isChatSessionWindowOpen}
-                    onClose={this.onCloseChatSessionWindow}
-                />
                 <LogDialogEditor
                     app={this.props.app}
                     invalidBot={this.props.invalidBot}
@@ -531,10 +479,21 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         );
     }
 
-    private focusNewChatButton() {
-        if (this.newChatSessionButtonRef.current) {
-            this.newChatSessionButtonRef.current.focus()
+    getLogScore(logDialogId: string): number {
+        if (!this.state.logScores) {
+            return 0
         }
+        const logScore = this.state.logScores.find(ls => ls.logDialogId === logDialogId)
+        return logScore ? logScore.score : 0
+
+    }
+
+    getLogScoreDetails(logDialogId: string): string {
+        if (!this.state.logScores) {
+            return ""
+        }
+        const logScore = this.state.logScores.find(ls => ls.logDialogId === logDialogId)
+        return logScore ? JSON.stringify(logScore, null, 2) : ""
     }
 
     private async openLogDialog(logDialog: CLM.LogDialog) {
@@ -580,4 +539,4 @@ type stateProps = ReturnType<typeof mapStateToProps>
 type dispatchProps = ReturnType<typeof mapDispatchToProps>
 type Props = stateProps & dispatchProps & ReceivedProps & InjectedIntlProps & RouteComponentProps<any>
 
-export default connect<stateProps, dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(withRouter(injectIntl(LogDialogs)))
+export default connect<stateProps, dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(withRouter(injectIntl(Review)))

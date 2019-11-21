@@ -768,7 +768,7 @@ const mapStateToProps = (state: State) => {
     }
 
     return {
-        logDialogs: state.logDialogs,
+        logDialogs: state.logDialogState.logDialogs,
         trainDialogs: state.trainDialogs,
         user: state.user.user,
         actions: state.actions,
