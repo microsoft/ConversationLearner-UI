@@ -229,10 +229,17 @@ export class TestSet {
                                 })
                             }
                             else {
-                                const result = OBIUtils.areTranscriptsEqual(innerItem.transcript, outerItem.transcript, true)
-                                    ? ComparisonResultType.REPRODUCED 
-                                    : ComparisonResultType.CHANGED
+                                let result: ComparisonResultType
 
+                                try {
+                                    result = OBIUtils.areTranscriptsEqual(innerItem.transcript, outerItem.transcript, true)
+                                        ? ComparisonResultType.REPRODUCED
+                                        : ComparisonResultType.CHANGED
+                                }
+                                catch {
+                                    result = ComparisonResultType.INVALID_TRANSCRIPT
+                                }
+                                
                                 this.comparisons.push({ 
                                     conversationId,
                                     sourceNames: [innerSource, outerSource],

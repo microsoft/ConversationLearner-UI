@@ -19,7 +19,11 @@ export type ErrorState = {
 }
 export type TrainDialogState = CLM.TrainDialog[];
 
-export type LogDialogState = CLM.LogDialog[]
+export type LogDialogState = {
+    logDialogs: CLM.LogDialog[]
+    continuationToken: string | undefined
+    pendingDelete: CLM.LogDialog[]
+}
 
 export type AppsState = {
     all: CLM.AppBase[],
@@ -88,7 +92,7 @@ export type State = {
     trainDialogs: TrainDialogState,
     display: DisplayState,
     error: ErrorState,
-    logDialogs: LogDialogState,
+    logDialogState: LogDialogState,
     teachSession: TeachSessionState,
     chatSessions: ChatSessionState,
     settings: SettingsState,

@@ -212,10 +212,13 @@ export type FetchAction = {
 } | {
     type: AT.FETCH_LOG_DIALOGS_ASYNC,
     appId: string,
-    packageIds: string[]
+    packageIds: string[],
+    noSpinnerDisplay: boolean
 } | {
     type: AT.FETCH_LOG_DIALOGS_FULFILLED,
-    allLogDialogs: CLM.LogDialog[],
+    logDialogs: CLM.LogDialog[],
+    continuationToken: string | undefined
+    clear: boolean
 } | {
     type: AT.FETCH_APPLICATIONS_FULFILLED,
     uiAppList: CLM.UIAppList,
@@ -476,8 +479,8 @@ export type DeleteLogDialogFulfilledAction = {
 }
 export type DeleteLogDialogRejectedAction = {
     type: AT.DELETE_LOG_DIALOG_REJECTED,
+    logDialogId: string
 }
-
 export type DeleteLogDialogsAsyncAction = {
     type: AT.DELETE_LOG_DIALOGS_ASYNC,
     appId: string,
@@ -485,9 +488,11 @@ export type DeleteLogDialogsAsyncAction = {
 }
 export type DeleteLogDialogsFulfilledAction = {
     type: AT.DELETE_LOG_DIALOGS_FULFILLED,
+    logDialogIds: string[]
 }
 export type DeleteLogDialogsRejectedAction = {
     type: AT.DELETE_LOG_DIALOGS_REJECTED,
+    logDialogIds: string[]
 }
 
 export type TeachAction = {

@@ -491,9 +491,9 @@ export const fetchTranscriptValidationThunkAsync = (appId: string, packageId: st
         dispatch(validateTranscriptAsync())
 
         try {
-            const transcriptValidationResult = await clClient.validateTranscript(appId, packageId, testId, transcriptValidationTurns)
+            const logDialogId = await clClient.validateTranscript(appId, packageId, testId, transcriptValidationTurns)
             dispatch(validateTranscriptFulfilled())
-            return transcriptValidationResult
+            return logDialogId
         }
         catch (e) {
             const error = e as AxiosError

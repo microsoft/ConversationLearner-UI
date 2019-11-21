@@ -448,7 +448,7 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
 
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        fetchLogDialogAsync: actions.log.fetchLogDialogThunkAsync,
+        fetchLogDialogThunkAsync: actions.log.fetchLogDialogThunkAsync,
         fetchActivitiesThunkAsync: actions.train.fetchActivitiesThunkAsync,
     }, dispatch);
 }
@@ -466,7 +466,7 @@ const mapStateToProps = (state: State) => {
 export interface ReceivedProps {
     app: CLM.AppBase
     testSet: Test.TestSet
-    onRate: (ratingPair: Test.RatingPair) => void
+    onRate: (ratingPair: Test.RatingPair) => Promise<void>
     onClose: () => void
 }
 
