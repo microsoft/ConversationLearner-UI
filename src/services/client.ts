@@ -472,12 +472,19 @@ export default class ClClient {
         return response.data
     }
 
-    async logDialogs(appId: string, packageIds: string[]): Promise<CLM.LogDialog[]> {
+    async logDialogs(appId: string, packageIds: string[], maxPageSize: number, continuationToken?: string): Promise<CLM.LogQueryResult> {
         const packages = packageIds.map(p => `package=${p}`).join("&")
-        const response = await this.send<CLM.LogDialogList>({
-            url: `/app/${appId}/logdialogs?includeDefinitions=false&excludeConverted=true&${packages}`
+        let url = `/app/${appId}/logdialogs?includeDefinitions=false&excludeConverted=true&${packages}`
+        if (maxPageSize) {
+            url += `&maxPageSize=${maxPageSize}`
+        }
+        if (continuationToken) {
+            url += `&continuationToken=${encodeURIComponent(continuationToken)}`
+        }
+        const response = await this.send<CLM.LogQueryResult>({
+            url
         })
-        return response.data.logDialogs
+        return response.data
     }
 
     async logDialogsCreate(appId: string, logDialog: CLM.LogDialog): Promise<CLM.LogDialog> {

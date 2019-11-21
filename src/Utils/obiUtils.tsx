@@ -53,7 +53,7 @@ export async function getLogDialogActivities(
     // Fetch the LogDialog
     const logDialog = await fetchLogDialogThunkAsync(appId, logDialogId, true, true, true)
     if (!logDialog) {
-        return []
+        throw new Error(`Unable to find log Id: ${logDialogId}`)
     }
 
     // Convert to TrainDialog

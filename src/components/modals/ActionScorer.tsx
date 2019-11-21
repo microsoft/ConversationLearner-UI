@@ -8,6 +8,7 @@ import * as CLM from '@conversationlearner/models'
 import * as OF from 'office-ui-fabric-react'
 import * as Util from '../../Utils/util'
 import * as DialogEditing from '../../Utils/dialogEditing'
+import * as DialogUtils from '../../Utils/dialogUtils'
 import actions from '../../actions'
 import ConfirmCancelModal from './ConfirmCancelModal'
 import actionTypeRenderer from '../ActionTypeRenderer'
@@ -24,7 +25,6 @@ import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../react-intl-messages'
 import './ActionScorer.css'
 import { autobind } from 'core-decorators';
-import { getValueConditionName, findNumberFromMemory, isValueConditionTrue, isEnumConditionTrue } from '../../Utils/actionCondition'
 
 const MISSING_ACTION = 'missing_action'
 
@@ -423,7 +423,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             )
         ) {
             // See if new action is available, then take it
-            const isAvailable = this.isAvailable(newAction)
+            const isAvailable = DialogUtils.isActionAvailable(newAction, this.props.entities, this.props.memories)
             if (isAvailable) {
                 await this.handleActionSelection(newAction)
             }
@@ -567,69 +567,6 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         this.props.onActionSelected(trainScorerStep)
     }
 
-    convertToScorerCondition(condition: CLM.Condition): { match: boolean, name: string } {
-        const entity = this.props.entities.find(e => e.entityId === condition.entityId)
-
-        // If entity is null - there's a bug somewhere
-        if (!entity) {
-            return { match: false, name: 'ERROR' };
-        }
-
-        const memory = this.props.memories.find(m => m.entityName === entity.entityName)
-
-        // If EnumCondition
-        if (condition.valueId) {
-            const enumValue = entity.enumValues?.find(ev => ev.enumValueId === condition.valueId)
-            const value = enumValue
-                ? enumValue.enumValue
-                : "NOT FOUND"
-
-            const match = memory !== undefined
-                && isEnumConditionTrue(condition, memory)
-
-            return {
-                match,
-                name: `${entity.entityName} == ${value}`
-            }
-        }
-        // If ValueCondition
-        else if (condition.value) {
-            const name = getValueConditionName(entity, condition)
-            let match = false
-            if (memory) {
-                const numberValue = findNumberFromMemory(memory, entity.isMultivalue)
-                if (numberValue) {
-                    match = isValueConditionTrue(condition, numberValue)
-                }
-            }
-
-            return {
-                match,
-                name
-            }
-        }
-        // Other conditions (StringCondition in future)
-        else {
-            return {
-                match: false,
-                name: `Unknown Condition Type`
-            }
-        }
-    }
-
-    // Check if entity is in memory and return it's name
-    entityInMemory(entityId: string): { match: boolean, name: string } {
-        const entity = this.props.entities.find(e => e.entityId === entityId);
-
-        // If entity is null - there's a bug somewhere
-        if (!entity) {
-            return { match: false, name: 'ERROR' };
-        }
-
-        const memory = this.props.memories.find(m => m.entityName === entity.entityName);
-        return { match: (memory !== undefined), name: entity.entityName };
-    }
-
     renderEntityRequirements(actionId: string) {
         if (actionId === Util.PLACEHOLDER_SET_ENTITY_ACTION_ID) {
             return null
@@ -644,7 +581,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
 
         const items = [];
         for (const entityId of action.requiredEntities) {
-            const found = this.entityInMemory(entityId)
+            const found = DialogUtils.entityInMemory(entityId, this.props.entities, this.props.memories)
             items.push({
                 name: found.name,
                 neg: false,
@@ -654,7 +591,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             });
         }
         for (const entityId of action.negativeEntities) {
-            const found = this.entityInMemory(entityId)
+            const found = DialogUtils.entityInMemory(entityId, this.props.entities, this.props.memories)
             items.push({
                 name: found.name,
                 neg: true,
@@ -665,7 +602,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         }
         if (action.requiredConditions) {
             for (const condition of action.requiredConditions) {
-                const result = this.convertToScorerCondition(condition)
+                const result = DialogUtils.convertToScorerCondition(condition, this.props.entities, this.props.memories)
                 items.push({
                     name: result.name,
                     neg: false,
@@ -677,7 +614,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         }
         if (action.negativeConditions) {
             for (const condition of action.negativeConditions) {
-                const result = this.convertToScorerCondition(condition)
+                const result = DialogUtils.convertToScorerCondition(condition, this.props.entities, this.props.memories)
                 items.push({
                     name: result.name,
                     neg: true,
@@ -725,51 +662,8 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         else if (action.actionId === Util.PLACEHOLDER_SET_ENTITY_ACTION_ID) {
             return true
         } else {
-            return this.isActionIdAvailable(action.actionId);
+            return DialogUtils.isActionIdAvailable(action.actionId, this.props.actions, this.props.entities, this.props.memories);
         }
-    }
-
-    // Returns true if ActionId is available in actions
-    isActionIdAvailable(actionId: string): boolean {
-        const action = this.props.actions.find(a => a.actionId === actionId);
-        if (!action) {
-            return false;
-        }
-        return this.isAvailable(action);
-    }
-
-    // Returns true if Action is available given Entities in Memory
-    isAvailable(action: CLM.ActionBase): boolean {
-
-        for (const entityId of action.requiredEntities) {
-            const found = this.entityInMemory(entityId)
-            if (!found.match) {
-                return false
-            }
-        }
-        for (const entityId of action.negativeEntities) {
-            const found = this.entityInMemory(entityId)
-            if (found.match) {
-                return false
-            }
-        }
-        if (action.requiredConditions) {
-            for (const condition of action.requiredConditions) {
-                const result = this.convertToScorerCondition(condition)
-                if (!result.match) {
-                    return false
-                }
-            }
-        }
-        if (action.negativeConditions) {
-            for (const condition of action.negativeConditions) {
-                const result = this.convertToScorerCondition(condition)
-                if (result.match) {
-                    return false
-                }
-            }
-        }
-        return true;
     }
 
     calculateReason(unscoredAction: CLM.UnscoredAction): CLM.ScoreReason {
@@ -785,7 +679,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                 return CLM.ScoreReason.NotAvailable;
             }
 
-            const isAvailable = this.isAvailable(action);
+            const isAvailable = DialogUtils.isActionAvailable(action, this.props.entities, this.props.memories);
             return isAvailable ? CLM.ScoreReason.NotScorable : CLM.ScoreReason.NotAvailable;
         }
         return unscoredAction.reason as CLM.ScoreReason;
