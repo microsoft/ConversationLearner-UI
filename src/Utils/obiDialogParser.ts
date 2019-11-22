@@ -9,6 +9,7 @@ import * as Util from './util'
 import * as OBITypes from '../types/obiTypes'
 import * as fspath from 'path'
 import * as stripJsonComments from 'strip-json-comments'
+import { isUndefined } from 'util'
 
 // TODO(thpar) : update to use value from Models package.
 const MAX_NAME_LENGTH = 30
@@ -242,6 +243,11 @@ export class ObiDialogParser {
                     httpNode.intent = CLM.ModelUtils.generateGUID()
                     // This new node becomes a child of the current node.
                     node.children = [httpNode]
+                    // The last action of the current node may need to set the expected entity property, so the user utterance can be assigned properly.
+                    const expectedEntityName = this.getImpliedExpectedEntity(step)
+                    if (expectedEntityName) {
+                        node.expectedEntityName = expectedEntityName
+                    }
 
                     // Everything following the HTTP request becomes a child of the HTTP request node.
                     const childSteps = Util.deepCopy(node.dialog.steps!.slice(i + 1))
@@ -493,6 +499,21 @@ export class ObiDialogParser {
             }
         }
         return scorerSteps
+    }
+
+    /**
+     * If the step is an HttpRequest node that has a single input variable, returns the normalized
+     * name of that variable.  Otherwise returns undefined.
+     */
+    private getImpliedExpectedEntity(step: OBITypes.OBIDialog): string | undefined {
+        if (step?.$type !== OBIStepType.HTTP_REQUEST) {
+            return undefined
+        }
+        if (!step?.body) {
+            return undefined
+        }
+        // TODO - get the thing
+        return undefined
     }
 
     /**
