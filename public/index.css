@@ -142,9 +142,13 @@ html {
   vertical-align: sub;
   font-size: 1.2em;
 }
-
+.cl-icon[data-icon-name="Cancel"] {
+  color: var(--color-error) !important;
+  vertical-align: sub;
+  font-size: 1.2em;
+}
 .cl-icon[data-icon-name="CheckMark"] {
-  color: green;
+  color: green !important;
   font-size: 20px;
 }
 

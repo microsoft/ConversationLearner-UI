@@ -7,10 +7,11 @@ import * as React from 'react'
 import * as OF from 'office-ui-fabric-react'
 import * as Util from '../Utils/util'
 import * as BB from 'botbuilder'
+import TagsReadOnly from '../components/TagsReadOnly'
 import { compareTwoStrings } from 'string-similarity'
 import { deepCopy, getDefaultEntityMap } from './util'
 import { ImportedAction } from '../types/models'
-import TagsReadOnly from '../components/TagsReadOnly'
+import { getValueConditionName, findNumberFromMemory, isValueConditionTrue, isEnumConditionTrue } from './actionCondition'
 import { fromLogTag } from '../types'
 
 const MAX_SAMPLE_INPUT_LENGTH = 150
@@ -281,6 +282,131 @@ export function getBestAction(scoreResponse: CLM.ScoreResponse, allActions: CLM.
         }
     }
     return best
+}
+
+// Return first unscored action that is available
+export function getBestUnscoredAction(scoreResponse: CLM.ScoreResponse, actions: CLM.ActionBase[], entities: CLM.EntityBase[], memories: CLM.Memory[]): CLM.ScoredAction | undefined {
+    if (scoreResponse.unscoredActions.length === 0) {
+        return undefined
+    }
+    // Return first available unscored action (we have no scores to can't tell which is best)
+    for (const action of scoreResponse.unscoredActions) {
+        if (isActionIdAvailable(action.actionId, actions, entities, memories)) {
+            const scoredAction = { ...action, score: 1 }
+            delete scoredAction.reason
+            return scoredAction
+        }
+    }
+    // If none available return the first one
+    const unavailableScoredAction = { ...scoreResponse.unscoredActions[0], score: 1 }
+    delete unavailableScoredAction.reason
+    return unavailableScoredAction
+}
+
+// Check if entity is in memory and return its name
+export function entityInMemory(entityId: string, entities: CLM.EntityBase[], memories: CLM.Memory[]): { match: boolean, name: string } {
+    const entity = entities.find(e => e.entityId === entityId);
+
+    // If entity is null - there's a bug somewhere
+    if (!entity) {
+        return { match: false, name: 'ERROR' };
+    }
+
+    const memory = memories.find(m => m.entityName === entity.entityName);
+    return { match: (memory !== undefined), name: entity.entityName };
+}
+
+// Returns true if ActionId is available in actions
+export function isActionIdAvailable(actionId: string, actions: CLM.ActionBase[], entities: CLM.EntityBase[], memories: CLM.Memory[]): boolean {
+    const action = actions.find(a => a.actionId === actionId);
+    if (!action) {
+        return false;
+    }
+    return isActionAvailable(action, entities, memories);
+}
+
+// Returns true if Action is available given Entities in Memory
+export function isActionAvailable(action: CLM.ActionBase, entities: CLM.EntityBase[], memories: CLM.Memory[]): boolean {
+
+    for (const entityId of action.requiredEntities) {
+        const found = entityInMemory(entityId, entities, memories)
+        if (!found.match) {
+            return false
+        }
+    }
+    for (const entityId of action.negativeEntities) {
+        const found = entityInMemory(entityId, entities, memories)
+        if (found.match) {
+            return false
+        }
+    }
+    if (action.requiredConditions) {
+        for (const condition of action.requiredConditions) {
+            const result = convertToScorerCondition(condition, entities, memories)
+            if (!result.match) {
+                return false
+            }
+        }
+    }
+    if (action.negativeConditions) {
+        for (const condition of action.negativeConditions) {
+            const result = convertToScorerCondition(condition, entities, memories)
+            if (result.match) {
+                return false
+            }
+        }
+    }
+    return true;
+}
+
+export function convertToScorerCondition(condition: CLM.Condition, entities: CLM.EntityBase[], memories: CLM.Memory[]): { match: boolean, name: string } {
+    const entity = entities.find(e => e.entityId === condition.entityId)
+
+    // If entity is null - there's a bug somewhere
+    if (!entity) {
+        return { match: false, name: 'ERROR' };
+    }
+
+    const memory = memories.find(m => m.entityName === entity.entityName)
+
+    // If EnumCondition
+    if (condition.valueId) {
+        const enumValue = entity.enumValues?.find(ev => ev.enumValueId === condition.valueId)
+        const value = enumValue
+            ? enumValue.enumValue
+            : "NOT FOUND"
+
+        const match = memory !== undefined
+            && isEnumConditionTrue(condition, memory)
+
+        return {
+            match,
+            name: `${entity.entityName} == ${value}`
+        }
+    }
+    // If ValueCondition
+    else if (condition.value) {
+        const name = getValueConditionName(entity, condition)
+        let match = false
+        if (memory) {
+            const numberValue = findNumberFromMemory(memory, entity.isMultivalue)
+            if (numberValue) {
+                match = isValueConditionTrue(condition, numberValue)
+            }
+        }
+
+        return {
+            match,
+            name
+        }
+    }
+    // Other conditions (StringCondition in future)
+    else {
+        return {
+            match: false,
+            name: `Unknown Condition Type`
+        }
+    }
 }
 
 export function dialogSampleInput(dialog: CLM.TrainDialog | CLM.LogDialog): string {

@@ -29,7 +29,7 @@ const rootReducer: Reducer<State> = combineReducers<State>({
     trainDialogs: trainDialogsReducer,
     display: displayReducer,
     error: errorReducer,
-    logDialogs: logDialogsReducer,
+    logDialogState: logDialogsReducer,
     teachSession: teachSessionReducer,
     chatSessions: chatSessionReducer,
     settings: settingsReducer,

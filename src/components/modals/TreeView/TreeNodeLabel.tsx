@@ -31,6 +31,7 @@ export interface TreeNode extends ReactD3TreeItem {
     userInput?: TreeUserInput[]
     attributes: { [key: string]: string; } | undefined
     trainDialogIds: string[]
+    sourceLogDialogIds: string[]
     roundIndex?: number
     scoreIndex?: number
     scorerSteps?: TreeScorerStep[]
@@ -56,6 +57,12 @@ const MAX_LINES = 7
 export class TreeNodeLabel extends React.PureComponent<TreeNodeReceivedProps>  {
 
     isSelected(): boolean {
+        if (this.props.nodeData &&
+            this.props.nodeData.trainDialogIds.length === 0 &&
+            this.props.nodeData.sourceLogDialogIds.length > 0) {
+            return true
+        }
+        
         if (this.props.selectedNode && this.props.nodeData)  {
             if (this.props.selectedNode.roundIndex === this.props.nodeData.roundIndex) {
                 if (this.props.selectedNode.trainDialogIds.includes(this.props.nodeData.trainDialogIds[0])) {

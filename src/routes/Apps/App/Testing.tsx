@@ -421,7 +421,7 @@ class Testing extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    async onRate(ratingPair: Test.RatingPair) {
+    async onRate(ratingPair: Test.RatingPair): Promise<void> {
         const testSet = Test.TestSet.Create(this.state.testSet)
         testSet.addRatingResult(ratingPair)
         await Util.setStateAsync(this, { testSet })
