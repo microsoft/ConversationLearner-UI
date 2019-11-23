@@ -9,7 +9,7 @@ import { AT } from '../types/ActionTypes'
 import { Dispatch } from 'redux'
 import { setErrorDisplay } from './displayActions'
 import { AxiosError } from 'axios'
-import { fetchAllLogDialogsThunkAsync, deleteLogDialogThunkAsync } from './logActions'
+import { fetchLogDialogThunkAsync, deleteLogDialogThunkAsync } from './logActions'
 
 // --------------------------
 // CreateChatSession
@@ -83,7 +83,7 @@ export const deleteChatSessionThunkAsync = (session: CLM.Session, app: CLM.AppBa
                 void dispatch(deleteLogDialogThunkAsync(app, session.logDialogId, packageId))
             }
             else {
-                void dispatch(fetchAllLogDialogsThunkAsync(app, packageId))
+                void dispatch(fetchLogDialogThunkAsync(app.appId, session.logDialogId, true))
             }
             return true;
         } catch (e) {
