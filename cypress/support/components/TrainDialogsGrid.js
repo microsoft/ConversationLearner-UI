@@ -49,16 +49,16 @@ export function VerifyDescriptionForRow(row, description) { cy.Get(`div[data-ite
 // Train Dialog Grid is ready before attempting to perform the find operation.
 export class TdGrid {
 // Public:
-  // 1) Start here, do not call the constructor. This will construct an instance for you AFTER this class has determined
-  //    that the Train Dialog Grid is ready and done rendering.
+  // 1) Start here, do not call the constructor. This will construct an instance for you and pass it to 
+  //    the "thenDoFunction" that you pass in.
   //
-  // RETURNS: an instance of TdGrid. 
+  // This function will wait for the Train Dialog Grid to become stable and then execute the provided function
+  // passing it an instance of this class.
   //
-  // This is intended to be used from a cy.something().should(()=>{tdGridObj = TdGrid.GetTdGrid()})
-  // .then(() =>{use the returned object to call one of the FindGridRow* functions or properties of the grid rows})
+  // STABLE = No overlays over the grid and the number of rows matching the "expectedRowCount" unless you pass in -1,
+  // in which case it will not consider the number of rows.
   //
-  // This was designed to be retried. It will throw an error until we can validate that the Train Dialog Grid is stable
-  // and then it will return a TdGrid object. (refer to existing code for usage examples)
+  // This makes use of the Cypress "should" command which will retry while yielding the process on a failed try.
   //
   // If you do not know what the "expectedRowCount" should be, pass in -1...but if you use -1 this will not wait for
   // the row count to be right. Either the UI or the logs will tell you what this value should be, you can always
@@ -66,33 +66,48 @@ export class TdGrid {
   // for the next step. This feature was included to allow tests that already existed before this class was created to
   // pass un-modified. If any of test starts failing related to timing of the grid rendering, then fix them to include 
   // the actual row count.
-  static GetTdGrid(expectedRowCount = -1) {
-    const funcName = `TdGrid.GetTdGrid(${expectedRowCount})`
-    try {
-      if (!TdGrid.monitorIsActivated) {
-        helpers.ConLog(funcName, 'Activate the Monitor')
-        TdGrid.expectedRowCount = expectedRowCount
-        TdGrid.isStable = false
-        TdGrid.noMoreOverlaysExpectedTime = new Date().getTime()
-        TdGrid.monitorIsActivated = true
-        TdGrid.MonitorGrid()
-      } else if (expectedRowCount != TdGrid.expectedRowCount) {
-        throw new Error(`The monitor is active, but the expected row count (${TdGrid.expectedRowCount}) it is looking for is different than this request ${expectedRowCount}`)
+  static WaitForGridReadyThen(expectedRowCount, thenDoFunction) {
+    const funcName = `TdGrid.WaitForGridReadyThen(${expectedRowCount})`
+    // We set the Cypress time out higher so that it never triggers. The intention is to run this code in a retry
+    // loop that will not fail, and exit after 4 seconds if we don't achieve stability. This allows the calling
+    // functions to log more information before throwing an error.
+    cy.wrap(1, {timeout: 5000}).should(() => {
+      try {
+        const currentTime = new Date().getTime()
+        if (!TdGrid.monitorIsActivated) {
+          helpers.ConLog(funcName, 'Activate the Monitor')
+          TdGrid.expectedRowCount = expectedRowCount
+          TdGrid.isStable = false
+          TdGrid.noMoreOverlaysExpectedTime = currentTime
+          TdGrid.maxWaitTime = currentTime + 4000
+          TdGrid.monitorIsActivated = true
+          TdGrid.MonitorGrid()
+        }
+        
+        if (TdGrid.isStable) {
+          helpers.ConLog(funcName, 'The Train Dialog Grid IS STABLE!')
+          TdGrid.monitorIsActivated = false
+          TdGrid.tdGrid = new TdGrid()
+          return
+        }
+
+        if (currentTime >= TdGrid.maxWaitTime) {
+          helpers.ConLog(funcName, 'Waited 4 seconds for the Train Dialog Grid to become stable but it did not happen.')
+          TdGrid.monitorIsActivated = false
+          TdGrid.tdGrid = new TdGrid()
+          return
+        }
+      } 
+      catch (error) {
+        helpers.ConLog(funcName, `Caught Errors: ${error.message}`)
       }
       
-      if (TdGrid.isStable) {
-        helpers.ConLog(funcName, 'The Train Dialog Grid IS STABLE!')
-        TdGrid.monitorIsActivated = false
-        TdGrid.tdGrid = new TdGrid()
-        return TdGrid.tdGrid
-      }
-    } 
-    catch (error) {
-      helpers.ConLog(funcName, `Caught Errors: ${error.message}`)
-    }
-    
-    helpers.ConLog(funcName, 'Failed attempt, the Train Dialog Grid is not stable yet.')
-    throw new Error(`Train Dialog Grid is not stable yet.`)
+      helpers.ConLog(funcName, 'Failed attempt, the Train Dialog Grid is not stable yet.')
+      throw new Error(`Train Dialog Grid is not stable yet, however, if you see this in the Cypress UI it is a TEST BUG`)
+      // Its a test bug if this error shows up in the Cypress UI because this function was designed to NOT time out.
+    }).then(() => { 
+      return thenDoFunction(TdGrid.tdGrid) 
+    })
   }
 
   // 2) this should be called from an object returned from TdGrid.GetTdGrid
@@ -101,7 +116,8 @@ export class TdGrid {
     const funcName = `TdGrid.FindGridRowByChatInputs("${firstInput}", "${lastInput}", "${lastResponse}")`
     helpers.ConLog(funcName, this.feedback)
 
-    if (this.expectedRowCount >= 0 && (this.expectedRowCount != this.firstInputs.length || this.expectedRowCount != this.lastInputs.length || this.expectedRowCount != this.lastResponses.length)) {
+    // Since this.rowCount is derived from this.firstInputs.length we don't need to verify it.
+    if (this.rowCount != this.lastInputs.length || this.rowCount != this.lastResponses.length) {
       throw new Error(`Somethings wrong in TdGrid.FindGridRowByChatInputs - ${this.feedback}`)
     }
 
@@ -127,7 +143,7 @@ export class TdGrid {
       throw new Error('Test code flaw: both description and tags cannot be undefined when calling this function.')
     }
 
-    if (this.expectedRowCount >= 0 && ((description && this.expectedRowCount != this.descriptions.length) || (tagList && this.expectedRowCount != this.tagLists.length))) {
+    if (description && tagList && this.descriptions.length != this.tagLists.length) {
       throw new Error(`Somethings wrong in TdGrid.FindGridRowByDescriptionAndOrTags - ${this.feedback}`)
     }
     
@@ -151,12 +167,11 @@ export class TdGrid {
     const funcName = `TdGrid.FindGridRowByAll("${firstInput}", "${lastInput}", "${lastResponse}", "${description}", "${tagList}")`
     helpers.ConLog(funcName, this.feedback)
     try {
-      if (this.expectedRowCount >= 0 && (
-          this.expectedRowCount != this.firstInputs.length || 
-          this.expectedRowCount != this.lastInputs.length ||
-          this.expectedRowCount != this.lastResponses.length ||
-          this.expectedRowCount != this.descriptions.length || 
-          this.expectedRowCount != this.tagLists.length)) {
+      if (// Since this.rowCount is derived from this.firstInputs.length we don't need to verify it.
+          this.rowCount != this.lastInputs.length ||
+          this.rowCount != this.lastResponses.length ||
+          this.rowCount != this.descriptions.length || 
+          this.rowCount != this.tagLists.length) {
           throw new Error(`Somethings wrong in TdGrid.FindGridRowByAll - ${this.feedback}`)
       }
 
@@ -180,6 +195,8 @@ export class TdGrid {
       return -1
     }
   }
+
+  get rowCount() { return this.firstInputs.length }
 
   get firstInputs() { 
     if (!this._firstInputs) { 
@@ -311,9 +328,11 @@ export class TdGrid {
     helpers.ConLog(funcName, 'start')
     cy.WaitForStableDOM()
   
-    cy.wrap(1).should(() => {
-      TdGrid.GetTdGrid(expectedRowCount)
-    }).then(() => {
+    TdGrid.WaitForGridReadyThen(expectedRowCount, () => {
+      if (expectedRowCount >= 0 && TdGrid.tdGrid.rowCount != expectedRowCount) {
+        throw new Error(`The Train Dialog Grid does not have the ${expectedRowCount} expected rows, instead it has ${TdGrid.tdGrid.rowCount}`)
+      }
+
       const firstInputs = TdGrid.tdGrid.firstInputs
       const lastInputs = TdGrid.tdGrid.lastInputs
       const lastResponses = TdGrid.tdGrid.lastResponses
@@ -349,7 +368,7 @@ export class TdGrid {
   // but we know. This updates our copy of what the Train Dialog Grid should look like once
   // it is saved in the UI.
   static SaveTrainDialog(firstInput, lastInput, lastResponse, description, tagList) {
-    helpers.ConLog(`TdGrid.SaveTrainDialog(${firstInput}, ${lastInput}, ${lastResponse}, ${description}, ${tagList})`, 'start')
+    helpers.ConLog(`TdGrid.SaveTrainDialog("${firstInput}", "${lastInput}", "${lastResponse}", "${description}", "${tagList}")`, 'start')
     const newRowData = {
       firstInput: firstInput,
       lastInput: lastInput,
@@ -389,6 +408,11 @@ export class TdGrid {
   // If it is not stable it will use setTimeout to retry by calling itself again ~50ms later.
   static MonitorGrid() {
     const funcName = 'TdGrid.MonitorGrid'
+    if (!TdGrid.monitorIsActivated) {
+      helpers.ConLog(funcName, 'STOP signaled detected')
+      return
+    }
+
     if (modelPage.IsOverlaid()) {
       helpers.ConLog(funcName, 'Overlay found thus Train Dialog Grid is not stable yet')
       TdGrid.noMoreOverlaysExpectedTime = new Date().getTime() + 1000
@@ -405,7 +429,7 @@ export class TdGrid {
     const elements = Cypress.$('[data-testid="train-dialogs-turns"]')
     const rowCountsMessage = `Expected Row Count: ${TdGrid.expectedRowCount} - Actual Row Count: ${elements.length}`
 
-    if (this.expectedRowCount >= 0 && elements.length != TdGrid.expectedRowCount) { 
+    if (TdGrid.expectedRowCount >= 0 && elements.length != TdGrid.expectedRowCount) { 
       helpers.ConLog(funcName, rowCountsMessage)
       setTimeout(TdGrid.MonitorGrid, 50)
       return
@@ -442,11 +466,14 @@ export function FindGridRowByAllThenDo(firstInput, lastInput, lastResponse, desc
   const funcName = `FindGridRowByAllThenDo("${firstInput}", "${lastInput}", "${lastResponse}", "${description}", "${tagList}, ${expectedRowCount}")`
   helpers.ConLog(funcName, 'Start')
 
-  let tdGrid
-  cy.wrap(1).should(() => {
-    tdGrid = TdGrid.GetTdGrid(expectedRowCount)
-  }).then(() => {
+  TdGrid.WaitForGridReadyThen(expectedRowCount, tdGrid => {
     let iRow = tdGrid.FindGridRowByAll(firstInput, lastInput, lastResponse, description, tagList)
+
+    // We do this validation after we try to find the row so that more information about the potential failure is in the log.
+    if (expectedRowCount >= 0 && TdGrid.tdGrid.rowCount != expectedRowCount) {
+      throw new Error(`The Train Dialog Grid does not have the ${expectedRowCount} expected rows, instead it has ${TdGrid.tdGrid.rowCount}`)
+    }
+
     if (iRow >= 0) { 
       func(iRow)
       return
@@ -460,10 +487,7 @@ export function VerifyListOfTrainDialogs(expectedTrainDialogs) {
   helpers.ConLog(`VerifyListOfTrainDialogs(expectedRowCount: ${expectedRowCount})`, 'Start')
   cy.log('Verify List of Train Dialogs', expectedRowCount)
 
-  let tdGrid
-  cy.wrap(1).should(() => {
-    tdGrid = TdGrid.GetTdGrid(expectedRowCount)
-  }).then(() => {
+  TdGrid.WaitForGridReadyThen(expectedRowCount, tdGrid => {    
     let errors = false
     expectedTrainDialogs.forEach(trainDialog => {
       errors = errors || tdGrid.FindGridRowByAll(trainDialog.firstInput, 
@@ -472,6 +496,11 @@ export function VerifyListOfTrainDialogs(expectedTrainDialogs) {
                                                  trainDialog.description, 
                                                  trainDialog.tagList) < 0
     })
+
+    // We do this validation after we try to find the row so that more information about the potential failure is in the log.
+    if (expectedRowCount >= 0 && TdGrid.tdGrid.rowCount != expectedRowCount) {
+      throw new Error(`The Train Dialog Grid does not have the ${expectedRowCount} expected rows, instead it has ${TdGrid.tdGrid.rowCount}. Refer to the log file for more details.`)
+    }
   
     if (errors) {
       throw new Error('Did not find 1 or more of the expected Train Dialogs in the grid. Refer to the log file for details.')
