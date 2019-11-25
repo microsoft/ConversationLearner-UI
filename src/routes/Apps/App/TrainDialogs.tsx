@@ -1127,7 +1127,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 autoActionCreate: obiImportData.autoActionCreate,
                 warnings: obiParseResult.warnings,
                 conditions: obiParseResult.conditions,
-                expectedEntityNames: obiParseResult.expectedEntities,
+                expectedEntityNames: obiParseResult.expectedEntityNames,
             }
 
             await Util.setStateAsync(this, {
