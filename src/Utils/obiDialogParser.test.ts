@@ -84,13 +84,17 @@ describe('obiDialogParser', () => {
                 renderArguments: [],
                 isPlaceholder: true
             }))
-            expect(entities.length).toEqual(1)
+            expect(entities.length).toEqual(2)
+            // Entities are created in a deterministic order.
+            expect(entities[0].entityName).toEqual("isProductKey")
             expect(entities[0].entityType).toEqual(CLM.EntityType.ENUM)
             expect(entities[0].enumValues).toEqual([
                 {enumValue: "Office"},
                 {enumValue: "Windows"},
                 {enumValue: "OfficeTest"}
             ])
+            expect(entities[1].entityName).toEqual("productKey")
+            expect(entities[1].entityType).toEqual(CLM.EntityType.LUIS)
             // There are 3 SwitchCondition nodes in the dialogs, so we expect 3 conditions to be imported.
             expect(Object.keys(importResults.conditions).length).toEqual(3)
             for (const key of Object.keys(importResults.conditions)) {
