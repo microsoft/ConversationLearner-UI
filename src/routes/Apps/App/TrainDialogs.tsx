@@ -1278,6 +1278,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 this.props.botInfo.templates,
                 importData.lgItems,
                 this.props.actions,
+                this.props.entities,
                 importData.conditions,
                 importData.expectedEntities,
                 this.props.createActionThunkAsync as any,

@@ -539,6 +539,7 @@ export async function createImportedActions(
     templates: CLM.Template[],
     lgItems: CLM.LGItem[] | undefined,
     actions: CLM.ActionBase[],
+    entities: CLM.EntityBase[],
     scorerStepConditions: { [key: string]: CLM.Condition[] } | undefined,
     expectedEntities: { [key: string]: string } | undefined,
     createActionThunkAsync: (appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null>,
@@ -553,7 +554,6 @@ export async function createImportedActions(
             let action = findActionFromScorerStep(scorerStep, [...newActions, ...actions], [])
 
             // If not, create a new one.
-            // TODO - need to flag suggestedEntity if applicable
             if (!action) {
                 const isTerminal = round.scorerSteps.length === scoreIndex + 1
                 let importedAction: ImportedAction | undefined
@@ -586,8 +586,7 @@ export async function createImportedActions(
                         actionHash: CLM.hashText(scorerStep.importText)
                     }
                 }
-                if 
-                action = await createActionFromImport(appId, importedAction, templates, scorerStep, scorerStepConditions, createActionThunkAsync)
+                action = await createActionFromImport(appId, importedAction, templates, scorerStep, scorerStepConditions, entities, expectedEntities, createActionThunkAsync)
                 newActions.push(action)
             }
 
@@ -707,6 +706,8 @@ function getEnumConditionData(entities: CLM.EntityBase[], condition: CLM.Conditi
  * 
  * @param scorerStepConditions a map of `TrainScorerStep.importId` values to `Condition`s that should
  *   be set on the generated action
+ * @param expectedEntities a map of `TrainScorerStep.importId` values to expected entity name that should
+ *   be set on the generated action
  */
 async function createActionFromImport(
     appId: string,
@@ -714,6 +715,8 @@ async function createActionFromImport(
     templates: CLM.Template[],
     scorerStep: CLM.TrainScorerStep,
     scorerStepConditions: { [key: string]: CLM.Condition[] } | undefined,
+    entities: CLM.EntityBase[],
+    expectedEntities: { [key: string]: string } | undefined,
     createActionThunkAsync: (appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null>,
 ): Promise<CLM.ActionBase> {
 
@@ -780,8 +783,18 @@ async function createActionFromImport(
             lgName: importedAction.lgName
         }
     })
-    if (scorerStep.importId && scorerStepConditions?.[scorerStep.importId]) {
-        action.requiredConditions = scorerStepConditions[scorerStep.importId]
+    // Set properties associated with this scorer step, if applicable.
+    if (scorerStep.importId) {
+        const importId = scorerStep.importId
+        if (scorerStepConditions?.[importId]) {
+            action.requiredConditions = scorerStepConditions[importId]
+        }
+        if (expectedEntities?.[importId]) {
+            let entity = entities.find(e => e.entityName === expectedEntities?.[importId])
+            if (entity) {
+                action.suggestedEntity = entity.entityId
+            }
+        }
     }
 
     const newAction = await createActionThunkAsync(appId, action)
