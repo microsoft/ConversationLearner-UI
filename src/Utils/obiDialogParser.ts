@@ -507,8 +507,8 @@ export class ObiDialogParser {
     }
 
     /**
-     * If the step is an HttpRequest node that has a single input variable, returns the normalized
-     * name of that variable.  Otherwise returns undefined.
+     * If the step is an HttpRequest node that has input variables, returns a `Set` containing the normalized
+     * name of those variables.  Otherwise returns undefined.
      */
     private getNormalizedHttpInputEntityNames(step: OBITypes.OBIDialog): Set<string> | undefined {
         if (step?.$type !== OBIStepType.HTTP_REQUEST) {
