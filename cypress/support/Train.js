@@ -137,7 +137,6 @@ export function SaveAsIsVerifyInGrid() {
   })
 }
 
-// The verificationFunction is optional, without it this function will just save the Train Dialog.
 export function SaveAsIs() {
   const funcName = 'SaveAsIs'
 
@@ -165,6 +164,41 @@ export function SaveAsIs() {
         throw new Error(`Waiting till no overlays show up for at least 1 second...retry '${funcName}'`)
       }
       helpers.ConLog(funcName, 'No overlays for at least 1 second')
+    })
+  })
+}
+
+export function SaveVerifyNoMergePopup() {
+  const funcName = 'SaveAsIs'
+
+  let mergeModalIsVisible = false
+
+  ClickSaveCloseButton()
+  cy.Enqueue(() => {
+    cy.WaitForStableDOM()
+    let renderingShouldBeCompleteTime = new Date().getTime() + 1000
+    cy.wrap(1, {timeout: 60000}).should(() => {
+      if (mergeModal.IsVisible()) {
+        helpers.ConLog(funcName, 'mergeModal.IsVisible')
+        mergeModalIsVisible = true
+        return
+      }
+
+      if (modelPage.IsOverlaid() && !helpers.HasErrorMessage()) {
+        helpers.ConLog(funcName, 'modalPage.IsOverlaid')
+        renderingShouldBeCompleteTime = new Date().getTime() + 1000
+        throw new Error('Overlay found thus Train Dialog Grid is not stable...retry until it is')
+      } else if (new Date().getTime() < renderingShouldBeCompleteTime) {
+        // There is no overlay, but we will still wait until we've seen this condition for 
+        // at least 1 full second before we call it good.
+        helpers.ConLog(funcName, 'Wait for no overlays for at least 1 second')
+        throw new Error(`Waiting till no overlays show up for at least 1 second...retry '${funcName}'`)
+      }
+      helpers.ConLog(funcName, 'No overlays for at least 1 second')
+    }).then(() => {
+      if (mergeModalIsVisible) {
+        throw new Error('The "Merge?" modal popup is showing but it is not expected to be there.')
+      }
     })
   })
 }

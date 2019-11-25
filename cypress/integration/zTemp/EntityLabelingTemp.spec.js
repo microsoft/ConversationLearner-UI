@@ -5,10 +5,9 @@
 
 import * as models from '../../support/Models'
 import * as modelPage from '../../support/components/ModelPage'
-import * as chatPanel from '../../../support/components/ChatPanel'
+import * as chatPanel from '../../support/components/ChatPanel'
 import * as trainDialogsGrid from '../../support/components/TrainDialogsGrid'
-import * as train from '../../support/Train'
-import * as entityDetectionPanel from '../../../support/components/EntityDetectionPanel'
+import * as entityDetectionPanel from '../../support/components/EntityDetectionPanel'
 import * as helpers from '../../support/Helpers'
 
 describe('Consistent Entity Labeling', () => {

@@ -8,6 +8,28 @@ let suiteTitle
 let test
 let logFileName 
 let logEntries = ''
+let failureMessage = ''
+
+// -----------------------------------------------------------------------------
+// To capture the error message in the event of a test failure.
+// -----------------------------------------------------------------------------
+
+Cypress.on('fail', (err, runnable) => {
+  if (!err || !err.message) {
+    throw err
+    //return true
+  }
+
+  // Use this commented out code to capture certain errors and let them pass
+  // for certain scenarios where you are testing the test code and need to 
+  // ignore certain errors to make progress with coding a test suite.
+  // if (err.message.includes('whatever')) {
+  //   return false
+  // }
+
+  failureMessage = err.message
+  throw err
+})
 
 // -----------------------------------------------------------------------------
 // Redirecting console.log so that we can persist it to a file.
@@ -79,11 +101,14 @@ after(() => {
 function LogTestState()
 {
   if (!test) { return false }
-
+  
   const message = `: ${test.state.toUpperCase()} - Test Case: '${GetFullTestSuiteTitle(test)}' - ${test.state.toUpperCase()} :`
   console.log('.'.repeat(message.length))
   console.log(message)
   console.log("'".repeat(message.length))
+  if (failureMessage != '') {
+    console.log(`Failure Message: "${failureMessage}"`)
+  }
 }
 
 // NOTE: This requires the latest version (3.1.5) of Cypress:
