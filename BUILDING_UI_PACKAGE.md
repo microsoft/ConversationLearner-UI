@@ -8,36 +8,35 @@
 
   To avoid this scenario, the SDK comes with the version of the UI that is known to work with it. To do this we create a npm package of the static resources and then use express to host them.
 
-- Steps to publish the package:
+- Steps to build the package:
 
-  There are scripts to automate the process but they don't seem to work all the time and don't publish.
+  There are scripts to automate the process.
 
   See: `npm run builduipackage`
 
   1. Build react app: `npm run build`
-  2. Build index.ts from `/publish` folder: `npm run tsc -- -p ./publish/tsconfig.json`
+  2. Build index.ts from `/packageScripts` folder: `npm run tsc -- --outDir ./package -p ./packageScripts/tsconfig.json`
 
      This effectively generates the: `index.js` and `index.d.ts` which are the entry point for the package inside the `/package` folder
 
-  3. Build publish script: `npm run tsc -- -p ./scripts/tsconfig.json`
+  3. Build createPackage script: `npm run tsc -- -p ./scripts/tsconfig.json`
 
-     This just generates the `publish.js` file and is only required because we're using typescript. (Alternative is to use ts-node)
+     This just generates the `createPackage.js` file and is only required because we're using typescript. (Alternative is to use ts-node)
 
-  4. Run publish scripts: `node ./scripts/publish.js`
+  4. Run createPackage scripts: `node ./scripts/createPackage.js`
 
-     This script copies the contents of the `/build` folder, `./.npmrc`, and `./publish/package.json` file into the `/package` folder. (Not this is different `package.json` than the one at the root)
+     This script creates a new package.json file and copies the contents of the `/build` folder into the `/package` folder. (Note this is a different `package.json` than the one at the root)
 
   > At this point the `/package` folder should have all of the contents necessary to be considered valid NPM package
 
-  5. Navigate into the `/package` folder and increment the package version and publish
+  5. Navigate into the `/package` folder and set the package version to the appropriate value
+
+  > The package folder is now ready for publishing.
 
   6. Run `npm publish`
 
-
 ## Future Improvements
 
-- Find way to complete automation so this script can be run by VSTS or Travis CI
-  - When I was testing I would run into permissions errors when trying to copy files into package folder.
-- Could re-use `package.json` from root and modify in the publish script
-  - Downside of this is added complexity for little benefit.  Even though it's duplicating the package name and version, it gives you an easy declarative way to know exactly what the `package.json` will be when publishing.
-- Set outDir for scripts and publish tsconfigs using command line to make `/package` folder arbitrary instead of hardcoded.
+- Make `/package` folder arbitrary instead of hard-coded.
+ - The createPackage script assumes /package folder (Change to accept arguments)
+ - The builds assumes /package folder (This is ok, but noted here in case it changes)

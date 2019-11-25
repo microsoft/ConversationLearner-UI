@@ -37,7 +37,7 @@
     "jest",
     "cypress",
     "src/setupTests.ts",
-    "publish",
+    "packageScripts",
     "package"
   ]
 }
