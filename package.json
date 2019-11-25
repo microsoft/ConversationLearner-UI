@@ -129,7 +129,7 @@
     "test:debug": "react-scripts-ts --inspect-brk test --runInBand --env=jsdom",
     "eject": "react-scripts-ts eject",
     "tsc": "tsc",
-    "builduipackage": "tsc -p ./publish/tsconfig.json --listFiles && tsc -p ./scripts/tsconfig.json --listFiles && node ./scripts/publish.js",
+    "builduipackage": "tsc -p ./packageScripts/tsconfig.json --outDir ./package --listFiles && tsc -p ./scripts/tsconfig.json --listFiles && node ./scripts/createPackage.js",
     "commit": "git-cz",
     "servebuild": "tsc -p ./server/tsconfig.json && node ./server/server.js",
     "wait-on": "wait-on"
