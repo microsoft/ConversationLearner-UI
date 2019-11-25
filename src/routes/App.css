@@ -74,7 +74,7 @@
 }
 
 /**
-Most of our classes are component classes but this is object class (not o- prefix) to be re-used across app
+Most of our classes are component classes but this is object class (note o- prefix) to be re-used across app
 https://csswizardry.com/2015/08/bemit-taking-the-bem-naming-convention-a-step-further/
 
 .cl-app prefix refers to the UI as an Application
