@@ -50,12 +50,12 @@ export interface ObiDialogParserResult {
     // Captures entity value restrictions derived from dialog SwitchCondition cases.
     // Key is a ScorerStep import id.
     conditions: { [key: string]: CLM.Condition[] }
-    // Captures "expected entity" settings to be applied when the bot is asking the user for information
+    // Captures expected entity names to be applied when the bot is asking the user for information
     // that will be used as the input to an API call.  Key is an action id, value is the expected entity name.
     // Eg, if the bot asks "are you on Windows or MacOS" and the next step is an API call that takes "osType"
     // as an input, the key will be the action id for the "are you on..." bot utterance and the value will be
     // "osType".
-    expectedEntities: { [key: string]: string }
+    expectedEntityNames: { [key: string]: string }
 }
 
 export class ObiDialogParser {
@@ -67,7 +67,7 @@ export class ObiDialogParser {
     private luMap: { [key: string]: string[] }
     private warnings: string[]
     private conditions: { [key: string]: CLM.Condition[] }
-    private expectedEntities: { [key: string]: string }
+    private expectedEntityNames: { [key: string]: string }
     private createActionThunkAsync: (appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null>
     private createEntityThunkAsync: (appId: string, entity: CLM.EntityBase) => Promise<CLM.EntityBase | null>
 
@@ -91,7 +91,7 @@ export class ObiDialogParser {
         this.dialogs = {}
         this.warnings = []
         this.conditions = {}
-        this.expectedEntities = {}
+        this.expectedEntityNames = {}
 
         await this.readDialogFiles(files)
 
@@ -111,7 +111,7 @@ export class ObiDialogParser {
             trainDialogs,
             warnings: this.warnings,
             conditions: this.conditions,
-            expectedEntities: this.expectedEntities,
+            expectedEntityNames: this.expectedEntityNames,
         }
     }
 
@@ -381,7 +381,7 @@ export class ObiDialogParser {
                     if (!scorerSteps[lastStepIndex].importId) {
                         scorerSteps[lastStepIndex].importId = CLM.ModelUtils.generateGUID()
                     }
-                    this.expectedEntities[scorerSteps[lastStepIndex].importId!] = node.expectedEntityName
+                    this.expectedEntityNames[scorerSteps[lastStepIndex].importId!] = node.expectedEntityName
                 }
 
                 if (currentIntent) {
@@ -669,9 +669,6 @@ export class ObiDialogParser {
      * The .dialog file is expected to have a field `responseFields` that enumerates the top-level
      * output parameters of the response object.  Note that as of 2019.09, this field is specific
      * to ConversationLearner and is not part of the OBI spec.
-     *
-     * @param expectedEntities key is actionId for the newly-created HTTP action, value is name of the input entity
-     *     This allows us to set expected entity values when the actions are actually created.
      */
     private async createActionAndEntitiesFromHttpRequest(step: OBITypes.OBIDialog, nextStep: OBITypes.OBIDialog | undefined):
         Promise<CLM.TrainScorerStep> {
