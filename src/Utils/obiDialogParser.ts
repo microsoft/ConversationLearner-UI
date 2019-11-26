@@ -4,11 +4,12 @@
  */
 import * as CLM from '@conversationlearner/models'
 import * as DialogEditing from './dialogEditing'
+import * as OBITypes from '../types/obiTypes'
 import * as OBIUtils from './obiUtils'
 import * as Util from './util'
-import * as OBITypes from '../types/obiTypes'
 import * as fspath from 'path'
 import * as stripJsonComments from 'strip-json-comments'
+import { NONE_RESOLVER_KEY } from '../types/const'
 
 enum OBIStepType {
     BEGIN_DIALOG = "Microsoft.BeginDialog",
@@ -55,7 +56,7 @@ export interface ObiDialogParserResult {
     // Eg, if the bot asks "are you on Windows or MacOS" and the next step is an API call that takes "osType"
     // as an input, the key will be the action id for the "are you on..." bot utterance and the value will be
     // "osType".
-    expectedEntityNames: { [key: string]: string }
+    actionImportIdToExpectedEntityName: { [key: string]: string }
 }
 
 export class ObiDialogParser {
@@ -67,7 +68,7 @@ export class ObiDialogParser {
     private luMap: { [key: string]: string[] }
     private warnings: string[]
     private conditions: { [key: string]: CLM.Condition[] }
-    private expectedEntityNames: { [key: string]: string }
+    private actionImportIdToExpectedEntityName: { [key: string]: string }
     private createActionThunkAsync: (appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null>
     private createEntityThunkAsync: (appId: string, entity: CLM.EntityBase) => Promise<CLM.EntityBase | null>
 
@@ -91,7 +92,7 @@ export class ObiDialogParser {
         this.dialogs = {}
         this.warnings = []
         this.conditions = {}
-        this.expectedEntityNames = {}
+        this.actionImportIdToExpectedEntityName = {}
 
         await this.readDialogFiles(files)
 
@@ -111,7 +112,7 @@ export class ObiDialogParser {
             trainDialogs,
             warnings: this.warnings,
             conditions: this.conditions,
-            expectedEntityNames: this.expectedEntityNames,
+            actionImportIdToExpectedEntityName: this.actionImportIdToExpectedEntityName,
         }
     }
 
@@ -381,7 +382,7 @@ export class ObiDialogParser {
                     if (!scorerSteps[lastStepIndex].importId) {
                         scorerSteps[lastStepIndex].importId = CLM.ModelUtils.generateGUID()
                     }
-                    this.expectedEntityNames[scorerSteps[lastStepIndex].importId!] = node.expectedEntityName
+                    this.actionImportIdToExpectedEntityName[scorerSteps[lastStepIndex].importId!] = node.expectedEntityName
                 }
 
                 if (currentIntent) {
@@ -570,7 +571,7 @@ export class ObiDialogParser {
         const newEntity: CLM.EntityBase = {
             entityId: undefined!,
             entityName,
-            resolverType: "none",
+            resolverType: NONE_RESOLVER_KEY,
             createdDateTime: new Date().toJSON(),
             lastModifiedDateTime: new Date().toJSON(),
             isResolutionRequired: false,
@@ -598,7 +599,7 @@ export class ObiDialogParser {
         const newEntity: CLM.EntityBase = {
             entityId: undefined!,
             entityName,
-            resolverType: "none",
+            resolverType: NONE_RESOLVER_KEY,
             createdDateTime: new Date().toJSON(),
             lastModifiedDateTime: new Date().toJSON(),
             isResolutionRequired: false,

@@ -77,6 +77,7 @@ describe('obiDialogParser', () => {
             const importResults: ObiDialog.ObiDialogParserResult = await parser.parse(dialogFiles)
             // Expect that just 1 action and 1 entity were created.
             // Dialogs referencing the same logical API or SwitchCondition should reuse the same action or entity after initial creation.
+            // Note that in an actual import, actions other than the HTTP request handler would be created later in the import flow.
             expect(actions.length).toEqual(1)
             expect(actions[0].payload).toEqual(JSON.stringify({
                 payload: "Replace Here",
@@ -103,7 +104,7 @@ describe('obiDialogParser', () => {
                 const condition: CLM.Condition = conditions[0]
                 expect(condition.condition).toEqual(CLM.ConditionType.EQUAL)
             }
-
+ 
             expect(importResults.trainDialogs.length).toEqual(4)
             // Validate 1st TrainDialog.
             {
@@ -118,6 +119,7 @@ describe('obiDialogParser', () => {
                 expect(round1.extractorStep.textVariations.length).toEqual(1)
                 expect(round1.extractorStep.textVariations[0].text).toEqual("Yes")
                 expect(round1.scorerSteps.length).toEqual(1)
+                expect(round1.scorerSteps[0].importText).toEqual("[option15]")
                 expect(round1.scorerSteps[0].importText).toEqual("[option15]")
                 const round2 = dialog.rounds[2]
                 expect(round2.extractorStep.textVariations.length).toEqual(1)

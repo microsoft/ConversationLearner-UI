@@ -516,6 +516,9 @@ export async function getOrCreatePlaceholderAPIAction(
         if (!newAction) {
             throw new Error("Failed to create placeholder API")
         }
+        newAction.clientData = {
+            actionHashes: [apiHash]
+        }
         actions.push(newAction)
         return newAction
     }

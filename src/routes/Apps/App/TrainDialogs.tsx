@@ -157,8 +157,7 @@ interface TranscriptImportData {
     warnings: string[]
     // Conditions are keyed by TrainScorerStep.importId.
     conditions?: { [key: string]: CLM.Condition[] }
-    // Expected entities are keyed by actionId.
-    expectedEntityNames?: { [key: string]: string }
+    actionImportIdToExpectedEntityName?: { [key: string]: string }
 }
 
 interface ComponentState {
@@ -1127,7 +1126,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 autoActionCreate: obiImportData.autoActionCreate,
                 warnings: obiParseResult.warnings,
                 conditions: obiParseResult.conditions,
-                expectedEntityNames: obiParseResult.expectedEntityNames,
+                actionImportIdToExpectedEntityName: obiParseResult.actionImportIdToExpectedEntityName,
             }
 
             await Util.setStateAsync(this, {
@@ -1281,7 +1280,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 this.props.actions,
                 this.props.entities,
                 importData.conditions,
-                importData.expectedEntityNames,
+                importData.actionImportIdToExpectedEntityName,
                 this.props.createActionThunkAsync as any,
             )
 
