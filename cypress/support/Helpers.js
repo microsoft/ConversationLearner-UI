@@ -153,6 +153,7 @@ export function VerifyErrorMessageContains(expectedMessage) { cy.Get('div.cl-err
 export function VerifyErrorMessageExactMatch(expectedMessage) { cy.Get('div.cl-errorpanel').ExactMatch(expectedMessage) }
 export function VerifyNoErrorMessages() { cy.DoesNotContain('div.cl-errorpanel') }
 export function HasErrorMessage() { return Cypress.$('div.cl-errorpanel').length > 0 }
+export function CloseErrorMessagePanel() { cy.Get('button.ms-Panel-closeButton[title="Close"]').Click() }
 
 export function ExactMatch(elements, expectedText) {
   const funcName = `ExactMatch('${expectedText}')`

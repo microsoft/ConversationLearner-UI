@@ -19,13 +19,22 @@ describe('Bug 2379 Repro', () => {
     })
   })
 
-  context('Remove Expected Entity to reproduce Bug 2379', () => {
+  TestRemoval('Expected Entity', () => { actionModal.RemoveExpectedEntity('anEntity') })
+
+  TestRemoval('Required Conditions', () => { actionModal.RemoveRequiredCondition('anEntity == 1') })
+
+  TestRemoval('Expected Entity', () => { actionModal.RemoveDisqualifyingCondition('anEntity') })
+})
+
+
+function TestRemoval(title, removeFunction) {
+  context(`Remove ${title} to reproduce Bug 2379`, () => {
     it('Edit an Action that has Reprompt selected', () => {
       actionsGrid.EditTextAction('Reprompting you to enter something good')
     })
 
-    it('Remove Expected Entity', () => {
-      actionModal.RemoveExpectedEntity('anEntity')  
+    it(`Remove ${title}`, () => {
+      removeFunction() 
     })
 
     it('Save the changed Action', () => {
@@ -37,6 +46,7 @@ describe('Bug 2379 Repro', () => {
     it('Verify that the Bug reproduced', () => {
       helpers.VerifyErrorMessageContains('Request failed with status code 400')
       helpers.VerifyErrorMessageContains("Action refers to a RepromptActionId that doesn't exist in the source.")
+      helpers.CloseErrorMessagePanel()
     })
     
     // Bug 2379: Editing Action Failed - Using "Reprompt" option in Action and changing a condition fails to save 
@@ -46,5 +56,4 @@ describe('Bug 2379 Repro', () => {
     //   helpers.VerifyNoErrorMessages()
     // })
   })
-})
-
+}
