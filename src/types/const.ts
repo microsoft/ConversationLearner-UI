@@ -47,6 +47,8 @@ export const BOT_HOST_NAME: Readonly<string> = location.hostname
 
 export const REPROMPT_SELF = "SELF"
 
+export const NONE_RESOLVER_KEY = 'none'
+
 // if location.port is empty, the port will be set to 443 or 80 based on location.protocol
 const LOCATION_PORT: Readonly<string> = location.port === '' ? location.protocol === 'https:' ? '443' : '80' : location.port
 

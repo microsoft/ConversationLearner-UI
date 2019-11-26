@@ -16,7 +16,7 @@ import { FM } from '../../../react-intl-messages'
 import FormattedMessageId from '../../FormattedMessageId'
 import { InjectedIntlProps } from 'react-intl'
 // TODO: Eliminate circular reference
-import { NONE_RESOLVER_KEY } from './EntityCreatorContainer'
+import { NONE_RESOLVER_KEY } from '../../../types/const'
 import { getValueConditionName } from 'src/Utils/actionCondition'
 import ConditionModal from '../ConditionModal'
 
