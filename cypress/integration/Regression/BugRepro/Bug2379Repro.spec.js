@@ -5,8 +5,8 @@
 
 import * as models from '../../../support/Models'
 import * as modelPage from '../../../support/components/ModelPage'
-import * as trainDialogsGrid from '../../../support/components/TrainDialogsGrid'
-import * as train from '../../../support/Train'
+import * as actionsGrid from '../../../support/components/ActionsGrid'
+import * as actionModal from '../../../support/components/ActionModal'
 import * as helpers from '../../../support/Helpers'
 
 describe('Bug 2379 Repro', () => {
@@ -19,37 +19,32 @@ describe('Bug 2379 Repro', () => {
     })
   })
 
-  context('Attempt to reproduce Bug 2379', () => {
-    it('Edit Train Dialog', () => {
-      trainDialogsGrid.TdGrid.EditTrainingByChatInputs('The green frog jumped.', 'The green frog jumped.', 'The only response')
+  context('Remove Expected Entity to reproduce Bug 2379', () => {
+    it('Edit an Action that has Reprompt selected', () => {
+      actionsGrid.EditTextAction('Reprompting you to enter something good')
     })
 
-    it('Add an additional turn', () => {
-      train.TypeYourMessage('The brown dog ran.')
-      train.ClickScoreActionsButton()
+    it('Remove Expected Entity', () => {
+      actionModal.RemoveExpectedEntity('anEntity')  
     })
 
-    it('Save as is', () => {
-      train.SaveAsIs()
+    it('Save the changed Action', () => {
+      actionModal.ClickCreateSaveButton()
     })
 
     // Bug 2379: Editing Action Failed - Using "Reprompt" option in Action and changing a condition fails to save 
     // Once this bug is fixed comment out this block of code and uncomment the next block
-    // it('Verify that Bug 2305 reproduced', () => {
-    //   helpers.VerifyErrorMessageContains('Request failed with status code 404')
-    //   helpers.VerifyErrorMessageContains('{"errorMessages":["No such training dialog exists"]}')
-    // })
+    it('Verify that the Bug reproduced', () => {
+      helpers.VerifyErrorMessageContains('Request failed with status code 400')
+      helpers.VerifyErrorMessageContains("Action refers to a RepromptActionId that doesn't exist in the source.")
+    })
     
-    // Bug 2305: "Save As Is" Fails with status code 404
+    // Bug 2379: Editing Action Failed - Using "Reprompt" option in Action and changing a condition fails to save 
     // This code should work once this bug is fixed...
     // Uncomment this and comment out the above to detect a regression.
-    it('Verify that Bug 2305 did not reproduce', () => {
-      const expectedTrainDialogs = [
-        { firstInput: 'The green frog jumped.', lastInput: 'The green frog jumped.', lastResponse: 'The only response' },
-        { firstInput: 'The green frog jumped.', lastInput: 'The brown dog ran.', lastResponse: '' },
-      ]
-      trainDialogsGrid.VerifyListOfTrainDialogs(expectedTrainDialogs)
-    })
+    // it('Verify that the Bug did not reproduce', () => {
+    //   helpers.VerifyNoErrorMessages()
+    // })
   })
 })
 

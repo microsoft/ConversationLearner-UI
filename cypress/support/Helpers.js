@@ -157,10 +157,16 @@ export function HasErrorMessage() { return Cypress.$('div.cl-errorpanel').length
 export function ExactMatch(elements, expectedText) {
   const funcName = `ExactMatch('${expectedText}')`
   ConLog(funcName, `Start`)
-  for (let i = 0; i < elements.length; i++) {
-    const elementText = TextContentWithoutNewlines(elements[i])
+
+  // We start with contains because it zooms in to the minimum element with the text we are looking for,
+  // then after we have a list of just the single elements (as opposed to nested elements) then we find the
+  // one that has exactly the expectedText.
+  const possibleMatches = Cypress.$(elements).find(`:contains(${expectedText})`)
+
+  for (let i = 0; i < possibleMatches.length; i++) {
+    const elementText = TextContentWithoutNewlines(possibleMatches[i])
     ConLog(funcName, `elementText: '${elementText}'`)
-    if (elementText === expectedText) return elements[i]
+    if (elementText === expectedText) return [possibleMatches[i]]
   }
   return []
 }
