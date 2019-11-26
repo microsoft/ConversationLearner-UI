@@ -8,7 +8,7 @@ const selectors = {
         link: '#uiLink',
     },
     app: {
-        container: '.cl-app'
+        container: '.cl-o-app-columns'
     },
     officePicker: {
         buttonSuggestion: '.ms-Suggestions-itemButton',
