@@ -222,25 +222,11 @@
   ],
   [
     {
-      "buttonTestId": "action-scorer-button-no-click",
-      "response": "What's your name?",
-      "hasEntityValueNameToggle": false,
-      "type": "TEXT",
-      "score": "100.0%",
-      "entities": [
-        {
-          "name": "name",
-          "qualifierState": "RedStrikeout"
-        }
-      ],
-      "wait": true
-    },
-    {
-      "buttonTestId": "action-scorer-button-clickable",
+      "buttonTestId": "action-scorer-button-selected",
       "response": "Hello",
       "hasEntityValueNameToggle": false,
       "type": "TEXT",
-      "score": "-",
+      "score": "100.0%",
       "entities": [],
       "wait": false
     },
@@ -311,6 +297,20 @@
       "score": "-",
       "entities": [],
       "wait": false
+    },
+    {
+      "buttonTestId": "action-scorer-button-no-click",
+      "response": "What's your name?",
+      "hasEntityValueNameToggle": false,
+      "type": "TEXT",
+      "score": "Disqualified",
+      "entities": [
+        {
+          "name": "name",
+          "qualifierState": "RedStrikeout"
+        }
+      ],
+      "wait": true
     }
   ]
 ]

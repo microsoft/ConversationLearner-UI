@@ -55,7 +55,8 @@ export function VerifyContainsEndSessionAction(expectedData) { VerifyActionExist
 //    OR...
 //      set CYPRESS_GENERATE_SCORE_ACTIONS_DATA=true|anything
 //    Doing this will generate a file in the "cypress/fixtures/scoreActions" folder that will be used in #4
-//    If the value is "pause", then the test will pause at each data collection point.
+//    If the value is "pause", then the test will pause at each data collection point for you to visually 
+//    verify the data it holds.
 //
 // 3) Manually verify the data in each Score Actions grid for each chat turn that the test suite will verify.
 //

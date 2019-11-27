@@ -71,7 +71,7 @@ export function CreateNewAction({
       break
   }
 
-  actionModal.ClickCreateButton()
+  actionModal.ClickCreateSaveButton()
 }
 
 export function CreateNewActionThenVerifyInGrid({ 

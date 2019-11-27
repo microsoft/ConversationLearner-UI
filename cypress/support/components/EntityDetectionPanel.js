@@ -166,8 +166,17 @@ export function LabelTextAsEntity(text, entity, index = 0, itMustNotBeLabeledYet
 export function SelectEntityLabel(word, entity, index = 0) {
   cy.WaitForStableDOM().then(() => { return _GetEditorContainerForEntityDetectionPanel(index) }).then(elements => {
     cy.wrap(elements[0]).within(() => {
+      // cy.Get('[data-testid="token-node-entity-value"] > span > span')
+      //   .contains(word)
+      //   .RevealPreviousSubject()
+
+      // cy.Get('[data-testid="token-node-entity-value"] > span > span')
+      //   .ExactMatch(word)
+      //   .RevealPreviousSubject()
+
       cy.Get('[data-testid="token-node-entity-value"] > span > span')
         .ExactMatch(word)
+        //.contains(word)
         .parents('.cl-entity-node--custom')
         .find('[data-testid="custom-entity-name-button"]')
         .contains(entity)

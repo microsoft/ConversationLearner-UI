@@ -9,7 +9,7 @@ export function VerifyPageTitle() { cy.Get('[data-testid="create-an-action-title
 export function CheckWaitForResponse() { throw new Error('CheckWaitForResponse is NOT supported') } // Since this is a button and not a real check box it is difficult/ugly to manage the state. This defaults to checked.
 export function UncheckWaitForResponse() { cy.Get('[data-testid="action-creator-wait-checkbox"] .ms-Checkbox').Click() }
 export function ClickAddEntityButton() { cy.Get('[data-testid="action-button-create-entity"]').Click() }
-export function ClickCreateButton() { cy.Get('[data-testid="action-creator-create-button"]').Click() }
+export function ClickCreateSaveButton() { cy.Get('[data-testid="action-creator-create-button"]').Click() }
 export function ClickDeleteButton() { cy.Get('[data-testid="action-creator-delete-button"]').Click() }
 export function ClickCancelButton() { cy.Get('[data-testid="action-creator-cancel-button"]').Click() }
 
@@ -136,4 +136,16 @@ function SelectMultipleEntities(selector, entityNames) {
     cy.Get(selector).find('input.ms-BasePicker-input').Click()
     cy.Get('button.ms-Suggestions-itemButton').ExactMatch(entityName).Click()
   })
+}
+
+export function RemoveExpectedEntity(entityName) { RemoveEntityOrCondition('action-expected-entity', entityName) }
+export function RemoveRequiredCondition(entityNameOrCondition) { RemoveEntityOrCondition('action-required-entities', entityNameOrCondition) }
+export function RemoveDisqualifyingCondition(entityNameOrCondition) { RemoveEntityOrCondition('action-disqualifying-entities', entityNameOrCondition) }
+
+function RemoveEntityOrCondition(dataTestId, entityNameOrCondition) { 
+  cy.Get(`[data-testid="${dataTestId}"]`)
+    .find('[data-testid="tag-item"]')
+    .ExactMatch(entityNameOrCondition)
+    .next('span[role="button"]')
+    .Click()
 }
