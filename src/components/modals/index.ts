@@ -2,7 +2,7 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import ActionCreatorEditor from './ActionCreatorEditor'
+import ActionCreatorEditor from './ActionCreatorEditor/ActionCreatorEditor'
 import ActionDeleteModal from './ActionDeleteModal'
 import AppCreator from './AppCreator'
 import ConfirmCancelModal from './ConfirmCancelModal'
