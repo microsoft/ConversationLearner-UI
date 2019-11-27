@@ -441,7 +441,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     />
                     <OF.DefaultButton
                         disabled={this.props.logDialogs.length === 0 || this.props.logConinuationToken === undefined}
-                        data-testid="logdialogs-button-refresh"
+                        data-testid="logdialogs-load-more"
                         onClick={() => this.onClickSync()}
                         ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_MORE_LOGS)}
                         text={Util.formatMessageId(this.props.intl, FM.BUTTON_MORE_LOGS)}

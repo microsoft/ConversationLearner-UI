@@ -72,9 +72,10 @@ Cypress.Commands.add('UploadFile', uploadFile)
 
 // These functions operates similar to the "cy.contains" command except that it expects
 // the text content of the elements to contain an EXACT MATCH to the expected text.
-Cypress.Commands.add('ExactMatch', { prevSubject: 'element' }, (elements, expectedText) => { 
+Cypress.Commands.add('ExactMatch', { prevSubject: true }, (elements, expectedText) => { 
   const matchingElements = helpers.ExactMatch(elements, expectedText)
   if (matchingElements.length == 0) { throw new Error(`Exact Match '${expectedText}' NOT Found`) }
+  helpers.DumpElements('cy.ExactMatch', matchingElements)
   return matchingElements
 })
 
@@ -93,3 +94,9 @@ Cypress.Commands.add("Alert", message => { alert(message) })
 // This causes your JavaScript code to execute in the same time frame as all of cy.*commands*
 const enqueue = (functionToRun: Function) => { return functionToRun() }
 Cypress.Commands.add("Enqueue", enqueue)
+
+// Useful for debugging other cy.commands to show what they returned.
+Cypress.Commands.add('RevealPreviousSubject', { prevSubject: true }, (elements) => {
+  helpers.DumpElements('cy.RevealPreviousSubject', elements)
+  return elements
+})

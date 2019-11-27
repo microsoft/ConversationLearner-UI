@@ -31,7 +31,7 @@ describe('Merge Save as is Bugs Repros', () => {
     })
   })
 
-  context('Attempt to reproduce Bug 2353', () => {
+  context('Attempt to reproduce Bugs 2027 and 2353', () => {
     it('Edit a Train Dialog', () => {
       trainDialogsGrid.TdGrid.EditTrainingByChatInputs('Yo', 'Bye', 'Goodbye')
     })
