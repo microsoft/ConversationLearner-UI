@@ -18,11 +18,11 @@ import { RouteComponentProps } from 'react-router'
 import Component, { IEnumValueForDisplay } from './EntityCreatorComponent'
 import { autobind } from 'core-decorators'
 import { getUniqueConditions, getUpdatedActionsUsingCondition } from 'src/Utils/actionCondition'
+import { NONE_RESOLVER_KEY } from '../../../types/const'
 
 const entityNameMaxLength = 30
 const enumMaxLength = 10
 const prebuiltPrefix = 'builtin-'
-export const NONE_RESOLVER_KEY = 'none'
 
 const initState: ComponentState = {
     entityNameVal: '',
