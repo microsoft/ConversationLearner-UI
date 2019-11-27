@@ -11,9 +11,9 @@ import * as trainDialogsGrid from '../../../support/components/TrainDialogsGrid'
 import * as train from '../../../support/Train'
 import * as helpers from '../../../support/Helpers'
 
-// This test case was intended to reproduce bug 2319 but it does not work.
-// Manual reproduction is 100%, so I can only guess that Cypress somehow changes the environment
-// in such a way that the UI code works fine.
+// This test case was intended to reproduce bug 2319 but the problem is the bug is not 100%
+// anymore. When it fails you will see the following string in the chat panel:
+//  ERROR: Score Actions: No Action can be chosen based on current constraints. All Actions are disqualified.
 describe('Bug 2319 Repro', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
 

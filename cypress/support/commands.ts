@@ -98,4 +98,5 @@ Cypress.Commands.add("Enqueue", enqueue)
 // Useful for debugging other cy.commands to show what they returned.
 Cypress.Commands.add('RevealPreviousSubject', { prevSubject: true }, (elements) => {
   helpers.DumpElements('cy.RevealPreviousSubject', elements)
+  return elements
 })
