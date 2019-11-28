@@ -155,23 +155,18 @@ export function VerifyNoErrorMessages() { cy.DoesNotContain('div.cl-errorpanel')
 export function HasErrorMessage() { return Cypress.$('div.cl-errorpanel').length > 0 }
 export function CloseErrorMessagePanel() { cy.Get('button.ms-Panel-closeButton[title="Close"]').Click() }
 
+// This behaves slightly different than the cy.contains command does in that the elements returned
+// can contain multiple parent elements as well compared to the cy.contains command. To zoom in
+// to a smaller set of elements you can sometimes get away with calling it like this:
+//    cy.contains('your search string').ExactMatch('your search string')
 export function ExactMatch(elements, expectedText) {
   const funcName = `ExactMatch('${expectedText}')`
   ConLog(funcName, `Start`)
-
-  // We start with contains because it zooms in to the minimum element with the text we are looking for,
-  // then after we have a list of just the single elements (as opposed to nested elements) then we find the
-  // one that has exactly the expectedText.
-  let possibleMatches = Cypress.$(elements).find(`:contains(${expectedText})`)
-  if (possibleMatches.length == 0) {
-    ConLog(funcName, `":contains" found nothing, reverting back to the original elements we were given which contain ${elements.length} elements.`)
-    possibleMatches = elements
-  }
-
-  for (let i = 0; i < possibleMatches.length; i++) {
-    const elementText = TextContentWithoutNewlines(possibleMatches[i])
+  
+  for (let i = 0; i < elements.length; i++) {
+    const elementText = TextContentWithoutNewlines(elements[i])
     ConLog(funcName, `elementText: '${elementText}'`)
-    if (elementText === expectedText) return [possibleMatches[i]]
+    if (elementText === expectedText) return [elements[i]]
   }
   return []
 }
