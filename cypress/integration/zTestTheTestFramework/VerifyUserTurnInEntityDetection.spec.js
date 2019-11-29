@@ -25,6 +25,12 @@ describe('Verify User Turn in Entity Detection', () => {
       train.TypeYourMessage('This can be an entityError')
     })
 
+    it('Quotes', () => {
+      train.AbandonDialog()
+      trainDialogsGrid.TdGrid.CreateNewTrainDialog()
+      train.TypeYourMessage(`"This" contains 'both' types of quotes`)
+    })
+
     it('Spaces and Periods', () => {
       train.AbandonDialog()
       trainDialogsGrid.TdGrid.CreateNewTrainDialog()
