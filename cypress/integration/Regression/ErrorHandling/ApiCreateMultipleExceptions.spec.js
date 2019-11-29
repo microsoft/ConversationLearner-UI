@@ -14,7 +14,7 @@ import * as helpers from '../../../support/Helpers'
 // SKIPPING this test due to Bug 2389: Entity Detection stutters as it repeats the user's utterance many times
 
 // This test suite is part 1 of 2. The second part is in ApiVerifyMultipleExceptions.
-describe.skip('API Create Multiple Exceptions - ErrorHandling', () => {
+describe('API Create Multiple Exceptions - ErrorHandling', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
   
   context('Setup', () => {
