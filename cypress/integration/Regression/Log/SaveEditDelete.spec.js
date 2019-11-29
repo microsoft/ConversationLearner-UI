@@ -82,9 +82,21 @@ describe("Save Edit Delete - Log", () => {
       logDialogModal.ClickDoneTestingButton()
     })
 
-    it("Should verify the list of Log Dialogs", () => {
+    // Bug 2395: New Log Dialogs that began after prior one was terminated by EndSession Actions do not show up in grid until user presses Refresh button
+    // Verify that this bug still occurs
+    // Once fixed, comment out this code and uncomment the next block
+    it("Verify bug 2395 reproduces by verifying the list of Log Dialogs, refreshing, and then reverifying list again", () => {
+      const buggyLogDialogGridContent = logDialogGridContent.slice(0,3)
+      logDialogsGrid.VerifyListOfLogDialogs(buggyLogDialogGridContent)
+      logDialogsGrid.ClickRefreshButton()
       logDialogsGrid.VerifyListOfLogDialogs(logDialogGridContent)
     })
+
+    // Bug 2395: New Log Dialogs that began after prior one was terminated by EndSession Actions do not show up in grid until user presses Refresh button
+    // Once the bug is fixed uncomment this block of code and comment out the block above.
+    // it("Verify bug 2395 is fixed by verifying the list of Log Dialogs", () => {
+    //   logDialogsGrid.VerifyListOfLogDialogs(logDialogGridContent)
+    // })
   })
 
   context('Multi-Session Log Dialogs using "Session Timeout" Button', () => {
@@ -108,9 +120,21 @@ describe("Save Edit Delete - Log", () => {
       logDialogModal.ClickDoneTestingButton()
     })
 
-    it("Should verify the list of Log Dialogs", () => {
+    // Bug 2395: New Log Dialogs that began after prior one was terminated by EndSession Actions do not show up in grid until user presses Refresh button
+    // Verify that this bug still occurs
+    // Once fixed, comment out this code and uncomment the next block
+    it("Verify bug 2395 reproduces by verifying the list of Log Dialogs, refreshing, and then reverifying list again", () => {
+      const buggyLogDialogGridContent = logDialogGridContent.slice(0,6)
+      logDialogsGrid.VerifyListOfLogDialogs(buggyLogDialogGridContent)
+      logDialogsGrid.ClickRefreshButton()
       logDialogsGrid.VerifyListOfLogDialogs(logDialogGridContent)
     })
+
+    // Bug 2395: New Log Dialogs that began after prior one was terminated by EndSession Actions do not show up in grid until user presses Refresh button
+    // Once the bug is fixed uncomment this block of code and comment out the block above.
+    // it("Verify bug 2395 is fixed by verifying the list of Log Dialogs", () => {
+    //   logDialogsGrid.VerifyListOfLogDialogs(logDialogGridContent)
+    // })
   })
 
   context('Edit', () => {
