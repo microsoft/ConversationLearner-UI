@@ -248,18 +248,34 @@ function _VerifyEntityLabelConflictPopupAndClickButton(previousTextEntityPairs, 
 }
 
 export function VerifyEntityDetectionPhrase(expectedPhrase) {
-  function StringArrayFromElementRawText() {
-    let elements = Cypress.$('span[data-offset-key]')
-    let returnValues = []
-    for (let i = 1; i < elements.length; i++)  {
-      returnValues.push(elements[i].textContent)
-    }
-    return returnValues
-  }
+  // function StringArrayFromElementRawText() {
+  //   let elements = Cypress.$('span[data-offset-key]')
+  //   let returnValues = []
+  //   for (let i = 1; i < elements.length; i++)  {
+  //     returnValues.push(elements[i].textContent)
+  //   }
+  //   return returnValues
+  // }
 
+  function StringFromElementRawText() {
+    let funcName = `StringFromElementRawText('span[data-offset-key]')`
+    let elements = Cypress.$('span[data-offset-key]')
+    helpers.ConLog(funcName, `Number of Elements Found: ${elements.length}`)
+    let returnString = ''
+    for (let i = 0; i < elements.length; i++)  {
+      let textContent = elements[i].textContent
+        .replace(/‘|’/g, "'")
+        .replace(/“|”/g, '"')
+        .replace(/([^◾️…\x20-\x7E])/gm, '')
+        returnString += textContent
+
+      helpers.ConLog(funcName, `"${textContent}"`)
+    }
+    return returnString
+  }
+  
   cy.WaitForStableDOM().then(() => {
-    const wordList = StringArrayFromElementRawText()
-    const detectionPhrase = wordList.join('')
+    const detectionPhrase = StringFromElementRawText()
       
     if (detectionPhrase != expectedPhrase) {
       throw new Error(`Entity Detection panel shows a phrase that is different than the user's utterance. Detection Phrase: "${detectionPhrase}" --- Expected Phrase: "${expectedPhrase}"`)

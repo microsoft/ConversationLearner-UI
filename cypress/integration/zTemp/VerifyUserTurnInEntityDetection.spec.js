@@ -10,7 +10,7 @@ import * as train from '../../support/train'
 import * as helpers from '../../support/Helpers'
 
 describe('Verify User Turn in Entity Detection', () => {
-  afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
+  //afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
 
   context('Setup', () => {
     it('Should import a model to test against', () => {
@@ -20,7 +20,13 @@ describe('Verify User Turn in Entity Detection', () => {
   })
 
   context('Tests', () => {
-    it('', () => {
+    it('Simple', () => {
+      trainDialogsGrid.TdGrid.CreateNewTrainDialog()
+      train.TypeYourMessage('This can be an entityError')
+    })
+
+    it('Spaces and Periods', () => {
+      train.AbandonDialog()
       trainDialogsGrid.TdGrid.CreateNewTrainDialog()
       train.TypeYourMessage('This is a test -  two  spaces. Period before and after.   Last sentence after 3 spaces. ')
     })
