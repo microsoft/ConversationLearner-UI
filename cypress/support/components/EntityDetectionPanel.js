@@ -266,7 +266,7 @@ export function VerifyEntityDetectionPhrase(expectedPhrase) {
     const detectionPhrase = StringFromEntityDetectionUiElements()
       
     if (detectionPhrase != expectedPhrase) {
-      throw new Error(`Entity Detection panel shows a phrase that is different than the user's utterance. Detection Phrase: "${detectionPhrase}" --- Expected Phrase: "${expectedPhrase}"`)
+      throw new Error(`Bugs 2389 & 2400 - Entity Detection panel shows a phrase that is different than the user's utterance. Detection Phrase: "${detectionPhrase}" --- Expected Phrase: "${expectedPhrase}"`)
     }
   })
 }
