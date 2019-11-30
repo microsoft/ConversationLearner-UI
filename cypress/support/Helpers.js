@@ -99,6 +99,8 @@ export function TextContentWithoutNewlines(element) {
   }
 
   const textContent = element.textContent
+  ConLog('TextContentWithoutNewlines', `Raw Text Content: "${textContent}"`)
+
   if (!textContent) {
     ConLog('TextContentWithoutNewlines', `textContent is undefined, which typically means there is no text. Here is the element that was passed in: ${element.outerHTML}`)
     return ''

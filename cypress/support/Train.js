@@ -8,6 +8,7 @@ import * as modelPage from './components/ModelPage'
 import * as scorerModal from './components/ScorerModal'
 import * as chatPanel from './components/ChatPanel'
 import * as trainDialogsGrid from './components/TrainDialogsGrid'
+import * as entityDetectionPanel from './components/EntityDetectionPanel'
 import * as mergeModal from './components/MergeModal'
 import * as helpers from './Helpers'
 
@@ -30,7 +31,7 @@ export function VerifyErrorPopup(expectedMessage) { cy.Get('p.ms-Dialog-title').
 export function ClickPopupConfirmCancelOkButton() { cy.Get('[data-testid="confirm-cancel-modal-ok"]').Click() }
 export function ClickDeleteChatTurn() { cy.Get('[data-testid="chat-edit-delete-turn-button"]').Click() }
 
-export function TypeYourMessage(message) { cy.Get(TypeYourMessageSelector).type(`${message}{enter}`) }
+//export function TypeYourMessage(message) { cy.Get(TypeYourMessageSelector).type(`${message}{enter}`) }
 export function VerifyTypeYourMessageIsPresent() { cy.Get(TypeYourMessageSelector) }
 export function VerifyTypeYourMessageIsMissing() { cy.DoesNotContain(TypeYourMessageSelector) }
 export function VerifyScoreActionsButtonIsPresent() { cy.Get(ScoreActionsButtonSelector) }
@@ -212,5 +213,10 @@ export function VerifyCloseIsTheOnlyEnabledButton() {
   cy.Get('[data-testid="edit-dialog-modal-replay-button"]').should('be.disabled')
   cy.Get('[data-testid="edit-dialog-modal-abandon-delete-button"]').should('be.disabled')
   cy.Get('[data-testid="edit-teach-dialog-close-save-button"]').should('be.enabled')
+}
+
+export function TypeYourMessage(message) { 
+  cy.Get(TypeYourMessageSelector).type(`${message}{enter}`)
+  entityDetectionPanel.VerifyEntityDetectionPhrase(message)
 }
 
