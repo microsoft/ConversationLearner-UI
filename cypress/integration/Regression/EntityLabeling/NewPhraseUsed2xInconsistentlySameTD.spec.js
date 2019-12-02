@@ -92,9 +92,5 @@ describe('New Phrase Used 2 Times Inconsistently - Entity Labeling', () => {
     //   chatPanel.VerifyChatTurnIsAnExactMatchWithMarkup('A totally unique phrase<br>', 4, 0)
     //   chatPanel.VerifyChatTurnIsAnExactMatchWithMarkup('A totally unique phrase<br>', 4, 2)
     // })
-    
-    it('', () => {
-    })
-    
   })
 })

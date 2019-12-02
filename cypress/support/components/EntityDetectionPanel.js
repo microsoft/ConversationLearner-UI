@@ -246,3 +246,27 @@ function _VerifyEntityLabelConflictPopupAndClickButton(previousTextEntityPairs, 
     helpers.ConLog('VerifyEntityLabelConflictPopupAndClickButton', 'end')
   })
 }
+
+export function VerifyEntityDetectionPhrase(expectedPhrase) {
+  function StringFromEntityDetectionUiElements() {
+    let funcName = `StringFromEntityDetectionUiElements('span[data-offset-key]')`
+    let elements = Cypress.$('span[data-offset-key]')
+    helpers.ConLog(funcName, `Number of Elements Found: ${elements.length}`)
+    let textContent = ''
+    for (let i = 0; i < elements.length; i++) { 
+      textContent += elements[i].textContent 
+    }
+
+    let returnString = textContent.replace(/([^◾️…\x20-\x7E])/gm, '')
+    helpers.ConLog(funcName, `Acumulated textContent: "${textContent}" -- normalized textContent: "${returnString}"`)
+    return returnString
+  }
+  
+  cy.WaitForStableDOM().then(() => {
+    const detectionPhrase = StringFromEntityDetectionUiElements()
+      
+    if (detectionPhrase != expectedPhrase) {
+      throw new Error(`Bugs 2389 & 2400 - Entity Detection panel shows a phrase that is different than the user's utterance. Detection Phrase: "${detectionPhrase}" --- Expected Phrase: "${expectedPhrase}"`)
+    }
+  })
+}

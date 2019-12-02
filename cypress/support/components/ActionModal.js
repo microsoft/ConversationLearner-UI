@@ -145,6 +145,8 @@ export function RemoveDisqualifyingCondition(entityNameOrCondition) { RemoveEnti
 function RemoveEntityOrCondition(dataTestId, entityNameOrCondition) { 
   cy.Get(`[data-testid="${dataTestId}"]`)
     .find('[data-testid="tag-item"]')
+    // We need 'contains' here as well as 'ExactMatch' because it returns a single element
+    .contains(entityNameOrCondition)
     .ExactMatch(entityNameOrCondition)
     .next('span[role="button"]')
     .Click()
