@@ -5,15 +5,9 @@
 import * as CLM from '@conversationlearner/models'
 import * as IntlMessages from '../react-intl-messages'
 import * as Const from '../types/const'
-import * as OF from 'office-ui-fabric-react'
 import * as moment from 'moment'
 import * as stringify from 'fast-json-stable-stringify'
 import { MessageValue } from 'react-intl'
-
-// Used to add id for running UI tests
-export interface ChoiceGroupOptionWithTestId extends OF.IChoiceGroupOption {
-    'data-testid': string
-}
 
 export function notNullOrUndefined<TValue>(value: TValue | null | undefined): value is TValue {
     return value !== null && value !== undefined;

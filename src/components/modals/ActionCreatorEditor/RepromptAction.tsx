@@ -5,6 +5,7 @@
 import * as React from 'react'
 import * as OF from 'office-ui-fabric-react'
 import * as Util from '../../../Utils/util'
+import { ChoiceGroupOptionWithTestId } from '../../../types'
 import * as CLM from '@conversationlearner/models'
 import AdaptiveCardViewer from '../AdaptiveCardViewer/AdaptiveCardViewer'
 import { FM } from '../../../react-intl-messages'
@@ -65,7 +66,7 @@ class RepromptAction extends React.Component<Props, ComponentState> {
             renderedActionArguments = cardAction.renderArguments(entityMap, { preserveOptionalNodeWrappingCharacters: true })
         }
         
-        const repromptOptions: Util.ChoiceGroupOptionWithTestId[] = [
+        const repromptOptions: ChoiceGroupOptionWithTestId[] = [
             {
                 key: 'A',
                 text: Util.formatMessageId(this.props.intl, FM.REPROMPTACTION_SAME_CHOICE),

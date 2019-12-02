@@ -714,11 +714,14 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     @autobind
     onChangeRepromptType() {
         // Toggle between reprompt-self and reprompt other action
-        this.setState(prevState => ({
-            repromptActionId: this.isSelfReprompt(prevState.repromptActionId) ? undefined : REPROMPT_SELF,
-            // If not self-promp, open reprompt selector
-            isRepromptActionSelectorModelOpen: this.isSelfReprompt(prevState.repromptActionId)
-        }))
+        this.setState(prevState => {
+            const isSelfReprompt = this.isSelfReprompt(prevState.repromptActionId)
+            return {
+                repromptActionId: isSelfReprompt ? undefined : REPROMPT_SELF,
+                // If not self-promp, open reprompt selector
+                isRepromptActionSelectorModelOpen: isSelfReprompt
+            }
+        })
     }
 
     @autobind

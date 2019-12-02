@@ -6,6 +6,7 @@ import * as React from 'react'
 import * as OF from 'office-ui-fabric-react'
 import * as Utils from '../../Utils/util'
 import HelpIcon from '../HelpIcon'
+import { ChoiceGroupOptionWithTestId } from '../../types'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { TipType } from '../ToolTips/ToolTips'
@@ -22,7 +23,7 @@ interface ReceivedProps {
 
 type Props = ReceivedProps & InjectedIntlProps
 
-const deleteOptions: Utils.ChoiceGroupOptionWithTestId[] = [
+const deleteOptions: ChoiceGroupOptionWithTestId[] = [
     {
         key: 'A',
         text: 'Preserve Placeholders (Default)',
