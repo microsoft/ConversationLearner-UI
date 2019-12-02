@@ -3,7 +3,6 @@
  * Licensed under the MIT License.
  */
 import * as React from 'react';
-import * as ActionPayloadRenderers from '../actionPayloadRenderers'
 import * as CLM from '@conversationlearner/models'
 import * as OF from 'office-ui-fabric-react'
 import * as Util from '../../Utils/util'
@@ -11,9 +10,9 @@ import * as DialogEditing from '../../Utils/dialogEditing'
 import * as DialogUtils from '../../Utils/dialogUtils'
 import actions from '../../actions'
 import ConfirmCancelModal from './ConfirmCancelModal'
-import actionTypeRenderer from '../ActionTypeRenderer'
+import { actionTypeRenderer, actionListViewRenderer } from '../ActionRenderers'
 import EditApiPlaceholder from '../modals/EditApiPlaceholder'
-import ActionCreatorEditor from './ActionCreatorEditor'
+import ActionCreatorEditor from './ActionCreatorEditor/ActionCreatorEditor'
 import AdaptiveCardViewer, { getRawTemplateText } from './AdaptiveCardViewer/AdaptiveCardViewer'
 import { ImportedAction } from '../../types/models'
 import { compareTwoStrings } from 'string-similarity'
@@ -39,7 +38,6 @@ interface IRenderableColumn extends OF.IColumn {
     getSortValue: (actionForRender: ActionForRender, component: ActionScorer) => number | string
     render: (actionForRender: ActionForRender, component: ActionScorer, index: number) => React.ReactNode
 }
-
 
 function getColumns(intl: InjectedIntl): IRenderableColumn[] {
     return [
@@ -119,7 +117,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
         },
         {
             key: 'actionResponse',
-            name: Util.formatMessageId(intl, FM.ACTIONSCORER_COLUMNS_RESPONSE),
+            name: Util.formatMessageId(intl, FM.ACTIONLIST_COLUMNS_RESPONSE),
             fieldName: 'actionResponse',
             minWidth: 100,
             maxWidth: 500,
@@ -127,66 +125,10 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             isResizable: true,
             getSortValue: () => '',
             render: (action: CLM.ActionBase, component) => {
-                const defaultEntityMap = Util.getDefaultEntityMap(component.props.entities)
-
-                if (action.actionType === CLM.ActionTypes.TEXT) {
-                    const textAction = new CLM.TextAction(action)
-                    return (
-                        <ActionPayloadRenderers.TextPayloadRendererWithHighlights
-                            textAction={textAction}
-                            entities={component.props.entities}
-                            memories={component.props.memories}
-                            showMissingEntities={true}
-                        />)
-                }
-                else if (action.actionType === CLM.ActionTypes.API_LOCAL) {
-                    const apiAction = new CLM.ApiAction(action)
-                    const callback = component.props.botInfo.callbacks.find(t => t.name === apiAction.name)
-                    return (
-                        <ActionPayloadRenderers.ApiPayloadRendererWithHighlights
-                            apiAction={apiAction}
-                            entities={component.props.entities}
-                            memories={component.props.memories}
-                            callback={callback}
-                            showMissingEntities={true}
-                        />)
-                }
-                else if (action.actionType === CLM.ActionTypes.CARD) {
-                    const cardAction = new CLM.CardAction(action)
-                    return (
-                        <ActionPayloadRenderers.CardPayloadRendererWithHighlights
-                            isValidationError={false}
-                            cardAction={cardAction}
-                            entities={component.props.entities}
-                            memories={component.props.memories}
-                            onClickViewCard={(_, showOriginal) => component.onClickViewCard(action, showOriginal)}
-                            showMissingEntities={true}
-                        />)
-                }
-                else if (action.actionType === CLM.ActionTypes.END_SESSION) {
-                    const sessionAction = new CLM.SessionAction(action)
-                    return (
-                        <ActionPayloadRenderers.SessionPayloadRendererWithHighlights
-                            sessionAction={sessionAction}
-                            entities={component.props.entities}
-                            memories={component.props.memories}
-                            showMissingEntities={true}
-                        />)
-                }
-                else if (action.actionType === CLM.ActionTypes.SET_ENTITY) {
-                    const [name, value] = Util.setEntityActionDisplay(action, component.props.entities)
-                    return <span data-testid="action-scorer-action-set-entity" className={OF.FontClassNames.mediumPlus}>{name}: {value}</span>
-                }
-                else if (action.actionType === CLM.ActionTypes.DISPATCH) {
-                    const dispatchAction = new CLM.DispatchAction(action)
-                    return <span data-testid="action-scorer-action-dispatch" className={OF.FontClassNames.mediumPlus}>Dispatch to model: {dispatchAction.modelName}</span>
-                }
-                else if (action.actionType === CLM.ActionTypes.CHANGE_MODEL) {
-                    const changeModelAction = new CLM.ChangeModelAction(action)
-                    return <span data-testid="action-scorer-action-change-model" className={OF.FontClassNames.mediumPlus}>Change to model: {changeModelAction.modelName}</span>
-                }
-
-                return <span className={OF.FontClassNames.mediumPlus}>{CLM.ActionBase.GetPayload(action, defaultEntityMap)}</span>
+                return actionListViewRenderer(action,
+                    component.props.entities,
+                    component.props.botInfo.callbacks,
+                    component.onClickViewCard)
             }
         },
         {
@@ -247,7 +189,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
         },
         {
             key: 'actionEntities',
-            name: Util.formatMessageId(intl, FM.ACTIONSCORER_COLUMNS_ENTITIES),
+            name: Util.formatMessageId(intl, FM.ACTIONLIST_COLUMNS_CONDITIONS),
             fieldName: 'entities',
             minWidth: 100,
             maxWidth: 300,
@@ -257,7 +199,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
         },
         {
             key: 'isTerminal',
-            name: Util.formatMessageId(intl, FM.ACTIONSCORER_COLUMNS_ISTERMINAL),
+            name: Util.formatMessageId(intl, FM.ACTIONLIST_COLUMNS_ISTERMINAL),
             fieldName: 'isTerminal',
             minWidth: 50,
             maxWidth: 50,
@@ -271,7 +213,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
         },
         {
             key: 'actionReprompt',
-            name: Util.formatMessageId(intl, FM.ACTIONDETAILSLIST_COLUMNS_REPROMPT),
+            name: Util.formatMessageId(intl, FM.ACTIONLIST_COLUMNS_REPROMPT),
             fieldName: 'actionReprompt',
             minWidth: 70,
             isResizable: false,
@@ -280,7 +222,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
         },
         {
             key: 'actionType',
-            name: Util.formatMessageId(intl, FM.ACTIONSCORER_COLUMNS_TYPE),
+            name: Util.formatMessageId(intl, FM.ACTIONLIST_COLUMNS_TYPE),
             fieldName: 'actionType',
             minWidth: 80,
             maxWidth: 80,

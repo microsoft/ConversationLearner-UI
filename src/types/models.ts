@@ -3,6 +3,7 @@
  * Licensed under the MIT License.
  */
 import * as CLM from '@conversationlearner/models'
+import * as OF from 'office-ui-fabric-react'
 
 export interface App extends CLM.AppBase {
     didPollingExpire: boolean
@@ -31,6 +32,11 @@ export interface ActivityHeight {
     id: string,
     height: number | undefined,
     padding: number | undefined
+}
+
+// Used to add id for running UI tests
+export interface ChoiceGroupOptionWithTestId extends OF.IChoiceGroupOption {
+    'data-testid': string
 }
 
 export type PartialTrainDialog = Pick<CLM.TrainDialog, "trainDialogId" | "tags" | "description"> & Partial<CLM.TrainDialog>

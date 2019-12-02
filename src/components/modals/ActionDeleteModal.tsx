@@ -4,12 +4,13 @@
  */
 import * as React from 'react'
 import * as OF from 'office-ui-fabric-react'
+import * as Utils from '../../Utils/util'
+import HelpIcon from '../HelpIcon'
+import { ChoiceGroupOptionWithTestId } from '../../types'
 import { FM } from '../../react-intl-messages'
-import { formatMessageId } from '../../Utils/util'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
-import './ActionDeleteModal.css'
-import HelpIcon from '../HelpIcon';
 import { TipType } from '../ToolTips/ToolTips'
+import './ActionDeleteModal.css'
 
 // Renaming from Props because of https://github.com/Microsoft/tslint-microsoft-contrib/issues/339
 interface ReceivedProps {
@@ -21,10 +22,6 @@ interface ReceivedProps {
 }
 
 type Props = ReceivedProps & InjectedIntlProps
-
-interface ChoiceGroupOptionWithTestId extends OF.IChoiceGroupOption {
-    'data-testid': string
-}
 
 const deleteOptions: ChoiceGroupOptionWithTestId[] = [
     {
@@ -87,13 +84,13 @@ const ConfirmCancelModal: React.FC<Props> = (props) => {
             <OF.DialogFooter>
                 <OF.PrimaryButton
                     onClick={() => props.onConfirm(deleteTypeKey !== defaultDeleteTypeKey)}
-                    text={formatMessageId(intl, FM.CONFIRMCANCELMODAL_PRIMARYBUTTON_TEXT)}
+                    text={Utils.formatMessageId(intl, FM.CONFIRMCANCELMODAL_PRIMARYBUTTON_TEXT)}
                     iconProps={{ iconName: 'Accept' }}
                     data-testid="action-delete-confirm"
                 />
                 <OF.DefaultButton
                     onClick={() => props.onCancel()}
-                    text={formatMessageId(intl, FM.CONFIRMCANCELMODAL_DEFAULTBUTTON_TEXT)}
+                    text={Utils.formatMessageId(intl, FM.CONFIRMCANCELMODAL_DEFAULTBUTTON_TEXT)}
                     iconProps={{ iconName: 'Cancel' }}
                     data-testid="confirm-cancel-modal-cancel"
                 />

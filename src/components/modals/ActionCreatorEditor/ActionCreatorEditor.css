@@ -15,6 +15,20 @@
     grid-gap: 0.5em;
 }
 
+.cl-action-creator-reprompt {
+    margin-left: 50px;
+}
+
+.cl-action-creator-reprompt-box {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    margin-left: 40px;
+}
+
+.cl-action-creator-select-action {
+    margin-left: 40px;
+}
+
 .cl-tag-item-suggestion--add-condition {
     background-color: white;
     width: 100%;

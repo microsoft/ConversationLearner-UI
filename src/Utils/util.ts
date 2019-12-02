@@ -5,9 +5,9 @@
 import * as CLM from '@conversationlearner/models'
 import * as IntlMessages from '../react-intl-messages'
 import * as Const from '../types/const'
-import { MessageValue } from 'react-intl'
 import * as moment from 'moment'
 import * as stringify from 'fast-json-stable-stringify'
+import { MessageValue } from 'react-intl'
 
 export function notNullOrUndefined<TValue>(value: TValue | null | undefined): value is TValue {
     return value !== null && value !== undefined;

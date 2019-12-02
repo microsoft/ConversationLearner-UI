@@ -4,35 +4,37 @@
  */
 import * as React from 'react'
 import * as CLM from '@conversationlearner/models'
-import * as ToolTip from '../ToolTips/ToolTips'
-import * as TC from '../tipComponents'
+import * as ToolTip from '../../ToolTips/ToolTips'
+import * as TC from '../../tipComponents'
 import * as OF from 'office-ui-fabric-react'
-import * as Util from '../../Utils/util'
-import * as DialogUtils from '../../Utils/dialogUtils'
-import * as ActionPayloadEditor from './ActionPayloadEditor'
+import * as Util from '../../../Utils/util'
+import * as DialogUtils from '../../../Utils/dialogUtils'
+import * as ActionPayloadEditor from '../ActionPayloadEditor'
 import Plain from 'slate-plain-serializer'
-import actions from '../../actions'
-import ActionDeleteModal from './ActionDeleteModal'
-import ConditionModal from './ConditionModal'
-import ConfirmCancelModal from './ConfirmCancelModal'
-import EntityCreatorEditor from './EntityCreatorEditor'
-import AdaptiveCardViewer from './AdaptiveCardViewer/AdaptiveCardViewer'
-import CLTagPicker from '../CLTagPicker'
-import HelpIcon from '../HelpIcon'
-import { ImportedAction } from '../../types/models'
+import actions from '../../../actions'
+import RepromptAction from './RepromptAction'
+import ActionDeleteModal from '../ActionDeleteModal'
+import ConditionModal from '../ConditionModal'
+import ConfirmCancelModal from '../ConfirmCancelModal'
+import EntityCreatorEditor from '../EntityCreatorEditor'
+import ActionSelector from '../ActionSelector'
+import AdaptiveCardViewer from '../AdaptiveCardViewer/AdaptiveCardViewer'
+import CLTagPicker from '../../CLTagPicker'
+import HelpIcon from '../../HelpIcon'
+import { ImportedAction } from '../../../types/models'
 import { Value } from 'slate'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import { FeatureStrings, State } from '../../types'
-import { REPROMPT_SELF } from '../../types/const'
-import { CLTagItem, ICLPickerItemProps } from './CLTagItem'
+import { FeatureStrings, State } from '../../../types'
+import { REPROMPT_SELF } from '../../../types/const'
+import { CLTagItem, ICLPickerItemProps } from '../CLTagItem'
 import { withRouter } from 'react-router-dom'
 import { RouteComponentProps } from 'react-router'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
-import { FM } from '../../react-intl-messages'
+import { FM } from '../../../react-intl-messages'
+import { autobind } from 'core-decorators'
+import { IConditionalTag, getEnumConditionName, convertConditionToConditionalTag, isConditionEqual, getUniqueConditions } from '../../../Utils/actionCondition'
 import './ActionCreatorEditor.css'
-import { autobind } from 'core-decorators';
-import { IConditionalTag, getEnumConditionName, convertConditionToConditionalTag, isConditionEqual, getUniqueConditions } from 'src/Utils/actionCondition'
 
 const TEXT_SLOT = '#TEXT_SLOT#'
 
@@ -278,6 +280,7 @@ interface ComponentState {
     isConfirmDeleteInUseModalOpen: boolean
     isConfirmEditModalOpen: boolean
     isConfirmDuplicateActionModalOpen: boolean
+    isRepromptActionSelectorModelOpen: boolean
     validationWarnings: string[]
     isPayloadFocused: boolean
     isPayloadMissing: boolean
@@ -293,7 +296,8 @@ interface ComponentState {
     slateValuesMap: SlateValueMap
     secondarySlateValuesMap: SlateValueMap
     isTerminal: boolean
-    reprompt: boolean
+    shouldReprompt: boolean
+    repromptActionId: string | undefined
     isEntryNode: boolean
     selectedCardIndex: number
 }
@@ -322,6 +326,7 @@ const initialState: Readonly<ComponentState> = {
     isConfirmDeleteInUseModalOpen: false,
     isConfirmEditModalOpen: false,
     isConfirmDuplicateActionModalOpen: false,
+    isRepromptActionSelectorModelOpen: false,
     validationWarnings: [],
     isPayloadFocused: false,
     isPayloadMissing: true,
@@ -339,7 +344,8 @@ const initialState: Readonly<ComponentState> = {
     },
     secondarySlateValuesMap: {},
     isTerminal: true,
-    reprompt: false,
+    shouldReprompt: false,
+    repromptActionId: undefined,
     isEntryNode: false,
     selectedCardIndex: 0
 }
@@ -541,7 +547,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     requiredEntityTagsFromPayload,
                     requiredConditionTags,
                     isTerminal: action.isTerminal,
-                    reprompt: action.repromptActionId !== undefined,
+                    shouldReprompt: action.repromptActionId !== undefined,
+                    repromptActionId: action.repromptActionId,
                     isEntryNode: action.isEntryNode,
                     isEditing: true
                 }
@@ -573,7 +580,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         const disqualifyingEntitiesChanged = !initialEditState || !this.areTagsIdentical(this.state.negativeConditionTags, initialEditState.negativeConditionTags)
 
         const isTerminalChanged = initialEditState.isTerminal !== this.state.isTerminal
-        const isRepromptChanged = initialEditState.reprompt !== this.state.reprompt
+        const isRepromptChanged = initialEditState.repromptActionId !== this.state.repromptActionId || initialEditState.shouldReprompt !== this.state.shouldReprompt
         const isEntryNodeChanged = initialEditState.isEntryNode !== this.state.isEntryNode
         const isSelectedApiChanged = initialEditState.selectedApiOptionKey !== this.state.selectedApiOptionKey
         const isSelectedCardChanged = initialEditState.selectedCardOptionKey !== this.state.selectedCardOptionKey
@@ -695,8 +702,26 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     @autobind
     onChangeRepromptCheckbox() {
         this.setState(prevState => ({
-            reprompt: !prevState.reprompt
+            shouldReprompt: !prevState.shouldReprompt,
+            repromptActionId: prevState.repromptActionId || REPROMPT_SELF
         }))
+    }
+
+    isSelfReprompt(repromptActionId: string | undefined): boolean {
+        return (repromptActionId === REPROMPT_SELF || (this.props.action !== null && repromptActionId === this.props.action.actionId))
+    }
+
+    @autobind
+    onChangeRepromptType() {
+        // Toggle between reprompt-self and reprompt other action
+        this.setState(prevState => {
+            const isSelfReprompt = this.isSelfReprompt(prevState.repromptActionId)
+            return {
+                repromptActionId: isSelfReprompt ? undefined : REPROMPT_SELF,
+                // If not self-promp, open reprompt selector
+                isRepromptActionSelectorModelOpen: isSelfReprompt
+            }
+        })
     }
 
     @autobind
@@ -841,6 +866,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         this.props.fetchBotInfoThunkAsync(this.props.browserId, this.props.app.appId)
     }
 
+    @autobind
     async onClickViewCard() {
         if (!this.state.selectedCardOptionKey) {
             await this.onNextCard()
@@ -990,14 +1016,17 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         const negativeTags = this.state.negativeConditionTags.filter(t => !t.condition)
         const requiredConditions = this.state.requiredConditionTags.filter(t => t.condition).map(t => t.condition!)
         const negativeConditions = this.state.negativeConditionTags.filter(t => t.condition).map(t => t.condition!)
-
+        const repromptActionId = this.state.shouldReprompt
+            ? this.state.repromptActionId || REPROMPT_SELF
+            : undefined 
+        
         // TODO: This should be new type such as ActionInput for creation only.
         const action = new CLM.ActionBase({
             actionId: null!,
             payload,
             createdDateTime: new Date().toJSON(),
             isTerminal: this.state.isTerminal,
-            repromptActionId: this.state.reprompt ? REPROMPT_SELF : undefined,
+            repromptActionId,
             requiredEntitiesFromPayload: this.state.requiredEntityTagsFromPayload.map<string>(tag => tag.key),
             requiredEntities: [...this.state.requiredEntityTagsFromPayload, ...requiredTags].map<string>(tag => tag.key),
             negativeEntities: negativeTags.map<string>(tag => tag.key),
@@ -1173,6 +1202,21 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     }
 
     @autobind
+    onOpenRepromptActionSelector(): void {
+        this.setState({
+            isRepromptActionSelectorModelOpen: true
+        })
+    }
+
+    @autobind
+    onCloseRepromptActionSelector(actionId: string | undefined): void {
+        this.setState({
+            isRepromptActionSelectorModelOpen: false,
+            repromptActionId: actionId
+        })
+    }
+
+    @autobind
     onCancelDuplicate() {
         this.setState({
             isConfirmDuplicateActionModalOpen: false,
@@ -1245,9 +1289,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 : this.state.isTerminal
 
         // Reprompt and Entry node only allowed on CARD and TEXT actions
-        const reprompt = (actionTypeOption.key === CLM.ActionTypes.CARD || actionTypeOption.key === CLM.ActionTypes.TEXT)
-            ? this.state.reprompt
-            : false
+        const canReprompt = (actionTypeOption.key === CLM.ActionTypes.CARD || actionTypeOption.key === CLM.ActionTypes.TEXT)
         const isEntryNode = (actionTypeOption.key === CLM.ActionTypes.CARD || actionTypeOption.key === CLM.ActionTypes.TEXT)
             ? this.state.isEntryNode
             : false
@@ -1255,7 +1297,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         await Util.setStateAsync(this, {
             isPayloadMissing,
             isTerminal,
-            reprompt,
+            shouldReprompt: canReprompt ? this.state.shouldReprompt : false,
+            repromptActionId: canReprompt ? this.state.repromptActionId : undefined,
             isEntryNode,
             selectedActionTypeOptionKey: actionTypeOption.key,
             selectedEntityOptionKey: undefined,
@@ -1571,6 +1614,11 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             : undefined
 
         const uniqueConditions = getUniqueConditions(this.props.actions)
+
+        const repromptAction = this.state.repromptActionId
+            ? this.props.actions.find(a => a.actionId === this.state.repromptActionId)
+            : undefined
+        
         return (
             <OF.Modal
                 isOpen={this.props.open}
@@ -1906,7 +1954,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                 checked={this.state.isTerminal}
                                 onChange={this.onChangeWaitCheckbox}
 
-                                disabled={this.state.reprompt || [CLM.ActionTypes.END_SESSION, CLM.ActionTypes.SET_ENTITY, CLM.ActionTypes.DISPATCH, CLM.ActionTypes.CHANGE_MODEL].includes(this.state.selectedActionTypeOptionKey as CLM.ActionTypes)}
+                                disabled={(this.state.repromptActionId !== undefined) || [CLM.ActionTypes.END_SESSION, CLM.ActionTypes.SET_ENTITY, CLM.ActionTypes.DISPATCH, CLM.ActionTypes.CHANGE_MODEL].includes(this.state.selectedActionTypeOptionKey as CLM.ActionTypes)}
                                 tipType={ToolTip.TipType.ACTION_WAIT}
                             />
                         </div>
@@ -1916,11 +1964,22 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                 <TC.Checkbox
                                     data-testid="action-creator-reprompt-checkbox"
                                     label={Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_CHECKBOX_REPROMPT_LABEL)}
-                                    checked={this.state.reprompt}
+                                    checked={this.state.shouldReprompt}
                                     onChange={this.onChangeRepromptCheckbox}
                                     disabled={!this.state.isTerminal || [CLM.ActionTypes.END_SESSION, CLM.ActionTypes.SET_ENTITY, CLM.ActionTypes.DISPATCH].includes(this.state.selectedActionTypeOptionKey as CLM.ActionTypes)}
                                     tipType={ToolTip.TipType.ACTION_REPROMPT}
                                 />
+                                {this.state.shouldReprompt &&
+                                    <RepromptAction
+                                        intl={intl}
+                                        action={repromptAction}
+                                        selfprompt={this.isSelfReprompt(this.state.repromptActionId)}
+                                        entities={this.props.entities}
+                                        botInfo={this.props.botInfo}
+                                        onPickAction={this.onOpenRepromptActionSelector}
+                                        onChangeRepromptType={this.onChangeRepromptType}
+                                    />
+                                }
                                 {Util.isFeatureEnabled(this.props.settings.features, FeatureStrings.CCI) &&
                                     <TC.Checkbox
                                         data-testid="action-creator-entry-node-checkbox"
@@ -2045,6 +2104,11 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                         ? this.getRenderedActionArguments(this.state.slateValuesMap, this.props.entities)
                         : []}
                     hideUndefined={false}
+                />
+                <ActionSelector
+                    open={this.state.isRepromptActionSelectorModelOpen}
+                    actions={this.props.actions.filter(a => a.actionId !== this.props.action?.actionId)}
+                    onClose={this.onCloseRepromptActionSelector}
                 />
                 <ConditionModal
                     entities={this.props.entities}
