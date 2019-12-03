@@ -60,10 +60,12 @@ class AppCreator extends React.Component<Props, ComponentState> {
     componentDidUpdate(prevProps: Props) {
         // Reset when opening modal
         if (this.props.open === false && prevProps.open === true) {
-            const firstValue = this.state.localeOptions[0].text
+            // Component might update before localOptions have been loaded
+            // TODO: Remove explicit types, should be inferrable
+            const firstValue: string | undefined = this.state.localeOptions[0]?.text
             this.setState({
                 appNameVal: '',
-                localeVal: firstValue,
+                localeVal: firstValue ?? '',
                 clFile: null,
                 obiFiles: null
             })
