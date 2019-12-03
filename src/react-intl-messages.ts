@@ -1197,7 +1197,7 @@ export default {
         [FM.TOOLTIP_ACTION_IS_ENTRY_NODE]: "When selected and not in a Train Dialog, Bot will direct dialog flow to this action if it isn't confident on how to respond to the user's first input.",
         [FM.TOOLTIP_ACTION_IS_ENTRY_NODE_TITLE]: 'Unknown user 1st turn input',
 
-        [FM.TOOLTIP_ACTION_REPROMPT]: "When selected and not in a Train Dialog, Bot will repeat the given action if it isn't confident on how to respond to the user's input.",
+        [FM.TOOLTIP_ACTION_REPROMPT]: "When checked (and not in a Train Dialog), Bot will take the given action if it isn't confident on how to respond to the user's input.  This feature can not be used in conjunction with Expected Entity.",
         [FM.TOOLTIP_ACTION_REPROMPT_TITLE]: 'Reprompt',
 
         [FM.TOOLTIP_ACTION_RESPONSE]: 'Value of Response that Bot will take',
@@ -1221,7 +1221,7 @@ export default {
         [FM.TOOLTIP_ACTION_SCORE_TRAINING]: `Action can't be scored yet as Conversation Learner is still training`,
         [FM.TOOLTIP_ACTION_SCORE_DISQUALIFIED]: 'Action has been disqualified - Required Conditions are missing or Blocked Entities are present',
 
-        [FM.TOOLTIP_ACTION_SUGGESTED]: `Hint to Conversation Learner that the user's reply to this Action will likely be a value for this Entity. Pre-Trained Entities cannot be used as Expected Entities.`,
+        [FM.TOOLTIP_ACTION_SUGGESTED]: `Hint to Conversation Learner that the user's reply to this Action will likely be a value for this Entity. Pre-Trained Entities cannot be used as Expected Entities.  This feature can not be used in conjuntion with prompts for unexpected input.`,
         [FM.TOOLTIP_ACTION_SUGGESTED_TITLE]: 'Expected Response',
         [FM.TOOLTIP_ACTION_SUGGESTED_ROW1]: '"What is your name?"',
         [FM.TOOLTIP_ACTION_SUGGESTED_ROW2]: '$name',

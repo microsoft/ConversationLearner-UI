@@ -1885,6 +1885,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                 <TC.TagPicker
                                     data-testid="action-expected-entity"
                                     label="Expected Entity in User reply..."
+                                    // Expected Entity and Reprompt can't both be in use
+                                    disabled={this.state.shouldReprompt}
                                     onResolveSuggestions={this.onResolveExpectedEntityTags}
                                     onEmptyResolveSuggestions={selectedItems => this.onResolveExpectedEntityTags('', selectedItems ?? [])}
                                     onRenderItem={this.onRenderExpectedTag}
@@ -1966,7 +1968,12 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                     label={Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_CHECKBOX_REPROMPT_LABEL)}
                                     checked={this.state.shouldReprompt}
                                     onChange={this.onChangeRepromptCheckbox}
-                                    disabled={!this.state.isTerminal || [CLM.ActionTypes.END_SESSION, CLM.ActionTypes.SET_ENTITY, CLM.ActionTypes.DISPATCH].includes(this.state.selectedActionTypeOptionKey as CLM.ActionTypes)}
+                                    disabled={
+                                        !this.state.isTerminal
+                                        || [CLM.ActionTypes.END_SESSION, CLM.ActionTypes.SET_ENTITY, CLM.ActionTypes.DISPATCH].includes(this.state.selectedActionTypeOptionKey as CLM.ActionTypes)
+                                        // Expected Entity and Reprompt can't both be in use
+                                        || this.state.expectedEntityTags.length > 0
+                                    }
                                     tipType={ToolTip.TipType.ACTION_REPROMPT}
                                 />
                                 {this.state.shouldReprompt &&
