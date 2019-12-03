@@ -309,6 +309,8 @@ const Component: React.FC<Props> = (props) => {
                                 ? <div data-testid="condition-creator-modal-dropdown-numbervalue">
                                     <OF.Label>Number</OF.Label>
                                     <OF.SpinButton
+                                        max={Number.MAX_SAFE_INTEGER}
+                                        min={Number.MIN_SAFE_INTEGER}
                                         value={numberValue.toString()}
                                         onBlur={(event: React.FocusEvent<HTMLInputElement>) => {
                                             const value = parseInt(event.target.value, 10)
