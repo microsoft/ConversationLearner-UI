@@ -266,7 +266,7 @@ const Component: React.FC<Props> = (props) => {
     }
 
     const isOperatorDisabled = selectedEntityOption?.data.entityType === CLM.EntityType.ENUM
-    const conditionsUsingEntity = props.conditions.filter(c => c.entityId === selectedEntityOption.key)
+    const conditionsUsingEntity = props.conditions.filter(c => c.entityId === selectedEntityOption?.key)
     const currentCondition = createConditionFromState()
 
     return <OF.Modal
@@ -309,6 +309,8 @@ const Component: React.FC<Props> = (props) => {
                                 ? <div data-testid="condition-creator-modal-dropdown-numbervalue">
                                     <OF.Label>Number</OF.Label>
                                     <OF.SpinButton
+                                        max={Number.MAX_SAFE_INTEGER}
+                                        min={Number.MIN_SAFE_INTEGER}
                                         value={numberValue.toString()}
                                         onBlur={(event: React.FocusEvent<HTMLInputElement>) => {
                                             const value = parseInt(event.target.value, 10)
