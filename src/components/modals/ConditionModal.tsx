@@ -266,7 +266,7 @@ const Component: React.FC<Props> = (props) => {
     }
 
     const isOperatorDisabled = selectedEntityOption?.data.entityType === CLM.EntityType.ENUM
-    const conditionsUsingEntity = props.conditions.filter(c => c.entityId === selectedEntityOption.key)
+    const conditionsUsingEntity = props.conditions.filter(c => c.entityId === selectedEntityOption?.key)
     const currentCondition = createConditionFromState()
 
     return <OF.Modal
