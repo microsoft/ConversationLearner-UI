@@ -2,22 +2,17 @@ const axios = require('axios');
 
 async function GetJson(url) {
   try {
-    let artifacts;
-    await axios.get(url)
-    .then(response => {
-      artifacts = response.data;
-      return artifacts;
+    let artifacts = await axios.get(url).then(response => {
+      return response.data;
     })
     .catch(error => {
       console.log(error);
     });
-    console.log('2');
     return artifacts;
   }
   catch(err) {
     console.log(`Error in GetJson: ${err.message}`)
   }
-
 }
 
 GetJson('https://circleci.com/api/v1.1/project/github/microsoft/ConversationLearner-UI/5321/artifacts?circle-token=2ad1e457047948114cb3bbb1957d6f90c1e2ee25')
