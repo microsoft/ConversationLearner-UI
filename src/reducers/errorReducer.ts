@@ -10,10 +10,10 @@ import produce from 'immer'
 
 const initialState: ErrorState = {
     type: ErrorType.Error,
-    title: null,
-    message: "",
+    title: undefined,
+    messages: [""],
     actionType: AT.NO_OP,
-    closeCallback: null
+    closeCallback: undefined
 }
 
 const errorReducer: Reducer<ErrorState> = produce((state: ErrorState, action: ActionObject) => {
@@ -23,7 +23,7 @@ const errorReducer: Reducer<ErrorState> = produce((state: ErrorState, action: Ac
         case AT.SET_ERROR_DISPLAY:
             state.type = action.errorType
             state.title = action.title
-            state.message = action.message
+            state.messages = action.messages
             state.actionType = action.actionType
             return
         case AT.SET_ERROR_DISMISS_CALLBACK:
@@ -34,9 +34,9 @@ const errorReducer: Reducer<ErrorState> = produce((state: ErrorState, action: Ac
                 return {
                     type: ErrorType.Error,
                     title: `Configuration Error`,
-                    message: action.botInfo.validationError,
+                    messages: [action.botInfo.validationError],
                     actionType: AT.FETCH_BOTINFO_ASYNC,
-                    closeCallback: null
+                    closeCallback: undefined
                 }
             }
             return

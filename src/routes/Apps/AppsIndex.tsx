@@ -3,6 +3,9 @@
  * Licensed under the MIT License.
  */
 import * as React from 'react'
+import * as Util from '../../Utils/util'
+import * as DispatchUtils from '../../Utils/dispatchUtils'
+import * as CLM from '@conversationlearner/models'
 import actions from '../../actions'
 import AppIndex from './App/Index'
 import AppsList from './AppsList'
@@ -11,10 +14,8 @@ import { RouteComponentProps, StaticContext } from 'react-router'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { State } from '../../types'
-import * as CLM from '@conversationlearner/models'
-import { CL_IMPORT_TUTORIALS_USER_ID } from '../../types/const'
+import { CL_IMPORT_TUTORIALS_USER_ID, ErrorType } from '../../types/const'
 import { OBIImportData } from '../../Utils/obiUtils'
-import * as DispatchUtils from '../../Utils/dispatchUtils'
 import { SourceAndModelPair } from '../../types/models'
 import { DispatcherAlgorithmType } from '../../components/modals/DispatcherCreator';
 
@@ -54,6 +55,13 @@ class AppsIndex extends React.Component<Props> {
     }
 
     onCreateApp = async (appToCreate: CLM.AppBase, source: CLM.AppDefinition | null = null, obiImportData?: OBIImportData) => {
+        if (source) {
+            const errors = Util.appDefinitionValidationErrors(source)
+            if (errors.length > 0) {
+                this.props.setErrorDisplay(ErrorType.Error, "Invalid .cl File", errors)
+                return
+            }
+        }
         const app = await (this.props.createApplicationThunkAsync(this.props.user.id, appToCreate, source, obiImportData) as any as Promise<CLM.AppBase>)
         const { match, history } = this.props
         history.push(`${match.url}/${app.appId}${obiImportData ? "/trainDialogs" : ""}`, { app })
@@ -120,6 +128,7 @@ const mapDispatchToProps = (dispatch: any) => {
         createApplicationThunkAsync: actions.app.createApplicationThunkAsync,
         deleteApplicationThunkAsync: actions.app.deleteApplicationThunkAsync,
         copyApplicationThunkAsync: actions.app.copyApplicationThunkAsync,
+        setErrorDisplay: actions.display.setErrorDisplay
     }, dispatch)
 }
 
