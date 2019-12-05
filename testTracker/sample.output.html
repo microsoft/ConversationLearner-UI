@@ -1,12 +1,20 @@
 <html>
   <head>
     <style>
-    .grid-container {
+    .grid-container1 {
       display: grid;
-      grid-template-columns: auto auto auto;
+      grid-template-columns: auto;
       background-color: #2196F3;
       padding: 5px;
     }
+
+    .grid-container2 {
+      display: grid;
+      grid-template-columns: auto auto;
+      background-color: #2196F3;
+      padding: 5px;
+    }
+
     .grid-item {
       background-color: rgba(255, 255, 255, 0.8);
       border: 1px solid rgba(0, 0, 0, 0.8);
@@ -18,28 +26,92 @@
   </head>
 
   <body>
-    <a href='https://5390-94457606-gh.circle-artifacts.com/0/root/project/cypress/screenshots/regressionTs/actionConditions.spec.ts/Action%20Conditions%20--%20Existing%20Model%20--%20Action%20Constraints%20--%20ValueConditions%20--%20Single%20Value%20Entity%20-%20Number%20Value%20%28number%20from%20label%29%20--%20should%20properly%20constrain%20actions%20%28failed%29.png' target="_blank">
-    SPECIAL LINK
-    </a>
+    Build Number: <input type="text" id="buildNumber">
+    <button onclick="loadTestResults()">Load Test Results</button>
+    
+    <div id="UnknownFailures"></div>
+    <div id="KnownFailures"></div>
+    <div id="PassingTests"></div>
 
-    <div class="grid-container">
-      <div class="grid-item">
-        <a href='https://5321-94457606-gh.circle-artifacts.com/0/root/project/cypress/screenshots/Regression/Train/DisqualifyingEntities.spec.js/Disqualifying Entities - Train -- 1st Train Dialog -- 3rd Round -- Should type in another user utterance and click Score Actions button (failed).png' target="_blank">
-          Regression/Train/DisqualifyingEntities.spec.js/Disqualifying Entities - Train
-        </a>
-      </div>
+    <script>
+      function loadTestResults() {
+        const buildNumber = document.getElementById("buildNumber").value
 
-      <div class="grid-item">
-        <a href='https://5321-94457606-gh.circle-artifacts.com/0/root/project/results/cypress/Disqualifying Entities - Train.19.11.30.02.07.42..667.log' target="_blank">
-          Bugs 2389 & 2400 - Entity Detection panel shows a phrase that is different than the user's utterance. Detection Phrase: "HeyHeyHey" --- Expected Phrase: "Hey"
-        </a><br>
-        <a href='https://dialearn.visualstudio.com/BLIS/_workitems/edit/2400' target="_blank">Bug 2400</a><br>
-        <a href='https://dialearn.visualstudio.com/BLIS/_workitems/edit/2389' target="_blank">Bug 2389</a>
-      </div>
+        renderUnknownFailures([1])
+        renderKnownFailures(['s'])
+        renderPassingTests([2])
+      }
 
-      <div class="grid-item">      
-        <a href='https://5321-94457606-gh.circle-artifacts.com/0/root/project/cypress/videos/Regression/CreateModels/DisqualifyingEntities.spec.js.mp4' target="_blank">Video</a>
-      </div>  
-    </p>
+      function renderUnknownFailures(unknownFailures) {
+        const element = document.getElementById("UnknownFailures")
+        if (!unknownFailures || unknownFailures.length == 0) {
+          element.innerHTML = `<h2>No Unknown Failures</h2>`
+        } else {
+          element.innerHTML = `
+            <h2>Failures with Unknown Cause</h2>
+            <div class="grid-container2">
+              <div class="grid-item">
+                <b>Regression/Train/DisqualifyingEntities.spec.js/Disqualifying Entities - Train</b><br>
+                <a href='https://5321-94457606-gh.circle-artifacts.com/0/root/project/cypress/screenshots/Regression/Train/DisqualifyingEntities.spec.js/Disqualifying Entities - Train -- 1st Train Dialog -- 3rd Round -- Should type in another user utterance and click Score Actions button (failed).png' target="_blank">Snapshot</a><br>
+                <a href='https://5321-94457606-gh.circle-artifacts.com/0/root/project/cypress/videos/Regression/CreateModels/DisqualifyingEntities.spec.js.mp4' target="_blank">Video</a>
+              </div>
+
+              <div class="grid-item">
+                <b>Failure Message:</b> Bugs 2389 & 2400 - Entity Detection panel shows a phrase that is different than the user's utterance. Detection Phrase: "HeyHeyHey" --- Expected Phrase: "Hey"<br>
+                <a href='https://5321-94457606-gh.circle-artifacts.com/0/root/project/results/cypress/Disqualifying Entities - Train.19.11.30.02.07.42..667.log' target="_blank">
+                  Log File
+                </a><br>
+                <a href='https://dialearn.visualstudio.com/BLIS/_workitems/edit/2400' target="_blank">Bug 2400:</a> Use of APIs cause User Turns to be mangled in the Entity Detection panel<br>
+                <a href='https://dialearn.visualstudio.com/BLIS/_workitems/edit/2389' target="_blank">Bug 2389:</a> Entity Detection stutters as it repeats the user's utterance many times
+              </div>
+            </div>
+          `
+        }
+      }
+
+      function renderKnownFailures(knownFailures) {
+        const element = document.getElementById("KnownFailures")
+        if (!knownFailures || knownFailures.length == 0) {
+          element.innerHTML = `<h2>No Known Failures</h2>`
+        } else {
+          element.innerHTML = `
+            <h2>Failures with Known Cause</h2>
+            <div class="grid-container2">
+              <div class="grid-item">
+                <b>Regression/Train/DisqualifyingEntities.spec.js/Disqualifying Entities - Train</b><br>
+                <a href='https://5321-94457606-gh.circle-artifacts.com/0/root/project/cypress/screenshots/Regression/Train/DisqualifyingEntities.spec.js/Disqualifying Entities - Train -- 1st Train Dialog -- 3rd Round -- Should type in another user utterance and click Score Actions button (failed).png' target="_blank">Snapshot</a><br>
+                <a href='https://5321-94457606-gh.circle-artifacts.com/0/root/project/cypress/videos/Regression/CreateModels/DisqualifyingEntities.spec.js.mp4' target="_blank">Video</a>
+              </div>
+
+              <div class="grid-item">
+                <b>Failure Message:</b> Bugs 2389 & 2400 - Entity Detection panel shows a phrase that is different than the user's utterance. Detection Phrase: "HeyHeyHey" --- Expected Phrase: "Hey"<br>
+                <a href='https://5321-94457606-gh.circle-artifacts.com/0/root/project/results/cypress/Disqualifying Entities - Train.19.11.30.02.07.42..667.log' target="_blank">
+                  Log File
+                </a><br>
+                <a href='https://dialearn.visualstudio.com/BLIS/_workitems/edit/2400' target="_blank">Bug 2400:</a> Use of APIs cause User Turns to be mangled in the Entity Detection panel<br>
+                <a href='https://dialearn.visualstudio.com/BLIS/_workitems/edit/2389' target="_blank">Bug 2389:</a> Entity Detection stutters as it repeats the user's utterance many times
+              </div>
+            </div>
+          `
+        }
+      }
+
+      function renderPassingTests(passingTests) {
+        const element = document.getElementById("PassingTests")
+        if (!passingTests || passingTests.length == 0) {
+          element.innerHTML = `<h2>No Passing Tests</h2>`
+        } else {
+          element.innerHTML = `
+            <h2>Passing Tests</h2>
+            <div class="grid-container1">
+              <div class="grid-item">
+                <b>Regression/Train/DisqualifyingEntities.spec.js/Disqualifying Entities - Train</b><br>
+                <a href='https://5321-94457606-gh.circle-artifacts.com/0/root/project/cypress/videos/Regression/CreateModels/DisqualifyingEntities.spec.js.mp4' target="_blank">Video</a>
+              </div>
+            </div>
+          `
+        }
+      }
+    </script>
   </body>
 </html>
