@@ -411,5 +411,85 @@ describe('ExtractResponseEditor', () => {
             })
 
         })
+
+        describe('warnAboutOverlappingEntities', () => {
+            test('given no entities return false', () => {
+                expect(utilities.warnAboutOverlappingEntities([])).toBe(false)
+            })
+
+            test('given entities NOT overlapping return false', () => {
+                const customEntities: models.IGenericEntity<any>[] = [
+                    {
+                        startIndex: 1,
+                        endIndex: 3,
+                        data: {},
+                    },
+                    {
+                        startIndex: 5,
+                        endIndex: 7,
+                        data: {},
+                    }
+                ]
+
+                expect(utilities.warnAboutOverlappingEntities(customEntities)).toBe(false)
+            })
+
+            test('given entities WITH overlap return true', () => {
+                const customEntities: models.IGenericEntity<any>[] = [
+                    {
+                        startIndex: 1,
+                        endIndex: 3,
+                        data: {},
+                    },
+                    {
+                        startIndex: 0,
+                        endIndex: 4,
+                        data: {},
+                    },
+                ]
+
+                expect(utilities.warnAboutOverlappingEntities(customEntities)).toBe(true)
+            })
+        })
+
+        describe('discardOverlappingEntities', () => {
+            test('given empty array return empty array', () => {
+                expect(utilities.discardOverlappingEntities([])).toEqual([])
+            })
+
+            test('given entities NOT overlapping, dont discard any, ensure length is same', () => {
+                const customEntities: models.IGenericEntity<any>[] = [
+                    {
+                        startIndex: 1,
+                        endIndex: 3,
+                        data: {},
+                    },
+                    {
+                        startIndex: 5,
+                        endIndex: 7,
+                        data: {},
+                    }
+                ]
+
+                expect(utilities.discardOverlappingEntities(customEntities).length).toBe(2)
+            })
+
+            test('given entities WITH overlap, discard', () => {
+                const customEntities: models.IGenericEntity<any>[] = [
+                    {
+                        startIndex: 1,
+                        endIndex: 3,
+                        data: {},
+                    },
+                    {
+                        startIndex: 0,
+                        endIndex: 4,
+                        data: {},
+                    },
+                ]
+
+                expect(utilities.discardOverlappingEntities(customEntities).length).toBe(1)
+            })
+        })
     })
 })
