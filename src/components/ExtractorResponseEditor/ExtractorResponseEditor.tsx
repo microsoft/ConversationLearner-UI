@@ -14,7 +14,7 @@ import { Expando } from '../modals'
 import { IOption, IPosition, IEntityPickerProps, IGenericEntity, NodeType, IGenericEntityData, ExtractorStatus } from './models'
 import { convertEntitiesAndTextToTokenizedEditorValue, convertEntitiesAndTextToEditorValue, getRelativeParent, getEntitiesFromValueUsingTokenData, getSelectedText } from './utilities'
 import './ExtractorResponseEditor.css'
-import { autobind } from 'core-decorators';
+import { autobind } from 'core-decorators'
 
 // Slate doesn't have type definitions but we still want type consistency and references so we make custom type
 export type SlateValue = any
@@ -239,7 +239,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
     // selection to pick the character
     onSelectChar = () => {
         // Make selection
-        const selection = window.getSelection();
+        const selection = window.getSelection()
         const parentNode = selection?.anchorNode?.parentElement?.parentNode
 
         if (parentNode && selection) {
@@ -249,7 +249,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
 
             if (sibling?.firstChild?.firstChild?.firstChild) {
                 const newSelection = sibling.firstChild.firstChild.firstChild
-                const range = document.createRange();
+                const range = document.createRange()
                 range.selectNode(newSelection)
                 selection.removeAllRanges()
                 selection.addRange(range)
@@ -435,7 +435,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
      */
     @autobind
     onTestSelectWord(val: { detail: { phrase: string, index: number } } | { detail: string }) {
-        
+
         if (!val.detail) {
             throw new Error("Test_SelectWord expecting detail phrase")
         }
@@ -448,25 +448,33 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
         const lastWord = words[words.length - 1]
 
         // Get row
-        const rows = Array.from(document.querySelectorAll('[data-testid="extractor-response-editor-entity-labeler"]'))
+        const selectors = {
+            extractionEditor: '[data-testid="extractor-response-editor-entity-labeler"]',
+            tokenNode: ".cl-token-node",
+            slateEditor: '[data-slate-editor="true"]',
+        }
+        const rows = Array.from(document.querySelectorAll(selectors.extractionEditor))
         if (index >= rows.length || index < 0) {
             throw new Error("Row index does not exist")
         }
 
         const selectedRow = rows[index]
         // Get start div
-        const tokens = Array.from(selectedRow.querySelectorAll(".cl-token-node"))
-        const firstWordToken = tokens.filter(element => element.children[0].textContent === firstWord)[0]
-        const lastWordToken = tokens.filter(element => element.children[0].textContent === lastWord)[0]
+        const tokens = selectedRow
+            ? Array.from(selectedRow.querySelectorAll(selectors.tokenNode))
+            : []
+        const firstWordToken = tokens.find(element => element.children[0].textContent === firstWord)
+        const lastWordToken = tokens.find(element => element.children[0].textContent === lastWord)
 
         if (!firstWordToken || !lastWordToken) {
-            const extractionTextElement = document.querySelector('[data-slate-editor="true"]')
-            const input = extractionTextElement ? extractionTextElement.textContent : ''
+            const extractionTextElement = document.querySelector(selectors.slateEditor)
+            const input = extractionTextElement?.textContent ?? ''
             throw new Error(`You attempted to select the phrase: '${phrase}', but it was not found in the input: '${input}'`)
         }
 
         const firstDiv = firstWordToken.children[0].children[0]
         const lastDiv = lastWordToken.children[0].children[0]
+        // TODO: Decouple with DOM hierarchy
         const slateEditor = firstDiv!.parentElement!.parentElement!.parentElement!.parentElement
         const currentTarget = 'currentTarget'
         const typeKey = 'type'
@@ -485,15 +493,15 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
         }
 
         // Make selection
-        const selection = window.getSelection();
-        const range = document.createRange();
+        const selection = window.getSelection()
+        const range = document.createRange()
 
         if (selection) {
             range.setStartBefore(firstDiv)
             range.setEndAfter(lastDiv)
 
             if (selection) {
-                selection.removeAllRanges();
+                selection.removeAllRanges()
                 selection.addRange(range)
             }
 
