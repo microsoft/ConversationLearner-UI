@@ -4,6 +4,7 @@
  */
 import * as CLM from '@conversationlearner/models'
 import { PartialTrainDialog } from '../types/models'
+import { REPROMPT_SELF } from '../types/const'
 import Axios, { AxiosRequestConfig, AxiosResponse } from 'axios'
 import * as querystring from 'query-string'
 
@@ -305,7 +306,10 @@ export default class ClClient {
             url: `/app/${appId}/action`,
             data: action
         })
-        action.actionId = response.data.actionId;
+        action.actionId = response.data.actionId
+        if (action.repromptActionId === REPROMPT_SELF) {
+            action.repromptActionId = action.actionId
+        }
         return action
     }
 
