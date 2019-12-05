@@ -31,6 +31,7 @@ export function actionTypeRenderer(action: CLM.ActionBase | undefined): JSX.Elem
 export function actionListViewRenderer(
     action: CLM.ActionBase,
     entities: CLM.EntityBase[],
+    memories: CLM.Memory[],
     callbacks: CLM.Callback[],
     onClickViewCard: (action: CLM.ActionBase, cardViewerShowOriginal: boolean) => void
 ): React.ReactNode {
@@ -43,6 +44,7 @@ export function actionListViewRenderer(
             <ActionPayloadRenderers.TextPayloadRendererWithHighlights
                 textAction={textAction}
                 entities={entities}
+                memories={memories}
                 showMissingEntities={true}
             />)
     }
@@ -53,6 +55,7 @@ export function actionListViewRenderer(
             <ActionPayloadRenderers.ApiPayloadRendererWithHighlights
                 apiAction={apiAction}
                 entities={entities}
+                memories={memories}
                 callback={callback}
                 showMissingEntities={true}
             />)
@@ -64,6 +67,7 @@ export function actionListViewRenderer(
                 isValidationError={false}
                 cardAction={cardAction}
                 entities={entities}
+                memories={memories}
                 onClickViewCard={(_, showOriginal) => onClickViewCard(action, showOriginal)}
                 showMissingEntities={true}
             />)
@@ -74,6 +78,7 @@ export function actionListViewRenderer(
             <ActionPayloadRenderers.SessionPayloadRendererWithHighlights
                 sessionAction={sessionAction}
                 entities={entities}
+                memories={memories}
                 showMissingEntities={true}
             />)
     }
