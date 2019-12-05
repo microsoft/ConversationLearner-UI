@@ -53,6 +53,7 @@ class RepromptAction extends React.Component<Props, ComponentState> {
         const actionRender = (!this.props.selfprompt && this.props.action)
             ? actionListViewRenderer(this.props.action,
                 this.props.entities,
+                [],
                 this.props.botInfo.callbacks,
                 this.onClickViewCard)
             : undefined
