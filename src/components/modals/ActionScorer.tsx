@@ -127,6 +127,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             render: (action: CLM.ActionBase, component) => {
                 return actionListViewRenderer(action,
                     component.props.entities,
+                    component.props.memories,
                     component.props.botInfo.callbacks,
                     component.onClickViewCard)
             }
