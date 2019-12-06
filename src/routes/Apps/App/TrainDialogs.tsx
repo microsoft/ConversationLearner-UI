@@ -1072,8 +1072,9 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             )
 
             // Get new activities to check for errors or warnings
-            const teachWithActivities = ((await this.props.fetchActivitiesThunkAsync(this.props.app.appId, newTrainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithActivities>)
-            const replayError = DialogUtils.getMostSevereReplayError((await teachWithActivities).activities)
+            const teachWithActivities = await ((this.props.fetchActivitiesThunkAsync(this.props.app.appId, newTrainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithActivities>)
+            const replayError = DialogUtils.getMostSevereReplayError(teachWithActivities.activities)
+
             if (replayError) {
                 if (replayError.errorLevel === CLM.ReplayErrorLevel.WARNING) {
                     newTrainDialog.validity = CLM.Validity.WARNING
