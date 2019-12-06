@@ -1762,7 +1762,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         editingPackageId={this.props.editingPackageId}
                         originalTrainDialogId={this.state.originalTrainDialog ? this.state.originalTrainDialog.trainDialogId : null}
                         onClose={this.onCloseTeachSession}
-                        onEditTeach={(historyIndex, editHandlerArgs, tags, description, editHandler) => this.onEditTeach(historyIndex, editHandlerArgs ? editHandlerArgs : undefined, tags, description, editHandler)}
+                        onEditTeach={(activityIndex, editHandlerArgs, tags, description, editHandler) => this.onEditTeach(activityIndex, editHandlerArgs ? editHandlerArgs : undefined, tags, description, editHandler)}
                         onInsertAction={(trainDialog, activity, editHandlerArgs) => this.onInsertAction(trainDialog, activity, editHandlerArgs.isLastActivity!, editHandlerArgs.selectionType!)}
                         onInsertInput={(trainDialog, activity, editHandlerArgs) => this.onInsertInput(trainDialog, activity, editHandlerArgs.userInput!, editHandlerArgs.selectionType!)}
                         onDeleteTurn={(trainDialog, activity) => this.onDeleteTurn(trainDialog, activity)}
@@ -1920,7 +1920,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
     // User has edited an Activity in a TeachSession
     private async onEditTeach(
-        historyIndex: number | null,
+        activityIndex: number | null,
         args: DialogEditing.EditHandlerArgs | undefined,
         tags: string[],
         description: string,
@@ -1932,7 +1932,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             }
 
             await DialogEditing.onEditTeach(
-                historyIndex,
+                activityIndex,
                 args,
                 tags,
                 description,

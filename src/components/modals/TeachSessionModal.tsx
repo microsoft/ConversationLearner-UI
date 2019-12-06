@@ -848,7 +848,7 @@ const mapStateToProps = (state: State) => {
 export interface ReceivedProps {
     isOpen: boolean
     onClose: (save: boolean, tags?: string[], description?: string, stopImport?: boolean) => void
-    onEditTeach: (historyIndex: number | null, args: DialogEditing.EditHandlerArgs | null, tags: string[], description: string, editHandler: (trainDialog: CLM.TrainDialog, activity: BB.Activity, args: DialogEditing.EditHandlerArgs) => any) => void
+    onEditTeach: (activityIndex: number | null, args: DialogEditing.EditHandlerArgs | null, tags: string[], description: string, editHandler: (trainDialog: CLM.TrainDialog, activity: BB.Activity, args: DialogEditing.EditHandlerArgs) => any) => void
     onInsertAction: (trainDialog: CLM.TrainDialog, activity: BB.Activity, args: DialogEditing.EditHandlerArgs) => any
     onInsertInput: (trainDialog: CLM.TrainDialog, activity: BB.Activity, args: DialogEditing.EditHandlerArgs) => any
     onChangeExtraction: (trainDialog: CLM.TrainDialog, activity: BB.Activity, args: DialogEditing.EditHandlerArgs) => any
