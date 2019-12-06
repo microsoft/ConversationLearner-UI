@@ -15,7 +15,7 @@ async function GetFile(url) {
   }
 }
 
-GetFile('https://5321-94457606-gh.circle-artifacts.com/0/root/project/results/cypress/API%20Callbacks%20-%20CreateModels.19.11.30.01.22.04..120.log')
+GetFile('https://5432-94457606-gh.circle-artifacts.com/0/root/project/results/cypress/Settings%20-%20Settings.19.12.06.01.25.03..018.log')
 .then(file => {
   if (file) {
     console.log(file)

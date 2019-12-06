@@ -113,7 +113,7 @@ function LogTestState()
   console.log(message)
   console.log("'".repeat(message.length))
   if (failureMessage != '') {
-    console.log(`Failure Message: "${failureMessage}"`)
+    console.log(`Failure Message: ${failureMessage}`)
   }
 }
 
