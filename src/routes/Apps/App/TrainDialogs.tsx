@@ -1071,6 +1071,22 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 this.props.trainDialogReplayThunkAsync as any,
             )
 
+            // Get new activities to check for errors or warnings
+            const teachWithActivities = await ((this.props.fetchActivitiesThunkAsync(this.props.app.appId, newTrainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithActivities>)
+            const replayError = DialogUtils.getMostSevereReplayError(teachWithActivities.activities)
+
+            if (replayError) {
+                if (replayError.errorLevel === CLM.ReplayErrorLevel.WARNING) {
+                    newTrainDialog.validity = CLM.Validity.WARNING
+                }
+                else {
+                    newTrainDialog.validity = CLM.Validity.INVALID
+                }
+            }
+            else {
+                newTrainDialog.validity = CLM.Validity.VALID
+            }
+
             await ((this.props.trainDialogReplaceThunkAsync(this.props.app.appId, trainDialog.trainDialogId, newTrainDialog, false) as any) as Promise<void>)
 
             // If user clicks 'Cancel' replay dialogs will be reset
@@ -1142,7 +1158,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 transcriptImport: undefined
             })
             const message = error.currentTarget ? error.currentTarget.error.message : error.message
-            this.props.setErrorDisplay(ErrorType.Error, "Import Failed", message, null)
+            this.props.setErrorDisplay(ErrorType.Error, "Import Failed", message)
         }
     }
 
@@ -1219,7 +1235,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         }
         catch (e) {
             const error = e as Error
-            this.props.setErrorDisplay(ErrorType.Error, error.message, error.message, null)
+            this.props.setErrorDisplay(ErrorType.Error, error.message, "")
             this.setState({
                 transcriptImport: undefined,
                 isImportWaitModalOpen: false
