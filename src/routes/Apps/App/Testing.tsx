@@ -120,7 +120,7 @@ class Testing extends React.Component<Props, ComponentState> {
             }
             catch (e) {
                 const error = e as Error
-                this.props.setErrorDisplay(ErrorType.Error, `invalid .transcript file`, error.message, null)
+                this.props.setErrorDisplay(ErrorType.Error, `invalid .transcript file`, error.message)
             }
             finally {
                 this.props.spinnerRemove()
@@ -146,7 +146,7 @@ class Testing extends React.Component<Props, ComponentState> {
             }
             catch (e) {
                 const error = e as Error
-                this.props.setErrorDisplay(ErrorType.Error, `invalid .lg file`, error.message, null)
+                this.props.setErrorDisplay(ErrorType.Error, `invalid .lg file`, error.message)
             }
         }
     }
@@ -525,7 +525,7 @@ class Testing extends React.Component<Props, ComponentState> {
         }
         catch (e) {
             const error = e as Error
-            this.props.setErrorDisplay(ErrorType.Error, error.message, "Invalid file contents", null)
+            this.props.setErrorDisplay(ErrorType.Error, error.message, "Invalid file contents")
         }
     }
 

@@ -103,13 +103,13 @@ export type DisplayAction = {
     // used for setting whether the error popup is displayed
     type: AT.SET_ERROR_DISPLAY,
     errorType: ErrorType,
-    title: string | null,
-    message: string,
-    actionType: AT | null
+    title: string | undefined,
+    messages: string[],
+    actionType: AT | undefined
 } | {
     // fuction to call when error display is closeed
     type: AT.SET_ERROR_DISMISS_CALLBACK
-    closeCallback: (() => void) | null
+    closeCallback: (() => void) | undefined
 } | {
     type: AT.SET_WEBCHAT_SCROLL_POSITION,
     position: number

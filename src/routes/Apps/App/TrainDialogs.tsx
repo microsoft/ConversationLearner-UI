@@ -1158,7 +1158,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 transcriptImport: undefined
             })
             const message = error.currentTarget ? error.currentTarget.error.message : error.message
-            this.props.setErrorDisplay(ErrorType.Error, "Import Failed", message, null)
+            this.props.setErrorDisplay(ErrorType.Error, "Import Failed", message)
         }
     }
 
@@ -1235,7 +1235,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         }
         catch (e) {
             const error = e as Error
-            this.props.setErrorDisplay(ErrorType.Error, error.message, error.message, null)
+            this.props.setErrorDisplay(ErrorType.Error, error.message, "")
             this.setState({
                 transcriptImport: undefined,
                 isImportWaitModalOpen: false
