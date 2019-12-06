@@ -470,7 +470,7 @@ export async function onEditTeach(
     // Generate activities
     const teachWithActivities = await fetchActivitiesAsync(app.appId, trainDialog, user.name, user.id)
     // If no index given, select last activity
-    const selectedActivity = activityIndex
+    const selectedActivity = activityIndex != null
         ? teachWithActivities.activities[activityIndex]
         : teachWithActivities.activities[teachWithActivities.activities.length - 1]
     const clData: CLM.CLChannelData = { ...selectedActivity.channelData.clData, activityIndex: activityIndex }
