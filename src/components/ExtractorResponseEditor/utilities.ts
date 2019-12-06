@@ -355,6 +355,82 @@ function convertSegmentsToSlateValue(normalizedSegements: models.ISegement[], in
     }
 }
 
+export const discardOverlappingEntities = (customEntities: models.IGenericEntity<object>[]): models.IGenericEntity<any>[] => {
+    // Group by start index
+    const entityGroups = customEntities
+        .reduce<models.IGenericEntity<object>[][]>((groups, customEntity) => {
+            const existingGroup = groups.find(g => g.some(ce => ce.startIndex === customEntity.startIndex))
+            if (existingGroup) {
+                existingGroup.push(customEntity)
+            }
+            else {
+                const newGroup = [customEntity]
+                groups.push(newGroup)
+            }
+
+            return groups
+        }, [])
+
+    // Sort groups by size (smallest first) might not be necessary, but might be precursor to supporting hierarchial (intentional overlap)
+    const sortedEntityGroups = entityGroups.map(g => [...g].sort((a, b) => {
+        const sizeA = a.endIndex - a.startIndex
+        const sizeB = b.endIndex - b.startIndex
+
+        return sizeA - sizeB
+    }))
+
+    // Flatten groups by taking first of non overlapping entity of next group
+    let lastEndIndex = 0
+    const nonOverlappingEntities: models.IGenericEntity<object>[] = []
+    for (const group of sortedEntityGroups) {
+        // https://github.com/Microsoft/TypeScript/issues/13778
+        const firstEntityOfGroup: models.IGenericEntity<object> | undefined = group[0]
+        if (!firstEntityOfGroup) {
+            throw new Error(`Error when discarding overlapping entities. Cannot get first entity of group because the group is empty.`)
+        }
+
+        if (firstEntityOfGroup.startIndex >= lastEndIndex) {
+            nonOverlappingEntities.push(firstEntityOfGroup)
+            lastEndIndex = firstEntityOfGroup.endIndex
+        }
+    }
+
+    return nonOverlappingEntities
+}
+
+/**
+ * Compare every entity to every other entity. If any have overlapping indices then log warning.
+ * 
+ * @param customEntities List of custom entities
+ */
+export const warnAboutOverlappingEntities = (customEntities: models.IGenericEntity<object>[]): boolean => {
+    return customEntities.some((entity, i) => {
+        return customEntities
+            .slice(i + 1)
+            .some((otherEntity, _, es) => {
+                // Overlap start index
+                //  [ other entity ]
+                //            [ entity ]
+                const overlapStartIndex = (otherEntity.startIndex <= entity.startIndex
+                    && otherEntity.endIndex >= entity.startIndex)
+                // Overlap end index
+                //    [ other entity ]
+                // [entity]
+                const overlapEndIndex = (otherEntity.startIndex <= entity.endIndex
+                    && otherEntity.endIndex >= entity.endIndex)
+
+                const overlap = overlapStartIndex || overlapEndIndex
+
+                if (overlap) {
+                    // console.debug(`Entity `, entity, `has overlap with other entities.`, es)
+                    console.warn(`Custom entities have overlap. Overlapping entities will be discarded to allow proper rendering in UI but this is a bug.`, customEntities)
+                }
+
+                return overlap
+            })
+    })
+}
+
 /**
  * Note: this is more like a negative match used to determine characters that split the string instead of
  * positive match would specify characters which are tokens. Only chose this because it seems like a much
@@ -370,7 +446,9 @@ export const tokenizeRegex = /\s+|[.?,!]/g
  * @param customEntities array of entities
  */
 export const convertEntitiesAndTextToTokenizedEditorValue = (text: string, customEntities: models.IGenericEntity<any>[], inlineNodeType: string) => {
-    const labeledTokens = labelTokens(tokenizeText(text, tokenizeRegex), customEntities)
+    warnAboutOverlappingEntities(customEntities)
+    const nonOverlappingCustomEntities = discardOverlappingEntities(customEntities)
+    const labeledTokens = labelTokens(tokenizeText(text, tokenizeRegex), nonOverlappingCustomEntities)
     return convertToSlateValue(labeledTokens, inlineNodeType)
 }
 
