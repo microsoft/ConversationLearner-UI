@@ -473,7 +473,7 @@ export async function onEditTeach(
     const selectedActivity = activityIndex != null
         ? teachWithActivities.activities[activityIndex]
         : teachWithActivities.activities[teachWithActivities.activities.length - 1]
-    const clData: CLM.CLChannelData = { ...selectedActivity.channelData.clData, activityIndex: activityIndex }
+    const clData: CLM.CLChannelData = { ...selectedActivity.channelData.clData, activityIndex }
     selectedActivity.channelData.clData = clData
 
     await editHandler(trainDialog, selectedActivity, args)
