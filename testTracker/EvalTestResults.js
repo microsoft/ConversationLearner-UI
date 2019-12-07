@@ -24,28 +24,37 @@ const triageData = [
 
 async function GetTriageDetailsAboutTestFailure(log) {
   return await GetApiData(log.url).then(logText => {
-    const searchForFailureMessage = '\nFailure Message: '
-    let failureMessage
-    
-    let index = logText.lastIndexOf(searchForFailureMessage)
-    if (index == -1) {
-      failureMessage = 'ERROR: Failure Message was not found in this log file.'
-    } else {
-      failureMessage = logText.substring(index + searchForFailureMessage.length)
+    try {
+      console.log(`GetTriageDetailsAboutTestFailure - start`)
+      const searchForFailureMessage = '\nFailure Message: '
+      let failureMessage
+      
+      let index = logText.lastIndexOf(searchForFailureMessage)
+      if (index == -1) {
+        console.log(`GetTriageDetailsAboutTestFailure - not found error`)
+        failureMessage = 'ERROR: Failure Message was not found in this log file.'
+      } else {
+        failureMessage = logText.substring(index + searchForFailureMessage.length)
 
-      for(let i = 0; i < triageData.length; i++) {
-        let and = triageData[i].and
-        if (and && Array.isArray(and)) {
-          if (and.findIndex(matchString => !failureMessage.includes(matchString)) >= 0) {
-            continue // because this one is not a match
+        for(let i = 0; i < triageData.length; i++) {
+          console.log(`GetTriageDetailsAboutTestFailure - for i=${i}`)
+          let and = triageData[i].and
+          if (and && Array.isArray(and)) {
+            if (and.findIndex(matchString => !failureMessage.includes(matchString)) >= 0) {
+              console.log(`GetTriageDetailsAboutTestFailure - continue not a match`)
+              continue // because this one is not a match
+            }
+            console.log(`GetTriageDetailsAboutTestFailure returns: { message: ${failureMessage}, bugs: ${triageData[i].bugs} }`)
+            return { message: failureMessage, bugs: triageData[i].bugs }
           }
-          //console.log(`GetTriageDetailsAboutTestFailure returns: { message: ${failureMessage}, bugs: ${triageData[i].bugs} }`)
-          return { message: failureMessage, bugs: triageData[i].bugs }
         }
       }
+      console.log(`GetTriageDetailsAboutTestFailure returns: ${failureMessage}`)
+      return failureMessage
     }
-    //console.log(`GetTriageDetailsAboutTestFailure returns: ${failureMessage}`)
-    return failureMessage
+    catch(error) {
+      console.log(`!!! ERROR: ${error.message}`)
+    }
   })
 }
 
@@ -127,16 +136,23 @@ async function GetApiData(url) {
   }
 
   async function ProcessFailingTestArtifacts() {
-    async function ProcessFailingTestArtifact(png) {
+    for(let i = 0; i < pngs.length; i++) {
+      const png = pngs[i]
       let error
       let failureDetails
+      
+      //if (png.testName.endsWith('.ts')) continue
+
+      console.log(`*** PNG: ${png.testName} *****************************`)
 
       const log = logs.find(log => log.key === png.key)
       if (!log) {
+        console.log(`ProcessFailingTestArtifacts - going to return since log is undefined`)  
         errors.push({ testName: png.testName, key: png.key, url: 'page error: Log file not found' })
-        return
+        continue
       }
       
+      console.log(`ProcessFailingTestArtifacts - going to await GetTriageDetailsAboutTestFailure`)
       failureDetails = await GetTriageDetailsAboutTestFailure(log)
       if (typeof failureDetails == 'string') {
         console.log(`ProcessFailingTestArtifacts got failureDetails: ${failureDetails}`)
@@ -148,7 +164,7 @@ async function GetApiData(url) {
       if (!mp4) {
         console.log('ProcessFailingTestArtifacts - ERROR: Did not find matching mp4')
         errors.push({ testName: png.testName, key: png.key, url: 'page error: mp4 file not found' })
-        return
+        continue
       }
 
       let testFailure = {
@@ -170,8 +186,6 @@ async function GetApiData(url) {
         console.log('ProcessFailingTestArtifacts - Known Test Failure')
       }
     }
-
-    pngs.forEach(png => { await ProcessFailingTestArtifact(png) })
   }
 
   function ProcessPassingTestArtifacts() {
@@ -197,25 +211,25 @@ async function GetApiData(url) {
     console.log(`${unknownTestFailures.length} UNKNOWN TEST FAILURES -------------------------------------------------------`)
     unknownTestFailures.forEach(unknownTestFailure => {
       console.log(`unknownTestFailures.push({
-        testName: '${unknownTestFailures.testName}',
-        key: ${unknownTestFailures.key},
-        snapshotUrl: '${unknownTestFailures.snapshotUrl}',
-        videoUrl: '${unknownTestFailures.videoUrl}',
-        logUrl: '${unknownTestFailures.logUrl}',
-        failureMessage: '${unknownTestFailures.failureMessage}',
+        testName: '${unknownTestFailure.testName}',
+        key: ${unknownTestFailure.key},
+        snapshotUrl: '${unknownTestFailure.snapshotUrl}',
+        videoUrl: '${unknownTestFailure.videoUrl}',
+        logUrl: '${unknownTestFailure.logUrl}',
+        failureMessage: '${unknownTestFailure.failureMessage}',
       })`)
     })
 
     console.log(`${knownTestFailures.length} KNOWN TEST FAILURES ---------------------------------------------------------`)
     knownTestFailures.forEach(knownTestFailure => {
-      console.log(`unknownTestFailures.push({
+      console.log(`knownTestFailures.push({
         testName: '${knownTestFailure.testName}',
         key: ${knownTestFailure.key},
         snapshotUrl: '${knownTestFailure.snapshotUrl}',
         videoUrl: '${knownTestFailure.videoUrl}',
         logUrl: '${knownTestFailure.logUrl}',
         failureMessage: '${knownTestFailure.failureMessage}',
-        bugs: '${knownTestFailures.bugs}',
+        bugs: '${knownTestFailure.bugs}',
       })`)
     })
 
@@ -225,6 +239,15 @@ async function GetApiData(url) {
         testName: '${passingTest.testName}',
         videoUrl: '${passingTest.videoUrl}',
         logUrl: '${passingTest.logUrl}',
+      })`)
+    })
+
+    console.log(`${errors.length} ERRORS ---------------------------------------------------------------`)
+    errors.forEach(error => {
+      console.log(`errors.push({
+        testName: '${error.testName}',
+        key: '${error.key}',
+        url: '${error.url}',
       })`)
     })
   }

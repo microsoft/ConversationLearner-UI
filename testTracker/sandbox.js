@@ -1,36 +1,27 @@
-window.addEventListener("unhandledrejection", event => {
-  console.log(`Unhandled Promise Rejection Reason: ${event.reason}`)
-  console.log(`Unhandled Promise Rejection Promise: ${event.promise}`)
-  event.preventDefault();
-}, false);
+function f(valueToReturn) {
+  let promise = new Promise((resolve, reject) => {
+    setTimeout(() => resolve(valueToReturn), 1000)
+  });
 
-
-async function f(valueToReturn) {
-  return valueToReturn
+  promise.then(retVal => {
+    console.log(`Promise Returned: ${retVal} Expected: ${valueToReturn}`)
+    if(retVal != valueToReturn) {
+      throw new Error(`Promise returned: ${retVal} but we were expecting: ${valueToReturn}`)
+    }
+    return retVal
+  })
+  console.log('No, this is frustrating!')  
+  return 'Not what I want'
 }
 
-f(1).then(rv => {console.log(rv)});
+const returnedValue = f('EXPECTED VALUE')
+console.log(returnedValue)
 
-(async function() {
-  let rv = await f(2)
-  console.log(rv)
-}())
+setTimeout(() => console.log('We are DONE!'), 1200)
 
+// f(1).then(rv => {console.log(rv)});
 
-new Promise((resolve, reject) => {
-  console.log('Initial');
-  throw new Error('Something failed');
-  resolve();
-})
-.then(() => {
-  //throw new Error('Something failed');
-      
-  console.log('Do this');
-})
-// .catch(() => {
-//   console.error('Caught Error');
-// })
-// .then(() => {
-//   console.log('Do this, no matter what happened before');
-// });
-
+// (async function() {
+//   let rv = await f(2)
+//   console.log(rv)
+// }())

@@ -1,0 +1,367 @@
+<html>
+  <script>
+    const triageData = [
+      { 
+        and: [`Timed out retrying: Expected to find element: 'button.ms-Dropdown-item[title="Enum"]', but never found it.`],
+        bugs: [2409],
+      },
+      {
+        and: [`Bugs 2389 & 2400 - Entity Detection panel shows a phrase that is different than the user's utterance.`],
+        bugs: [2389, 2400]
+      },
+      {
+        and: [
+          "Timed out retrying: Expected to find content: 'z-rename-",
+          "within the element: <div.css-69> but never did.",
+        ],
+        bugs: [2407],
+      },
+      {
+        and: [`CypressError: Timed out retrying: Expected to find element: '[data-testid="app-index-model-name"]', but never found it.`],
+        bugs: [2408],
+      }
+    ]
+  </script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+  <head>
+    <style>
+    .grid-container1 {
+      display: grid;
+      grid-template-columns: auto;
+      background-color: #2196F3;
+      padding: 5px;
+    }
+
+    .grid-container2 {
+      display: grid;
+      grid-template-columns: auto auto;
+      background-color: #2196F3;
+      padding: 5px;
+    }
+
+    .grid-item {
+      background-color: rgba(255, 255, 255, 0.8);
+      border: 1px solid rgba(0, 0, 0, 0.8);
+      padding: 5px;
+      font-size: 15px;
+      text-align: left;
+    }
+    </style>
+  </head>
+
+  <body>
+    Build Number: <input type="text" id="buildNumber" value="5390">
+    <button onclick="loadTestResults()">Load Test Results</button>
+    
+    <div id="UnknownFailures"></div>
+    <div id="KnownFailures"></div>
+    <div id="PassingTests"></div>
+    <div id="ParsingErrors"></div>
+
+    <script>
+      function loadTestResults() {
+        const buildNumber = document.getElementById("buildNumber").value
+        
+        let logs = []
+        let mp4s = []
+        let pngs = []
+        let unknownTestFailures = []
+        let knownTestFailures = []
+        let passingTests = []
+        let parsingErrors = []
+
+        let iStart
+        let iEnd
+        let iSpec
+        let testName
+        let key
+
+        let artifacts
+        GetApiData(`https://circleci.com/api/v1.1/project/github/microsoft/ConversationLearner-UI/${buildNumber}/artifacts?circle-token=2ad1e457047948114cb3bbb1957d6f90c1e2ee25`)
+        .then(data => {
+          artifacts = data          
+
+          MoveArtifactJsonIntoArrays()
+          
+          console.log('Processing the Failed Test Results ----------------------------------')
+          ProcessFailingTestArtifacts()
+          .then(() => {
+            console.log('Processing the Passed Test Results ----------------------------------')
+            ProcessPassingTestArtifacts()
+
+            renderUnknownFailures()
+            renderKnownFailures()
+            renderPassingTests()
+            renderParsingErrors()
+          })
+        })
+
+        function MoveArtifactJsonIntoArrays() {
+          artifacts.forEach(artifact => {
+            const suffix = artifact.url.substring(artifact.url.length - 3)
+            switch (suffix) {
+              case 'log':
+                  iStart = artifact.url.indexOf('/cypress/') + '/cypress/'.length
+                  iEnd = artifact.url.length - '.19.12.05.02.42.14..456.log'.length
+                  key = artifact.url.substring(iStart, iEnd)
+                  console.log(key)
+                  console.log(artifact.url)
+                  logs.push({ key: key, url: artifact.url })
+                break
+
+              case 'mp4':
+                  iStart = artifact.url.indexOf('/videos/') + '/videos/'.length
+                  iEnd = artifact.url.length - 4
+                  testName = artifact.url.substring(iStart, iEnd)
+                  key = testName.replace(/\/|\\/g, "-")
+                  console.log(testName)
+                  console.log(key)
+                  console.log(artifact.url)
+                  mp4s.push({ testName: testName, key: key, url: artifact.url })
+                break
+              
+              case 'png':
+                iStart = artifact.url.indexOf('/screenshots/') + '/screenshots/'.length
+                iSpec = artifact.url.indexOf('.spec.', iStart)
+                iEnd = artifact.url.indexOf('/', iSpec)
+                testName = artifact.url.substring(iStart, iEnd)
+                key = testName.replace(/\/|\\/g, "-")
+                console.log(testName)
+                console.log(key)
+                console.log(artifact.url)
+                pngs.push({ testName: testName, key: key, url: artifact.url })
+                break
+              
+              default:
+                break
+            }
+          })
+        }
+
+        async function ProcessFailingTestArtifacts() {
+          for(let i = 0; i < pngs.length; i++) {
+            const png = pngs[i]
+            let error
+            let failureDetails
+            
+            //if (png.testName.endsWith('.ts')) continue
+
+            console.log(`*** PNG: ${png.testName} *****************************`)
+
+            const log = logs.find(log => log.key === png.key)
+            if (!log) {
+              console.log(`ProcessFailingTestArtifacts - going to return since log is undefined`)  
+              parsingErrors.push({ testName: png.testName, key: png.key, url: 'page error: Log file not found' })
+              continue
+            }
+            
+            console.log(`ProcessFailingTestArtifacts - going to await GetTriageDetailsAboutTestFailure`)
+            failureDetails = await GetTriageDetailsAboutTestFailure(log)
+            if (typeof failureDetails == 'string') {
+              console.log(`ProcessFailingTestArtifacts got failureDetails: ${failureDetails}`)
+            } else {
+              console.log(`ProcessFailingTestArtifacts got failureDetails: { message: ${failureDetails.message}, bugs: ${failureDetails.bugs} }`)
+            }
+
+            const mp4 = mp4s.find(mp4 => mp4.key === png.key)
+            if (!mp4) {
+              console.log('ProcessFailingTestArtifacts - ERROR: Did not find matching mp4')
+              parsingErrors.push({ testName: png.testName, key: png.key, url: 'page error: mp4 file not found' })
+              continue
+            }
+
+            let testFailure = {
+              testName: png.testName,
+              key: png.key,
+              snapshotUrl: png.url,
+              videoUrl: mp4.url,
+              logUrl: log.url,
+            }
+
+            if (typeof failureDetails == 'string') {
+              testFailure.failureMessage = failureDetails
+              unknownTestFailures.push(testFailure)
+              console.log('ProcessFailingTestArtifacts - Unknown Test Failure')
+            } else {
+              testFailure.failureMessage = failureDetails.message
+              testFailure.bugs = failureDetails.bugs
+              knownTestFailures.push(testFailure)
+              console.log('ProcessFailingTestArtifacts - Known Test Failure')
+            }
+          }
+        }
+
+        function ProcessPassingTestArtifacts() {
+          logs.forEach(log => {
+            if (unknownTestFailures.findIndex(failure => failure.key === log.key) >= 0) return
+            if (knownTestFailures.findIndex(failure => failure.key === log.key) >= 0) return
+
+            const mp4 = mp4s.find(mp4 => mp4.key === log.key)
+            if (!mp4) {
+              parsingErrors.push({ testName: log.key, key: log.key, url: 'page error: mp4 file not found' })
+              return
+            }
+
+            passingTests.push({
+              testName: mp4.testName,
+              videoUrl: mp4.url,
+              logUrl: log.url,
+            })
+          })
+        }
+
+        async function GetApiData(url) {
+          return await axios.get(url).then(response => {
+            return response.data
+          })
+          .catch(err => {
+            console.log(`GetApiData - Error accessing: ${url}`)
+            console.log(err.message)
+          })
+        }
+        
+        async function GetTriageDetailsAboutTestFailure(log) {
+          return await GetApiData(log.url).then(logText => {
+            try {
+              console.log(`GetTriageDetailsAboutTestFailure - start`)
+              const searchForFailureMessage = '\nFailure Message: '
+              let failureMessage
+              
+              let index = logText.lastIndexOf(searchForFailureMessage)
+              if (index == -1) {
+                console.log(`GetTriageDetailsAboutTestFailure - not found error`)
+                failureMessage = 'ERROR: Failure Message was not found in this log file.'
+              } else {
+                failureMessage = logText.substring(index + searchForFailureMessage.length)
+
+                for(let i = 0; i < triageData.length; i++) {
+                  console.log(`GetTriageDetailsAboutTestFailure - for i=${i}`)
+                  let and = triageData[i].and
+                  if (and && Array.isArray(and)) {
+                    if (and.findIndex(matchString => !failureMessage.includes(matchString)) >= 0) {
+                      console.log(`GetTriageDetailsAboutTestFailure - continue not a match`)
+                      continue // because this one is not a match
+                    }
+                    console.log(`GetTriageDetailsAboutTestFailure returns: { message: ${failureMessage}, bugs: ${triageData[i].bugs} }`)
+                    return { message: failureMessage, bugs: triageData[i].bugs }
+                  }
+                }
+              }
+              console.log(`GetTriageDetailsAboutTestFailure returns: ${failureMessage}`)
+              return failureMessage
+            }
+            catch(error) {
+              console.log(`!!! ERROR: ${error.message}`)
+            }
+          })
+        }
+
+        function renderUnknownFailures() {
+          console.log(`${unknownTestFailures.length} UNKNOWN TEST FAILURES -------------------------------------------------------`)
+
+          const element = document.getElementById("UnknownFailures")
+          if (!unknownFailures || unknownFailures.length == 0) {
+            element.innerHTML = `<h2>No Unknown Failures</h2>`
+          } else {
+            let toRender = `
+              <h2>${unknownFailures.length} Failures with an Unknown Cause</h2>
+              <div class="grid-container2">
+            `
+            unknownTestFailures.forEach(unknownTestFailure => {
+              toRender += `
+                <div class="grid-item">
+                  <b>${unknownTestFailure.testName}</b><br>
+                  <a href='${unknownTestFailures.snapshotUrl}' target="_blank">
+                    Snapshot
+                  </a> -- 
+                  <a href='${unknownTestFailures.videoUrl}' target="_blank">Video</a>
+                </div>
+
+                <div class="grid-item">
+                  <b>Failure Message:</b> ${unknownTestFailures.failureMessage}<br>
+                  <a href='${unknownTestFailures.logUrl}' target="_blank">
+                    Log File
+                  </a><br>
+                </div>
+              `
+            })
+            element.innerHTML = toRender + '</div>'
+          }
+        }
+
+        function renderKnownFailures() {
+          console.log(`${knownTestFailures.length} KNOWN TEST FAILURES ---------------------------------------------------------`)
+
+          const element = document.getElementById("KnownFailures")
+          if (!knownFailures || knownFailures.length == 0) {
+            element.innerHTML = `<h2>No Known Failures</h2>`
+          } else {
+            let toRender = `
+              <h2>${knownFailures.length} Failures with a Known Cause</h2>
+              <div class="grid-container2">
+            `
+            knownTestFailures.forEach(knownTestFailure => {
+              toRender += `
+                <div class="grid-item">
+                  <b>${unknownTestFailure.testName}</b><br>
+                  <a href='${unknownTestFailures.snapshotUrl}' target="_blank">
+                    Snapshot
+                  </a> -- 
+                  <a href='${unknownTestFailures.videoUrl}' target="_blank">Video</a>
+                </div>
+
+                <div class="grid-item">
+                  <b>Failure Message:</b> ${unknownTestFailures.failureMessage}<br>
+                  <a href='${unknownTestFailures.logUrl}' target="_blank">
+                    Log File
+                  </a><br>
+              `
+              knownTestFailure.bugs.forEach(bugNumber => {
+                toRender += `
+                  <a href='https://dialearn.visualstudio.com/BLIS/_workitems/edit/${bugNumber}' target="_blank">Bug ${bugNumber}</a> TODO: Bug Title to go here.<br>
+                `
+              })
+              toRender += `
+                </div>
+              </div>
+              `
+            })
+            element.innerHTML = toRender + '</div>'
+          }
+        }
+
+        function renderPassingTests() {
+          console.log(`${passingTests.length} PASSING TESTS ---------------------------------------------------------------`)
+
+          passingTests.forEach(passingTest => {
+            const element = document.getElementById("PassingTests")
+            if (!passingTests || passingTests.length == 0) {
+              element.innerHTML = `<h2>No Passing Tests</h2>`
+            } else {
+              let toRender = `
+                <h2>${passingTests.length}Passing Tests</h2>
+                <div class="grid-container1">
+              `
+              passingTests.forEach(passingTest => {
+                toRender += `
+                  <div class="grid-item">
+                    <b>${passingTest.testName}</b><br>
+                    <a href='${passingTest.videoUrl}' target="_blank">
+                      Video
+                    </a> -- 
+                    <a href='${passingTest.logUrl}' target="_blank">
+                      Log File
+                    </a><br>
+                  </div>
+                </div>
+                `
+                element.innerHTML = toRender + `</div>`
+              })
+            }
+          })
+        }
+      }
+    </script>
+  </body>
+</html>
