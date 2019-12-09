@@ -25,12 +25,12 @@ const setCurrentAppFulfilled = (app: AppBase): ActionObject => {
     }
 }
 
-export const setErrorDisplay = (errorType: ErrorType, title: string, message: string, actionType: AT | null): ActionObject => {
+export const setErrorDisplay = (errorType: ErrorType, title: string, messages: string | string[], actionType?: AT): ActionObject => {
     return {
         type: AT.SET_ERROR_DISPLAY,
         errorType,
         title,
-        message,
+        messages: (typeof messages === "string") ? [messages] : messages,
         actionType
     }
 }

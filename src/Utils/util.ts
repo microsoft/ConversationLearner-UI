@@ -5,9 +5,9 @@
 import * as CLM from '@conversationlearner/models'
 import * as IntlMessages from '../react-intl-messages'
 import * as Const from '../types/const'
-import { MessageValue } from 'react-intl'
 import * as moment from 'moment'
 import * as stringify from 'fast-json-stable-stringify'
+import { MessageValue } from 'react-intl'
 
 export function notNullOrUndefined<TValue>(value: TValue | null | undefined): value is TValue {
     return value !== null && value !== undefined;
@@ -363,4 +363,55 @@ export function mapReviver(key: any, value: any) {
         }
     }
     return value
+}
+
+// Returns list of validation errors or empty array
+export function appDefinitionValidationErrors(source: CLM.AppDefinition): string[] {
+
+    // Gather up all the entity and action references
+    let entityIds: string[] = []
+    let actionIds: string[] = []
+    source.trainDialogs.forEach(td => {
+        let filledEntityIds = td.initialFilledEntities.map(ife => ife.entityId!)
+        entityIds.push(...filledEntityIds)
+        td.rounds.forEach(round => {
+            round.extractorStep.textVariations.forEach(tv => {
+                const labeledEntitiId = tv.labelEntities.map(le => le.entityId)
+                entityIds.push(...labeledEntitiId)
+            })
+            round.scorerSteps.forEach(ss => {
+                filledEntityIds = ss.input.filledEntities.map(fe => fe.entityId!)
+                entityIds.push(...filledEntityIds)
+                actionIds.push(ss.labelAction!)
+                filledEntityIds = ss.logicResult?.changedFilledEntities.map(cfe => cfe.entityId!) || []
+                entityIds.push(...filledEntityIds)
+            })
+        })
+    })
+    source.actions.forEach(a => {
+        entityIds.push(...a.negativeEntities)
+        entityIds.push(...a.requiredEntities)
+        entityIds.push(...a.requiredEntitiesFromPayload)
+        if (a.suggestedEntity) {
+            entityIds.push(a.suggestedEntity)
+        }
+    })
+
+    // Make unique
+    entityIds = [...new Set(entityIds)]
+    actionIds = [...new Set(actionIds)]
+
+    // Make sure that each one exists
+    const errors: string[] = []
+    entityIds.forEach(eid => {
+        if (!source.entities.find(e => e.entityId === eid)) {
+            errors.push(`Entity ${eid} is not defined`)
+        }
+    })
+    actionIds.forEach(aid => {
+        if (!source.actions.find(a => a.actionId === aid)) {
+            errors.push(`Action ${aid} is not defined`)
+        }
+    })
+    return errors
 }

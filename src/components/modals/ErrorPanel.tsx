@@ -18,7 +18,7 @@ import * as Util from '../../Utils/util'
 
 interface ComponentState {
     errorCode: ErrorCode | null
-    errorBody: string,
+    errorMessages: string[],
     customError: string | null
 }
 
@@ -29,25 +29,25 @@ class ErrorPanel extends React.Component<Props, ComponentState> {
 
     state: ComponentState = {
         errorCode: null,
-        errorBody: "",
+        errorMessages: [""],
         customError: null
     }
 
-    UNSAFE_componentWillReceiveProps(newProps: Props) {
-        if (newProps.error !== this.props.error) {
-            const errorBody = this.getErrorBody(newProps.error)
-            const errorCode = this.getErrorCode(errorBody)
-            const customError = this.getCustomError(newProps.intl, newProps.error)
+    componentDidUpdate(prevProps: Props) {
+        if (prevProps.error !== this.props.error) {
+            const errorMessages = this.getErrorMessages(this.props.error)
+            const errorCode = this.getErrorCode(errorMessages[0])
+            const customError = this.getCustomError(this.props.intl, this.props.error)
 
             this.setState({
                 errorCode,
-                errorBody,
+                errorMessages,
                 customError
             })
         }
     }
 
-    handleClose = (actionType: AT | null) => {
+    handleClose = (actionType?: AT) => {
         this.props.clearErrorDisplay()
 
         // If error associated with an action
@@ -88,23 +88,25 @@ class ErrorPanel extends React.Component<Props, ComponentState> {
             Util.formatMessageId(intl, formattedMessageId)
     }
 
-    getErrorBody(error: ErrorState): string {
-        if (error.message) {
-            try {
-                // Try to parse as JSON
-                const errorObj = JSON.parse(error.message)
-                if (errorObj.data) {
-                    return JSON.stringify(errorObj.data)
+    getErrorMessages(error: ErrorState): string[] {
+        if (error.messages) {
+            return error.messages.map(message => {
+                try {
+                    // Try to parse as JSON
+                    const errorObj = JSON.parse(message)
+                    if (errorObj.data) {
+                        return JSON.stringify(errorObj.data)
+                    }
+                    else {
+                        return message
+                    }
                 }
-                else {
-                    return error.message
+                catch {
+                    return message
                 }
-            }
-            catch {
-                return error.message
-            }
+            })
         }
-        return ""
+        return []
     }
 
     getErrorCode(errorBody: string): ErrorCode | null {
@@ -120,13 +122,17 @@ class ErrorPanel extends React.Component<Props, ComponentState> {
         return null
     }
 
-    renderErrorCode(errorCode: ErrorCode, errorBody: string): React.ReactNode {
-        switch (errorCode) {
+    renderErrorBody(): React.ReactNode {
+        return this.state.errorMessages.map((item, i) => <p key={i}>{item}</p>);
+    }
+
+    renderErrorCode(): React.ReactNode {
+        switch (this.state.errorCode) {
             case ErrorCode.INVALID_LUIS_AUTHORING_KEY:
                 return (
                     <div className="cl-errorpanel">
                         <div>
-                            <div>{errorBody}</div>
+                            <div>{this.renderErrorBody()}</div>
                             {getTip(TipType.LUIS_AUTHORING_KEY)}
                         </div>
                     </div>
@@ -144,7 +150,7 @@ class ErrorPanel extends React.Component<Props, ComponentState> {
 
     renderError(): React.ReactNode {
         if (this.state.errorCode) {
-            return this.renderErrorCode(this.state.errorCode, this.state.errorBody)
+            return this.renderErrorCode()
         }
         else {
             return (
@@ -155,7 +161,7 @@ class ErrorPanel extends React.Component<Props, ComponentState> {
                             defaultMessage={this.props.error.actionType ?? 'Unknown'}
                         /> Failed</div>}
                     <div className={OF.FontClassNames.medium}>{this.props.error.title}</div>
-                    {this.state.errorBody}
+                    {this.renderErrorBody()}
                     {this.state.customError &&
                         <div className={OF.FontClassNames.medium}>{this.state.customError}</div>}
                 </div>

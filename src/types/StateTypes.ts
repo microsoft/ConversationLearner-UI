@@ -12,10 +12,10 @@ export type ActionState = CLM.ActionBase[];
 export type EntityState = CLM.EntityBase[];
 export type ErrorState = {
     type: ErrorType,
-    title: string | null,
-    message: string,
-    actionType: AT | null,
-    closeCallback: (() => void) | null
+    title?: string,
+    messages: string[],
+    actionType?: AT,
+    closeCallback?: (() => void)
 }
 export type TrainDialogState = CLM.TrainDialog[];
 

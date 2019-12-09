@@ -59,24 +59,25 @@ export enum FM {
     ACTION_DELETE_INUSE_PLACEHOLDER_PRESERVE = 'ActionDelete.inUse.placeholderPreserve',
     ACTION_DELETE_INUSE_PLACEHOLDER_REMOVE = 'ActionDelete.inUse.placeholderRemove',
 
+    // ActionList Columns
+    ACTIONLIST_COLUMNS_RESPONSE = 'ActionListColumns.response',
+    ACTIONLIST_COLUMNS_ARGUMENTS = 'ActionListColumns.arguements',
+    ACTIONLIST_COLUMNS_ISTERMINAL = 'ActionListColumns.isTerminal',
+    ACTIONLIST_COLUMNS_TYPE = 'ActionListColumns.type',
+    ACTIONLIST_COLUMNS_CONDITIONS = 'ActionListColumns.conditions',
+    ACTIONLIST_COLUMNS_REPROMPT = 'ActionListColumns.reprompt',
+            
     // ActionDetails
-    ACTIONDETAILSLIST_COLUMNS_RESPONSE = 'ActionDetailsList.columns.response',
-    ACTIONDETAILSLIST_COLUMNS_ARGUMENTS = 'ActionDetailsList.columns.arguments',
-    ACTIONDETAILSLIST_COLUMNS_TYPE = 'ActionDetailsList.columns.type',
     ACTIONDETAILSLIST_COLUMNS_REQUIREDENTITIES = 'ActionDetailsList.columns.requiredEntities',
     ACTIONDETAILSLIST_COLUMNS_DISQUALIFYINGENTITIES = 'ActionDetailsList.columns.disqualifyingEntities',
     ACTIONDETAILSLIST_COLUMNS_SUGGESTEDENTITY = 'ActionDetailsList.columns.suggestedEntity',
-    ACTIONDETAILSLIST_COLUMNS_ISTERMINAL = 'ActionDetailsList.columns.isTerminal',
-    ACTIONDETAILSLIST_COLUMNS_REPROMPT = 'ActionDetailsList.columns.reprompt',
     ACTIONDETAILSLIST_COLUMNS_CREATED_DATE_TIME = 'ActionDetailsList.columns.createdDateTime',
 
+    // ActionSelector
+    ACTIONSELECTOR_TITLE = 'ActionSelector.title',
+
     // ActionScorer
-    ACTIONSCORER_COLUMNS_RESPONSE = 'ActionScorer.columns.response',
-    ACTIONSCORER_COLUMNS_ARGUMENTS = 'ActionScorer.columns.arguments',
     ACTIONSCORER_COLUMNS_SCORE = 'ActionScorer.columns.score',
-    ACTIONSCORER_COLUMNS_ENTITIES = 'ActionScorer.columns.entities',
-    ACTIONSCORER_COLUMNS_ISTERMINAL = 'ActionScorer.columns.isTerminal',
-    ACTIONSCORER_COLUMNS_TYPE = 'ActionScorer.columns.type',
 
     // App
     APP_HEADER_MODELS = 'App.header.home',
@@ -415,6 +416,11 @@ export enum FM {
     REPLAYERROR_DESC_CHANGED_ENTITIES = 'ReplayError.Desc.changedEntities',
     REPLAYERROR_DESC_EXCEPTION = 'ReplayError.Desc.exception',
 
+    // RepromptAction
+    REPROMPTACTION_SELECTACTION_BUTTON = 'RepromptAction.selectActionButton',
+    REPROMPTACTION_SAME_CHOICE = 'RepromptAction.sameChoiceButton',
+    REPROMPTACTION_DIFFERENT_CHOICE = 'RepromptAction.sameDifferentButton',
+
     // Review
     REVIEW_TITLE = 'Review.title',
     REVIEW_SUBTITLE = 'Review.subtitle',
@@ -695,7 +701,7 @@ export default {
         [FM.ACTIONCREATOREDITOR_TRAINDIALOGSBUTTON_ARIADESCRIPTION]: 'Train Dialogs',
         [FM.ACTIONCREATOREDITOR_TRAINDIALOGSBUTTON_TEXT]: 'Train Dialogs',
         [FM.ACTIONCREATOREDITOR_CHECKBOX_TERMINAL_LABEL]: 'Wait for Response?',
-        [FM.ACTIONCREATOREDITOR_CHECKBOX_REPROMPT_LABEL]: 'Reprompt on unexected user input',
+        [FM.ACTIONCREATOREDITOR_CHECKBOX_REPROMPT_LABEL]: 'Prompt on unexected user input',
         [FM.ACTIONCREATOREDITOR_CHECKBOX_ENTRY_NODE_LABEL]: 'Direct unknown user 1st input to this action',
         [FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_TITLE]: 'Are you sure you want to delete this Action?',
         [FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_WARNING]: 'This Action is used by one or more Training Dialogs.',
@@ -711,27 +717,30 @@ export default {
         [FM.ACTIONCREATOREDITOR_WARNING_SET_ENTITY_EDIT]: 'You cannot save changes to {actionType} Actions.',
         [FM.ACTIONCREATOREDITOR_WARNING_DISPATCH_EDIT]: 'You cannot edit {actionType} Actions.',
 
-        // ActionScorer
-        [FM.ACTIONSCORER_COLUMNS_RESPONSE]: 'Response',
-        [FM.ACTIONSCORER_COLUMNS_ARGUMENTS]: 'Arguments',
-        [FM.ACTIONSCORER_COLUMNS_SCORE]: 'Score',
-        [FM.ACTIONSCORER_COLUMNS_ENTITIES]: 'Conditions',
-        [FM.ACTIONSCORER_COLUMNS_ISTERMINAL]: 'Wait',
-        [FM.ACTIONSCORER_COLUMNS_TYPE]: 'Type',
+        // ActionList Columns
+        [FM.ACTIONLIST_COLUMNS_RESPONSE]: 'Response',
+        [FM.ACTIONLIST_COLUMNS_ARGUMENTS]: 'Arguments',
+        [FM.ACTIONLIST_COLUMNS_ISTERMINAL]: 'Wait',
+        [FM.ACTIONLIST_COLUMNS_TYPE]: 'Type',
+        [FM.ACTIONLIST_COLUMNS_CONDITIONS]: 'Conditions',
+        [FM.ACTIONLIST_COLUMNS_REPROMPT]: 'Reprompt',
 
+        // ActionSelector
+        [FM.ACTIONSELECTOR_TITLE]: 'Select Action for Prompt',
+    
+        // ActionScorer
+        [FM.ACTIONSCORER_COLUMNS_SCORE]: 'Score',
+        
+        // ActionDeleteModal
         [FM.ACTION_DELETE_INUSE_TITLE]: 'Deleting actions used by train dialogs',
         [FM.ACTION_DELETE_INUSE_PLACEHOLDER_PRESERVE]: 'This operation will preserves the reference to the action leaving a placeholder. All the dialogs using the action will become invalid.  This option can be useful to see where and how the action was used as you correct the dialogs or replace the action.',
         [FM.ACTION_DELETE_INUSE_PLACEHOLDER_REMOVE]: 'This operation will remove the reference to the action. The dialog may become invalid if removal of the action affected memory or left a round unterminated. This option can be useful to if you think most of the dialogs will remain valid and you do not want to have to correct each dialog.',
 
         // ActionDetailsList
-        [FM.ACTIONDETAILSLIST_COLUMNS_RESPONSE]: 'Response',
-        [FM.ACTIONDETAILSLIST_COLUMNS_ARGUMENTS]: 'Arguments',
-        [FM.ACTIONDETAILSLIST_COLUMNS_TYPE]: 'Action Type',
         [FM.ACTIONDETAILSLIST_COLUMNS_REQUIREDENTITIES]: 'Required Conditions',
         [FM.ACTIONDETAILSLIST_COLUMNS_DISQUALIFYINGENTITIES]: 'Disqualifying Conditions',
         [FM.ACTIONDETAILSLIST_COLUMNS_SUGGESTEDENTITY]: 'Expected Entity',
-        [FM.ACTIONDETAILSLIST_COLUMNS_ISTERMINAL]: 'Wait',
-        [FM.ACTIONDETAILSLIST_COLUMNS_REPROMPT]: 'Reprompt',
+        [FM.ACTIONDETAILSLIST_COLUMNS_CREATED_DATE_TIME]: 'Created',
 
         // Actions
         [FM.ACTIONS_TITLE]: 'Actions',
@@ -759,9 +768,6 @@ export default {
         [FM.APPCREATOR_CHOOSE_FILE_BUTTON_TEXT]: 'Select File',
         [FM.APPCREATOR_CANCELBUTTON_ARIADESCRIPTION]: 'Cancel',
         [FM.APPCREATOR_CANCELBUTTON_TEXT]: 'Cancel',
-
-        // Dispatch Creator
-        [FM.DISPATCHCREATOR_ALGORITHM_TYPE_LABEL]: 'Algorithm Type',
 
         // App
         [FM.APP_HEADER_MODELS]: 'My Models',
@@ -845,257 +851,6 @@ export default {
         [FM.BUTTON_NEXT]: 'Next',
         [FM.BUTTON_PREVIOUS]: 'Prev',
 
-        // Error Messages
-        [FM.CUSTOMERROR_NETWORK_ERROR]: 'Is your Bot running? Did you set NODE_ENV=development?',
-
-        // Dashboard
-        [FM.DASHBOARD_TITLE]: 'Overview',
-        [FM.DASHBOARD_SUBTITLE]: `Notifications about this model`,
-
-        // Entities
-        [FM.ENTITIES_TITLE]: 'Entities',
-        [FM.ENTITIES_SUBTITLE]: `Entities hold values that are extracted from user utterances or set by code. They are stored in the Bot's memory to track state`,
-        [FM.ENTITIES_CREATEBUTTONARIALDESCRIPTION]: 'Create a New Entity',
-        [FM.ENTITIES_CREATEBUTTONTEXT]: 'New Entity',
-        [FM.ENTITIES_COLUMNS_NAME]: 'Name',
-        [FM.ENTITIES_COLUMNS_TYPE]: 'Type',
-        [FM.ENTITIES_COLUMNS_RESOLVER]: 'Resolver Type',
-        [FM.ENTITIES_COLUMNS_IS_PROGRAMMATIC]: 'Programmatic',
-        [FM.ENTITIES_COLUMNS_IS_MULTIVALUE]: 'Multi-Value',
-        [FM.ENTITIES_COLUMNS_IS_NEGATABLE]: 'Negatable',
-        [FM.ENTITIES_COLUMNS_CREATED_DATE_TIME]: 'Created',
-        [FM.ENTITIES_CONFIRMCANCELMODALTITLE]: 'Are you sure you want to delete this entity?',
-
-        // LogDialogs
-        [FM.LOGDIALOGS_TITLE]: 'Log Dialogs',
-        [FM.LOGDIALOGS_SUBTITLE]: 'Log Dialogs are records of conversations between users and your Bot. You can make corrections to Log Dialogs to improve the Bot.',
-        [FM.LOGDIALOGS_CREATEBUTTONTITLE]: 'New Log Dialog',
-        [FM.LOGDIALOGS_CREATEBUTTONARIALDESCRIPTION]: 'Create a New Log Dialog',
-        [FM.LOGDIALOGS_MODEL_VERSION]: 'Model Version',
-        [FM.LOGDIALOGS_USERINPUT]: 'User Input',
-        [FM.LOGDIALOGS_TURNS]: 'Turns',
-        [FM.LOGDIALOGS_LOGDISABLED]: 'Logging is disabled',
-        [FM.LOGDIALOGS_CREATED_DATE_TIME]: 'Created',
-        [FM.LOGDIALOGS_LAST_MODIFIED_DATE_TIME]: 'Last Modified',
-        [FM.LOGDIALOGS_ALREADYSELECTED]: 'Action already selected',
-        [FM.LOGDIALOGS_BUTTON_DELETESELECTED]: 'Delete Selected ({selectionCount})',
-        [FM.LOGDIALOGS_CONFIRMCANCEL_DELETESELECTED]: 'This will permanentaly delete {selectionCount} log dialog(s). Are you sure?',
-
-        // LogDialogAdmin
-        [FM.LOGDIALOGADMIN_CONFIRMTITLE]: 'This will attempt to replay the Log Dialog against the Bot and convert it into a new Train Dialog',
-
-        // ReplayErrorList
-        [FM.REPLAYERROR_ERROR]: 'This Train Dialog has errors that must be fixed before it can be used to train your model',
-        [FM.REPLAYERROR_ERROR_LOG]: 'This Log Dialog has errors that must be fixed before it can be converted to a Train Dialog',
-        [FM.REPLAYERROR_WARNING]: 'This Train Dialog has some issues to address',
-        [FM.REPLAYERROR_LOGDIALOG_VALIDATION_TITLE]: 'Model definition has changed',
-        [FM.REPLAYERROR_LOGDIALOG_VALIDATION_MESSAGE]: 'This Log Dialog was created with a earlier version of the model.  The following incompatibilities were found:',
-        [FM.REPLAYERROR_CONVERT_TITLE]: 'Unable to convert to Train Dialog',
-        [FM.REPLAYERROR_FAILMESSAGE]: 'The following issues need to be corrected first',
-        [FM.REPLAYERROR_EDIT_TITLE]: 'Unable to continue Dialog',
-        [FM.REPLAYERROR_BRANCH_TITLE]: 'Unable to Branch',
-        [FM.REPLAYERROR_DESC_ACTION_AFTER_WAIT]: 'Action follows a Wait Action',
-        [FM.REPLAYERROR_DESC_ACTION_UNDEFINED]: 'Action does not exist',
-        [FM.REPLAYERROR_DESC_ACTION_STUB]: 'Action not yet assigned to this imported response',
-        [FM.REPLAYERROR_DESC_API_BADCARD]: 'API Render function returned a malformed Activity',
-        [FM.REPLAYERROR_DESC_API_EXCEPTION]: 'API in Bot encountered an exception',
-        [FM.REPLAYERROR_DESC_API_MALFORMED]: 'Logic portion of callback returns a value, but no Render portion defined',
-        [FM.REPLAYERROR_DESC_API_PLACEHOLDER]: 'Placeholder should be replaced with a real API callback',
-        [FM.REPLAYERROR_DESC_API_UNDEFINED]: 'API does not exist on running Bot',
-        [FM.REPLAYERROR_DESC_INPUT_AFTER_NONWAIT]: 'User Input following a non-Wait Action',
-        [FM.REPLAYERROR_DESC_ENTITY_UNDEFINED]: 'Entity does not exist',
-        [FM.REPLAYERROR_DESC_ENTITY_EMPTY]: 'Action missing a value for',
-        [FM.REPLAYERROR_DESC_ENTITY_UNEXPECTED_MULTIVALUE]: 'Non-multivalue Entity labeled with more than one value',
-        [FM.REPLAYERROR_DESC_TWO_USER_INPUTS]: 'Two consecutive User Inputs',
-        [FM.REPLAYERROR_DESC_ACTION_UNAVAILABLE]: 'Action is unavailable',
-        [FM.REPLAYERROR_DESC_CHANGED_ENTITIES]: 'Entities inconsistent after user input',
-        [FM.REPLAYERROR_DESC_EXCEPTION]: `Encountered an error in Bot's API callback`,
-
-        // LogDialogs
-        [FM.REVIEW_TITLE]: 'Review Suspect Log Dialogs',
-        [FM.REVIEW_SUBTITLE]: 'Top log dialogs suspected of having issues',
-        [FM.REVIEW_ANALYZE]: 'Analyze',
-        [FM.REVIEW_PLACEHOLDER_TITLE]: 'Analyze Log Dialogs',
-        
-        // Settings
-        [FM.SETTINGS_TITLE]: 'Settings',
-        [FM.SETTINGS_SUBTITLE]: 'Control your model version tags and other model configuration',
-        [FM.SETTINGS_COPYBUTTONARIALDESCRIPTION]: 'Copy Model',
-        [FM.SETTINGS_COPYBUTTONTEXT]: 'Copy',
-        [FM.SETTINGS_EXPORTBUTTONARIALDESCRIPTION]: 'Export Model to File',
-        [FM.SETTINGS_FIELDERROR_ALPHANUMERIC]: 'Model names may only contain alphanumeric characters',
-        [FM.SETTINGS_FIELDS_NAMELABEL]: 'Name',
-        [FM.SETTINGS_FILEDS_APPIDLABEL]: 'Model ID',
-        [FM.SETTINGS_FIELDS_MARKDOWNLABEL]: 'Markdown',
-        [FM.SETTINGS_FIELDS_VIDEOLABEL]: 'Video',
-        [FM.SETTINGS_PASSWORDHIDDEN]: 'Show',
-        [FM.SETTINGS_PASSWORDVISIBLE]: 'Hide',
-        [FM.SETTINGS_BOTFRAMEWORKAPPIDFIELDLABEL]: 'Model ID',
-        [FM.SETTINGS_BOTFRAMEWORKADDBOTBUTTONTEXT]: 'Add',
-        [FM.SETTINGS_BOTFRAMEWORKLUISKEY_AUTHORING_LABEL]: 'LUIS Authoring Key',
-        [FM.SETTINGS_BOTFRAMEWORKLUISKEY_AUTHORING_PLACEHOLDER]: 'Authoring Key...',
-        [FM.SETTINGS_BOTFRAMEWORKLUISKEY_SUBSCRIPTION_LABEL]: 'LUIS Subscription Key',
-        [FM.SETTINGS_BOTFRAMEWORKLUISKEY_SUBSCRIPTION_PLACEHOLDER]: 'Subscription Key...',
-        [FM.SETTINGS_BOTFRAMEWORKLOCALELABEL]: 'Locale',
-        [FM.SETTINGS_BOTFRAMEWORKLISTLABEL]: 'Bot Framework Apps',
-        [FM.SETTINGS_SAVECHANGES]: 'Save Changes',
-        [FM.SETTINGS_DISCARD]: 'Discard',
-        [FM.SETTINGS_LOGGINGON_LABEL]: 'Log Conversations',
-        [FM.SETTINGS_DELETEISPERMANENT]: 'Deletion is irreversible.',
-        [FM.SETTINGS_LUIS_LINK]: 'Go to LUIS',
-        [FM.SETTINGS_MODEL_VERSION_EDITING]: 'Displayed Version',
-        [FM.SETTINGS_MODEL_VERSION_LIVE]: 'Live Version',
-        [FM.SETTINGS_MODEL_VERSIONS_CREATE]: 'New Version',
-        [FM.SETTINGS_MODEL_VERSIONS_TITLE]: 'Model Versions',
-        [FM.SETTINGS_MODEL_VERSIONS_DESCRIPTION]: 'Creating a new version will save a snapshot of the currently active model. You can promote this version to "live" for use in deployed bots while you continue to edit the latest version.  You can also recall these snapshots at any point in time.',
-
-        // ToolTip
-        [FM.TOOLTIP_ACTION_API]: 'APIs exposed in the running Bot of the form:',
-        [FM.TOOLTIP_ACTION_API_TITLE]: 'API',
-        [FM.TOOLTIP_ACTION_ARGUMENTS]: `When Action Type is an API call, a list of comma separated arguments passed to the API. Arguments prefixed with a $ refer to Entity values.  For example: "$city"`,
-        [FM.TOOLTIP_ACTION_ARGUMENTS_TITLE]: `Arguments`,
-        [FM.TOOLTIP_ACTION_CARD]: `When Action Type is a card call, a list of comma separated arguments passed to the Card. Arguments prefixed with a $ refer to Entity values.  For example: "$city"`,
-        [FM.TOOLTIP_ACTION_CARD_TITLE]: `Card`,
-        [FM.TOOLTIP_ACTION_END_SESSION]: `Data to send to "onSessionEndCallback" when this Action is selected`,
-        [FM.TOOLTIP_ACTION_END_SESSION_TITLE]: `End Session`,
-        [FM.TOOLTIP_ACTION_SET_ENTITY]: `Since these are actions they can be learned just like any other action in your bot.`,
-        [FM.TOOLTIP_ACTION_SET_ENTITY_TITLE]: `Set Entity`,
-        [FM.TOOLTIP_ACTION_ENTITY_VALUE]: `When this action is taken by the bot it will result in the entity being set with this value`,
-        [FM.TOOLTIP_ACTION_ENTITY_VALUE_TITLE]: `Entity Value`,
-        [FM.TOOLTIP_ACTION_ENTITIES]: 'Status of Entity requirements for this Action:',
-        [FM.TOOLTIP_ACTION_ENTITIES_REQ]: 'Required Entity is present',
-        [FM.TOOLTIP_ACTION_ENTITIES_REQ_NOT]: 'Required Enitity is missing (DISQUALIFIES ACTION)',
-        [FM.TOOLTIP_ACTION_ENTITIES_DISQUAL]: 'Disqualifying Entity is present (DISQUALIFIES ACTION)',
-        [FM.TOOLTIP_ACTION_ENTITIES_DISQUAL_NOT]: 'Disqualifying Entity is missing',
-
-        [FM.TOOLTIP_ACTION_DISQUAL]: 'Action will not be selected if Memory already contains value for these Entities',
-        [FM.TOOLTIP_ACTION_DISQUAL_TITLE]: 'Disqualifying Entities',
-        [FM.TOOLTIP_ACTION_DISQUAL_ROW1]: '"How would you like to pay?"',
-        [FM.TOOLTIP_ACTION_DISQUAL_ROW2]: '$paymentDetails',
-        [FM.TOOLTIP_ACTION_DISQUAL_ROW3]: '"When were you born?"',
-        [FM.TOOLTIP_ACTION_DISQUAL_ROW4]: '$birthdate',
-
-        [FM.TOOLTIP_ACTION_IS_ENTRY_NODE]: "When selected and not in a Train Dialog, Bot will direct dialog flow to this action if it isn't confident on how to respond to the user's first input.",
-        [FM.TOOLTIP_ACTION_IS_ENTRY_NODE_TITLE]: 'Unknown user 1st turn input',
-
-        [FM.TOOLTIP_ACTION_REPROMPT]: "When selected and not in a Train Dialog, Bot will repeat the given action if it isn't confident on how to respond to the user's input.",
-        [FM.TOOLTIP_ACTION_REPROMPT_TITLE]: 'Reprompt',
-
-        [FM.TOOLTIP_ACTION_RESPONSE]: 'Value of Response that Bot will take',
-        [FM.TOOLTIP_ACTION_RESPONSE_TEXT1]: 'Text the Bot will display to the user.',
-        [FM.TOOLTIP_ACTION_RESPONSE_TEXT2]: 'Prefix text with a $ to substitute Entity values.',
-        [FM.TOOLTIP_ACTION_RESPONSE_TEXT3]: 'Text contained in brackets (i.e. []) will only be displayed if all contained entities have values.',
-        [FM.TOOLTIP_ACTION_RESPONSE_TEXT_TITLE]: 'Response',
-        [FM.TOOLTIP_ACTION_RESPONSE_ROW1]: '"How can I help you?"',
-        [FM.TOOLTIP_ACTION_RESPONSE_ROW2]: '"You have $toppings on your pizza."',
-        [FM.TOOLTIP_ACTION_RESPONSE_ROW3]: '"Hi[, $name]"',
-
-        [FM.TOOLTIP_ACTION_REQUIRED]: 'Action will not be selected unless Memory contains values for these Entities',
-        [FM.TOOLTIP_ACTION_REQUIRED_TITLE]: 'Required Conditions',
-        [FM.TOOLTIP_ACTION_REQUIRED_ROW1]: '"How would you like to pay?"',
-        [FM.TOOLTIP_ACTION_REQUIRED_ROW2]: '$orderDetails $address',
-        [FM.TOOLTIP_ACTION_REQUIRED_ROW3]: '"Hi, $name"',
-        [FM.TOOLTIP_ACTION_REQUIRED_ROW4]: '$name',
-
-        [FM.TOOLTIP_ACTION_SCORE]: 'Score:',
-        [FM.TOOLTIP_ACTION_SCORE_PERCENT]: 'Conversation Learner confidence in performing an Action',
-        [FM.TOOLTIP_ACTION_SCORE_TRAINING]: `Action can't be scored yet as Conversation Learner is still training`,
-        [FM.TOOLTIP_ACTION_SCORE_DISQUALIFIED]: 'Action has been disqualified - Required Conditions are missing or Blocked Entities are present',
-
-        [FM.TOOLTIP_ACTION_SUGGESTED]: `Hint to Conversation Learner that the user's reply to this Action will likely be a value for this Entity. Pre-Trained Entities cannot be used as Expected Entities.`,
-        [FM.TOOLTIP_ACTION_SUGGESTED_TITLE]: 'Expected Response',
-        [FM.TOOLTIP_ACTION_SUGGESTED_ROW1]: '"What is your name?"',
-        [FM.TOOLTIP_ACTION_SUGGESTED_ROW2]: '$name',
-
-        [FM.TOOLTIP_ACTION_TYPE]: 'One of the following:',
-        [FM.TOOLTIP_ACTION_TYPE_TITLE]: 'Action Type',
-        [FM.TOOLTIP_ACTION_TYPE_TEXT]: 'A text response',
-        [FM.TOOLTIP_ACTION_TYPE_APILOCAL]: 'An API call to the Bot',
-        [FM.TOOLTIP_ACTION_TYPE_ENDSESSION]: 'Indicate Bot is done',
-        [FM.TOOLTIP_ACTION_TYPE_SET_ENTITY]: 'Set an entity to a known enum value',
-        [FM.TOOLTIP_ACTION_TYPE_CARD]: 'Renders an Adaptive Card template',
-        [FM.TOOLTIP_ACTION_TYPE_DISPATCH]: 'Dispatches the input to specified model',
-        [FM.TOOLTIP_ACTION_TYPE_CHANGE_MODEL]: `Forwards the input to specified model similar to 'Dispatch', but also persists the change so all future inputs in conversation are directed to the model.`,
-        [FM.TOOLTIP_ACTION_WAIT]: 'When selected, Bot will wait for more user input before taking another Action',
-        [FM.TOOLTIP_ACTION_WAIT_TITLE]: 'Wait For Response',
-
-        [FM.TOOLTIP_ADD_USER_INPUT_BUTTON]: 'Add a new user input',
-        [FM.TOOLTIP_ADD_BOT_RESONSE_BUTTON]: 'Add a new Bot response',
-        [FM.TOOLTIP_BRANCH_BUTTON]: 'Create a new Train Dialog by branching at this step',
-
-        [FM.TOOLTIP_BOTINFO_INVALID]: 'This model contains Card or API references that do not exist in the running Bot',
-        [FM.TOOLTIP_ENTITY_ACTION_DISQUALIFIED]: `Actions that are blocked from use if this Entity is set`,
-        [FM.TOOLTIP_ENTITY_ACTION_REQUIRED]: `Actions that are only employed when this Entity is set`,
-        [FM.TOOLTIP_ENTITY_EXTRACTOR_HELP]: `Select text to label it as an entity`,
-        [FM.TOOLTIP_ENTITY_EXTRACTOR_MATCH_WARNING]: 'Equivalent input must contain the same detected Entities as the original input text.',
-        [FM.TOOLTIP_ENTITY_EXTRACTOR_DUPE_WARNING1]: 'Entities that are not multi-value (i.e. ',
-        [FM.TOOLTIP_ENTITY_EXTRACTOR_DUPE_WARNING2]: ') will only store the last labelled utterance',
-        [FM.TOOLTIP_ENTITY_EXTRACTOR_DLG_SAMETAGGED]: 'Equivalent input must all have same tagged entities.',
-        [FM.TOOLTIP_ENTITY_EXTRACTOR_DLG_SAVECHANGES]: 'Do you want to save your Entity Detection changes?',
-
-        [FM.TOOLTIP_ENTITY_NAME]: 'Name of the Entity',
-        [FM.TOOLTIP_ENTITY_VALUE]: 'What the Bot currently has in Memory for this Entity',
-        [FM.TOOLTIP_EXAMPLE]: 'For example:',
-        [FM.TOOLTIP_LOGGING_TOGGLE]: 'Enables or disables logging of user conversations. When logging is enabled, Bot performance can be improved by providing corrections to Logs that contain undesired Bot responses.  The corrected Log Dialogs become new Training Dialogs',
-        [FM.TOOLTIP_MEMORYMANAGER]: `The memory manager provides the following functions for manipulating the Bot's memory:`,
-        [FM.TOOLTIP_MEMORYMANAGER_TITLE]: 'Memory Manager',
-        [FM.TOOLTIP_MEMORYCONVERTER]: `Conversation Learner provides the following converters, but developers are free to write additional ones:`,
-        [FM.TOOLTIP_MEMORYCONVERTER_TITLE]: 'Memory Converters',
-        [FM.TOOLTIP_PACKAGECREATOR_LIVE_TOGGLE]: 'When checked the new Tag will become the Live app served to users',
-        [FM.TOOLTIP_REPLAY]: `Replay each step in the Dialog, calling the EntityDetectionCallback and any API callbacks.  This will update the Dialog to reflect any changes made to the Bot's APIs`,
-        [FM.TOOLTIP_TAG_EDITING]: 'The version of the Model displayed in this administrative interface. You can view any version but can only edit the "Master" version.',
-        [FM.TOOLTIP_TAG_LIVE]: 'The version of the Model used when published to external channels (e.g. Skype)',
-        [FM.TOOLTIP_TRAINDIALOG_INVALID]: 'This Model contains Train Dialogs that have been invalided.  They must be edited and fixed to be included in training',
-        [FM.TOOLTIP_TRAINDIALOG_UNKNOWN]: 'This Model contains Train Dialogs that may have errors. They must be replayed and any errors fixed to be included in training',
-        [FM.TOOLTIP_TRAINDIALOG_WARNING]: 'This Model contains Train Dialogs that may have errors.',
-
-        // Train Dialogs
-        [FM.TRAINDIALOGS_TITLE]: 'Train Dialogs',
-        [FM.TRAINDIALOGS_SUBTITLE]: 'Train Dialogs are example conversations you want your Bot to imitate',
-        [FM.TRAINDIALOGS_CREATEBUTTONTITLE]: 'New Train Dialog',
-        [FM.TRAINDIALOGS_CREATEBUTTONARIALDESCRIPTION]: 'Create a New Train Dialog',
-        [FM.TRAINDIALOGS_TAGS]: 'Tags',
-        [FM.TRAINDIALOGS_DESCRIPTION]: 'Description',
-        [FM.TRAINDIALOGS_TURNS]: 'Turns',
-        [FM.TRAINDIALOGS_CREATED_DATE_TIME]: 'Created',
-        [FM.TRAINDIALOGS_LAST_MODIFIED_DATE_TIME]: 'Last Modified',
-        [FM.TRAINDIALOGS_FILTERING_TAGS_LABEL]: 'Filter by Tag:',
-        [FM.TRAINDIALOGS_FILTERING_TAGS]: 'All tags',
-        [FM.TRAINDIALOGS_FILTERING_ENTITIES_LABEL]: 'Filter by Entity:',
-        [FM.TRAINDIALOGS_FILTERING_ENTITIES]: 'All entities',
-        [FM.TRAINDIALOGS_FILTERING_ACTIONS_LABEL]: 'Filter by Actions:',
-        [FM.TRAINDIALOGS_FILTERING_ACTIONS]: 'All actions',
-        [FM.TRAINDIALOGS_FILTERING_RESET]: 'Clear',
-        [FM.TRAINDIALOGS_LISTVIEW_BUTTON]: 'List View',
-        [FM.TRAINDIALOGS_TREEVIEW_BUTTON]: 'Tree View',
-        [FM.TRAINDIALOGS_IMPORT_WARNING]: 'Import Warnings',
-
-        // TreeView
-        [FM.TREEVIEW_TOGGLE_FULLSCREEN]: 'Toggle Fullscreen',
-
-        // Tutorial Importer
-        [FM.TUTORIALIMPORTER_TITLE]: 'Tutorials',
-
-        // Validation
-        [FM.VALIDATE_UNABLE_TO_EDIT]: 'Unable to Edit',
-        [FM.VALIDATE_UNABLE_TO_BRANCH]: 'Unable to Branch',
-        [FM.VALIDATE_ENTITY_REASON]: 'Bot API calls are behaving differently. Entities in memory do not match.',
-
-        // ActionDetailsList
-        [FM.ACTIONDETAILSLIST_COLUMNS_RESPONSE]: 'Response',
-        [FM.ACTIONDETAILSLIST_COLUMNS_ARGUMENTS]: 'Arguments',
-        [FM.ACTIONDETAILSLIST_COLUMNS_TYPE]: 'Action Type',
-        [FM.ACTIONDETAILSLIST_COLUMNS_REQUIREDENTITIES]: 'Required Conditions',
-        [FM.ACTIONDETAILSLIST_COLUMNS_DISQUALIFYINGENTITIES]: 'Disqualifying Conditions',
-        [FM.ACTIONDETAILSLIST_COLUMNS_SUGGESTEDENTITY]: 'Expected Entity',
-        [FM.ACTIONDETAILSLIST_COLUMNS_ISTERMINAL]: 'Wait',
-        [FM.ACTIONDETAILSLIST_COLUMNS_CREATED_DATE_TIME]: 'Created',
-
-        // DemoImporter
-        [FM.DEMOIMPORT_TITLE]: 'Import Demo Models',
-        [FM.DEMOIMPORT_BUTTON_ARIADESCRIPTION]: 'Import Demo Models',
-        [FM.DEMOIMPORT_BUTTON_TEXT]: 'Import',
-
         // ChatSessionModal
         [FM.CHATSESSIONMODAL_PRIMARYBUTTON_ARIADESCRIPTION]: 'Done Testing',
         [FM.CHATSESSIONMODAL_PRIMARYBUTTON_TEXT]: 'Done Testing',
@@ -1110,12 +865,27 @@ export default {
         [FM.CONFIRMCANCELMODAL_PRIMARYBUTTON_TEXT]: 'Confirm',
         [FM.CONFIRMCANCELMODAL_DEFAULTBUTTON_TEXT]: 'Cancel',
 
+        // Error Messages
+        [FM.CUSTOMERROR_NETWORK_ERROR]: 'Is your Bot running? Did you set NODE_ENV=development?',
+
+        // Dashboard
+        [FM.DASHBOARD_TITLE]: 'Overview',
+        [FM.DASHBOARD_SUBTITLE]: `Notifications about this model`,
+
+        // DemoImporter
+        [FM.DEMOIMPORT_TITLE]: 'Import Demo Models',
+        [FM.DEMOIMPORT_BUTTON_ARIADESCRIPTION]: 'Import Demo Models',
+        [FM.DEMOIMPORT_BUTTON_TEXT]: 'Import',
+        
         // DialogMetadata
         [FM.DIALOGMETADATA_TAGS_LABEL]: 'Tags',
         [FM.DIALOGMETADATA_DESCRIPTION_LABEL]: 'Description',
         [FM.DIALOGMETADATA_DESCRIPTION_PLACEHOLDER]: 'Click to add description',
         [FM.DIALOGMETADATA_USERINPUT_LABEL]: 'User Input',
         [FM.DIALOGMETADATA_ALTINPUT_LABEL]: 'Alt Input',
+                    
+        // Dispatch Creator
+        [FM.DISPATCHCREATOR_ALGORITHM_TYPE_LABEL]: 'Algorithm Type',
 
         // EditDialogAdmin
         [FM.EDITDIALOGADMIN_DIALOGMODE_USER]: 'User Input',
@@ -1189,6 +959,20 @@ export default {
         [FM.ENTITYCREATOREDITOR_DELETE_ENUM_ERROR_TITLE]: 'Are you sure?',
         [FM.ENTITYCREATOREDITOR_DELETE_ENUM_ERROR_WARNING]: 'Enum is referenced by one or more Actions and may invalidate related Training Dialogs',
 
+        // Entities
+        [FM.ENTITIES_TITLE]: 'Entities',
+        [FM.ENTITIES_SUBTITLE]: `Entities hold values that are extracted from user utterances or set by code. They are stored in the Bot's memory to track state`,
+        [FM.ENTITIES_CREATEBUTTONARIALDESCRIPTION]: 'Create a New Entity',
+        [FM.ENTITIES_CREATEBUTTONTEXT]: 'New Entity',
+        [FM.ENTITIES_COLUMNS_NAME]: 'Name',
+        [FM.ENTITIES_COLUMNS_TYPE]: 'Type',
+        [FM.ENTITIES_COLUMNS_RESOLVER]: 'Resolver Type',
+        [FM.ENTITIES_COLUMNS_IS_PROGRAMMATIC]: 'Programmatic',
+        [FM.ENTITIES_COLUMNS_IS_MULTIVALUE]: 'Multi-Value',
+        [FM.ENTITIES_COLUMNS_IS_NEGATABLE]: 'Negatable',
+        [FM.ENTITIES_COLUMNS_CREATED_DATE_TIME]: 'Created',
+        [FM.ENTITIES_CONFIRMCANCELMODALTITLE]: 'Are you sure you want to delete this entity?',
+
         // Error
         [FM.ERROR_ERROR]: 'Error',
         [FM.ERROR_WARNING]: 'Warning',
@@ -1222,13 +1006,31 @@ export default {
         [FM.IMPORT_AUTOMERGE]: 'Auto Merge',
         [FM.IMPORT_AUTOACTIONMATCH]: 'Auto Action Match',
 
-         // LogConversionConflictModal
+            // LogConversionConflictModal
         [FM.LOGCONVERSIONCONFLICTMODAL_TITLE]: 'Incompatible Log Dialog',
         [FM.LOGCONVERSIONCONFLICTMODAL_SUBTITLE]: 'You attempted to save this log dialog as a train dialog but this dialog is incompatible with the current model due to conflicts in entity labels.  This may occur if the model has changed from the version of model used to create the log dialog. You need to update the dialog to match current model to convert it.',
         [FM.LOGCONVERSIONCONFLICTMODAL_REVIEW]: 'The log dialog contains {conflictCount} conflicts. Please review the changes to labels for each conflict below:',
         [FM.LOGCONVERSIONCONFLICTMODAL_BUTTON_EXPLANATION]: "Clicking 'Accept' will use the previously submitted labels for all conflicts.",
         [FM.LOGCONVERSIONCONFLICTMODAL_ACCEPT]: 'Accept',
         [FM.LOGCONVERSIONCONFLICTMODAL_ABORT]: 'Abort',
+
+        // LogDialogs
+        [FM.LOGDIALOGS_TITLE]: 'Log Dialogs',
+        [FM.LOGDIALOGS_SUBTITLE]: 'Log Dialogs are records of conversations between users and your Bot. You can make corrections to Log Dialogs to improve the Bot.',
+        [FM.LOGDIALOGS_CREATEBUTTONTITLE]: 'New Log Dialog',
+        [FM.LOGDIALOGS_CREATEBUTTONARIALDESCRIPTION]: 'Create a New Log Dialog',
+        [FM.LOGDIALOGS_MODEL_VERSION]: 'Model Version',
+        [FM.LOGDIALOGS_USERINPUT]: 'User Input',
+        [FM.LOGDIALOGS_TURNS]: 'Turns',
+        [FM.LOGDIALOGS_LOGDISABLED]: 'Logging is disabled',
+        [FM.LOGDIALOGS_CREATED_DATE_TIME]: 'Created',
+        [FM.LOGDIALOGS_LAST_MODIFIED_DATE_TIME]: 'Last Modified',
+        [FM.LOGDIALOGS_ALREADYSELECTED]: 'Action already selected',
+        [FM.LOGDIALOGS_BUTTON_DELETESELECTED]: 'Delete Selected ({selectionCount})',
+        [FM.LOGDIALOGS_CONFIRMCANCEL_DELETESELECTED]: 'This will permanentaly delete {selectionCount} log dialog(s). Are you sure?',
+
+        // LogDialogAdmin
+        [FM.LOGDIALOGADMIN_CONFIRMTITLE]: 'This will attempt to replay the Log Dialog against the Bot and convert it into a new Train Dialog',
 
         // MemoryTable
         [FM.MEMORYTABLE_EMPTY]: 'Empty',
@@ -1251,6 +1053,76 @@ export default {
         [FM.PACKAGECREATOR_LIVE_LABEL]: 'Make Live Version',
         [FM.PACKAGECREATOR_CANCELBUTTON_ARIADESCRIPTION]: 'Cancel',
         [FM.PACKAGECREATOR_CANCELBUTTON_TEXT]: 'Cancel',
+        
+        // ReplayErrorList
+        [FM.REPLAYERROR_ERROR]: 'This Train Dialog has errors that must be fixed before it can be used to train your model',
+        [FM.REPLAYERROR_ERROR_LOG]: 'This Log Dialog has errors that must be fixed before it can be converted to a Train Dialog',
+        [FM.REPLAYERROR_WARNING]: 'This Train Dialog has some issues to address',
+        [FM.REPLAYERROR_LOGDIALOG_VALIDATION_TITLE]: 'Model definition has changed',
+        [FM.REPLAYERROR_LOGDIALOG_VALIDATION_MESSAGE]: 'This Log Dialog was created with a earlier version of the model.  The following incompatibilities were found:',
+        [FM.REPLAYERROR_CONVERT_TITLE]: 'Unable to convert to Train Dialog',
+        [FM.REPLAYERROR_FAILMESSAGE]: 'The following issues need to be corrected first',
+        [FM.REPLAYERROR_EDIT_TITLE]: 'Unable to continue Dialog',
+        [FM.REPLAYERROR_BRANCH_TITLE]: 'Unable to Branch',
+        [FM.REPLAYERROR_DESC_ACTION_AFTER_WAIT]: 'Action follows a Wait Action',
+        [FM.REPLAYERROR_DESC_ACTION_UNDEFINED]: 'Action does not exist',
+        [FM.REPLAYERROR_DESC_ACTION_STUB]: 'Action not yet assigned to this imported response',
+        [FM.REPLAYERROR_DESC_API_BADCARD]: 'API Render function returned a malformed Activity',
+        [FM.REPLAYERROR_DESC_API_EXCEPTION]: 'API in Bot encountered an exception',
+        [FM.REPLAYERROR_DESC_API_MALFORMED]: 'Logic portion of callback returns a value, but no Render portion defined',
+        [FM.REPLAYERROR_DESC_API_PLACEHOLDER]: 'Placeholder should be replaced with a real API callback',
+        [FM.REPLAYERROR_DESC_API_UNDEFINED]: 'API does not exist on running Bot',
+        [FM.REPLAYERROR_DESC_INPUT_AFTER_NONWAIT]: 'User Input following a non-Wait Action',
+        [FM.REPLAYERROR_DESC_ENTITY_UNDEFINED]: 'Entity does not exist',
+        [FM.REPLAYERROR_DESC_ENTITY_EMPTY]: 'Action missing a value for',
+        [FM.REPLAYERROR_DESC_ENTITY_UNEXPECTED_MULTIVALUE]: 'Non-multivalue Entity labeled with more than one value',
+        [FM.REPLAYERROR_DESC_TWO_USER_INPUTS]: 'Two consecutive User Inputs',
+        [FM.REPLAYERROR_DESC_ACTION_UNAVAILABLE]: 'Action is unavailable',
+        [FM.REPLAYERROR_DESC_CHANGED_ENTITIES]: 'Entities inconsistent after user input',
+        [FM.REPLAYERROR_DESC_EXCEPTION]: `Encountered an error in Bot's API callback`,
+
+        // RepromptAction
+        [FM.REPROMPTACTION_SELECTACTION_BUTTON]: 'Change Action',
+        [FM.REPROMPTACTION_SAME_CHOICE]: 'Repeat Same Action',
+        [FM.REPROMPTACTION_DIFFERENT_CHOICE]: 'Show a Different Action',
+
+        // LogDialogs
+        [FM.REVIEW_TITLE]: 'Review Suspect Log Dialogs',
+        [FM.REVIEW_SUBTITLE]: 'Top log dialogs suspected of having issues',
+        [FM.REVIEW_ANALYZE]: 'Analyze',
+        [FM.REVIEW_PLACEHOLDER_TITLE]: 'Analyze Log Dialogs',
+        
+        // Settings
+        [FM.SETTINGS_TITLE]: 'Settings',
+        [FM.SETTINGS_SUBTITLE]: 'Control your model version tags and other model configuration',
+        [FM.SETTINGS_COPYBUTTONARIALDESCRIPTION]: 'Copy Model',
+        [FM.SETTINGS_COPYBUTTONTEXT]: 'Copy',
+        [FM.SETTINGS_EXPORTBUTTONARIALDESCRIPTION]: 'Export Model to File',
+        [FM.SETTINGS_FIELDERROR_ALPHANUMERIC]: 'Model names may only contain alphanumeric characters',
+        [FM.SETTINGS_FIELDS_NAMELABEL]: 'Name',
+        [FM.SETTINGS_FILEDS_APPIDLABEL]: 'Model ID',
+        [FM.SETTINGS_FIELDS_MARKDOWNLABEL]: 'Markdown',
+        [FM.SETTINGS_FIELDS_VIDEOLABEL]: 'Video',
+        [FM.SETTINGS_PASSWORDHIDDEN]: 'Show',
+        [FM.SETTINGS_PASSWORDVISIBLE]: 'Hide',
+        [FM.SETTINGS_BOTFRAMEWORKAPPIDFIELDLABEL]: 'Model ID',
+        [FM.SETTINGS_BOTFRAMEWORKADDBOTBUTTONTEXT]: 'Add',
+        [FM.SETTINGS_BOTFRAMEWORKLUISKEY_AUTHORING_LABEL]: 'LUIS Authoring Key',
+        [FM.SETTINGS_BOTFRAMEWORKLUISKEY_AUTHORING_PLACEHOLDER]: 'Authoring Key...',
+        [FM.SETTINGS_BOTFRAMEWORKLUISKEY_SUBSCRIPTION_LABEL]: 'LUIS Subscription Key',
+        [FM.SETTINGS_BOTFRAMEWORKLUISKEY_SUBSCRIPTION_PLACEHOLDER]: 'Subscription Key...',
+        [FM.SETTINGS_BOTFRAMEWORKLOCALELABEL]: 'Locale',
+        [FM.SETTINGS_BOTFRAMEWORKLISTLABEL]: 'Bot Framework Apps',
+        [FM.SETTINGS_SAVECHANGES]: 'Save Changes',
+        [FM.SETTINGS_DISCARD]: 'Discard',
+        [FM.SETTINGS_LOGGINGON_LABEL]: 'Log Conversations',
+        [FM.SETTINGS_DELETEISPERMANENT]: 'Deletion is irreversible.',
+        [FM.SETTINGS_LUIS_LINK]: 'Go to LUIS',
+        [FM.SETTINGS_MODEL_VERSION_EDITING]: 'Displayed Version',
+        [FM.SETTINGS_MODEL_VERSION_LIVE]: 'Live Version',
+        [FM.SETTINGS_MODEL_VERSIONS_CREATE]: 'New Version',
+        [FM.SETTINGS_MODEL_VERSIONS_TITLE]: 'Model Versions',
+        [FM.SETTINGS_MODEL_VERSIONS_DESCRIPTION]: 'Creating a new version will save a snapshot of the currently active model. You can promote this version to "live" for use in deployed bots while you continue to edit the latest version.  You can also recall these snapshots at any point in time.',
 
         // TagsInput
         [FM.TAGSINPUT_ADD]: 'Add Tag',
@@ -1295,7 +1167,128 @@ export default {
 
         // TextVariationCreator
         [FM.TEXTVARIATION_PLACEHOLDER]: 'Add alternative input...',
-        
+    
+        // ToolTip
+        [FM.TOOLTIP_ACTION_API]: 'APIs exposed in the running Bot of the form:',
+        [FM.TOOLTIP_ACTION_API_TITLE]: 'API',
+        [FM.TOOLTIP_ACTION_ARGUMENTS]: `When Action Type is an API call, a list of comma separated arguments passed to the API. Arguments prefixed with a $ refer to Entity values.  For example: "$city"`,
+        [FM.TOOLTIP_ACTION_ARGUMENTS_TITLE]: `Arguments`,
+        [FM.TOOLTIP_ACTION_CARD]: `When Action Type is a card call, a list of comma separated arguments passed to the Card. Arguments prefixed with a $ refer to Entity values.  For example: "$city"`,
+        [FM.TOOLTIP_ACTION_CARD_TITLE]: `Card`,
+        [FM.TOOLTIP_ACTION_END_SESSION]: `Data to send to "onSessionEndCallback" when this Action is selected`,
+        [FM.TOOLTIP_ACTION_END_SESSION_TITLE]: `End Session`,
+        [FM.TOOLTIP_ACTION_SET_ENTITY]: `Since these are actions they can be learned just like any other action in your bot.`,
+        [FM.TOOLTIP_ACTION_SET_ENTITY_TITLE]: `Set Entity`,
+        [FM.TOOLTIP_ACTION_ENTITY_VALUE]: `When this action is taken by the bot it will result in the entity being set with this value`,
+        [FM.TOOLTIP_ACTION_ENTITY_VALUE_TITLE]: `Entity Value`,
+        [FM.TOOLTIP_ACTION_ENTITIES]: 'Status of Entity requirements for this Action:',
+        [FM.TOOLTIP_ACTION_ENTITIES_REQ]: 'Required Entity is present',
+        [FM.TOOLTIP_ACTION_ENTITIES_REQ_NOT]: 'Required Enitity is missing (DISQUALIFIES ACTION)',
+        [FM.TOOLTIP_ACTION_ENTITIES_DISQUAL]: 'Disqualifying Entity is present (DISQUALIFIES ACTION)',
+        [FM.TOOLTIP_ACTION_ENTITIES_DISQUAL_NOT]: 'Disqualifying Entity is missing',
+
+        [FM.TOOLTIP_ACTION_DISQUAL]: 'Action will not be selected if Memory already contains value for these Entities',
+        [FM.TOOLTIP_ACTION_DISQUAL_TITLE]: 'Disqualifying Entities',
+        [FM.TOOLTIP_ACTION_DISQUAL_ROW1]: '"How would you like to pay?"',
+        [FM.TOOLTIP_ACTION_DISQUAL_ROW2]: '$paymentDetails',
+        [FM.TOOLTIP_ACTION_DISQUAL_ROW3]: '"When were you born?"',
+        [FM.TOOLTIP_ACTION_DISQUAL_ROW4]: '$birthdate',
+
+        [FM.TOOLTIP_ACTION_IS_ENTRY_NODE]: "When selected and not in a Train Dialog, Bot will direct dialog flow to this action if it isn't confident on how to respond to the user's first input.",
+        [FM.TOOLTIP_ACTION_IS_ENTRY_NODE_TITLE]: 'Unknown user 1st turn input',
+
+        [FM.TOOLTIP_ACTION_REPROMPT]: "When checked (and not in a Train Dialog), Bot will take the given action if it isn't confident on how to respond to the user's input.  This feature can not be used in conjunction with Expected Entity.",
+        [FM.TOOLTIP_ACTION_REPROMPT_TITLE]: 'Reprompt',
+
+        [FM.TOOLTIP_ACTION_RESPONSE]: 'Value of Response that Bot will take',
+        [FM.TOOLTIP_ACTION_RESPONSE_TEXT1]: 'Text the Bot will display to the user.',
+        [FM.TOOLTIP_ACTION_RESPONSE_TEXT2]: 'Prefix text with a $ to substitute Entity values.',
+        [FM.TOOLTIP_ACTION_RESPONSE_TEXT3]: 'Text contained in brackets (i.e. []) will only be displayed if all contained entities have values.',
+        [FM.TOOLTIP_ACTION_RESPONSE_TEXT_TITLE]: 'Response',
+        [FM.TOOLTIP_ACTION_RESPONSE_ROW1]: '"How can I help you?"',
+        [FM.TOOLTIP_ACTION_RESPONSE_ROW2]: '"You have $toppings on your pizza."',
+        [FM.TOOLTIP_ACTION_RESPONSE_ROW3]: '"Hi[, $name]"',
+
+        [FM.TOOLTIP_ACTION_REQUIRED]: 'Action will not be selected unless Memory contains values for these Entities',
+        [FM.TOOLTIP_ACTION_REQUIRED_TITLE]: 'Required Conditions',
+        [FM.TOOLTIP_ACTION_REQUIRED_ROW1]: '"How would you like to pay?"',
+        [FM.TOOLTIP_ACTION_REQUIRED_ROW2]: '$orderDetails $address',
+        [FM.TOOLTIP_ACTION_REQUIRED_ROW3]: '"Hi, $name"',
+        [FM.TOOLTIP_ACTION_REQUIRED_ROW4]: '$name',
+
+        [FM.TOOLTIP_ACTION_SCORE]: 'Score:',
+        [FM.TOOLTIP_ACTION_SCORE_PERCENT]: 'Conversation Learner confidence in performing an Action',
+        [FM.TOOLTIP_ACTION_SCORE_TRAINING]: `Action can't be scored yet as Conversation Learner is still training`,
+        [FM.TOOLTIP_ACTION_SCORE_DISQUALIFIED]: 'Action has been disqualified - Required Conditions are missing or Blocked Entities are present',
+
+        [FM.TOOLTIP_ACTION_SUGGESTED]: `Hint to Conversation Learner that the user's reply to this Action will likely be a value for this Entity. Pre-Trained Entities cannot be used as Expected Entities.  This feature can not be used in conjuntion with prompts for unexpected input.`,
+        [FM.TOOLTIP_ACTION_SUGGESTED_TITLE]: 'Expected Response',
+        [FM.TOOLTIP_ACTION_SUGGESTED_ROW1]: '"What is your name?"',
+        [FM.TOOLTIP_ACTION_SUGGESTED_ROW2]: '$name',
+
+        [FM.TOOLTIP_ACTION_TYPE]: 'One of the following:',
+        [FM.TOOLTIP_ACTION_TYPE_TITLE]: 'Action Type',
+        [FM.TOOLTIP_ACTION_TYPE_TEXT]: 'A text response',
+        [FM.TOOLTIP_ACTION_TYPE_APILOCAL]: 'An API call to the Bot',
+        [FM.TOOLTIP_ACTION_TYPE_ENDSESSION]: 'Indicate Bot is done',
+        [FM.TOOLTIP_ACTION_TYPE_SET_ENTITY]: 'Set an entity to a known enum value',
+        [FM.TOOLTIP_ACTION_TYPE_CARD]: 'Renders an Adaptive Card template',
+        [FM.TOOLTIP_ACTION_TYPE_DISPATCH]: 'Dispatches the input to specified model',
+        [FM.TOOLTIP_ACTION_TYPE_CHANGE_MODEL]: `Forwards the input to specified model similar to 'Dispatch', but also persists the change so all future inputs in conversation are directed to the model.`,
+        [FM.TOOLTIP_ACTION_WAIT]: 'When selected, Bot will wait for more user input before taking another Action',
+        [FM.TOOLTIP_ACTION_WAIT_TITLE]: 'Wait For Response',
+
+        [FM.TOOLTIP_ADD_USER_INPUT_BUTTON]: 'Add a new user input',
+        [FM.TOOLTIP_ADD_BOT_RESONSE_BUTTON]: 'Add a new Bot response',
+        [FM.TOOLTIP_BRANCH_BUTTON]: 'Create a new Train Dialog by branching at this step',
+
+        [FM.TOOLTIP_BOTINFO_INVALID]: 'This model contains Card or API references that do not exist in the running Bot',
+        [FM.TOOLTIP_ENTITY_ACTION_DISQUALIFIED]: `Actions that are blocked from use if this Entity is set`,
+        [FM.TOOLTIP_ENTITY_ACTION_REQUIRED]: `Actions that are only employed when this Entity is set`,
+        [FM.TOOLTIP_ENTITY_EXTRACTOR_HELP]: `Select text to label it as an entity`,
+        [FM.TOOLTIP_ENTITY_EXTRACTOR_MATCH_WARNING]: 'Equivalent input must contain the same detected Entities as the original input text.',
+        [FM.TOOLTIP_ENTITY_EXTRACTOR_DUPE_WARNING1]: 'Entities that are not multi-value (i.e. ',
+        [FM.TOOLTIP_ENTITY_EXTRACTOR_DUPE_WARNING2]: ') will only store the last labelled utterance',
+        [FM.TOOLTIP_ENTITY_EXTRACTOR_DLG_SAMETAGGED]: 'Equivalent input must all have same tagged entities.',
+        [FM.TOOLTIP_ENTITY_EXTRACTOR_DLG_SAVECHANGES]: 'Do you want to save your Entity Detection changes?',
+
+        [FM.TOOLTIP_ENTITY_NAME]: 'Name of the Entity',
+        [FM.TOOLTIP_ENTITY_VALUE]: 'What the Bot currently has in Memory for this Entity',
+        [FM.TOOLTIP_EXAMPLE]: 'For example:',
+        [FM.TOOLTIP_LOGGING_TOGGLE]: 'Enables or disables logging of user conversations. When logging is enabled, Bot performance can be improved by providing corrections to Logs that contain undesired Bot responses.  The corrected Log Dialogs become new Training Dialogs',
+        [FM.TOOLTIP_MEMORYMANAGER]: `The memory manager provides the following functions for manipulating the Bot's memory:`,
+        [FM.TOOLTIP_MEMORYMANAGER_TITLE]: 'Memory Manager',
+        [FM.TOOLTIP_MEMORYCONVERTER]: `Conversation Learner provides the following converters, but developers are free to write additional ones:`,
+        [FM.TOOLTIP_MEMORYCONVERTER_TITLE]: 'Memory Converters',
+        [FM.TOOLTIP_PACKAGECREATOR_LIVE_TOGGLE]: 'When checked the new Tag will become the Live app served to users',
+        [FM.TOOLTIP_REPLAY]: `Replay each step in the Dialog, calling the EntityDetectionCallback and any API callbacks.  This will update the Dialog to reflect any changes made to the Bot's APIs`,
+        [FM.TOOLTIP_TAG_EDITING]: 'The version of the Model displayed in this administrative interface. You can view any version but can only edit the "Master" version.',
+        [FM.TOOLTIP_TAG_LIVE]: 'The version of the Model used when published to external channels (e.g. Skype)',
+        [FM.TOOLTIP_TRAINDIALOG_INVALID]: 'This Model contains Train Dialogs that have been invalided.  They must be edited and fixed to be included in training',
+        [FM.TOOLTIP_TRAINDIALOG_UNKNOWN]: 'This Model contains Train Dialogs that may have errors. They must be replayed and any errors fixed to be included in training',
+        [FM.TOOLTIP_TRAINDIALOG_WARNING]: 'This Model contains Train Dialogs that may have errors.',
+
+        // Train Dialogs
+        [FM.TRAINDIALOGS_TITLE]: 'Train Dialogs',
+        [FM.TRAINDIALOGS_SUBTITLE]: 'Train Dialogs are example conversations you want your Bot to imitate',
+        [FM.TRAINDIALOGS_CREATEBUTTONTITLE]: 'New Train Dialog',
+        [FM.TRAINDIALOGS_CREATEBUTTONARIALDESCRIPTION]: 'Create a New Train Dialog',
+        [FM.TRAINDIALOGS_TAGS]: 'Tags',
+        [FM.TRAINDIALOGS_DESCRIPTION]: 'Description',
+        [FM.TRAINDIALOGS_TURNS]: 'Turns',
+        [FM.TRAINDIALOGS_CREATED_DATE_TIME]: 'Created',
+        [FM.TRAINDIALOGS_LAST_MODIFIED_DATE_TIME]: 'Last Modified',
+        [FM.TRAINDIALOGS_FILTERING_TAGS_LABEL]: 'Filter by Tag:',
+        [FM.TRAINDIALOGS_FILTERING_TAGS]: 'All tags',
+        [FM.TRAINDIALOGS_FILTERING_ENTITIES_LABEL]: 'Filter by Entity:',
+        [FM.TRAINDIALOGS_FILTERING_ENTITIES]: 'All entities',
+        [FM.TRAINDIALOGS_FILTERING_ACTIONS_LABEL]: 'Filter by Actions:',
+        [FM.TRAINDIALOGS_FILTERING_ACTIONS]: 'All actions',
+        [FM.TRAINDIALOGS_FILTERING_RESET]: 'Clear',
+        [FM.TRAINDIALOGS_LISTVIEW_BUTTON]: 'List View',
+        [FM.TRAINDIALOGS_TREEVIEW_BUTTON]: 'Tree View',
+        [FM.TRAINDIALOGS_IMPORT_WARNING]: 'Import Warnings',
+
         // TrainscriptComparisions
         [FM.TRANSCRIPTCOMPARISONS_DROPDOWN_TITLE]: 'Compared to:',
         [FM.TRANSCRIPTCOMPARISONS_WARNING_TITLE]: 'At least two sets of transcripts must be loaded for a comparison',
@@ -1326,7 +1319,18 @@ export default {
         // TrainscriptRatings
         [FM.TRANSCRIPTRATINGS_DROPDOWN_TITLE]: 'Relative to:',
         [FM.TRANSCRIPTRATINGS_WARNING_TITLE]: 'At least two sets of transcripts must be loaded to rate them',
+        
+        // TreeView
+        [FM.TREEVIEW_TOGGLE_FULLSCREEN]: 'Toggle Fullscreen',
 
+        // Tutorial Importer
+        [FM.TUTORIALIMPORTER_TITLE]: 'Tutorials',
+
+        // Validation
+        [FM.VALIDATE_UNABLE_TO_EDIT]: 'Unable to Edit',
+        [FM.VALIDATE_UNABLE_TO_BRANCH]: 'Unable to Branch',
+        [FM.VALIDATE_ENTITY_REASON]: 'Bot API calls are behaving differently. Entities in memory do not match.',
+      
         // UserInput Modal
         [FM.USERINPUT_ADD_TITLE]: 'Add User Input',
         [FM.USERINPUT_BRANCH_TITLE]: 'Add Different User Input',

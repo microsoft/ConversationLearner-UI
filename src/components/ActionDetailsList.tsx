@@ -9,7 +9,7 @@ import * as ActionPayloadRenderers from './actionPayloadRenderers'
 import * as moment from 'moment'
 import * as CLM from '@conversationlearner/models'
 import AdaptiveCardViewer from './modals/AdaptiveCardViewer/AdaptiveCardViewer'
-import actionTypeRenderer from './ActionTypeRenderer'
+import { actionTypeRenderer } from './ActionRenderers'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { State } from '../types'
@@ -343,7 +343,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
     return [
         {
             key: 'actionResponse',
-            name: Util.formatMessageId(intl, FM.ACTIONDETAILSLIST_COLUMNS_RESPONSE),
+            name: Util.formatMessageId(intl, FM.ACTIONLIST_COLUMNS_RESPONSE),
             fieldName: 'actionResponse',
             minWidth: 200,
             maxWidth: 400,
@@ -411,7 +411,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
         },
         {
             key: 'actionType',
-            name: Util.formatMessageId(intl, FM.ACTIONDETAILSLIST_COLUMNS_TYPE),
+            name: Util.formatMessageId(intl, FM.ACTIONLIST_COLUMNS_TYPE),
             fieldName: 'metadata',
             minWidth: 100,
             maxWidth: 100,
@@ -471,7 +471,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
         },
         {
             key: 'isTerminal',
-            name: Util.formatMessageId(intl, FM.ACTIONDETAILSLIST_COLUMNS_ISTERMINAL),
+            name: Util.formatMessageId(intl, FM.ACTIONLIST_COLUMNS_ISTERMINAL),
             fieldName: 'isTerminal',
             minWidth: 50,
             maxWidth: 50,
@@ -481,7 +481,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
         },
         {
             key: 'actionReprompt',
-            name: Util.formatMessageId(intl, FM.ACTIONDETAILSLIST_COLUMNS_REPROMPT),
+            name: Util.formatMessageId(intl, FM.ACTIONLIST_COLUMNS_REPROMPT),
             fieldName: 'actionReprompt',
             minWidth: 70,
             isResizable: false,

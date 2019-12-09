@@ -1071,6 +1071,22 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 this.props.trainDialogReplayThunkAsync as any,
             )
 
+            // Get new activities to check for errors or warnings
+            const teachWithActivities = await ((this.props.fetchActivitiesThunkAsync(this.props.app.appId, newTrainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithActivities>)
+            const replayError = DialogUtils.getMostSevereReplayError(teachWithActivities.activities)
+
+            if (replayError) {
+                if (replayError.errorLevel === CLM.ReplayErrorLevel.WARNING) {
+                    newTrainDialog.validity = CLM.Validity.WARNING
+                }
+                else {
+                    newTrainDialog.validity = CLM.Validity.INVALID
+                }
+            }
+            else {
+                newTrainDialog.validity = CLM.Validity.VALID
+            }
+
             await ((this.props.trainDialogReplaceThunkAsync(this.props.app.appId, trainDialog.trainDialogId, newTrainDialog, false) as any) as Promise<void>)
 
             // If user clicks 'Cancel' replay dialogs will be reset
@@ -1142,7 +1158,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 transcriptImport: undefined
             })
             const message = error.currentTarget ? error.currentTarget.error.message : error.message
-            this.props.setErrorDisplay(ErrorType.Error, "Import Failed", message, null)
+            this.props.setErrorDisplay(ErrorType.Error, "Import Failed", message)
         }
     }
 
@@ -1219,7 +1235,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         }
         catch (e) {
             const error = e as Error
-            this.props.setErrorDisplay(ErrorType.Error, error.message, error.message, null)
+            this.props.setErrorDisplay(ErrorType.Error, error.message, "")
             this.setState({
                 transcriptImport: undefined,
                 isImportWaitModalOpen: false
@@ -1746,7 +1762,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         editingPackageId={this.props.editingPackageId}
                         originalTrainDialogId={this.state.originalTrainDialog ? this.state.originalTrainDialog.trainDialogId : null}
                         onClose={this.onCloseTeachSession}
-                        onEditTeach={(historyIndex, editHandlerArgs, tags, description, editHandler) => this.onEditTeach(historyIndex, editHandlerArgs ? editHandlerArgs : undefined, tags, description, editHandler)}
+                        onEditTeach={(activityIndex, editHandlerArgs, tags, description, editHandler) => this.onEditTeach(activityIndex, editHandlerArgs ? editHandlerArgs : undefined, tags, description, editHandler)}
                         onInsertAction={(trainDialog, activity, editHandlerArgs) => this.onInsertAction(trainDialog, activity, editHandlerArgs.isLastActivity!, editHandlerArgs.selectionType!)}
                         onInsertInput={(trainDialog, activity, editHandlerArgs) => this.onInsertInput(trainDialog, activity, editHandlerArgs.userInput!, editHandlerArgs.selectionType!)}
                         onDeleteTurn={(trainDialog, activity) => this.onDeleteTurn(trainDialog, activity)}
@@ -1904,7 +1920,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
     // User has edited an Activity in a TeachSession
     private async onEditTeach(
-        historyIndex: number | null,
+        activityIndex: number | null,
         args: DialogEditing.EditHandlerArgs | undefined,
         tags: string[],
         description: string,
@@ -1916,7 +1932,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             }
 
             await DialogEditing.onEditTeach(
-                historyIndex,
+                activityIndex,
                 args,
                 tags,
                 description,
