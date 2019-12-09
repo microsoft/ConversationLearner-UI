@@ -4,7 +4,6 @@
  */
 
 (function () {
-let suiteTitle
 let test
 let logFileName 
 let logEntries = ''
@@ -79,10 +78,9 @@ beforeEach(function() {
   console.log(`******************** ${GetFullTestSuiteTitle(this.currentTest)} ************************************************************`)
 
   test = this.currentTest
-  const title = GetSuiteRootTitle(this.currentTest)
-  if (title !== suiteTitle) {
-    suiteTitle = title
-    logFileName = `./results/cypress/${suiteTitle}.${Cypress.moment().format("YY.MM.DD.HH.mm.ss..SSS")}.log`
+  if (!logFileName) {
+    const specFileId = Cypress.spec.name.replace(/\/|\\/g, "-")
+    logFileName = `./results/cypress/${specFileId}.${Cypress.moment().format("YY.MM.DD.HH.mm.ss..SSS")}.log`
   }
 })
 
@@ -107,7 +105,7 @@ function LogTestState()
   console.log(message)
   console.log("'".repeat(message.length))
   if (failureMessage != '') {
-    console.log(`Failure Message: "${failureMessage}"`)
+    console.log(`Failure Message: ${failureMessage}`)
   }
 }
 
