@@ -212,7 +212,10 @@
         }
 
         async function GetApiData(url) {
-          return await axios.get(url).then(response => {
+          const options = {
+            headers: {'Access-Control-Allow-Origin': '*'}
+          };
+          return await axios.get(url, options).then(response => {
             return response.data
           })
           .catch(err => {

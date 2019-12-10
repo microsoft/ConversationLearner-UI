@@ -3,14 +3,6 @@
  * Licensed under the MIT License.
  */
 
-export function DumpObject(funcName, object) {
-  function ConLog(funcName, message) { console.log(`-+- ${Cypress.moment().format("HH:mm:ss..SSS")} - ${funcName} - ${message}`) }
-
-  let propertyList = ''
-  for (let property in object) propertyList += `${(propertyList.length == 0 ? '' : ', ')}${property}: ${object[property]}`
-  ConLog(funcName, propertyList)
-}
-
 (function () {
 let test
 let logFileName 

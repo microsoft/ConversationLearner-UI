@@ -1,4 +1,5 @@
 const axios = require('axios')
+const fs = require('fs')
 
 const triageData = [
   { 
@@ -78,6 +79,7 @@ async function GetApiData(url) {
   let knownTestFailures = []
   let passingTests = []
   let errors = []
+  let htmlContent = ''
 
   let iStart
   let iEnd
@@ -91,7 +93,12 @@ async function GetApiData(url) {
   await ProcessFailingTestArtifacts()
   console.log('Processing the Passed Test Results ----------------------------------')
   ProcessPassingTestArtifacts()
+
+  console.log('Rendering all Results to HTML ----------------------------------')
   RenderResults()
+
+  console.log('Writing HTML to File TestResults.html ----------------------------------')
+  fs.writeFileSync('TestResults.html', htmlContent)
 
   function MoveArtifactJsonIntoArrays() {
     artifacts.forEach(artifact => {
@@ -207,7 +214,7 @@ async function GetApiData(url) {
     })
   }
 
-  function RenderResults() {
+  function OLD_RenderResults() {
     console.log(`${unknownTestFailures.length} UNKNOWN TEST FAILURES -------------------------------------------------------`)
     unknownTestFailures.forEach(unknownTestFailure => {
       console.log(`unknownTestFailures.push({
@@ -250,5 +257,153 @@ async function GetApiData(url) {
         url: '${error.url}',
       })`)
     })
+  }
+
+  function ReplaceSpecialHtmlCharacters(text) {
+    return text.replace(/&/g, "&amp;").replace(/>/g, "&gt;").replace(/</g, "&lt;")
+  }
+
+  function RenderResults() {
+    htmlContent = `
+      <html>
+      <head>
+        <style>
+        .grid-container1 {
+          display: grid;
+          grid-template-columns: auto;
+          background-color: #2196F3;
+          padding: 5px;
+        }
+    
+        .grid-container2 {
+          display: grid;
+          grid-template-columns: auto auto;
+          background-color: #2196F3;
+          padding: 5px;
+        }
+    
+        .grid-item {
+          background-color: rgba(255, 255, 255, 0.8);
+          border: 1px solid rgba(0, 0, 0, 0.8);
+          padding: 5px;
+          font-size: 15px;
+          text-align: left;
+        }
+        </style>
+      </head>
+    
+      <body>
+        <h1>Test Results for Build Number <a href='https://circleci.com/gh/microsoft/ConversationLearner-UI/${buildNumber}#artifacts/containers/0' target='_blank'>${buildNumber}</a></h1>
+        <div>
+    `
+    RenderUnknownFailures()
+    htmlContent += `</div>
+        <div>
+    `
+    RenderKnownFailures()
+    htmlContent += `</div>
+        <div>
+    `
+
+    RenderPassingTests()
+    htmlContent += `</div>
+  </body>
+</html>`
+  }
+  
+  function RenderUnknownFailures() {
+    console.log(`${unknownTestFailures.length} UNKNOWN TEST FAILURES -------------------------------------------------------`)
+
+    if (!unknownTestFailures || unknownTestFailures.length == 0) {
+      htmlContent += `<h2>No Unknown Failures</h2>`
+    } else {
+      htmlContent += `
+        <h2>${unknownTestFailures.length} Failures with an Unknown Cause</h2>
+        <div class="grid-container2">
+      `
+      unknownTestFailures.forEach(unknownTestFailure => {
+        htmlContent += `
+          <div class="grid-item">
+            <b>${unknownTestFailure.testName}</b><br>
+            <a href='${unknownTestFailure.snapshotUrl}' target='_blank'>
+              Snapshot
+            </a> -- 
+            <a href='${unknownTestFailure.videoUrl}' target='_blank'>Video</a>
+          </div>
+
+          <div class="grid-item">
+            <b>Failure Message:</b> ${ReplaceSpecialHtmlCharacters(unknownTestFailure.failureMessage)}<br>
+            <a href='${unknownTestFailure.logUrl}' target='_blank'>
+              Log File
+            </a><br>
+          </div>
+        `
+      })
+      htmlContent + '</div>'
+    }
+  }
+
+  function RenderKnownFailures() {
+    console.log(`${knownTestFailures.length} KNOWN TEST FAILURES ---------------------------------------------------------`)
+
+    if (!knownTestFailures || knownTestFailures.length == 0) {
+      htmlContent += `<h2>No Known Failures</h2>`
+    } else {
+      htmlContent += `
+        <h2>${knownTestFailures.length} Failures with a Known Cause</h2>
+        <div class="grid-container2">
+      `
+      knownTestFailures.forEach(knownTestFailure => {
+        htmlContent += `
+          <div class="grid-item">
+            <b>${knownTestFailure.testName}</b><br>
+            <a href='${knownTestFailure.snapshotUrl}' target='_blank'>
+              Snapshot
+            </a> -- 
+            <a href='${knownTestFailure.videoUrl}' target='_blank'>Video</a>
+          </div>
+
+          <div class="grid-item">
+            <b>Failure Message:</b> ${ReplaceSpecialHtmlCharacters(knownTestFailure.failureMessage)}<br>
+            <a href='${knownTestFailure.logUrl}' target='_blank'>
+              Log File
+            </a><br>
+        `
+        knownTestFailure.bugs.forEach(bugNumber => {
+          htmlContent += `
+            <a href='https://dialearn.visualstudio.com/BLIS/_workitems/edit/${bugNumber}' target='_blank'>Bug ${bugNumber}</a> TODO: Bug Title to go here.<br>
+          `
+        })
+        htmlContent += `</div>`
+      })
+      htmlContent += '</div>'
+    }
+  }
+
+  function RenderPassingTests() {
+    console.log(`${passingTests.length} PASSING TESTS ---------------------------------------------------------------`)
+
+    if (!passingTests || passingTests.length == 0) {
+      htmlContent += `<h2>No Passing Tests</h2>`
+    } else {
+      htmlContent += `
+        <h2>${passingTests.length} Passing Tests</h2>
+        <div class="grid-container1">
+      `
+      passingTests.forEach(passingTest => {
+        htmlContent += `
+          <div class="grid-item">
+            <b>${passingTest.testName}</b><br>
+            <a href='${passingTest.videoUrl}' target='_blank'>
+              Video
+            </a> -- 
+            <a href='${passingTest.logUrl}' target='_blank'>
+              Log File
+            </a><br>
+          </div>
+        `
+      })
+      htmlContent += `</div>`
+    }
   }
 }())
