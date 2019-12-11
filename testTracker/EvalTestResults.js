@@ -42,6 +42,26 @@ const triageData = [
   {
     or: [`Response: What's your name? - Expected to find data-testid="action-scorer-button-clickable" instead we found "action-scorer-button-no-click"`],
     bugs: [2408],
+  },
+  {
+    testName: 'Settings.spec.js',
+    and: [`RETRY - Loaded Model List Row Count does not yet match the aria-rowcount.`],
+    bugs: [2418],
+  },
+  {
+    testName: 'MissingAction.spec.js',
+    and: [`Timed out retrying: Expected to find element: '[data-testid="action-scorer-button-clickable"]', but never found it. Queried from element: <div.ms-DetailsRow-fields.`],
+    bugs: [2419],
+  },
+  {
+    testName: 'Bug2379Repro.spec.js',
+    and: [`Timed out retrying: Expected to find element: 'span[role="button"]', but never found it. Queried from element: <span.ms-TagItem-text.>`],
+    comment: 'TEST BUG - Its been fixed, should see this working soon.',
+  },
+  {
+    and: [`Chat turn 2 should be an exact match to: The user asks a silly question, however, we found The user asks another question instead`],
+    comment: 'UI BUG is fixed - Test code modified to pass, should see this working soon.',
+    bugs: [2265]
   }
 ]
 
@@ -61,26 +81,35 @@ async function GetTriageDetailsAboutTestFailure(log) {
 
         for(let i = 0; i < triageData.length; i++) {
           console.log(`GetTriageDetailsAboutTestFailure - for i=${i}`)
+          let testName = triageData[i].testName
           let and = triageData[i].and
           let or = triageData[i].or
+
+          // testName is an "and" condition with the other "and" or "or" conditions.
+          if (testName) {
+            if (!log.key.includes(testName)) {
+              console.log(`GetTriageDetailsAboutTestFailure - 'testName' - continue not a match`)
+              continue // because this one is not a match
+            }
+          }
+
           if (and && Array.isArray(and)) {
             if (and.findIndex(matchString => !failureMessage.includes(matchString)) >= 0) {
-              console.log(`GetTriageDetailsAboutTestFailure - continue not a match`)
+              console.log(`GetTriageDetailsAboutTestFailure - 'and' - continue not a match`)
               continue // because this one is not a match
             }
             console.log(`GetTriageDetailsAboutTestFailure returns: { message: ${failureMessage}, bugs: ${triageData[i].bugs} }`)
-            return { message: failureMessage, bugs: triageData[i].bugs }
+            return { message: failureMessage, bugs: triageData[i].bugs, comment: triageData[i].comment }
           }
           
           if (or && Array.isArray(or)) {
             if (or.findIndex(matchString => failureMessage.includes(matchString)) >= 0) {
               console.log(`GetTriageDetailsAboutTestFailure returns: { message: ${failureMessage}, bugs: ${triageData[i].bugs} }`)
-              return { message: failureMessage, bugs: triageData[i].bugs }
+              return { message: failureMessage, bugs: triageData[i].bugs, comment: triageData[i].comment }
             }
-            console.log(`GetTriageDetailsAboutTestFailure - continue not a match`)
+            console.log(`GetTriageDetailsAboutTestFailure - 'or' - continue not a match`)
             continue // because this one is not a match
           }
-
         }
       }
       console.log(`GetTriageDetailsAboutTestFailure returns: ${failureMessage}`)
@@ -133,7 +162,7 @@ async function GetApiData(url) {
   RenderResults()
 
   console.log('Writing HTML to File TestResults.html ----------------------------------')
-  fs.writeFileSync('TestResults.html', htmlContent)
+  fs.writeFileSync('..\\results\\TestResults.html', htmlContent)
 
   function MoveArtifactJsonIntoArrays() {
     artifacts.forEach(artifact => {
@@ -152,7 +181,7 @@ async function GetApiData(url) {
             iStart = artifact.url.indexOf('/videos/') + '/videos/'.length
             iEnd = artifact.url.length - 4
             testName = artifact.url.substring(iStart, iEnd)
-            key = testName.replace(/\/|\\/g, "-")
+            key = testName.replace(/\/|\\/g, '-')
             console.log(testName)
             console.log(key)
             console.log(artifact.url)
@@ -164,7 +193,7 @@ async function GetApiData(url) {
           iSpec = artifact.url.indexOf('.spec.', iStart)
           iEnd = artifact.url.indexOf('/', iSpec)
           testName = artifact.url.substring(iStart, iEnd)
-          key = testName.replace(/\/|\\/g, "-")
+          key = testName.replace(/\/|\\/g, '-')
           console.log(testName)
           console.log(key)
           console.log(artifact.url)
@@ -199,7 +228,7 @@ async function GetApiData(url) {
       if (typeof failureDetails == 'string') {
         console.log(`ProcessFailingTestArtifacts got failureDetails: ${failureDetails}`)
       } else {
-        console.log(`ProcessFailingTestArtifacts got failureDetails: { message: ${failureDetails.message}, bugs: ${failureDetails.bugs} }`)
+        console.log(`ProcessFailingTestArtifacts got failureDetails: { message: ${failureDetails.message}, bugs: ${failureDetails.bugs}, comment: ${failureDetails.comment} }`)
       }
 
       const mp4 = mp4s.find(mp4 => mp4.key === png.key)
@@ -224,6 +253,7 @@ async function GetApiData(url) {
       } else {
         testFailure.failureMessage = failureDetails.message
         testFailure.bugs = failureDetails.bugs
+        testFailure.comment = failureDetails.comment
         knownTestFailures.push(testFailure)
         console.log('ProcessFailingTestArtifacts - Known Test Failure')
       }
@@ -399,16 +429,25 @@ async function GetApiData(url) {
           </div>
 
           <div class="grid-item">
+        `
+        if (knownTestFailure.comment) {
+          htmlContent += `<b>${knownTestFailure.comment}</b><br>`
+        }
+
+        htmlContent += `
             <b>Failure Message:</b> ${ReplaceSpecialHtmlCharacters(knownTestFailure.failureMessage)}<br>
             <a href='${knownTestFailure.logUrl}' target='_blank'>
               Log File
             </a><br>
         `
-        knownTestFailure.bugs.forEach(bugNumber => {
-          htmlContent += `
-            <a href='https://dialearn.visualstudio.com/BLIS/_workitems/edit/${bugNumber}' target='_blank'>Bug ${bugNumber}</a> TODO: Bug Title to go here.<br>
-          `
-        })
+        
+        if (knownTestFailure.bugs) {
+          knownTestFailure.bugs.forEach(bugNumber => {
+            htmlContent += `
+              <a href='https://dialearn.visualstudio.com/BLIS/_workitems/edit/${bugNumber}' target='_blank'>Bug ${bugNumber}</a> TODO: Bug Title to go here.<br>
+            `
+          })
+        }
         htmlContent += `</div>`
       })
       htmlContent += '</div>'

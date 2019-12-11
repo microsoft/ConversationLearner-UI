@@ -40,10 +40,10 @@ describe('Bug 2265 Repro', () => {
 
     // If we save and re-edit the training, the bug does not reproduce. 
     // Uncomment the following code for proof.
-    // it('Save training and re-edit it', () => {
-    //   train.SaveAsIs()
-    //   trainDialogsGrid.TdGrid.EditTrainingByChatInputs('The user asks a silly question', 'The user asks another question', 'The Bot responds once again')
-    // })
+    it('Save training and re-edit it', () => {
+      train.SaveAsIs()
+      trainDialogsGrid.TdGrid.EditTrainingByChatInputs('The user asks a silly question', 'The user asks another question', 'The Bot responds once again')
+    })
 
     it('Select a Bot Turn, + Action + Entity - Create an Enum Entity', () => {
       chatPanel.SelectChatTurnExactMatch('The user asks a silly question')
@@ -53,14 +53,14 @@ describe('Bug 2265 Repro', () => {
 
     // Bug 2265: Editing 1st user turn to label entities saves changes to 2nd user turn
     // Once this bug is fixed comment out this block of code and uncomment the next block
-    it('Verify that Bug 2265 reproduced', () => {
-      chatPanel.VerifyChatTurnIsAnExactMatch('The user asks a silly question', 4, 2)
-    })
+    // it('Verify that Bug 2265 reproduced', () => {
+    //   chatPanel.VerifyChatTurnIsAnExactMatch('The user asks a silly question', 4, 2)
+    // })
     
     // This code should work once bug 2265 is fixed...
     // Uncomment this and comment out the above to detect a regression.
-    // it('Verify that Bug 2259 did not reproduce', () => {
-    //   chatPanel.VerifyChatTurnIsAnExactMatch('The user asks another question', 4, 2)
-    // })
+    it('Verify that Bug 2259 did not reproduce', () => {
+      chatPanel.VerifyChatTurnIsAnExactMatch('The user asks another question', 4, 2)
+    })
   })
 })
