@@ -2,6 +2,13 @@ const axios = require('axios')
 const fs = require('fs')
 
 const triageData = [
+  {
+    or: [
+      `Timed out retrying: Stauts is queued - Still Waiting for Status == Running or Completed - Queued Wait Time:`,
+      `Timed out retrying: Status is queued - Still Waiting for Status == Running or Completed - Queued Wait Time:`,
+    ],
+    bugs: [2415]
+  },
   { 
     and: [`Timed out retrying: Expected to find element: 'button.ms-Dropdown-item[title="Enum"]', but never found it.`],
     bugs: [2409],
@@ -19,6 +26,21 @@ const triageData = [
   },
   {
     and: [`CypressError: Timed out retrying: Expected to find element: '[data-testid="app-index-model-name"]', but never found it.`],
+    bugs: [2408],
+  },
+  {
+    or: [`Expected to find content: 'world peace' within the element: [ <span.`],
+    bugs: [2416],
+  },
+  {
+    or: [
+      `Expected to find element: '[data-testid="fuse-match-option"]', but never found it. Queried from element: <div.editor-container.`,
+      `Response: What's your name? - Expected to find data-testid="action-scorer-button-clickable" instead we found "action-scorer-button-no-click"`
+    ],
+    bugs: [2396],
+  },
+  {
+    or: [`Response: What's your name? - Expected to find data-testid="action-scorer-button-clickable" instead we found "action-scorer-button-no-click"`],
     bugs: [2408],
   }
 ]
@@ -40,6 +62,7 @@ async function GetTriageDetailsAboutTestFailure(log) {
         for(let i = 0; i < triageData.length; i++) {
           console.log(`GetTriageDetailsAboutTestFailure - for i=${i}`)
           let and = triageData[i].and
+          let or = triageData[i].or
           if (and && Array.isArray(and)) {
             if (and.findIndex(matchString => !failureMessage.includes(matchString)) >= 0) {
               console.log(`GetTriageDetailsAboutTestFailure - continue not a match`)
@@ -48,6 +71,16 @@ async function GetTriageDetailsAboutTestFailure(log) {
             console.log(`GetTriageDetailsAboutTestFailure returns: { message: ${failureMessage}, bugs: ${triageData[i].bugs} }`)
             return { message: failureMessage, bugs: triageData[i].bugs }
           }
+          
+          if (or && Array.isArray(or)) {
+            if (or.findIndex(matchString => failureMessage.includes(matchString)) >= 0) {
+              console.log(`GetTriageDetailsAboutTestFailure returns: { message: ${failureMessage}, bugs: ${triageData[i].bugs} }`)
+              return { message: failureMessage, bugs: triageData[i].bugs }
+            }
+            console.log(`GetTriageDetailsAboutTestFailure - continue not a match`)
+            continue // because this one is not a match
+          }
+
         }
       }
       console.log(`GetTriageDetailsAboutTestFailure returns: ${failureMessage}`)
@@ -71,7 +104,7 @@ async function GetApiData(url) {
 
 (async function() {
 
-  const buildNumber = 5390
+  let buildNumber
   let logs = []
   let mp4s = []
   let pngs = []
@@ -86,6 +119,8 @@ async function GetApiData(url) {
   let iSpec
   let testName
   let key
+
+  buildNumber = process.argv[2]
 
   const artifacts = await GetApiData(`https://circleci.com/api/v1.1/project/github/microsoft/ConversationLearner-UI/${buildNumber}/artifacts?circle-token=2ad1e457047948114cb3bbb1957d6f90c1e2ee25`)
   MoveArtifactJsonIntoArrays()

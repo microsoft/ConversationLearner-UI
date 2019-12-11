@@ -206,7 +206,16 @@ import * as helpers from './Helpers.js'
     if (currentHtml != lastHtml) {
       if (waitTillNChangesOccur > 0) { waitTillNChangesOccur-- }
       helpers.ConLog(funcName, `Change Found - Milliseconds since last change: ${(currentTime - lastChangeTime)}`)
-      if (dumpHtml) { helpers.ConLog(funcName, `Current HTML:\n${currentHtml}`) }
+      if (dumpHtml) { 
+        helpers.ConLog(funcName, `Current HTML:\n${currentHtml}`) 
+      } else {
+        // If the error panel is up dump its elements to the log file so that they can be used to help
+        // identify a bug using our test result evaluation tool.
+        const errorPanelElements = Cypress.$('div.cl-errorpanel')
+        if (errorPanelElements.length > 0) {
+          helpers.DumpElements(`${funcName} - Error Panel found in Current HTML`, errorPanelElements)   
+        }
+      }
 
       lastChangeTime = currentTime
       lastHtml = currentHtml

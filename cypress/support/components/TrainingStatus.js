@@ -52,7 +52,7 @@ export class TrainingStatus {
           const currentTime = new Date().getTime()
           const totalWaitTime = Math.floor((currentTime - this.startTime) / 1000)
           const queuedWaitTime = Math.floor((currentTime - startTime) / 1000)
-          throw new Error(`Stauts is ${this.currentStatus} - Still Waiting for Status == Running or Completed - Queued Wait Time: ${queuedWaitTime} - Total Wait Time: ${totalWaitTime}`)
+          throw new Error(`Status is ${this.currentStatus} - Still Waiting for Status == Running or Completed - Queued Wait Time: ${queuedWaitTime} - Total Wait Time: ${totalWaitTime}`)
         }
   
         // The status is now Running so we need to wait a different 
@@ -75,7 +75,7 @@ export class TrainingStatus {
           const currentTime = new Date().getTime()
           const totalWaitTime = Math.floor((currentTime - this.startTime) / 1000)
           const runningWaitTime = Math.floor((currentTime - startTime) / 1000)
-          throw new Error(`Stauts is ${this.currentStatus} - Still Waiting for Status == Completed - Running Wait Time: ${runningWaitTime} - Total Wait Time: ${totalWaitTime}`)
+          throw new Error(`Status is ${this.currentStatus} - Still Waiting for Status == Completed - Running Wait Time: ${runningWaitTime} - Total Wait Time: ${totalWaitTime}`)
         }
   
         // The status is no longer Running so we need to wait a different 
