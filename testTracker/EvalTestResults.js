@@ -161,7 +161,7 @@ async function GetApiData(url) {
   console.log('Rendering all Results to HTML ----------------------------------')
   RenderResults()
 
-  console.log('Writing HTML to File TestResults.html ----------------------------------')
+  console.log('Writing HTML to File ..\\results\\TestResults.html ----------------------------------')
   fs.writeFileSync('..\\results\\TestResults.html', htmlContent)
 
   function MoveArtifactJsonIntoArrays() {
