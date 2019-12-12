@@ -62,6 +62,14 @@ const triageData = [
     and: [`Chat turn 2 should be an exact match to: The user asks a silly question, however, we found The user asks another question instead`],
     comment: 'UI BUG is fixed - Test code modified to pass, should see this working soon.',
     bugs: [2265]
+  },
+  {
+    testName: 'Regression-Log',
+    and: [
+      `Timed out retrying: Expected to find content:`,
+      `within the element: <div.wc-message-content> but never did.`,
+    ],
+    bugs: [2197]
   }
 ]
 
