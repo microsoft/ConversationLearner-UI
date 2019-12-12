@@ -70,10 +70,46 @@ const triageData = [
       `within the element: <div.wc-message-content> but never did.`,
     ],
     bugs: [2197]
+  },
+  {
+    and: [
+      `cy.visit() failed trying to load:`,
+      `http://localhost:3000/`
+    ],
+    comment: 'This happens from time to time and there is no known fix for it.',
+  },
+  {
+    logContains: {
+
+    }
   }
 ]
 
 async function GetTriageDetailsAboutTestFailure(log) {
+  function AndOrContains(sourceText, query) {
+    let and = triageData[i].and
+    let or = triageData[i].or
+    
+    if (and && Array.isArray(and)) {
+      if (and.findIndex(matchString => !sourceText.includes(matchString)) >= 0) {
+        console.log(`GetTriageDetailsAboutTestFailure - 'and' - continue not a match`)
+        return false // because this one is not a match
+      }
+      console.log(`GetTriageDetailsAboutTestFailure returns: { message: ${failureMessage}, bugs: ${triageData[i].bugs} }`)
+      return true
+    }
+    
+    if (or && Array.isArray(or)) {
+      if (or.findIndex(matchString => failureMessage.includes(matchString)) >= 0) {
+        console.log(`GetTriageDetailsAboutTestFailure returns: { message: ${failureMessage}, bugs: ${triageData[i].bugs} }`)
+        return { message: failureMessage, bugs: triageData[i].bugs, comment: triageData[i].comment }
+      }
+      console.log(`GetTriageDetailsAboutTestFailure - 'or' - continue not a match`)
+      continue // because this one is not a match
+    }
+
+  }
+
   return await GetApiData(log.url).then(logText => {
     try {
       console.log(`GetTriageDetailsAboutTestFailure - start`)
