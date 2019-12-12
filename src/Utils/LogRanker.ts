@@ -35,6 +35,9 @@ function isLastActionInSet(trainDialog: CLM.TrainDialog, actionIds: string[]) {
     const lastRound = trainDialog
         .rounds[trainDialog.rounds.length - 1]
     
+    if (lastRound.scorerSteps.length === 0) {
+        return false
+    }
     const actionId = lastRound.scorerSteps[lastRound.scorerSteps.length - 1].labelAction
     if (!actionId) {
         return false
