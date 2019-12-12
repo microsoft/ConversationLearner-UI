@@ -16,7 +16,7 @@ export const conditionDisplay: Record<CLM.ConditionType, string> = {
     [CLM.ConditionType.GREATER_THAN]: '>',
     [CLM.ConditionType.GREATER_THAN_OR_EQUAL]: '>=',
     [CLM.ConditionType.LESS_THAN]: '<',
-    [CLM.ConditionType.LESS_THEN_OR_EQUAL]: '<=',
+    [CLM.ConditionType.LESS_THAN_OR_EQUAL]: '<=',
 }
 
 export const getEnumConditionName = (entity: CLM.EntityBase, enumValue: CLM.EnumValue): string => {
