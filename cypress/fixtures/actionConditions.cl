@@ -2907,7 +2907,7 @@
                 {
                     "entityId": "ba50584b-244c-4c73-83fe-b0bf04498714",
                     "value": 3,
-                    "condition": "LESS_THEN_OR_EQUAL"
+                    "condition": "LESS_THAN_OR_EQUAL"
                 }
             ],
             "negativeConditions": [],

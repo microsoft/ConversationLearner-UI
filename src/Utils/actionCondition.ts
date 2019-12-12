@@ -16,7 +16,7 @@ export const conditionDisplay: Record<CLM.ConditionType, string> = {
     [CLM.ConditionType.GREATER_THAN]: '>',
     [CLM.ConditionType.GREATER_THAN_OR_EQUAL]: '>=',
     [CLM.ConditionType.LESS_THAN]: '<',
-    [CLM.ConditionType.LESS_THEN_OR_EQUAL]: '<=',
+    [CLM.ConditionType.LESS_THAN_OR_EQUAL]: '<=',
 }
 
 export const getEnumConditionName = (entity: CLM.EntityBase, enumValue: CLM.EnumValue): string => {
@@ -102,7 +102,7 @@ export const isValueConditionTrue = (condition: CLM.Condition, numberValue: numb
             || (condition.condition === CLM.ConditionType.GREATER_THAN && numberValue > condition.value)
             || (condition.condition === CLM.ConditionType.GREATER_THAN_OR_EQUAL && numberValue >= condition.value)
             || (condition.condition === CLM.ConditionType.LESS_THAN && numberValue < condition.value)
-            || (condition.condition === CLM.ConditionType.LESS_THEN_OR_EQUAL && numberValue <= condition.value)
+            || (condition.condition === CLM.ConditionType.LESS_THAN_OR_EQUAL && numberValue <= condition.value)
     }
 
     return isTrue
@@ -150,7 +150,7 @@ export const getUpdatedActionsUsingCondition = (actions: CLM.ActionBase[], exist
                 draftAction.requiredConditions.splice(requiredConditionIndex, 1, newCondition)
                 isActionUsingCondition = true
             }
-    
+
             const negativeConditionIndex = draftAction.negativeConditions.findIndex(c => isConditionEqual(c, existingCondition))
             if (negativeConditionIndex >= 0) {
                 draftAction.negativeConditions.splice(negativeConditionIndex, 1, newCondition)
