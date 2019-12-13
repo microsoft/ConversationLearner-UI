@@ -123,7 +123,7 @@ class MemorySetter extends React.Component<Props> {
     }
 
     onChange(index: number, text: string | undefined, entity: CLM.EntityBase) {
-        if (!text) {
+        if (typeof text !== 'string') {
             return
         }
 
