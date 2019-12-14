@@ -1,5 +1,6 @@
 const axios = require('axios')
 const fs = require('fs')
+const cheerio = require('cheerio')
 
 const triageData = [
   {
@@ -85,6 +86,7 @@ const triageData = [
   }
 ]
 
+
 async function GetTriageDetailsAboutTestFailure(log) {
   function AndOrContains(sourceText, query) {
     let and = triageData[i].and
@@ -107,7 +109,6 @@ async function GetTriageDetailsAboutTestFailure(log) {
       console.log(`GetTriageDetailsAboutTestFailure - 'or' - continue not a match`)
       continue // because this one is not a match
     }
-
   }
 
   return await GetApiData(log.url).then(logText => {
@@ -123,6 +124,10 @@ async function GetTriageDetailsAboutTestFailure(log) {
       } else {
         failureMessage = logText.substring(index + searchForFailureMessage.length)
 
+        const errorPanelText = GetErrorPanelText(logText)
+
+
+        
         for(let i = 0; i < triageData.length; i++) {
           console.log(`GetTriageDetailsAboutTestFailure - for i=${i}`)
           let testName = triageData[i].testName
@@ -164,6 +169,32 @@ async function GetTriageDetailsAboutTestFailure(log) {
     }
   })
 }
+
+// Returns undefined if the logText does not have an Error Panel entry in it,
+// otherwise it returns the text of the the error message that was contained 
+// in the Error Panel.
+function GetErrorPanelText(logText) {
+  const errorPanelMarker = 'Error Panel found in Current HTML'
+  const index = logText.indexOf(errorPanelMarker)
+  if (index == -1) { return undefined }
+
+  let start = logText.indexOf('\n', index + errorPanelMarker.length) + 6
+  let end = logText.indexOf('\n-+- ', start)
+  let errorMessage = logText.substring(start, end).trim()
+
+  // console.log(`start: ${start} - end: ${end}`)
+  // console.log(`Extracted:\n${errorMessage}\n`)
+
+  // Adding spaces to the end of each potential text string just to be sure there is a break between words.
+  // Later we will remove any extra spaces this might create.
+  errorMessage = errorMessage.replace(/<\//g, ' </')
+
+  const $ = cheerio.load(`<div class="cl-errorpanel"><div class="css-52"><span>Creating Application </span> Failed </div><div class="css-53">Request failed with status code 400 </div><p>"Bad Request\n{\"Locale\":[\"The Locale field is required.\"]}" </p> </div>`)
+  let text = $('div.cl-errorpanel').text().trim().replace(/  |\n/g, ' ')
+  // console.log(`Error Message:\n${text}<===\n`)
+  return text
+}
+
 
 async function GetApiData(url) {
   return await axios.get(url).then(response => {
