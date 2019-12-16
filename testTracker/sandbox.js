@@ -33,9 +33,17 @@ const triageData = [
         searchBy: FULL_LOG,
         or: [
           `This will NOT be found`,
-          `Should import a model to test against and navigate to Train Dialogs view`,
-        ]
-      }
+          { 
+            and : [
+            `Should import a model to test against and navigate to Train Dialogs view`,
+            { 
+              searchBy: ERROR_PANEL,
+              and: [`Creating Application Failed Request failed with status code 400 "Bad Request {"Locale":["The Locale field is required."]}`],
+            }
+          ]}
+          
+        ],
+      },
     ],
     comment: 'This can be the answer',
   },
@@ -206,8 +214,8 @@ async function GetApiData(url) {
   })
 }
 
-(function () {
-  GetTriageDetailsAboutTestFailure({
+(async function () {
+  await GetTriageDetailsAboutTestFailure({
     key: 'neverGonnaMatchThis',
     url: 'https://5509-94457606-gh.circle-artifacts.com/0/root/project/results/cypress/Regression-EditAndBranching-LastTurnUndo.spec.js.19.12.13.01.21.57..846.log'})
 }())
