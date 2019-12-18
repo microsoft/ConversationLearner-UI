@@ -1,60 +1,24 @@
-const axios = require('axios')
+const apiData = require('./ApiData')
 const cheerio = require('cheerio')
 
 const FAILURE_MESSAGE = 'fm'
 const ERROR_PANEL = 'ep'
 const FULL_LOG = 'fl'
 
-const triageData = [
-  {
-    //testName: 'Regression-Log',
-    and: [
-      `Timed out retrying: Expected to find content:`,
-      `within the element: <div.wc-message-content> but never did.`,
-    ],
-    bugs: [2197]
-  },
-  {
-    and: [
-      `cy.visit() failed trying to load:`,
-      `http://localhost:3000/`
-    ],
-    comment: 'This happens from time to time and there is no known fix for it.',
-  },
-  {
-    and: [`Expected to find element:`, `but never found it.`, 'No WAY!'],
-    comment: 'This should NEVER be the answer',
-  },
-  {
-    and: [
-      `Expected to find element:`, 
-      `but never found it.`,
-      {
-        searchBy: FULL_LOG,
-        or: [
-          `This will NOT be found`,
-          { 
-            and : [
-            `Should import a model to test against and navigate to Train Dialogs view`,
-            { 
-              searchBy: ERROR_PANEL,
-              and: [`Creating Application Failed Request failed with status code 400 "Bad Request {"Locale":["The Locale field is required."]}`],
-            }
-          ]}
-          
-        ],
-      },
-    ],
-    comment: 'This can be the answer',
-  },
-  {
-    searchBy: ERROR_PANEL,
-    and: [`Creating Application Failed Request failed with status code 400 "Bad Request {"Locale":["The Locale field is required."]}`],
-    comment: 'This is the correct answer'
-  }
-]
+var triageData = undefined
+
+exports.SetTriageData = SetTriageData
+exports.GetTriageDetailsAboutTestFailure = GetTriageDetailsAboutTestFailure
+
+function SetTriageData(data) {
+  triageData = data
+}
 
 async function GetTriageDetailsAboutTestFailure(log) {
+  if (!triageData) {
+    throw new Error('You must first call "SetTriageData()" before calling GetTriageDetailsAboutTestFailure')
+  }
+
   let failureMessage
   let errorPanelText
   let fullLogText
@@ -95,6 +59,7 @@ async function GetTriageDetailsAboutTestFailure(log) {
         console.log(`sourceText for searchBy '${searchBy}' is undefined`)
         return false
       }
+      //console.log(`sourceText: >>>${sourceText.substring(0, 140)}<<<`)
 
       // Determine whether multiple conditions will be ANDed or ORed together to form the result...
       let and
@@ -135,7 +100,7 @@ async function GetTriageDetailsAboutTestFailure(log) {
   }
 
   console.log(`GetTriageDetailsAboutTestFailure - start`)
-  return await GetApiData(log.url).then(data => {
+  return await apiData.Get(log.url).then(data => {
     try {
       fullLogText = data
       // console.log(fullLogText)
@@ -150,7 +115,12 @@ async function GetTriageDetailsAboutTestFailure(log) {
         failureMessage = fullLogText.substring(index + searchForFailureMessage.length)
       }
       errorPanelText = GetErrorPanelText(fullLogText)
-      
+
+      let returnValue = {
+        message: failureMessage, 
+        errorPanelText: errorPanelText,
+      }
+  
       for(let i = 0; i < triageData.length; i++) {
         console.log(`GetTriageDetailsAboutTestFailure - for i=${i}`)
         // testName is an "AND" condition with the other query conditions.
@@ -162,19 +132,15 @@ async function GetTriageDetailsAboutTestFailure(log) {
         }
 
         if (query(triageData[i])) {
-          returnValue = {
-            message: failureMessage, 
-            bugs: triageData[i].bugs, 
-            comment: triageData[i].comment,
-            errorPanelText: errorPanelText,
-          }
-          console.log(`GetTriageDetailsAboutTestFailure returns:`)
-          console.log(returnValue)
-          return returnValue
+          returnValue.knownIssue = true
+          returnValue.bugs = triageData[i].bugs
+          returnValue.comment = triageData[i].comment
+          break
         }
       }
-      console.log(`GetTriageDetailsAboutTestFailure returns: ${failureMessage}`)
-      return failureMessage
+      console.log(`GetTriageDetailsAboutTestFailure returns:`)
+      console.log(returnValue)
+      return returnValue
     }
     catch(error) {
       console.log(`!!! ERROR: ${error.message}`)
@@ -198,24 +164,67 @@ function GetErrorPanelText(logText) {
   // Later we will remove any extra spaces this might create.
   errorMessage = errorMessage.replace(/<\//g, ' </')
 
-  const $ = cheerio.load(`<div class="cl-errorpanel"><div class="css-52"><span>Creating Application </span> Failed </div><div class="css-53">Request failed with status code 400 </div><p>"Bad Request\n{\"Locale\":[\"The Locale field is required.\"]}" </p> </div>`)
-  let text = $('div.cl-errorpanel').text().trim().replace(/  |\n/g, ' ')
+  const $ = cheerio.load(errorMessage)
+  let text = $('div.cl-errorpanel').text().trim().replace(/\\"/g, '"').replace(/  |\\n/g, ' ')
   console.log(`Error Message:\n${text}<===\n`)
   return text
 }
 
-async function GetApiData(url) {
-  return await axios.get(url).then(response => {
-    return response.data
-  })
-  .catch(err => {
-    console.log(`GetApiData - Error accessing: ${url}`)
-    console.log(err.message)
-  })
-}
+// UNIT TESTS - These are triggered ONLY when running this as a standalone module.
+if (require.main === module) {
+  (async function () {
+    const triageData = [
+      {
+        testName: 'Regression-Log',
+        and: [
+          `Timed out retrying: Expected to find content:`,
+          `within the element: <div.wc-message-content> but never did.`,
+        ],
+        bugs: [2197]
+      },
+      {
+        and: [
+          `cy.visit() failed trying to load:`,
+          `http://localhost:3000/`
+        ],
+        comment: 'This happens from time to time and there is no known fix for it.',
+      },
+      {
+        and: [`Expected to find element:`, `but never found it.`, 'No WAY!'],
+        comment: 'This should NEVER be the answer',
+      },
+      { // Should be a match
+        and: [
+          `Expected to find element:`, 
+          `but never found it.`,
+          {
+            searchBy: FULL_LOG,
+            or: [
+              `This will NOT be found`,
+              { 
+                and : [
+                `Should import a model to test against and navigate to Train Dialogs view`,
+                { 
+                  searchBy: ERROR_PANEL,
+                  and: [`Creating Application Failed Request failed with status code 400 "Bad Request {"Locale":["The Locale field is required."]}`],
+                },
+              ]},
+            ],
+          },
+        ],
+        comment: 'This can be the answer',
+      },
+      { // Should be a match
+        searchBy: ERROR_PANEL,
+        and: [`Creating Application Failed Request failed with status code 400 "Bad Request {"Locale":["The Locale field is required."]}"`],
+        comment: 'This is the correct answer'
+      }
+    ]
+   
+    SetTriageData(triageData)
 
-(async function () {
-  await GetTriageDetailsAboutTestFailure({
-    key: 'neverGonnaMatchThis',
-    url: 'https://5509-94457606-gh.circle-artifacts.com/0/root/project/results/cypress/Regression-EditAndBranching-LastTurnUndo.spec.js.19.12.13.01.21.57..846.log'})
-}())
+    await GetTriageDetailsAboutTestFailure({
+      key: 'WeDoNotNeedToMatchThis',
+      url: 'https://5509-94457606-gh.circle-artifacts.com/0/root/project/results/cypress/Regression-EditAndBranching-LastTurnUndo.spec.js.19.12.13.01.21.57..846.log'})
+  }())
+}
