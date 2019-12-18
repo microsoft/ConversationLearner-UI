@@ -98,6 +98,57 @@ async function GetTriageDetailsAboutTestFailure(log) {
       return and
     }
   }
+  
+  function GetFailureMessage() {
+    const searchForFailureMessage = '\nFailure Message: '
+    let iStart
+    if (log.key.endsWith('.spec.ts')) {
+      // The .ts tests usually have multiple errors in them, so we search from the beginning
+      // in order to find the first failure, which usually causes the other failures.
+      iStart = fullLogText.indexOf(searchForFailureMessage)
+    } else {
+      iStart = fullLogText.lastIndexOf(searchForFailureMessage)
+    }
+    if (iStart == -1) {
+      console.log(`GetTriageDetailsAboutTestFailure - not found error`)
+      return 'ERROR: Failure Message was not found in this log file.'
+    } else {
+      iStart += searchForFailureMessage.length
+
+      let iEnd
+      let iEnd1 = fullLogText.indexOf('\n-+-', iStart)
+      let iEnd2 = fullLogText.indexOf('\n***', iStart)
+      if (iEnd1 == -1 && iEnd2 == -1) {
+        iEnd = fullLogText.length
+      } else {
+        iEnd = Math.min(iEnd1, iEnd2)
+      }
+
+      return fullLogText.substring(iStart, iEnd)
+    }
+  }
+
+  function GetErrorPanelText() {
+    const errorPanelMarker = 'Error Panel found in Current HTML'
+    const index = fullLogText.indexOf(errorPanelMarker)
+    if (index == -1) { return undefined }
+  
+    let start = fullLogText.indexOf('\n', index + errorPanelMarker.length) + 6
+    let end = fullLogText.indexOf('\n-+- ', start)
+    let errorMessage = fullLogText.substring(start, end).trim()
+  
+    console.log(`start: ${start} - end: ${end}`)
+    console.log('Extracted:\n' + errorMessage + '\n')
+  
+    // Adding spaces to the end of each potential text string just to be sure there is a break between words.
+    // Later we will remove any extra spaces this might create.
+    errorMessage = errorMessage.replace(/<\//g, ' </')
+  
+    const $ = cheerio.load(errorMessage)
+    let text = $('div.cl-errorpanel').text().trim().replace(/\\"/g, '"').replace(/  |\\n/g, ' ')
+    console.log(`Error Message:\n${text}<===\n`)
+    return text
+  }
 
   console.log(`GetTriageDetailsAboutTestFailure - start`)
   return await apiData.Get(log.url).then(data => {
@@ -106,15 +157,8 @@ async function GetTriageDetailsAboutTestFailure(log) {
       // console.log(fullLogText)
       // console.log()
 
-      const searchForFailureMessage = '\nFailure Message: '
-      let index = fullLogText.lastIndexOf(searchForFailureMessage)
-      if (index == -1) {
-        console.log(`GetTriageDetailsAboutTestFailure - not found error`)
-        failureMessage = 'ERROR: Failure Message was not found in this log file.'
-      } else {
-        failureMessage = fullLogText.substring(index + searchForFailureMessage.length)
-      }
-      errorPanelText = GetErrorPanelText(fullLogText)
+      failureMessage = GetFailureMessage()
+      errorPanelText = GetErrorPanelText()
 
       let returnValue = {
         message: failureMessage, 
@@ -146,28 +190,6 @@ async function GetTriageDetailsAboutTestFailure(log) {
       console.log(`!!! ERROR: ${error.message}`)
     }
   })
-}
-
-function GetErrorPanelText(logText) {
-  const errorPanelMarker = 'Error Panel found in Current HTML'
-  const index = logText.indexOf(errorPanelMarker)
-  if (index == -1) { return undefined }
-
-  let start = logText.indexOf('\n', index + errorPanelMarker.length) + 6
-  let end = logText.indexOf('\n-+- ', start)
-  let errorMessage = logText.substring(start, end).trim()
-
-  console.log(`start: ${start} - end: ${end}`)
-  console.log('Extracted:\n' + errorMessage + '\n')
-
-  // Adding spaces to the end of each potential text string just to be sure there is a break between words.
-  // Later we will remove any extra spaces this might create.
-  errorMessage = errorMessage.replace(/<\//g, ' </')
-
-  const $ = cheerio.load(errorMessage)
-  let text = $('div.cl-errorpanel').text().trim().replace(/\\"/g, '"').replace(/  |\\n/g, ' ')
-  console.log(`Error Message:\n${text}<===\n`)
-  return text
 }
 
 // UNIT TESTS - These are triggered ONLY when running this as a standalone module.

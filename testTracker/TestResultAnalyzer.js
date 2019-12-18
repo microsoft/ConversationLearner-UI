@@ -46,8 +46,8 @@ ttf.SetTriageData(triageData);
             iStart = artifact.url.indexOf('/cypress/') + '/cypress/'.length
             iEnd = artifact.url.length - '.19.12.05.02.42.14..456.log'.length
             key = artifact.url.substring(iStart, iEnd)
-            console.log(key)
-            console.log(artifact.url)
+            console.log('key:', key)
+            console.log('url:', artifact.url)
             logs.push({ key: key, url: artifact.url })
           break
 
@@ -56,9 +56,9 @@ ttf.SetTriageData(triageData);
             iEnd = artifact.url.length - 4
             testName = artifact.url.substring(iStart, iEnd)
             key = testName.replace(/\/|\\/g, '-')
-            console.log(testName)
-            console.log(key)
-            console.log(artifact.url)
+            console.log('testName:', testName)
+            console.log('key:', key)
+            console.log('url:', artifact.url)
             mp4s.push({ testName: testName, key: key, url: artifact.url })
           break
         
@@ -68,13 +68,14 @@ ttf.SetTriageData(triageData);
           iEnd = artifact.url.indexOf('/', iSpec)
           testName = artifact.url.substring(iStart, iEnd)
           key = testName.replace(/\/|\\/g, '-')
-          console.log(testName)
-          console.log(key)
-          console.log(artifact.url)
+          console.log('testName:', testName)
+          console.log('key:', key)
+          console.log('url:', artifact.url)
           pngs.push({ testName: testName, key: key, url: artifact.url })
           break
         
         default:
+          console.log('!!!*** What file is this? ***!!!', artifact.url)
           break
       }
     })

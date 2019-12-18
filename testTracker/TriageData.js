@@ -88,7 +88,7 @@ exports.triageData = [
       `, but it was not found in the input:`,
     ],
     bugs: [2422],
-    comment: 'Failure Message: You attempted to select the phrase: *, but it was not found in the input: *',
+    comment: 'Bug in Test_SelectWord',
   },
   {
     testName: 'Regression-BugRepro-Bug2319Repro.spec.js',
@@ -108,9 +108,22 @@ exports.triageData = [
     or: [`TextContentWithoutNewlines - Raw Text Content: "User utterance **#**6"`],
     bugs: [2423],
     comment: 'PLEASE UPDATE BUG REPORT with a count on any instances of this bug that you find.',
+  },
+  {
+    testName: 'Regression-Train-ApiMemoryManipulation.spec.js',
+    and: [
+      `Expected to find element: '[data-testid="action-scorer-button-clickable"]', but never found it. Queried from element: <div.ms-DetailsRow-fields`,
+      {
+        searchBy: FULL_LOG,
+        and: [`FAILED - Test Case: 'API Memory Manipulation - Train - Train - Should remove one of the toppings and verify the resulting list is correct'`],
+      }
+    ],
+    bugs: [2416],
+    comment: 'Another instance of that LUIS bug that mislabels Entities.',
   }
 ]
 
+// NOT USED BY THE CODE - AN EXAMPLE ONLY
 exampleTriageData = [
   { // This is a complex example that shows how to search different strings found in the test artifacts.
     // 
